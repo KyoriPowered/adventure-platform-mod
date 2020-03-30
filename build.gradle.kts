@@ -62,6 +62,7 @@ minecraft {
 
 license {
     mapping("java", "SLASHSTAR_STYLE")
+    include("**/*.java")
 }
 
 java {
