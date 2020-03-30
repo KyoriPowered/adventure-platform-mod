@@ -44,6 +44,13 @@ import java.util.EnumSet;
 import static java.util.Objects.requireNonNull;
 import static net.kyori.text.TextComponent.*;
 
+/**
+ * Adapter methods for sending {@link Component Components} to a variety of users
+ *
+ * @see ComponentCommandOutput#sendMessage(Component) for sending to a single user
+ * @see ComponentPlayer for sending to a single player
+ * @see ComponentCommandSource for sending to a single command source
+ */
 public class TextAdapter implements ModInitializer {
 
     /**

@@ -18,40 +18,31 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package ca.stellardrift.text.fabric;
+package ca.stellardrift.text.fabric.mixin;
 
+import ca.stellardrift.text.fabric.ComponentCommandOutput;
 import net.kyori.text.Component;
-import net.minecraft.server.command.ServerCommandSource;
+import net.kyori.text.serializer.plain.PlainComponentSerializer;
+import net.minecraft.server.MinecraftServer;
+import org.apache.logging.log4j.Logger;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 
 /**
- * An interface applied to {@link ServerCommandSource} to allow sending {@link Component Components}
+ * Implement ComponentCommandOutput for output to the server console
  */
-public interface ComponentCommandSource {
+@Mixin(value = MinecraftServer.class)
+public abstract class MixinMinecraftServer implements ComponentCommandOutput {
+    @Shadow
+    private static Logger LOGGER;
+
     /**
-     * Send a result message to the command source
+     * Send a message to this receiver as a component
      *
      * @param text The text to send
-     * @param sendToOps If this message should be sent to all ops listening
      */
-    void sendFeedback(Component text, boolean sendToOps);
-
-    /**
-     * Send an error message to the command source
-     * @param text The error
-     */
-    void sendError(Component text);
-
-    ComponentCommandOutput getOutput();
-
-    static ComponentCommandSource of(ServerCommandSource src) {
-        if (src == null) {
-            return null;
-        }
-
-        if (!(src instanceof ComponentCommandSource)) {
-            throw new IllegalArgumentException("The ComponentCommandSource mixin failed!");
-        }
-
-        return (ComponentCommandSource) src;
+    @Override
+    public void sendMessage(Component text) {
+        LOGGER.info(PlainComponentSerializer.INSTANCE.serialize(text)); // TODO: Eventually will we support formatted output?
     }
 }

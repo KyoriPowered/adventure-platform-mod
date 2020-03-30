@@ -4,6 +4,7 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "MixinChatMessageS2CPacket",
+    "MixinMinecraftServer",
     "MixinServerCommandSource",
     "MixinServerPlayerEntity",
     "MixinTitleS2CPacket"

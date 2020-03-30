@@ -36,9 +36,11 @@ val versionFabricApi = ext["version.fabricApi"] as String
 dependencies {
     apiInclude("net.kyori:text-api:$versionText")
     apiInclude("net.kyori:text-feature-pagination:$versionText")
+    apiInclude("net.kyori:text-serializer-plain:$versionText")
     implementationInclude("net.kyori:text-serializer-gson:$versionText") {
         exclude("com.google.code.gson")
     }
+
 
     listOf("commands-v0", "api-base").forEach {
         implementationInclude("net.fabricmc.fabric-api:fabric-$it:$versionFabricApi")

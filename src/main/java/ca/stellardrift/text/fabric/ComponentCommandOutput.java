@@ -36,7 +36,7 @@ public interface ComponentCommandOutput extends CommandOutput {
     void sendMessage(Component text);
 
     /**
-     * Convert a standard {@link CommandOutput} into a ComponentCommandOutput
+     * Convert a standard {@link CommandOutput} into a ComponentCommandOutput.
      *
      * @param out The original output
      * @return The original output, if it supports components directly, or a wrapper that converts
