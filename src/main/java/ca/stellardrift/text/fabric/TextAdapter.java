@@ -25,11 +25,11 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.registry.CommandRegistry;
 import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.FabricLoader;
+import net.kyori.minecraft.Key;
 import net.kyori.text.Component;
 import net.kyori.text.TextComponent;
 import net.kyori.text.format.TextColor;
 import net.kyori.text.format.TextDecoration;
-import net.kyori.text.serializer.gson.GsonComponentSerializer;
 import net.minecraft.client.network.packet.ChatMessageS2CPacket;
 import net.minecraft.client.network.packet.TitleS2CPacket;
 import net.minecraft.network.MessageType;
@@ -38,6 +38,7 @@ import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 
 import java.util.EnumSet;
 
@@ -65,7 +66,7 @@ public class TextAdapter implements ModInitializer {
         if (text == null) {
             return null;
         }
-        return GsonComponentSerializer.INSTANCE.deserialize(Text.Serializer.toJson(text));
+        return MinecraftTextSerializer.INSTANCE.deserialize(text);
     }
 
     /**
@@ -80,7 +81,34 @@ public class TextAdapter implements ModInitializer {
         if (component == null) {
             return null;
         }
-        return Text.Serializer.fromJson(GsonComponentSerializer.INSTANCE.serialize(component));
+        return MinecraftTextSerializer.INSTANCE.serialize(component);
+    }
+
+    /**
+     * Convert a MC {@link Identifier} instance to a text Key
+     *
+     * @param ident The Identifier to convert
+     * @return The equivalent data as a Key
+     */
+    public static Key toKey(Identifier ident) {
+        if (ident == null) {
+            return null;
+        }
+        return Key.of(ident.getNamespace(), ident.getPath());
+    }
+
+
+    /**
+     * Convert a Kyori {@link Key} instance to a MC Identifier
+     *
+     * @param key The Key to convert
+     * @return The equivalent data as an Identifier
+     */
+    public static Identifier toIdentifier(Key key) {
+        if (key == null) {
+            return null;
+        }
+        return new Identifier(key.namespace(), key.value());
     }
 
     /**
