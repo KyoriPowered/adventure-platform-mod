@@ -76,6 +76,12 @@ tasks.withType(JavaCompile::class) {
     options.encoding = "UTF-8"
 }
 
+tasks.withType(Javadoc::class) {
+    options {
+        this.encoding = "UTF-8"
+    }
+}
+
 tasks.processResources {
     expand("project" to project)
 }
