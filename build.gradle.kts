@@ -9,7 +9,7 @@ plugins {
     id("fabric-loom") version "0.2.7-SNAPSHOT"
 }
 
-val versionSelf = "1.0"
+val versionSelf = "1.0.1"
 val versionMinecraft: String by project
 val versionText: String by project
 val versionMappings: String by project
@@ -53,6 +53,11 @@ license {
 
 tasks.processResources.configure {
     expand("project" to project)
+}
+
+bintray {
+    pkg.version.name = project.version as String
+    pkg.version.released = null
 }
 
 opinionated {
