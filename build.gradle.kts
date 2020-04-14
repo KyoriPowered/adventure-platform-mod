@@ -9,7 +9,7 @@ plugins {
     id("fabric-loom") version "0.2.7-SNAPSHOT"
 }
 
-val versionSelf = "1.0-SNAPSHOT"
+val versionSelf = "1.0"
 val versionMinecraft: String by project
 val versionText: String by project
 val versionMappings: String by project
