@@ -216,7 +216,7 @@ public class TextAdapter implements ModInitializer {
                         b.color(TextColor.GRAY);
                         b.append(highlight("v" + apiVersion));
                         b.append(newline());
-                        b.append(make("text-compat-fabric ", v -> v.append(highlight("v" + adapterVersion))));
+                        b.append(make("text-adapter-fabric ", v -> v.append(highlight("v" + adapterVersion))));
                     }), false);
 
                     return 1;
