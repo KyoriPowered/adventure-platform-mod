@@ -17,4 +17,5 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
+
 rootProject.name = "text-adapter-fabric"
