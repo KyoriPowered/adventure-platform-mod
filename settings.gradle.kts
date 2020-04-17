@@ -9,6 +9,7 @@
 
 pluginManagement {
     repositories {
+        mavenLocal()
         jcenter()
         maven {
             name = "Fabric"

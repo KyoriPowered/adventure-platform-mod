@@ -1,11 +1,14 @@
 import ca.stellardrift.build.apiInclude
 import ca.stellardrift.build.implementationInclude
+import ca.stellardrift.build.isRelease
 import ca.stellardrift.build.kyoriText
 import net.fabricmc.loom.task.RemapJarTask
 import net.fabricmc.loom.task.RemapSourcesJarTask
+import java.time.format.DateTimeFormatter
 
 plugins {
-    id("ca.stellardrift.opinionated") version "1.0.1"
+    id("ca.stellardrift.opinionated") version "2.0"
+    id("ca.stellardrift.opinionated.publish") version "2.0"
     id("fabric-loom") version "0.2.7-SNAPSHOT"
 }
 
@@ -58,6 +61,21 @@ tasks.processResources.configure {
 bintray {
     pkg.version.name = project.version as String
     pkg.version.released = null
+}
+
+val gitInfo by tasks.registering {
+    doLast {
+        println("Is release: ${isRelease()}")
+        val tags = grgit.repository.jgit.tagList().call()
+        val tagName = tags?.lastOrNull()?.name
+        println("Tag name: $tagName")
+        val grgitTag = grgit.resolve.toTag(tagName)
+        println("JGit tag: ${tags.lastOrNull()}")
+        println("Grgit tag: $grgitTag")
+        println("Commit: " + grgit.head())
+        println("Tag is commit: ${grgitTag.commit == grgit.head()}")
+    }
+
 }
 
 opinionated {

@@ -100,15 +100,16 @@ public class MinecraftTextSerializer implements ComponentSerializer<Component, C
 
     /**
      * Validates that all members of an enum are present in the given map
+     * Throws {@link IllegalStateException} if there is a missing value
+     *
      * @param toCheck The map to check
      * @param enumClass The enum class to verify coverage
      * @param <T> The type of enum
-     * @throws ExceptionInInitializerError if there is a missing value
      */
-    private static <T extends Enum<T>> void checkCoverage(Map<T, ?> toCheck,  Class<T> enumClass) {
+    private static <T extends Enum<T>> void checkCoverage(Map<T, ?> toCheck,  Class<T> enumClass) throws IllegalStateException {
         for (T value : enumClass.getEnumConstants()) {
             if (!toCheck.containsKey(value)) {
-                throw new ExceptionInInitializerError("Unmapped " + enumClass.getSimpleName() + " element '" + value + '!');
+                throw new IllegalStateException("Unmapped " + enumClass.getSimpleName() + " element '" + value + '!');
             }
         }
     }
