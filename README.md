@@ -1,6 +1,6 @@
 # text-compat-fabric
 
-[![Release](https://jitpack.io/v/ca.stellardrift/text-adapter-fabric.svg)](https://jitpack.io/#ca.stellardrift/text-adapter-fabric) | [Javadoc](https://jitpack.io/ca/stellardrift/text-adapter-fabric/master-SNAPSHOT/javadoc/)
+ [ ![Download](https://api.bintray.com/packages/zml/stellardrift-repo/text-adapter-fabric/images/download.svg) ](https://bintray.com/zml/stellardrift-repo/text-adapter-fabric/_latestVersion) | [Javadoc](https://jitpack.io/ca/stellardrift/text-adapter-fabric/master-SNAPSHOT/javadoc/)
 
 This mod integrates the [Kyori text](https://github.com/KyoriPowered/text) library with Fabric and Minecraft's Text format. As this is a library mod, it's most likely only useful for other mod developers.
 
@@ -14,19 +14,17 @@ Currently, we support the following features:
 
 ## Usage
 
-We're licensed under the MIT license and published on [Jitpack](https://jitpack.io). Here's how to add us. Including this library as a jar-in-jar is recommended
+We're licensed under the MIT license and published on JCenter. Here's how to add us. Including this library as a jar-in-jar is recommended
 
 ```kotlin
 repositories {
-    maven(url="https://jitpack.io") {
-        name = "jitpack"
-    }
+    jcenter()
 }
 
 dependencies {
     // [...]
-    modImplementation("ca.stellardrift:text-adapter-fabric:3.0.3-SNAPSHOT")
-    include("ca.stellardrift:text-adapter-fabric:3.0.3-SNAPSHOT")
+    modImplementation("ca.stellardrift:text-adapter-fabric:1.0.1+3.0.4")
+    include("ca.stellardrift:text-adapter-fabric:1.0.1+3.0.4")
     // [...]
 }
 ```
