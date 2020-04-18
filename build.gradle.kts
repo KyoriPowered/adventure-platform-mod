@@ -81,7 +81,7 @@ val gitInfo by tasks.registering {
 opinionated {
     github("PEXPlugins", "text-adapter-fabric")
     mit()
-    publication.apply {
+    publication?.apply {
         val remapJar by tasks.getting(RemapJarTask::class)
         val remapSourcesJar by tasks.getting(RemapSourcesJarTask::class)
         suppressAllPomMetadataWarnings()
