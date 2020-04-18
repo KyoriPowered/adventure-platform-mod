@@ -23,8 +23,8 @@ package ca.stellardrift.text.fabric.mixin;
 
 import ca.stellardrift.text.fabric.ComponentHoldingPacket;
 import ca.stellardrift.text.fabric.TextAdapter;
-import net.kyori.text.Component;
-import net.kyori.text.serializer.gson.GsonComponentSerializer;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.minecraft.client.network.packet.TitleS2CPacket;
 import net.minecraft.text.Text;
 import net.minecraft.util.PacketByteBuf;

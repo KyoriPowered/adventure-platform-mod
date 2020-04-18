@@ -21,7 +21,7 @@
 
 package ca.stellardrift.text.fabric;
 
-import net.kyori.text.Component;
+import net.kyori.adventure.text.Component;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.text.Text;
 
@@ -34,7 +34,7 @@ public interface ComponentCommandOutput extends CommandOutput {
      *
      * @param text The text to send
      */
-    void sendMessage(Component text);
+    void message(Component text);
 
     /**
      * Convert a standard {@link CommandOutput} into a ComponentCommandOutput.
@@ -66,7 +66,7 @@ public interface ComponentCommandOutput extends CommandOutput {
          * @param text The text to send
          */
         @Override
-        public void sendMessage(Component text) {
+        public void message(Component text) {
            sendMessage(TextAdapter.toMcText(text));
         }
 

@@ -22,8 +22,8 @@
 package ca.stellardrift.text.fabric.mixin;
 
 import ca.stellardrift.text.fabric.ComponentCommandOutput;
-import net.kyori.text.Component;
-import net.kyori.text.serializer.plain.PlainComponentSerializer;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
 import net.minecraft.server.MinecraftServer;
 import org.apache.logging.log4j.Logger;
 import org.spongepowered.asm.mixin.Mixin;
@@ -43,7 +43,7 @@ public abstract class MixinMinecraftServer implements ComponentCommandOutput {
      * @param text The text to send
      */
     @Override
-    public void sendMessage(Component text) {
+    public void message(Component text) {
         LOGGER.info(PlainComponentSerializer.INSTANCE.serialize(text)); // TODO: Eventually will we support formatted output?
     }
 }

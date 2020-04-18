@@ -6,6 +6,7 @@
     "AccessorStyle",
     "MixinChatMessageS2CPacket",
     "MixinMinecraftServer",
+    "MixinServerBossBar",
     "MixinServerCommandSource",
     "MixinServerPlayerEntity",
     "MixinTitleS2CPacket"

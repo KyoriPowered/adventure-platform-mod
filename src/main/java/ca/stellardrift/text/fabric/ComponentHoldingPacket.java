@@ -21,7 +21,7 @@
 
 package ca.stellardrift.text.fabric;
 
-import net.kyori.text.Component;
+import net.kyori.adventure.text.Component;
 
 /**
  * Allows chat message packets to receive components.

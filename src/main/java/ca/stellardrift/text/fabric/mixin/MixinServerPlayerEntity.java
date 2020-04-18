@@ -22,15 +22,24 @@
 package ca.stellardrift.text.fabric.mixin;
 
 import ca.stellardrift.text.fabric.ComponentPlayer;
+import ca.stellardrift.text.fabric.GameEnums;
 import ca.stellardrift.text.fabric.TextAdapter;
 import com.mojang.authlib.GameProfile;
-import net.kyori.text.Component;
+import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.sound.Sound;
+import net.kyori.adventure.sound.SoundStop;
+import net.kyori.adventure.text.Component;
 import net.minecraft.client.network.packet.TitleS2CPacket;
+import net.minecraft.entity.boss.ServerBossBar;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.MessageType;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
@@ -38,6 +47,10 @@ import org.spongepowered.asm.mixin.Shadow;
 public abstract class MixinServerPlayerEntity extends PlayerEntity implements ComponentPlayer {
     @Shadow
     public ServerPlayNetworkHandler networkHandler;
+
+    @Shadow public abstract void playSound(SoundEvent soundEvent, SoundCategory soundCategory, float f, float g);
+
+    @Shadow public abstract void sendAbilitiesUpdate();
 
     public MixinServerPlayerEntity(World world, GameProfile gameProfile) {
         super(world, gameProfile);
@@ -49,12 +62,12 @@ public abstract class MixinServerPlayerEntity extends PlayerEntity implements Co
      * @param text The text to send
      */
     @Override
-    public void sendMessage(Component text) {
-        sendMessage(text, MessageType.SYSTEM);
+    public void message(Component text) {
+        message(text, MessageType.SYSTEM);
     }
 
     @Override
-    public void sendMessage(Component text, MessageType type) {
+    public void message(Component text, MessageType type) {
         if (type == MessageType.GAME_INFO) {
             sendTitle(TitleS2CPacket.Action.ACTIONBAR, text);
         } else {
@@ -65,5 +78,29 @@ public abstract class MixinServerPlayerEntity extends PlayerEntity implements Co
     @Override
     public void sendTitle(TitleS2CPacket.Action field, Component text) {
         networkHandler.sendPacket(TextAdapter.createTitlePacket(field, text));
+    }
+
+    @Override
+    public void showBossBar(@NonNull BossBar bar) {
+        ((ServerBossBar) bar).addPlayer((ServerPlayerEntity) (Object) this);
+    }
+
+    @Override
+    public void hideBossBar(@NonNull BossBar bar) {
+        ((ServerBossBar) bar).removePlayer((ServerPlayerEntity) (Object) this);
+    }
+
+    @Override
+    public void playSound(@NonNull Sound sound) {
+        SoundEvent event = Registry.SOUND_EVENT.get(TextAdapter.toIdentifier(sound.name()));
+        if (event == null) {
+            throw new IllegalArgumentException("Unknown sound event " + sound.name());
+        }
+        this.playSound(event, GameEnums.SOUND_SOURCE.toMinecraft(sound.source()), sound.volume(), sound.pitch());
+    }
+
+    @Override
+    public void stopSound(@NonNull SoundStop stop) {
+        // TODO
     }
 }

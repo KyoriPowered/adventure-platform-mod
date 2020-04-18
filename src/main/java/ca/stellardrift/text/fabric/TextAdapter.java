@@ -26,11 +26,11 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.registry.CommandRegistry;
 import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.FabricLoader;
-import net.kyori.minecraft.Key;
-import net.kyori.text.Component;
-import net.kyori.text.TextComponent;
-import net.kyori.text.format.TextColor;
-import net.kyori.text.format.TextDecoration;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.minecraft.client.network.packet.ChatMessageS2CPacket;
 import net.minecraft.client.network.packet.TitleS2CPacket;
 import net.minecraft.network.MessageType;
@@ -44,7 +44,8 @@ import net.minecraft.util.Identifier;
 import java.util.EnumSet;
 
 import static java.util.Objects.requireNonNull;
-import static net.kyori.text.TextComponent.*;
+import static net.kyori.adventure.text.TextComponent.make;
+import static net.kyori.adventure.text.TextComponent.newline;
 
 /**
  * Adapter methods for sending {@link Component Components} to a variety of users

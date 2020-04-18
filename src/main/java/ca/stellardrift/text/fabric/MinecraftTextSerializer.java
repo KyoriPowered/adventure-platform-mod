@@ -22,97 +22,23 @@
 package ca.stellardrift.text.fabric;
 
 import ca.stellardrift.text.fabric.mixin.AccessorStyle;
-import com.google.common.collect.EnumBiMap;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonPrimitive;
-import net.kyori.text.BlockNbtComponent;
-import net.kyori.text.Component;
-import net.kyori.text.ComponentBuilder;
-import net.kyori.text.EntityNbtComponent;
-import net.kyori.text.KeybindComponent;
-import net.kyori.text.NbtComponent;
-import net.kyori.text.NbtComponentBuilder;
-import net.kyori.text.ScoreComponent;
-import net.kyori.text.SelectorComponent;
-import net.kyori.text.StorageNbtComponent;
-import net.kyori.text.TextComponent;
-import net.kyori.text.TranslatableComponent;
-import net.kyori.text.event.ClickEvent;
-import net.kyori.text.event.HoverEvent;
-import net.kyori.text.format.TextColor;
-import net.kyori.text.format.TextDecoration;
-import net.kyori.text.serializer.ComponentSerializer;
-import net.kyori.text.serializer.gson.BlockNbtComponentPosSerializer;
-import net.minecraft.text.KeybindText;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.NbtText;
-import net.minecraft.text.ScoreText;
-import net.minecraft.text.SelectorText;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Formatting;
+import net.kyori.adventure.text.*;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.serializer.ComponentSerializer;
+import net.kyori.adventure.text.serializer.gson.BlockNbtComponentPosSerializer;
+import net.minecraft.text.*;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-
 import java.util.ListIterator;
-import java.util.Locale;
-import java.util.Map;
 
 import static ca.stellardrift.text.fabric.TextAdapter.toKey;
 
 public class MinecraftTextSerializer implements ComponentSerializer<Component, Component, Text> {
     public static final MinecraftTextSerializer INSTANCE = new MinecraftTextSerializer();
-    private static final EnumBiMap<TextColor, Formatting> TEXT_COLORS = EnumBiMap.create(TextColor.class, Formatting.class);
-    private static final EnumBiMap<HoverEvent.Action, net.minecraft.text.HoverEvent.Action> HOVER_EVENTS = EnumBiMap.create(HoverEvent.Action.class, net.minecraft.text.HoverEvent.Action.class);
-    private static final EnumBiMap<ClickEvent.Action, net.minecraft.text.ClickEvent.Action> CLICK_EVENTS = EnumBiMap.create(ClickEvent.Action.class, net.minecraft.text.ClickEvent.Action.class);
-
-    static {
-        // Colors
-        for (Formatting fmt : Formatting.values()) {
-            if (fmt.isColor()) {
-                TextColor color = TextColor.NAMES.value(fmt.getName()).orElseThrow(() -> new ExceptionInInitializerError("Unknown MC Formatting color " + fmt));
-                TEXT_COLORS.put(color, fmt);
-            }
-        }
-        checkCoverage(TEXT_COLORS, TextColor.class);
-
-        // Click events
-        for (ClickEvent.Action action : ClickEvent.Action.values()) {
-            net.minecraft.text.ClickEvent.Action mcAction = net.minecraft.text.ClickEvent.Action.byName(action.name().toLowerCase(Locale.ROOT));
-            if (mcAction == null) {
-                throw new ExceptionInInitializerError("Unknown MC ClickAction for " + action.name());
-            }
-            CLICK_EVENTS.put(action, mcAction);
-        }
-        checkCoverage(CLICK_EVENTS.inverse(), net.minecraft.text.ClickEvent.Action.class);
-
-        // Hover events
-        for (HoverEvent.Action action : HoverEvent.Action.values()) {
-            net.minecraft.text.HoverEvent.Action mcAction = net.minecraft.text.HoverEvent.Action.byName(action.name().toLowerCase(Locale.ROOT));
-            if (mcAction == null) {
-                throw new ExceptionInInitializerError("Unknown MC HoverAction for " + action.name());
-            }
-            HOVER_EVENTS.put(action, mcAction);
-        }
-        checkCoverage(HOVER_EVENTS.inverse(), net.minecraft.text.HoverEvent.Action.class);
-    }
-
-    /**
-     * Validates that all members of an enum are present in the given map
-     * Throws {@link IllegalStateException} if there is a missing value
-     *
-     * @param toCheck The map to check
-     * @param enumClass The enum class to verify coverage
-     * @param <T> The type of enum
-     */
-    private static <T extends Enum<T>> void checkCoverage(Map<T, ?> toCheck,  Class<T> enumClass) throws IllegalStateException {
-        for (T value : enumClass.getEnumConstants()) {
-            if (!toCheck.containsKey(value)) {
-                throw new IllegalStateException("Unmapped " + enumClass.getSimpleName() + " element '" + value + '!');
-            }
-        }
-    }
 
     private MinecraftTextSerializer() {
 
@@ -153,7 +79,7 @@ public class MinecraftTextSerializer implements ComponentSerializer<Component, C
         builder.style(b -> {
             AccessorStyle access = (AccessorStyle) format;
             if (format.getColor() != null) {
-                b.color(TEXT_COLORS.inverse().get(format.getColor()));
+                b.color(GameEnums.TEXT_COLOR.toAdventure(format.getColor()));
             }
             if (access.getBold() != null) {
                 b.decoration(TextDecoration.BOLD, access.getBold());
@@ -177,12 +103,12 @@ public class MinecraftTextSerializer implements ComponentSerializer<Component, C
 
             if (format.getClickEvent() != null) {
                 net.minecraft.text.ClickEvent ev = format.getClickEvent();
-                b.clickEvent(ClickEvent.of(CLICK_EVENTS.inverse().get(ev.getAction()), ev.getValue()));
+                b.clickEvent(ClickEvent.of(GameEnums.CLICK_EVENT.toAdventure(ev.getAction()), ev.getValue()));
             }
 
             if (format.getHoverEvent() != null) {
                 net.minecraft.text.HoverEvent ev = format.getHoverEvent();
-                b.hoverEvent(HoverEvent.of(HOVER_EVENTS.inverse().get(ev.getAction()), deserialize(ev.getValue())));
+                b.hoverEvent(HoverEvent.of(GameEnums.HOVER_EVENT.toAdventure(ev.getAction()), deserialize(ev.getValue())));
             }
 
             if (format.getInsertion() != null) {
@@ -191,10 +117,10 @@ public class MinecraftTextSerializer implements ComponentSerializer<Component, C
         });
     }
 
-    private void applyStyle(Text text, net.kyori.text.format.Style format) {
+    private void applyStyle(Text text, net.kyori.adventure.text.format.Style format) {
         text.styled(s -> {
             if (format.color() != null) {
-                s.setColor(TEXT_COLORS.get(format.color()));
+                s.setColor(GameEnums.TEXT_COLOR.toMinecraft(format.color()));
             }
 
             s.setBold(toBoolean(format.decoration(TextDecoration.BOLD)));
@@ -205,12 +131,12 @@ public class MinecraftTextSerializer implements ComponentSerializer<Component, C
 
             ClickEvent click = format.clickEvent();
             if (click != null) {
-                s.setClickEvent(new net.minecraft.text.ClickEvent(CLICK_EVENTS.get(click.action()), click.value()));
+                s.setClickEvent(new net.minecraft.text.ClickEvent(GameEnums.CLICK_EVENT.toMinecraft(click.action()), click.value()));
             }
 
             HoverEvent hover = format.hoverEvent();
             if (hover != null) {
-                s.setHoverEvent(new net.minecraft.text.HoverEvent(HOVER_EVENTS.get(hover.action()), serialize(hover.value())));
+                s.setHoverEvent(new net.minecraft.text.HoverEvent(GameEnums.HOVER_EVENT.toMinecraft(hover.action()), serialize(hover.value())));
             }
 
             s.setInsertion(format.insertion());

@@ -21,7 +21,8 @@
 
 package ca.stellardrift.text.fabric;
 
-import net.kyori.text.Component;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.text.Component;
 import net.minecraft.client.network.packet.TitleS2CPacket;
 import net.minecraft.network.MessageType;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -29,7 +30,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 /**
  * An interface to be implemented by players and other rich text component receivers
  */
-public interface ComponentPlayer extends ComponentCommandOutput {
+public interface ComponentPlayer extends ComponentCommandOutput, Audience {
     /**
      * Send a chat message to this player.
      *
@@ -39,7 +40,7 @@ public interface ComponentPlayer extends ComponentCommandOutput {
      * @param text The contents of the message
      * @param type The type of message to send.
      */
-    void sendMessage(Component text, MessageType type);
+    void message(Component text, MessageType type);
 
     /**
      * Send a field of a title as a component.

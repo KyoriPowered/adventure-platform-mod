@@ -1,10 +1,8 @@
 import ca.stellardrift.build.apiInclude
 import ca.stellardrift.build.implementationInclude
 import ca.stellardrift.build.isRelease
-import ca.stellardrift.build.kyoriText
 import net.fabricmc.loom.task.RemapJarTask
 import net.fabricmc.loom.task.RemapSourcesJarTask
-import java.time.format.DateTimeFormatter
 
 plugins {
     id("ca.stellardrift.opinionated") version "2.0"
@@ -14,26 +12,35 @@ plugins {
 
 val versionSelf = "1.0.1"
 val versionMinecraft: String by project
-val versionText: String by project
+val versionAdventure: String by project
 val versionMappings: String by project
 val versionLoader: String by project
 val versionFabricApi: String by project
 
 group = "ca.stellardrift"
-version = "$versionSelf+$versionText"
+version = "$versionSelf+$versionAdventure"
 
 repositories {
+    mavenLocal()
     jcenter()
     mavenCentral()
+    maven {
+        url = uri("https://oss.sonatype.org/content/groups/public/")
+    }
 }
 
+fun DependencyHandler.adventure(comp: String, version: Any): String {
+    return "net.kyori:adventure-$comp:$version"
+}
 
 dependencies {
-    apiInclude(kyoriText("api", versionText))
-    apiInclude(kyoriText("feature-pagination", versionText))
-    apiInclude(kyoriText("serializer-plain", versionText))
+    apiInclude("net.kyori:examination-api:1.0.0-SNAPSHOT")
+    apiInclude("net.kyori:examination-string:1.0.0-SNAPSHOT")
+    apiInclude(adventure("api", versionAdventure))
+    apiInclude(adventure("text-feature-pagination", versionAdventure))
+    apiInclude(adventure("text-serializer-plain", versionAdventure))
 
-    implementationInclude(kyoriText("serializer-gson", versionText)) {
+    implementationInclude(adventure("text-serializer-gson", versionAdventure)) {
         exclude("com.google.code.gson")
     }
 
