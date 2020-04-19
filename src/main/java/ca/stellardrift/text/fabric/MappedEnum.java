@@ -1,5 +1,6 @@
 package ca.stellardrift.text.fabric;
 
+import net.kyori.adventure.util.NameMap;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -24,6 +25,10 @@ import static java.util.Objects.requireNonNull;
 public class MappedEnum<Mc extends Enum<Mc>, Adv extends Enum<Adv>> {
     private final EnumMap<Mc, Adv> mcToAdventure;
     private final EnumMap<Adv, Mc> adventureToMc;
+
+    static <Mc extends Enum<Mc>, Adv extends Enum<Adv>> MappedEnum<Mc, Adv> named(Class<Mc> mcType, Function<String, @Nullable Mc> mcByName, Function<Mc, @Nullable String> mcToName, Class<Adv> advType, final NameMap<Adv> names) {
+        return new MappedEnum<>(mcType, mcByName, mcToName, advType, names::name, name -> names.value(name).orElse(null));
+    }
 
     MappedEnum(Class<Mc> mcType, Function<String, @Nullable Mc> mcByName, Function<Mc, @Nullable String> mcToName, Class<Adv> advType, Function<Adv, @Nullable String> advToName, Function<String, @Nullable Adv> advByName) {
         mcToAdventure = new EnumMap<>(mcType);
