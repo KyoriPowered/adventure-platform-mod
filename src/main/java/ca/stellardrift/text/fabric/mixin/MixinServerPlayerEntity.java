@@ -29,6 +29,7 @@ import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.SoundStop;
 import net.kyori.adventure.text.Component;
+import net.minecraft.client.network.packet.PlaySoundIdS2CPacket;
 import net.minecraft.client.network.packet.SetTradeOffersS2CPacket;
 import net.minecraft.client.network.packet.StopSoundS2CPacket;
 import net.minecraft.client.network.packet.TitleS2CPacket;
@@ -94,11 +95,8 @@ public abstract class MixinServerPlayerEntity extends PlayerEntity implements Co
 
     @Override
     public void playSound(@NonNull Sound sound) {
-        SoundEvent event = Registry.SOUND_EVENT.get(TextAdapter.toIdentifier(sound.name()));
-        if (event == null) {
-            throw new IllegalArgumentException("Unknown sound event " + sound.name());
-        }
-        this.playSound(event, GameEnums.SOUND_SOURCE.toMinecraft(sound.source()), sound.volume(), sound.pitch());
+        this.networkHandler.sendPacket(new PlaySoundIdS2CPacket(TextAdapter.toIdentifier(sound.name()),
+                GameEnums.SOUND_SOURCE.toMinecraft(sound.source()), this.getPos(), sound.volume(), sound.pitch()));
     }
 
     @Override
