@@ -19,41 +19,8 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+@DefaultQualifier(NonNull.class)
 package ca.stellardrift.text.fabric;
 
-import net.kyori.adventure.text.Component;
-import net.minecraft.server.command.ServerCommandSource;
-import org.checkerframework.checker.nullness.qual.PolyNull;
-
-/**
- * An interface applied to {@link ServerCommandSource} to allow sending {@link Component Components}
- */
-public interface ComponentCommandSource {
-    /**
-     * Send a result message to the command source
-     *
-     * @param text The text to send
-     * @param sendToOps If this message should be sent to all ops listening
-     */
-    void sendFeedback(Component text, boolean sendToOps);
-
-    /**
-     * Send an error message to the command source
-     * @param text The error
-     */
-    void sendError(Component text);
-
-    ComponentCommandOutput getOutput();
-
-    static @PolyNull ComponentCommandSource of(@PolyNull ServerCommandSource src) {
-        if (src == null) {
-            return null;
-        }
-
-        if (!(src instanceof ComponentCommandSource)) {
-            throw new IllegalArgumentException("The ComponentCommandSource mixin failed!");
-        }
-
-        return (ComponentCommandSource) src;
-    }
-}
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.framework.qual.DefaultQualifier;

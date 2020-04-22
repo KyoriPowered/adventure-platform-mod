@@ -40,6 +40,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import org.checkerframework.checker.nullness.qual.PolyNull;
 
 import java.util.EnumSet;
 
@@ -50,7 +51,7 @@ import static net.kyori.adventure.text.TextComponent.newline;
 /**
  * Adapter methods for sending {@link Component Components} to a variety of users
  *
- * @see ComponentCommandOutput#sendMessage(Component) for sending to a single user
+ * @see ComponentCommandOutput#message(Component) for sending to a single user
  * @see ComponentPlayer for sending to a single player
  * @see ComponentCommandSource for sending to a single command source
  */
@@ -64,7 +65,7 @@ public class TextAdapter implements ModInitializer {
      * @param text The text to convert
      * @return The adapted component
      */
-    public static Component toComponent(Text text) {
+    public static @PolyNull Component toComponent(@PolyNull Text text) {
         if (text == null) {
             return null;
         }
@@ -79,7 +80,7 @@ public class TextAdapter implements ModInitializer {
      * @param component The component to convert
      * @return The adapted text
      */
-    public static Text toMcText(Component component) {
+    public static @PolyNull Text toMcText(@PolyNull Component component) {
         if (component == null) {
             return null;
         }
@@ -92,7 +93,7 @@ public class TextAdapter implements ModInitializer {
      * @param ident The Identifier to convert
      * @return The equivalent data as a Key
      */
-    public static Key toKey(Identifier ident) {
+    public static @PolyNull Key toKey(@PolyNull Identifier ident) {
         if (ident == null) {
             return null;
         }
@@ -106,7 +107,7 @@ public class TextAdapter implements ModInitializer {
      * @param key The Key to convert
      * @return The equivalent data as an Identifier
      */
-    public static Identifier toIdentifier(Key key) {
+    public static @PolyNull Identifier toIdentifier(@PolyNull Key key) {
         if (key == null) {
             return null;
         }
@@ -131,7 +132,7 @@ public class TextAdapter implements ModInitializer {
                 }
                 ((ServerPlayerEntity) target).networkHandler.sendPacket(pkt);
             } else if (target instanceof ComponentCommandOutput) {
-                ((ComponentCommandOutput) target).sendMessage(text);
+                ((ComponentCommandOutput) target).message(text);
             } else {
                 if (mcText == null) {
                     mcText = toMcText(text);

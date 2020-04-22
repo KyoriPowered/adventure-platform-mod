@@ -29,6 +29,7 @@ import net.kyori.adventure.text.format.TextColor;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -45,9 +46,9 @@ public abstract class MixinServerCommandSource implements ComponentCommandSource
     private boolean silent;
 
     @Shadow
-    abstract void sendToOps(Text text);
+    protected abstract void sendToOps(Text text);
 
-    private ComponentCommandOutput ownOut;
+    private @MonotonicNonNull ComponentCommandOutput ownOut;
 
 
     @Override

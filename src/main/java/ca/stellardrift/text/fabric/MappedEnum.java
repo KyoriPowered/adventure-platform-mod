@@ -56,11 +56,11 @@ public class MappedEnum<Mc extends Enum<Mc>, Adv extends Enum<Adv>> {
         adventureToMc = new EnumMap<>(advType);
 
         for (Adv advElement : advType.getEnumConstants()) {
-            String mcName = advToName.apply(advElement);
+            @Nullable String mcName = advToName.apply(advElement);
             if (mcName == null) {
                 throw new ExceptionInInitializerError("Unable to get name for enum element " + advElement + " of " + advType);
             }
-            Mc mcElement = mcByName.apply(mcName);
+            @Nullable Mc mcElement = mcByName.apply(mcName);
             if (mcElement == null) {
                 throw new ExceptionInInitializerError("Unknown MC " + mcType + "  for Adventure " + mcName);
             }
@@ -93,7 +93,7 @@ public class MappedEnum<Mc extends Enum<Mc>, Adv extends Enum<Adv>> {
      * @param mcItem The Minecraft element
      * @return The adventure equivalent.
      */
-    public @NonNull Adv toAdventure(@NonNull Mc mcItem) {
+    public Adv toAdventure(Mc mcItem) {
         return requireNonNull(mcToAdventure.get(mcItem), "Invalid enum value presented: " + mcItem);
     }
 
@@ -103,7 +103,7 @@ public class MappedEnum<Mc extends Enum<Mc>, Adv extends Enum<Adv>> {
      * @param advItem The Minecraft element
      * @return The adventure equivalent.
      */
-    public @NonNull Mc toMinecraft(@NonNull Adv advItem) {
+    public Mc toMinecraft(Adv advItem) {
         return adventureToMc.get(advItem);
     }
 }
