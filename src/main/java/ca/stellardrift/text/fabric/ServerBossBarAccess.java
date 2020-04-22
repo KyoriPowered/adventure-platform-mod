@@ -19,23 +19,17 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package ca.stellardrift.text.fabric.mixin;
+package ca.stellardrift.text.fabric;
 
-import ca.stellardrift.text.fabric.ServerBossBarAccess;
-import net.minecraft.entity.boss.ServerBossBar;
 import net.minecraft.server.network.ServerPlayerEntity;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 
 import java.util.Set;
 
-@Mixin(ServerBossBar.class)
-public class MixinServerBossBar implements ServerBossBarAccess {
-    @Shadow @Final private Set<ServerPlayerEntity> players;
-
-    @Override
-    public Set<ServerPlayerEntity> getPlayers() {
-        return this.players;
-    }
+public interface ServerBossBarAccess {
+    /**
+     * Returns a mutable reference to the player list used by this boss bar
+     *
+     * @return The player list;
+     */
+    Set<ServerPlayerEntity> getPlayers();
 }
