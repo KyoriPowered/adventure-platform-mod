@@ -26,7 +26,7 @@
     "text-adapter-fabric.mixins.json"
   ],
   "custom": {
-    "text-version": "${project.ext['versionText']}",
+    "text-version": "${project.ext['versionAdventure']}",
     "modmenu:api": true
   },
 
