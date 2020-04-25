@@ -25,9 +25,10 @@ import ca.stellardrift.text.fabric.ComponentHoldingPacket;
 import ca.stellardrift.text.fabric.TextAdapter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
-import net.minecraft.client.network.packet.TitleS2CPacket;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.text.Text;
-import net.minecraft.util.PacketByteBuf;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -37,7 +38,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(TitleS2CPacket.class)
 public class MixinTitleS2CPacket implements ComponentHoldingPacket {
-    private Component component;
+    private @Nullable Component component;
     @Shadow
     private Text text;
 
@@ -63,7 +64,7 @@ public class MixinTitleS2CPacket implements ComponentHoldingPacket {
         }
     }
 
-    @Redirect(method = "write", at = @At(value = "INVOKE", target = "net.minecraft.util.PacketByteBuf.writeText(Lnet/minecraft/text/Text;)Lnet/minecraft/util/PacketByteBuf;"))
+    @Redirect(method = "write", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/PacketByteBuf;writeText(Lnet/minecraft/text/Text;)Lnet/minecraft/network/PacketByteBuf;"))
     public PacketByteBuf writeComponent(PacketByteBuf buf, Text param) {
         if (this.component != null) {
             return buf.writeString(GsonComponentSerializer.INSTANCE.serialize(this.component), MAX_TEXT_PACKET_LENGTH);

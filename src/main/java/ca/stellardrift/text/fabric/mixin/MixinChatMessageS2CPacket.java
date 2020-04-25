@@ -25,9 +25,9 @@ import ca.stellardrift.text.fabric.ComponentHoldingPacket;
 import ca.stellardrift.text.fabric.TextAdapter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
-import net.minecraft.client.network.packet.ChatMessageS2CPacket;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
 import net.minecraft.text.Text;
-import net.minecraft.util.PacketByteBuf;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -35,7 +35,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(ChatMessageS2CPacket.class)
+@Mixin(GameMessageS2CPacket.class)
 public class MixinChatMessageS2CPacket implements ComponentHoldingPacket {
     @Shadow
     private Text message;
@@ -65,7 +65,7 @@ public class MixinChatMessageS2CPacket implements ComponentHoldingPacket {
         }
     }
 
-    @Redirect(method = "write", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/PacketByteBuf;writeText(Lnet/minecraft/text/Text;)Lnet/minecraft/util/PacketByteBuf;"))
+    @Redirect(method = "write", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/PacketByteBuf;writeText(Lnet/minecraft/text/Text;)Lnet/minecraft/network/PacketByteBuf;"))
     public PacketByteBuf writeText(PacketByteBuf buf, Text message) {
         if (this.component != null) {
             return buf.writeString(GsonComponentSerializer.INSTANCE.serialize(this.component));

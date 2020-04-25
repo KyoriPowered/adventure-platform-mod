@@ -67,17 +67,17 @@ public interface ComponentCommandOutput extends CommandOutput {
          */
         @Override
         public void message(Component text) {
-           sendMessage(TextAdapter.toMcText(text));
+           sendSystemMessage(TextAdapter.toMcText(text));
         }
 
         @Override
-        public void sendMessage(Text text) {
-            getOriginal().sendMessage(text);
+        public void sendSystemMessage(Text text) {
+            getOriginal().sendSystemMessage(text);
         }
 
         @Override
-        public boolean sendCommandFeedback() {
-            return getOriginal().sendCommandFeedback();
+        public boolean shouldReceiveFeedback() {
+            return getOriginal().shouldReceiveFeedback();
         }
 
         @Override

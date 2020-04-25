@@ -30,11 +30,11 @@ import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.SoundStop;
 import net.kyori.adventure.text.Component;
-import net.minecraft.client.network.packet.PlaySoundIdS2CPacket;
-import net.minecraft.client.network.packet.StopSoundS2CPacket;
-import net.minecraft.client.network.packet.TitleS2CPacket;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.MessageType;
+import net.minecraft.network.packet.s2c.play.PlaySoundIdS2CPacket;
+import net.minecraft.network.packet.s2c.play.StopSoundS2CPacket;
+import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
@@ -101,7 +101,7 @@ public abstract class MixinServerPlayerEntity extends PlayerEntity implements Co
     @Override
     public void stopSound(@NonNull SoundStop stop) {
         Sound.@Nullable Source src = stop.source();
-        SoundCategory cat = src == null ? null : GameEnums.SOUND_SOURCE.toMinecraft(src);
+        @Nullable SoundCategory cat = src == null ? null : GameEnums.SOUND_SOURCE.toMinecraft(src);
         this.networkHandler.sendPacket(new StopSoundS2CPacket(TextAdapter.toIdentifier(stop.sound()), cat));
     }
 }

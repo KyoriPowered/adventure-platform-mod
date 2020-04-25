@@ -25,7 +25,7 @@ import ca.stellardrift.text.fabric.ComponentCommandOutput;
 import ca.stellardrift.text.fabric.ComponentCommandSource;
 import ca.stellardrift.text.fabric.TextAdapter;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
@@ -53,7 +53,7 @@ public abstract class MixinServerCommandSource implements ComponentCommandSource
 
     @Override
     public void sendFeedback(Component text, boolean sendToOps) {
-        if (getOutput().sendCommandFeedback() && !silent) {
+        if (getOutput().shouldReceiveFeedback() && !silent) {
             getOutput().message(text);
         }
 
@@ -65,7 +65,7 @@ public abstract class MixinServerCommandSource implements ComponentCommandSource
     @Override
     public void sendError(Component text) {
         if (getOutput().shouldTrackOutput()) {
-            getOutput().message(text.color(TextColor.RED));
+            getOutput().message(text.color(NamedTextColor.RED));
         }
     }
 

@@ -27,9 +27,10 @@ import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.SoundStop;
 import net.kyori.adventure.text.Component;
-import net.minecraft.client.network.packet.ChatMessageS2CPacket;
-import net.minecraft.client.network.packet.StopSoundS2CPacket;
 import net.minecraft.network.MessageType;
+import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
+import net.minecraft.network.packet.s2c.play.StopSoundS2CPacket;
+import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -65,7 +66,7 @@ public class Audiences {
      * MinecraftServer#getOpPermissionLevel()}, including the server console and a potential RCON
      * client
      *
-     * @return
+     * @return An audience that targets all operators on the server
      */
     public static Audience allOperators() {
         return allOperators(4);
@@ -100,7 +101,7 @@ public class Audiences {
             if (!it.hasNext()) {
                 return;
             }
-            ChatMessageS2CPacket pkt = TextAdapter.createChatPacket(message, MessageType.SYSTEM);
+            GameMessageS2CPacket pkt = TextAdapter.createChatPacket(message, MessageType.SYSTEM);
             while (it.hasNext()) {
                 it.next().networkHandler.sendPacket(pkt);
             }
@@ -113,6 +114,11 @@ public class Audiences {
 
         @Override
         public void hideBossBar(@NonNull BossBar bar) {
+
+        }
+
+        @Override
+        public void showActionBar(@NonNull Component message) {
 
         }
 
@@ -142,7 +148,7 @@ public class Audiences {
         @Override
         public void message(@NonNull Component message) {
             if (!players.isEmpty()) {
-                ChatMessageS2CPacket pkt = TextAdapter.createChatPacket(message, MessageType.SYSTEM);
+                GameMessageS2CPacket pkt = TextAdapter.createChatPacket(message, MessageType.SYSTEM);
                 for (ServerPlayerEntity ply : players) {
                     ply.networkHandler.sendPacket(pkt);
                 }
@@ -151,7 +157,7 @@ public class Audiences {
                 audiences.forEach(it -> it.message(message));
             }
             if (!others.isEmpty()) {
-                others.forEach(it -> it.sendMessage(MinecraftTextSerializer.INSTANCE.serialize(message)));
+                others.forEach(it -> it.sendSystemMessage(MinecraftTextSerializer.INSTANCE.serialize(message)));
             }
         }
 
@@ -172,6 +178,19 @@ public class Audiences {
             }
             if (!audiences.isEmpty()) {
                 audiences.forEach(it -> it.hideBossBar(bar));
+            }
+        }
+
+        @Override
+        public void showActionBar(@NonNull Component message) {
+            if (!players.isEmpty()) {
+                TitleS2CPacket pkt = TextAdapter.createTitlePacket(TitleS2CPacket.Action.ACTIONBAR, message);
+                for (ServerPlayerEntity ply : players) {
+                    ply.networkHandler.sendPacket(pkt);
+                }
+            }
+            if (!audiences.isEmpty()) {
+                audiences.forEach(it -> it.showActionBar(message));
             }
         }
 
@@ -201,6 +220,4 @@ public class Audiences {
 
         }
     }
-
-
 }

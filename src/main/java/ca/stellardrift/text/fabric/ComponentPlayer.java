@@ -23,8 +23,8 @@ package ca.stellardrift.text.fabric;
 
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
-import net.minecraft.client.network.packet.TitleS2CPacket;
 import net.minecraft.network.MessageType;
+import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 /**

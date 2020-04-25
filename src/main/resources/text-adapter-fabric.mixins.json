@@ -3,6 +3,7 @@
   "package": "ca.stellardrift.text.fabric.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "AccessorHoverEventShowItem",
     "AccessorStyle",
     "MixinChatMessageS2CPacket",
     "MixinMinecraftServer",

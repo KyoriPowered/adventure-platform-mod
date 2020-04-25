@@ -23,21 +23,22 @@ package ca.stellardrift.text.fabric;
 
 import net.kyori.adventure.bossbar.BossBar.Overlay;
 import net.kyori.adventure.sound.Sound;
-import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.ClickEvent;
-import net.minecraft.text.HoverEvent;
 import net.minecraft.util.Formatting;
 
 public class GameEnums {
-    public static final MappedEnum<Formatting, TextColor> TEXT_COLOR
+    public static final MappedEnum<Formatting, NamedTextColor> TEXT_COLOR
             = MappedEnum.named(Formatting.class, Formatting::byName, Formatting::getName,
-            TextColor.class, TextColor.NAMES);
+            NamedTextColor.class, NamedTextColor.NAMES);
 
-    public static final MappedEnum<HoverEvent.Action, net.kyori.adventure.text.event.HoverEvent.Action> HOVER_EVENT
-            = MappedEnum.named(HoverEvent.Action.class, HoverEvent.Action::byName, HoverEvent.Action::getName,
+/*
+    public static final MappedEnum<HoverEvent.class_5247, net.kyori.adventure.text.event.HoverEvent.Action> HOVER_EVENT
+            = MappedEnum.named(HoverEvent.class_5247.class, HoverEvent.class_5247::byName, HoverEvent.class_5247::getName,
             net.kyori.adventure.text.event.HoverEvent.Action.class, net.kyori.adventure.text.event.HoverEvent.Action.NAMES);
+*/
 
     public static final MappedEnum<ClickEvent.Action, net.kyori.adventure.text.event.ClickEvent.Action> CLICK_EVENT
             = MappedEnum.named(ClickEvent.Action.class, ClickEvent.Action::byName, ClickEvent.Action::getName,

@@ -21,13 +21,21 @@
 
 package ca.stellardrift.text.fabric.mixin;
 
+import net.minecraft.class_5251;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Style;
+import net.minecraft.util.Identifier;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.framework.qual.DefaultQualifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
+import org.spongepowered.asm.mixin.gen.Invoker;
 
 @Mixin(Style.class)
-public
-interface AccessorStyle {
+@DefaultQualifier(Nullable.class)
+public interface AccessorStyle {
     @Accessor
     Boolean getBold();
     @Accessor
@@ -38,4 +46,12 @@ interface AccessorStyle {
     Boolean getStrikethrough();
     @Accessor
     Boolean getObfuscated();
+
+    @Accessor("field_24361")
+    Identifier getFont();
+
+    @Invoker("<init>")
+    static @NonNull Style createNew(class_5251 color, Boolean bold, Boolean italic, Boolean underline, Boolean strikethrough, Boolean obfuscated, ClickEvent click, HoverEvent hover, String insertion, Identifier font) {
+        throw new UnsupportedOperationException("Mixin replacement");
+    }
 }
