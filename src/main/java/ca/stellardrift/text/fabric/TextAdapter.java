@@ -22,17 +22,22 @@
 package ca.stellardrift.text.fabric;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import net.fabricmc.api.EnvType;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.registry.CommandRegistry;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.KeybindComponent;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.serializer.ComponentSerializer;
+import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
+import net.minecraft.client.options.KeyBinding;
 import net.minecraft.network.MessageType;
 import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
@@ -45,6 +50,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.checker.nullness.qual.PolyNull;
 
 import java.util.EnumSet;
+import java.util.function.Function;
 
 import static java.util.Objects.requireNonNull;
 import static net.kyori.adventure.text.TextComponent.*;
@@ -58,36 +64,51 @@ import static net.minecraft.server.command.CommandManager.literal;
  * @see ComponentCommandSource for sending to a single command source
  */
 public class TextAdapter implements ModInitializer {
+    private static final PlainComponentSerializer PLAIN;
+    private static final MinecraftTextSerializer TEXT_NON_WRAPPING = new MinecraftTextSerializer();
+    private static final MinecraftWrappingTextSerializer TEXT = new MinecraftWrappingTextSerializer();
 
-    /**
-     * Convert Minecraft-internal {@link Text} objects to Kyori-{@link Component Components}
-     *
-     * If a null value is provided, a null value will be returned
-     *
-     * @param text The text to convert
-     * @return The adapted component
-     */
-    public static @PolyNull Component toComponent(@PolyNull Text text) {
-        if (text == null) {
-            return null;
+    static {
+        Function<KeybindComponent, String> keybindNamer;
+
+        if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
+            keybindNamer = keybind -> KeyBinding.getLocalizedName(keybind.keybind()).get().asString();
+        } else {
+            keybindNamer = KeybindComponent::keybind;
         }
-        return MinecraftTextSerializer.INSTANCE.deserialize(text);
+        PLAIN = new PlainComponentSerializer(keybindNamer, trans -> TEXT_NON_WRAPPING.toText(trans).asString());
     }
 
     /**
-     * Convert a Kyori-{@link Component} to Minecraft-internal {@link Text} objects
+     * Return a {@link PlainComponentSerializer} instance that can resolve key bindings and translations using the game's data
      *
-     * If a null value is provided, a null value will be returned
-     *
-     * @param component The component to convert
-     * @return The adapted text
+     * @return the plain serializer instance
      */
-    public static @PolyNull Text toMcText(@PolyNull Component component) {
-        if (component == null) {
-            return null;
-        }
-        return MinecraftTextSerializer.INSTANCE.serialize(component);
+    public static PlainComponentSerializer plain() {
+        return PLAIN;
     }
+
+    /**
+     * Return a TextSerializer instance that will do deep conversions between Adventure {@link Component Components} and Minecraft {@link Text} objects.
+     * <p>
+     * This serializer will never wrap text, and can provide {@link net.minecraft.text.MutableText} instances suitable for passing around the game.
+     *
+     * @return a serializer instance
+     */
+    public static MinecraftTextSerializer textNonWrapping() {
+        return TEXT_NON_WRAPPING;
+    }
+
+    /**
+     * Create a new component serializer that will convert between Adventure and Minecraft text objects by wrapping and
+     * unwrapping the Adventure versions of the object hierarchy.
+     *
+     * @return a serializer instance
+     */
+    public static ComponentSerializer<Component, Component, Text> text() {
+        return TEXT;
+    }
+
 
     /**
      * Convert a MC {@link Identifier} instance to a text Key
@@ -121,7 +142,7 @@ public class TextAdapter implements ModInitializer {
      * these messages will sent as the {@link MessageType#SYSTEM} message type
      *
      * @param targets The receivers of the message
-     * @param text The message to send
+     * @param text    The message to send
      */
     public static void sendMessage(Iterable<? extends CommandOutput> targets, Component text) {
         GameMessageS2CPacket pkt = null;
@@ -137,7 +158,7 @@ public class TextAdapter implements ModInitializer {
                 ((ComponentCommandOutput) target).message(text);
             } else {
                 if (mcText == null) {
-                    mcText = toMcText(text);
+                    mcText = text().serialize(text);
                 }
 
                 target.sendSystemMessage(mcText);
@@ -149,8 +170,8 @@ public class TextAdapter implements ModInitializer {
      * Send a message to a collection of players
      *
      * @param targets The targets to send the message to
-     * @param text The text to send
-     * @param type The field to send to
+     * @param text    The text to send
+     * @param type    The field to send to
      */
     public static void sendMessage(Iterable<? extends ServerPlayerEntity> targets, Component text, MessageType type) {
         if (type == MessageType.GAME_INFO) { // Use title for better appearance
@@ -168,8 +189,8 @@ public class TextAdapter implements ModInitializer {
      * Send a title to multiple players
      *
      * @param targets The players to send a title to
-     * @param text The text to send
-     * @param type The field of the title to use
+     * @param text    The text to send
+     * @param type    The field of the title to use
      */
     public static void sendTitle(Iterable<? extends ServerPlayerEntity> targets, Component text, TitleS2CPacket.Action type) {
         TitleS2CPacket pkt = createTitlePacket(type, text);
@@ -179,20 +200,17 @@ public class TextAdapter implements ModInitializer {
     }
 
     public static GameMessageS2CPacket createChatPacket(Component text, MessageType type) {
-        GameMessageS2CPacket pkt = new GameMessageS2CPacket(null, type);
-        ((ComponentHoldingPacket) pkt).setComponent(text);
-        return pkt;
+        return new GameMessageS2CPacket(text().serialize(text), type);
     }
 
     private static final EnumSet<TitleS2CPacket.Action> ALLOWED_ACTIONS
             = EnumSet.of(TitleS2CPacket.Action.TITLE, TitleS2CPacket.Action.SUBTITLE, TitleS2CPacket.Action.ACTIONBAR);
+
     public static TitleS2CPacket createTitlePacket(TitleS2CPacket.Action action, Component text) {
         if (!ALLOWED_ACTIONS.contains(action)) {
             throw new IllegalArgumentException("Action provided was not one of supported actions " + ALLOWED_ACTIONS);
         }
-        TitleS2CPacket pkt = new TitleS2CPacket(action, null);
-        ((ComponentHoldingPacket) pkt).setComponent(text);
-        return pkt;
+        return new TitleS2CPacket(action, text().serialize(text));
     }
 
     /// Mod adapter implementation
@@ -231,8 +249,8 @@ public class TextAdapter implements ModInitializer {
         if (norm == null) {
             norm = NamedTextColor.WHITE;
         }
-        final TextColor light = norm.lighten(.1f);
-        final TextColor dark = norm.darken(.1f);
+        final TextColor light = TextColor.of((byte) (norm.red() * 1.1), (byte) (norm.green() * 1.1), (byte) (norm.blue() * 1.1));
+        final TextColor dark = TextColor.of((byte) (norm.red() * 0.9), (byte) (norm.green() * 0.9), (byte) (norm.blue() * 0.9));
         final Component lightT = TextComponent.of(BLOCK, light);
         final Component darkT = TextComponent.of(BLOCK, dark);
         final TextComponent.Builder ret = TextComponent.builder();

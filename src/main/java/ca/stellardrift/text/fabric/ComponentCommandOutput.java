@@ -67,7 +67,7 @@ public interface ComponentCommandOutput extends CommandOutput {
          */
         @Override
         public void message(Component text) {
-           sendSystemMessage(TextAdapter.toMcText(text));
+           sendSystemMessage(TextAdapter.text().serialize(text));
         }
 
         @Override

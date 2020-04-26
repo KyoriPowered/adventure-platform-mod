@@ -34,6 +34,7 @@ import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -157,7 +158,8 @@ public class Audiences {
                 audiences.forEach(it -> it.message(message));
             }
             if (!others.isEmpty()) {
-                others.forEach(it -> it.sendSystemMessage(MinecraftTextSerializer.INSTANCE.serialize(message)));
+                final Text mcText = TextAdapter.text().serialize(message);
+                others.forEach(it -> it.sendSystemMessage(mcText));
             }
         }
 

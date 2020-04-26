@@ -19,18 +19,17 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package ca.stellardrift.text.fabric;
+package ca.stellardrift.text.fabric.mixin;
 
-import net.kyori.adventure.text.Component;
+import net.minecraft.entity.boss.ServerBossBar;
+import net.minecraft.server.network.ServerPlayerEntity;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Accessor;
 
-/**
- * Allows chat message packets to receive components.
- *
- * This interface is intended for internal use only
- */
-public interface ComponentHoldingPacket {
-    int MAX_TEXT_PACKET_LENGTH = 262144;
-    Component getComponent();
+import java.util.Set;
 
-    void setComponent(Component component);
+@Mixin(ServerBossBar.class)
+public interface AccessorServerBossBar {
+    @Accessor("players")
+    Set<ServerPlayerEntity> getMutablePlayers();
 }

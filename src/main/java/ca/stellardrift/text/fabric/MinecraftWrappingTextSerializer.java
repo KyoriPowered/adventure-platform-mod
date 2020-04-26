@@ -21,15 +21,21 @@
 
 package ca.stellardrift.text.fabric;
 
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.ComponentSerializer;
+import net.minecraft.text.Text;
 
-import java.util.Set;
+class MinecraftWrappingTextSerializer implements ComponentSerializer<Component, Component, Text> {
+    @Override
+    public Component deserialize(Text input) {
+        if (input instanceof ComponentText) {
+            return ((ComponentText) input).getWrapped();
+        }
+        return TextAdapter.textNonWrapping().deserialize(input);
+    }
 
-public interface ServerBossBarAccess {
-    /**
-     * Returns a mutable reference to the player list used by this boss bar
-     *
-     * @return The player list;
-     */
-    Set<ServerPlayerEntity> getPlayers();
+    @Override
+    public Text serialize(Component component) {
+        return new ComponentText(component);
+    }
 }

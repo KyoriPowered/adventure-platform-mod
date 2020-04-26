@@ -43,16 +43,18 @@ import java.util.ListIterator;
 
 import static ca.stellardrift.text.fabric.TextAdapter.toKey;
 
-public class MinecraftTextSerializer implements ComponentSerializer<Component, Component, Text> {
-    public static final MinecraftTextSerializer INSTANCE = new MinecraftTextSerializer();
+class MinecraftTextSerializer implements ComponentSerializer<Component, Component, Text> {
 
-    private MinecraftTextSerializer() {
-
+    MinecraftTextSerializer() {
     }
 
     @NonNull
     @Override
     public Component deserialize(@NonNull Text input) {
+        if (input instanceof ComponentText) {
+            return ((ComponentText) input).getWrapped();
+        }
+
         ComponentBuilder<?, ?> builder = toBuilder(input);
         applyStyle(builder, input.getStyle());
 
@@ -64,7 +66,7 @@ public class MinecraftTextSerializer implements ComponentSerializer<Component, C
 
     @NonNull
     @Override
-    public Text serialize(@NonNull Component component) {
+    public MutableText serialize(@NonNull Component component) {
         MutableText text = toText(component);
         applyStyle(text, component.style());
 
@@ -238,7 +240,7 @@ public class MinecraftTextSerializer implements ComponentSerializer<Component, C
         }
     }
 
-    private MutableText toText(Component component) {
+    MutableText toText(Component component) {
         if (component instanceof NbtComponent<?, ?>) {
             NbtComponent<?, ?> nbt = (NbtComponent<?, ?>) component;
             if (component instanceof BlockNbtComponent) {

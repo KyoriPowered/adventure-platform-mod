@@ -4,13 +4,12 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "AccessorHoverEventShowItem",
+    "AccessorServerBossBar",
     "AccessorStyle",
-    "MixinChatMessageS2CPacket",
     "MixinMinecraftServer",
-    "MixinServerBossBar",
     "MixinServerCommandSource",
     "MixinServerPlayerEntity",
-    "MixinTitleS2CPacket"
+    "MixinTextSerializer"
   ],
   "injectors": {
     "defaultRequire": 1

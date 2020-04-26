@@ -50,7 +50,7 @@ dependencies {
     }
 
     minecraft("com.mojang:minecraft:$versionMinecraft")
-    mappings("net.fabricmc:yarn:$versionMinecraft+build.$versionMappings")
+    mappings("net.fabricmc:yarn:$versionMinecraft+build.$versionMappings:v2")
     modImplementation("net.fabricmc:fabric-loader:$versionLoader")
 }
 

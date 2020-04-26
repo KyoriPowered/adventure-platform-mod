@@ -21,13 +21,13 @@
 
 package ca.stellardrift.text.fabric;
 
+import ca.stellardrift.text.fabric.mixin.AccessorServerBossBar;
 import com.google.common.collect.ImmutableSet;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.minecraft.entity.boss.ServerBossBar;
 import net.minecraft.network.packet.s2c.play.BossBarS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.Collection;
@@ -37,18 +37,18 @@ import java.util.Set;
 public class AdventureBossBar extends ServerBossBar implements BossBar {
     private Set<Flag> flags = new HashSet<>();
 
-    public AdventureBossBar(Text text, BossBar.Color color, BossBar.Overlay style) {
-        super(text, GameEnums.BOSS_BAR_COLOR.toMinecraft(color), GameEnums.BOSS_BAR_OVERLAY.toMinecraft(style));
+    public AdventureBossBar(Component text, BossBar.Color color, BossBar.Overlay style) {
+        super(new ComponentText(text), GameEnums.BOSS_BAR_COLOR.toMinecraft(color), GameEnums.BOSS_BAR_OVERLAY.toMinecraft(style));
     }
 
     @Override
     public @NonNull Component name() {
-        return MinecraftTextSerializer.INSTANCE.deserialize(getName());
+        return TextAdapter.text().deserialize(getName());
     }
 
     @Override
     public @NonNull BossBar name(@NonNull Component name) {
-        setName(MinecraftTextSerializer.INSTANCE.serialize(name));
+        setName(new ComponentText(name));
         return this;
     }
 
@@ -161,7 +161,7 @@ public class AdventureBossBar extends ServerBossBar implements BossBar {
     }
 
     private Set<ServerPlayerEntity> getMutablePlayers() {
-        return ((ServerBossBarAccess) this).getPlayers();
+        return ((AccessorServerBossBar) this).getMutablePlayers();
     }
 
     void addAll(Collection<ServerPlayerEntity> players) {
@@ -188,6 +188,5 @@ public class AdventureBossBar extends ServerBossBar implements BossBar {
                 ply.networkHandler.sendPacket(pkt);
             }
         }
-
     }
 }
