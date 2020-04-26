@@ -33,10 +33,8 @@ import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.ComponentSerializer;
 import net.kyori.adventure.text.serializer.gson.BlockNbtComponentPosSerializer;
-import net.minecraft.class_5250;
-import net.minecraft.class_5251;
 import net.minecraft.text.*;
-import net.minecraft.text.HoverEvent.class_5247;
+import net.minecraft.text.HoverEvent.Action;
 import net.minecraft.util.registry.Registry;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -67,7 +65,7 @@ public class MinecraftTextSerializer implements ComponentSerializer<Component, C
     @NonNull
     @Override
     public Text serialize(@NonNull Component component) {
-        class_5250 text = toText(component);
+        MutableText text = toText(component);
         applyStyle(text, component.style());
 
         for (Component child : component.children()) {
@@ -82,7 +80,7 @@ public class MinecraftTextSerializer implements ComponentSerializer<Component, C
         @Nullable HoverEvent<?> hover = style.hoverEvent();
         @Nullable Key font = style.font();
         return AccessorStyle.createNew(
-                style.color() == null ? null : class_5251.method_27717(style.color().value()),
+                style.color() == null ? null : net.minecraft.text.TextColor.fromRgb(style.color().value()),
                 toBoolean(style.decoration(TextDecoration.BOLD)),
                 toBoolean(style.decoration(TextDecoration.ITALIC)),
                 toBoolean(style.decoration(TextDecoration.UNDERLINED)),
@@ -100,7 +98,7 @@ public class MinecraftTextSerializer implements ComponentSerializer<Component, C
         return net.kyori.adventure.text.format.Style.make(b -> {
             AccessorStyle access = (AccessorStyle) mcStyle;
             if (mcStyle.getColor() != null) {
-                b.color(TextColor.of(mcStyle.getColor().method_27716()));
+                b.color(TextColor.of(mcStyle.getColor().getRgb()));
             }
             if (access.getBold() != null) {
                 b.decoration(TextDecoration.BOLD, access.getBold());
@@ -118,8 +116,8 @@ public class MinecraftTextSerializer implements ComponentSerializer<Component, C
                 b.decoration(TextDecoration.STRIKETHROUGH, access.getStrikethrough());
             }
 
-            if (access.getUnderline() != null) {
-                b.decoration(TextDecoration.UNDERLINED, access.getUnderline());
+            if (access.getUnderlined() != null) {
+                b.decoration(TextDecoration.UNDERLINED, access.getUnderlined());
             }
 
             if (mcStyle.getClickEvent() != null) {
@@ -136,8 +134,8 @@ public class MinecraftTextSerializer implements ComponentSerializer<Component, C
                 b.insertion(mcStyle.getInsertion());
             }
 
-            if (access.getFont() != null) {
-                b.font(TextAdapter.toKey(access.getFont()));
+            if (access.adventure$getFont() != null) {
+                b.font(TextAdapter.toKey(access.adventure$getFont()));
             }
         });
     }
@@ -152,30 +150,30 @@ public class MinecraftTextSerializer implements ComponentSerializer<Component, C
         builder.style(style(format));
     }
 
-    private void applyStyle(class_5250 text, net.kyori.adventure.text.format.Style format) {
+    private void applyStyle(MutableText text, net.kyori.adventure.text.format.Style format) {
         text.setStyle(style(format));
     }
 
     private HoverEvent<?> convertHoverEvent(net.minecraft.text.HoverEvent mcEvent) {
-        class_5247<?> action = mcEvent.getAction();
-        if (action == class_5247.SHOW_TEXT) {
-            return HoverEvent.showText(deserialize(mcEvent.getValue(class_5247.SHOW_TEXT)));
-        } else if (action == class_5247.SHOW_ENTITY) {
-            return HoverEvent.showEntity(convertShowEntity(mcEvent.getValue(class_5247.SHOW_ENTITY)));
-        } else if (action == class_5247.SHOW_ITEM) {
-            return HoverEvent.showItem(convertShowItem(mcEvent.getValue(class_5247.SHOW_ITEM)));
+        Action<?> action = mcEvent.getAction();
+        if (action == Action.SHOW_TEXT) {
+            return HoverEvent.showText(deserialize(mcEvent.getValue(Action.SHOW_TEXT)));
+        } else if (action == Action.SHOW_ENTITY) {
+            return HoverEvent.showEntity(convertShowEntity(mcEvent.getValue(Action.SHOW_ENTITY)));
+        } else if (action == Action.SHOW_ITEM) {
+            return HoverEvent.showItem(convertShowItem(mcEvent.getValue(Action.SHOW_ITEM)));
         } else {
             throw unknownType(action);
         }
     }
 
-    private HoverEvent.ShowEntity convertShowEntity(net.minecraft.text.HoverEvent.class_5248 mcEntity) {
-        final Key type = TextAdapter.toKey(Registry.ENTITY_TYPE.getId(mcEntity.field_24351));
-        final @Nullable Text text = mcEntity.field_24353;
-        return new HoverEvent.ShowEntity(type, mcEntity.field_24352, text == null ? null : deserialize(text));
+    private HoverEvent.ShowEntity convertShowEntity(net.minecraft.text.HoverEvent.EntityContent mcEntity) {
+        final Key type = TextAdapter.toKey(Registry.ENTITY_TYPE.getId(mcEntity.entityType));
+        final @Nullable Text text = mcEntity.name;
+        return new HoverEvent.ShowEntity(type, mcEntity.uuid, text == null ? null : deserialize(text));
     }
 
-    private HoverEvent.ShowItem convertShowItem(net.minecraft.text.HoverEvent.class_5249 mcItem) {
+    private HoverEvent.ShowItem convertShowItem(net.minecraft.text.HoverEvent.ItemStackContent mcItem) {
         AccessorHoverEventShowItem mc = (AccessorHoverEventShowItem) mcItem;
         return new HoverEvent.ShowItem(TextAdapter.toKey(Registry.ITEM.getId(mc.getItem())), mc.getCount());
     }
@@ -203,7 +201,7 @@ public class MinecraftTextSerializer implements ComponentSerializer<Component, C
             } else if (text instanceof NbtText.EntityNbtText) {
                 builder = EntityNbtComponent.builder().selector(((NbtText.EntityNbtText) nbt).getSelector());
             } else if (text instanceof NbtText.StorageNbtText) {
-                builder = StorageNbtComponent.builder().storage(toKey(((NbtText.StorageNbtText) text).method_23728()));
+                builder = StorageNbtComponent.builder().storage(toKey(((NbtText.StorageNbtText) text).getId()));
             } else {
                 throw unknownType(text);
             }
@@ -240,7 +238,7 @@ public class MinecraftTextSerializer implements ComponentSerializer<Component, C
         }
     }
 
-    private class_5250 toText(Component component) {
+    private MutableText toText(Component component) {
         if (component instanceof NbtComponent<?, ?>) {
             NbtComponent<?, ?> nbt = (NbtComponent<?, ?>) component;
             if (component instanceof BlockNbtComponent) {

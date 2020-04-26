@@ -21,10 +21,10 @@
 
 package ca.stellardrift.text.fabric.mixin;
 
-import net.minecraft.class_5251;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Style;
+import net.minecraft.text.TextColor;
 import net.minecraft.util.Identifier;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -41,17 +41,17 @@ public interface AccessorStyle {
     @Accessor
     Boolean getItalic();
     @Accessor
-    Boolean getUnderline();
+    Boolean getUnderlined();
     @Accessor
     Boolean getStrikethrough();
     @Accessor
     Boolean getObfuscated();
 
-    @Accessor("field_24361")
-    Identifier getFont();
+    @Accessor("font")
+    Identifier adventure$getFont();
 
     @Invoker("<init>")
-    static @NonNull Style createNew(class_5251 color, Boolean bold, Boolean italic, Boolean underline, Boolean strikethrough, Boolean obfuscated, ClickEvent click, HoverEvent hover, String insertion, Identifier font) {
+    static @NonNull Style createNew(TextColor color, Boolean bold, Boolean italic, Boolean underline, Boolean strikethrough, Boolean obfuscated, ClickEvent click, HoverEvent hover, String insertion, Identifier font) {
         throw new UnsupportedOperationException("Mixin replacement");
     }
 }
