@@ -38,23 +38,26 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.function.Predicate;
 
 public class Audiences {
     private Audiences() {
         // no
     }
 
-    public static Audience console() {
-        return null; // todo
+    public static FabricAudience console() {
+        final @Nullable MinecraftServer server = TextAdapter.server();
+        return server == null ? NoOpAudience.INSTANCE : (FabricAudience) server;
     }
-    
-    public static ComponentPlayer of(ServerPlayerEntity player) {
-        return ComponentPlayer.of(player);
+
+    public static FabricAudience of(ServerPlayerEntity player) {
+        return (FabricAudience) player;
     }
 
     public static Audience of(Collection<ServerPlayerEntity> players) {
@@ -95,7 +98,8 @@ public class Audiences {
      * @return An audience that targets all operators on the server
      */
     public static Audience operators() {
-        return operators(4);
+        final @Nullable MinecraftServer server = TextAdapter.server();
+        return operators(server == null ? 4 : server.getOpPermissionLevel());
     }
 
     /**
@@ -105,32 +109,27 @@ public class Audiences {
      * @return A new audience
      */
     public static Audience operators(int level) {
-        //((MinecraftServer) FabricLoader.getInstance().getGameInstance()).getPlayerManager();
-        return null; // todo
-
+        return new OnlinePlayersAudience(ply -> ply.hasPermissionLevel(level), ImmutableSet.of(console()), ImmutableSet.of());
     }
 
     public static Audience withPermission(Identifier permission) {
-        return null; // todo
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 
-    static class DynamicAudience implements Audience {
-        private final Iterable<ServerPlayerEntity> players;
+    static class OnlinePlayersAudience implements FabricAudience {
+        private final Predicate<ServerPlayerEntity> playerFilter;
+        private final Set<CommandOutput> unknownOthers;
+        private final Set<Audience> others;
 
-        DynamicAudience(Iterable<ServerPlayerEntity> players) {
-            this.players = players;
+        OnlinePlayersAudience(Predicate<ServerPlayerEntity> playerFilter, Set<Audience> others, Set<CommandOutput> unknownOthers) {
+            this.playerFilter = playerFilter;
+            this.others = others;
+            this.unknownOthers = unknownOthers;
         }
 
-        @Override
-        public void message(@NonNull Component message) {
-            Iterator<ServerPlayerEntity> it = players.iterator();
-            if (!it.hasNext()) {
-                return;
-            }
-            GameMessageS2CPacket pkt = TextAdapter.createChatPacket(message, MessageType.SYSTEM);
-            while (it.hasNext()) {
-                it.next().networkHandler.sendPacket(pkt);
-            }
+        private static Iterable<ServerPlayerEntity> getOnlinePlayers() {
+            @Nullable MinecraftServer server = TextAdapter.server();
+            return server == null ? ImmutableList.of() : server.getPlayerManager().getPlayerList();
         }
 
         @Override
@@ -145,7 +144,7 @@ public class Audiences {
 
         @Override
         public void showActionBar(@NonNull Component message) {
-
+            title(TitleS2CPacket.Action.ACTIONBAR, message);
         }
 
         @Override
@@ -157,10 +156,43 @@ public class Audiences {
         public void stopSound(@NonNull SoundStop stop) {
 
         }
+
+        @Override
+        public void message(MessageType type, Component text) {
+            if (type == MessageType.GAME_INFO) {
+                title(TitleS2CPacket.Action.ACTIONBAR, text);
+                return;
+            }
+
+            Iterator<ServerPlayerEntity> it = getOnlinePlayers().iterator();
+            if (it.hasNext()) {
+                GameMessageS2CPacket pkt = TextAdapter.createChatPacket(text, type);
+                while (it.hasNext()) {
+                    ServerPlayerEntity player = it.next();
+                    if (playerFilter.test(player)) {
+                        player.networkHandler.sendPacket(pkt);
+                    }
+                }
+            }
+        }
+
+        @Override
+        public void title(TitleS2CPacket.Action field, Component text) {
+            Iterator<ServerPlayerEntity> it = getOnlinePlayers().iterator();
+            if (it.hasNext()) {
+                TitleS2CPacket pkt = TextAdapter.createTitlePacket(field, text);
+                while (it.hasNext()) {
+                    ServerPlayerEntity player = it.next();
+                    if (playerFilter.test(player)) {
+                        player.networkHandler.sendPacket(pkt);
+                    }
+                }
+            }
+
+        }
     }
 
-
-    static class MultiAudience implements Audience {
+    static class MultiAudience implements FabricAudience {
         private final Set<ServerPlayerEntity> players;
         private final Set<Audience> audiences;
         private final Set<CommandOutput> others;
@@ -169,23 +201,6 @@ public class Audiences {
             this.players = ImmutableSet.copyOf(players);
             this.audiences = ImmutableSet.copyOf(audiences);
             this.others = ImmutableSet.copyOf(others);
-        }
-
-        @Override
-        public void message(@NonNull Component message) {
-            if (!players.isEmpty()) {
-                GameMessageS2CPacket pkt = TextAdapter.createChatPacket(message, MessageType.SYSTEM);
-                for (ServerPlayerEntity ply : players) {
-                    ply.networkHandler.sendPacket(pkt);
-                }
-            }
-            if (!audiences.isEmpty()) {
-                audiences.forEach(it -> it.message(message));
-            }
-            if (!others.isEmpty()) {
-                final Text mcText = TextAdapter.text().serialize(message);
-                others.forEach(it -> it.sendSystemMessage(mcText));
-            }
         }
 
         @Override
@@ -205,19 +220,6 @@ public class Audiences {
             }
             if (!audiences.isEmpty()) {
                 audiences.forEach(it -> it.hideBossBar(bar));
-            }
-        }
-
-        @Override
-        public void showActionBar(@NonNull Component message) {
-            if (!players.isEmpty()) {
-                TitleS2CPacket pkt = TextAdapter.createTitlePacket(TitleS2CPacket.Action.ACTIONBAR, message);
-                for (ServerPlayerEntity ply : players) {
-                    ply.networkHandler.sendPacket(pkt);
-                }
-            }
-            if (!audiences.isEmpty()) {
-                audiences.forEach(it -> it.showActionBar(message));
             }
         }
 
@@ -244,7 +246,88 @@ public class Audiences {
             if (!audiences.isEmpty()) {
                 audiences.forEach(it -> it.stopSound(stop));
             }
+        }
 
+        @Override
+        public void message(MessageType type, Component text) {
+            if (type == MessageType.GAME_INFO) {
+                title(TitleS2CPacket.Action.ACTIONBAR, text);
+                return;
+            }
+
+            if (!players.isEmpty()) {
+                GameMessageS2CPacket pkt = TextAdapter.createChatPacket(text, type);
+                for (ServerPlayerEntity ply : players) {
+                    ply.networkHandler.sendPacket(pkt);
+                }
+            }
+            if (!audiences.isEmpty()) {
+                audiences.forEach(it -> it.message(text));
+            }
+            if (!others.isEmpty()) {
+                final Text mcText = TextAdapter.text().serialize(text);
+                others.forEach(it -> it.sendSystemMessage(mcText));
+            }
+        }
+
+        @Override
+        public void title(TitleS2CPacket.Action field, Component text) {
+            if (!players.isEmpty()) {
+                TitleS2CPacket pkt = TextAdapter.createTitlePacket(field, text);
+                for (ServerPlayerEntity ply : players) {
+                    ply.networkHandler.sendPacket(pkt);
+                }
+            }
+            if (!audiences.isEmpty()) {
+                audiences.forEach(it -> {
+                    if (it instanceof FabricAudience) {
+                        ((FabricAudience) it).title(field, text);
+                    } else if (field == TitleS2CPacket.Action.ACTIONBAR) {
+                        it.showActionBar(text);
+                    }
+                });
+            }
+        }
+    }
+
+    /**
+     * An audience that does nothing
+     */
+    static final class NoOpAudience implements FabricAudience {
+        static final NoOpAudience INSTANCE = new NoOpAudience();
+
+        private NoOpAudience() {}
+
+        @Override
+        public void message(MessageType type, Component text) {
+        }
+
+        @Override
+        public void title(TitleS2CPacket.Action field, Component text) {
+        }
+
+        @Override
+        public void message(@NonNull Component message) {
+        }
+
+        @Override
+        public void showBossBar(@NonNull BossBar bar) {
+        }
+
+        @Override
+        public void hideBossBar(@NonNull BossBar bar) {
+        }
+
+        @Override
+        public void showActionBar(@NonNull Component message) {
+        }
+
+        @Override
+        public void playSound(@NonNull Sound sound) {
+        }
+
+        @Override
+        public void stopSound(@NonNull SoundStop stop) {
         }
     }
 }

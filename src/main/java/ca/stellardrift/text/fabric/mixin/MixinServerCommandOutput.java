@@ -21,61 +21,21 @@
 
 package ca.stellardrift.text.fabric.mixin;
 
-import ca.stellardrift.text.fabric.FabricAudience;
+import ca.stellardrift.text.fabric.ComponentCommandOutput;
 import ca.stellardrift.text.fabric.TextAdapter;
-import net.kyori.adventure.bossbar.BossBar;
-import net.kyori.adventure.sound.Sound;
-import net.kyori.adventure.sound.SoundStop;
 import net.kyori.adventure.text.Component;
-import net.minecraft.network.MessageType;
-import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
-import net.minecraft.server.MinecraftServer;
-import org.apache.logging.log4j.Logger;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import net.minecraft.server.dedicated.ServerCommandOutput;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
-/**
- * Implement ComponentCommandOutput for output to the server console
- */
-@Mixin(value = MinecraftServer.class)
-public abstract class MixinMinecraftServer implements FabricAudience {
-    @Shadow @Final
-    private static Logger LOGGER;
-
-    /**
-     * Send a message to this receiver as a component
-     *
-     * @param text The text to send
-     */
-    @Override
-    public void message(MessageType type, Component text) {
-        LOGGER.info(TextAdapter.plain().serialize(text)); // TODO: Eventually will we support formatted output?
-    }
+@Mixin(ServerCommandOutput.class)
+public abstract class MixinServerCommandOutput implements ComponentCommandOutput {
+    @Shadow @Final private StringBuffer buffer;
 
     @Override
-    public void title(TitleS2CPacket.Action field, Component text) {
-        message(text);
+    public void message(Component text) {
+        this.buffer.append(TextAdapter.plain().serialize(text));
     }
 
-    @Override
-    public void showBossBar(@NonNull BossBar bar) {
-        // no-op
-    }
-
-    @Override
-    public void hideBossBar(@NonNull BossBar bar) {
-        // no-op
-    }
-
-    @Override
-    public void playSound(@NonNull Sound sound) {
-        // no-op
-    }
-
-    @Override
-    public void stopSound(@NonNull SoundStop stop) {
-        // no-op
-    }
 }

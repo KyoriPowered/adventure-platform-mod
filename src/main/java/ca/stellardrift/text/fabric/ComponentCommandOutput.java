@@ -24,6 +24,7 @@ package ca.stellardrift.text.fabric;
 import net.kyori.adventure.text.Component;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.text.Text;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Represents a {@link CommandOutput} that can receive {@link Component} messages

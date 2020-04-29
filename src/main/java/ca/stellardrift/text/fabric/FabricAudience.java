@@ -25,12 +25,9 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.minecraft.network.MessageType;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
-import net.minecraft.server.network.ServerPlayerEntity;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
-/**
- * An interface to be implemented by players and other rich text component receivers
- */
-public interface ComponentPlayer extends ComponentCommandOutput, Audience {
+public interface FabricAudience extends Audience, PlainAudience {
     /**
      * Send a chat message to this player.
      *
@@ -40,7 +37,7 @@ public interface ComponentPlayer extends ComponentCommandOutput, Audience {
      * @param text The contents of the message
      * @param type The type of message to send.
      */
-    void message(Component text, MessageType type);
+    void message(MessageType type, Component text);
 
     /**
      * Send a field of a title as a component.
@@ -50,9 +47,15 @@ public interface ComponentPlayer extends ComponentCommandOutput, Audience {
      * {@link TitleS2CPacket.Action#SUBTITLE}, or {@link TitleS2CPacket.Action#ACTIONBAR}
      * @param text The text to set as the title
      */
-    void sendTitle(TitleS2CPacket.Action field, Component text);
+    void title(TitleS2CPacket.Action field, Component text);
 
-    static ComponentPlayer of(ServerPlayerEntity ply) {
-        return (ComponentPlayer) ply;
+    @Override
+    default void message(@NonNull Component message) {
+        message(MessageType.SYSTEM, message);
+    }
+
+    @Override
+    default void showActionBar(@NonNull Component message) {
+        title(TitleS2CPacket.Action.ACTIONBAR, message);
     }
 }

@@ -34,16 +34,15 @@ import net.minecraft.client.options.KeyBinding;
 import net.minecraft.network.MessageType;
 import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.checker.nullness.qual.PolyNull;
 
 import java.util.EnumSet;
 import java.util.function.Function;
-
-import static java.util.Objects.requireNonNull;
 
 /**
  * Adapter methods for converting text objects between Minecraft and Adventure types
@@ -53,9 +52,21 @@ import static java.util.Objects.requireNonNull;
  * @see ComponentCommandSource for sending to a single command source
  */
 public class TextAdapter implements ModInitializer {
+    private static @Nullable MinecraftServer server;
     private static final PlainComponentSerializer PLAIN;
     private static final MinecraftTextSerializer TEXT_NON_WRAPPING = new MinecraftTextSerializer();
     private static final MinecraftWrappingTextSerializer TEXT = new MinecraftWrappingTextSerializer();
+
+    /**
+     * Get the active server instance. This instance may change
+     * throughout the lifetime of a game if we are running with an integrated server.
+     *
+     * @return the server instance
+     */
+    static @Nullable MinecraftServer server() {
+        @Nullable MinecraftServer instance = server;
+        return server;
+    }
 
     static {
         Function<KeybindComponent, String> keybindNamer;
@@ -126,20 +137,6 @@ public class TextAdapter implements ModInitializer {
         return new Identifier(key.namespace(), key.value());
     }
 
-    /**
-     * Send a title to multiple players
-     *
-     * @param targets The players to send a title to
-     * @param text    The text to send
-     * @param type    The field of the title to use
-     */
-    public static void sendTitle(Iterable<? extends ServerPlayerEntity> targets, Component text, TitleS2CPacket.Action type) {
-        TitleS2CPacket pkt = createTitlePacket(type, text);
-        for (ServerPlayerEntity target : requireNonNull(targets, "targets")) {
-            target.networkHandler.sendPacket(pkt);
-        }
-    }
-
     public static GameMessageS2CPacket createChatPacket(Component text, MessageType type) {
         return new GameMessageS2CPacket(text().serialize(text), type);
     }
@@ -161,6 +158,11 @@ public class TextAdapter implements ModInitializer {
     @Override
     public void onInitialize() {
         // not much to do?
+        final Object game = FabricLoader.getInstance().getGameInstance();
+        if (game instanceof MinecraftServer) {
+            server = (MinecraftServer) game;
+        }
+
         this.container = FabricLoader.getInstance().getModContainer("text-adapter-fabric")
                 .orElseThrow(() -> new IllegalStateException("Mod ID for text-adapter-fabric has been changed without updating the initializer!"));
     }
