@@ -40,6 +40,7 @@ import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -55,8 +56,8 @@ public abstract class MixinServerPlayerEntity extends PlayerEntity implements Fa
 
     @Shadow public abstract void sendAbilitiesUpdate();
 
-    public MixinServerPlayerEntity(World world, GameProfile gameProfile) {
-        super(world, gameProfile);
+    public MixinServerPlayerEntity(World world, BlockPos pos, GameProfile gameProfile) {
+        super(world, pos, gameProfile);
     }
 
     /**
