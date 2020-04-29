@@ -21,6 +21,7 @@
 
 package ca.stellardrift.text.fabric;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.bossbar.BossBar;
@@ -39,6 +40,7 @@ import net.minecraft.util.Identifier;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -51,16 +53,39 @@ public class Audiences {
         return null; // todo
     }
     
-    public static ComponentPlayer player(ServerPlayerEntity player) {
+    public static ComponentPlayer of(ServerPlayerEntity player) {
         return ComponentPlayer.of(player);
     }
 
-    public static Audience players(Collection<ServerPlayerEntity> players) {
+    public static Audience of(Collection<ServerPlayerEntity> players) {
         if (players.size() == 1) {
-            return player(players.iterator().next());
+            return of(players.iterator().next());
         }
         return new MultiAudience(ImmutableSet.copyOf(players), ImmutableSet.of(), ImmutableSet.of());
     }
+    
+    public static Audience of(Iterable<? extends CommandOutput> sources) {
+        final ImmutableSet.Builder<ServerPlayerEntity> players = ImmutableSet.builder();
+        final ImmutableSet.Builder<Audience> audiences = ImmutableSet.builder();
+        final ImmutableSet.Builder<CommandOutput> others = ImmutableSet.builder();
+        boolean first = true;
+        for (Iterator<? extends CommandOutput> it = sources.iterator(); it.hasNext();) {
+            CommandOutput out = it.next();
+            if (first && !it.hasNext() && out instanceof Audience) {
+                return (Audience) out;
+            }
+            first = false;
+            if (out instanceof ServerPlayerEntity) {
+                players.add((ServerPlayerEntity) out);
+            } else if (out instanceof Audience) {
+                audiences.add((Audience) out);
+            } else {
+                others.add(out);
+            }
+        }
+        return new MultiAudience(players.build(), audiences.build(), others.build());
+    }
+
 
     /**
      * Return an Audience that sends to all operators with at least the level {@link
@@ -69,8 +94,8 @@ public class Audiences {
      *
      * @return An audience that targets all operators on the server
      */
-    public static Audience allOperators() {
-        return allOperators(4);
+    public static Audience operators() {
+        return operators(4);
     }
 
     /**
@@ -79,13 +104,13 @@ public class Audiences {
      * @param level The operator level
      * @return A new audience
      */
-    public static Audience allOperators(int level) {
+    public static Audience operators(int level) {
         //((MinecraftServer) FabricLoader.getInstance().getGameInstance()).getPlayerManager();
         return null; // todo
 
     }
 
-    public static Audience permission(Identifier permission) {
+    public static Audience withPermission(Identifier permission) {
         return null; // todo
     }
 

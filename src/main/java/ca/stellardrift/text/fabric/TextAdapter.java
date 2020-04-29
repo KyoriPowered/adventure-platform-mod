@@ -41,11 +41,11 @@ import net.minecraft.client.options.KeyBinding;
 import net.minecraft.network.MessageType;
 import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
-import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.checker.nullness.qual.PolyNull;
 
@@ -57,10 +57,10 @@ import static net.kyori.adventure.text.TextComponent.*;
 import static net.minecraft.server.command.CommandManager.literal;
 
 /**
- * Adapter methods for sending {@link Component Components} to a variety of users
+ * Adapter methods for converting text objects between Minecraft and Adventure types
  *
+ * @see Audiences for ways to send messages to different groups of people, including players
  * @see ComponentCommandOutput#message(Component) for sending to a single user
- * @see ComponentPlayer for sending to a single player
  * @see ComponentCommandSource for sending to a single command source
  */
 public class TextAdapter implements ModInitializer {
@@ -138,54 +138,6 @@ public class TextAdapter implements ModInitializer {
     }
 
     /**
-     * Send a message to any number of message receivers. For message receivers that are players,
-     * these messages will sent as the {@link MessageType#SYSTEM} message type
-     *
-     * @param targets The receivers of the message
-     * @param text    The message to send
-     */
-    public static void sendMessage(Iterable<? extends CommandOutput> targets, Component text) {
-        GameMessageS2CPacket pkt = null;
-        Text mcText = null;
-
-        for (CommandOutput target : targets) {
-            if (target instanceof ServerPlayerEntity) {
-                if (pkt == null) {
-                    pkt = createChatPacket(text, MessageType.SYSTEM);
-                }
-                ((ServerPlayerEntity) target).networkHandler.sendPacket(pkt);
-            } else if (target instanceof ComponentCommandOutput) {
-                ((ComponentCommandOutput) target).message(text);
-            } else {
-                if (mcText == null) {
-                    mcText = text().serialize(text);
-                }
-
-                target.sendSystemMessage(mcText);
-            }
-        }
-    }
-
-    /**
-     * Send a message to a collection of players
-     *
-     * @param targets The targets to send the message to
-     * @param text    The text to send
-     * @param type    The field to send to
-     */
-    public static void sendMessage(Iterable<? extends ServerPlayerEntity> targets, Component text, MessageType type) {
-        if (type == MessageType.GAME_INFO) { // Use title for better appearance
-            sendTitle(targets, text, TitleS2CPacket.Action.ACTIONBAR);
-            return;
-        }
-
-        GameMessageS2CPacket pkt = createChatPacket(text, type);
-        for (ServerPlayerEntity target : targets) {
-            target.networkHandler.sendPacket(pkt);
-        }
-    }
-
-    /**
      * Send a title to multiple players
      *
      * @param targets The players to send a title to
@@ -215,7 +167,7 @@ public class TextAdapter implements ModInitializer {
 
     /// Mod adapter implementation
 
-    private ModContainer container;
+    private @MonotonicNonNull ModContainer container;
 
     @Override
     public void onInitialize() {
