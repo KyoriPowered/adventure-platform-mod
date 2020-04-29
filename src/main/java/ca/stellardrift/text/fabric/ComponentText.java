@@ -52,7 +52,7 @@ public final class ComponentText implements Text {
 
     @Override
     public String getString() {
-        return PlainComponentSerializer.INSTANCE.serialize(this.wrapped);
+        return TextAdapter.plain().serialize(this.wrapped);
     }
 
     @Override

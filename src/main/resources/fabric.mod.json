@@ -31,7 +31,6 @@
   },
 
   "depends": {
-    "fabric-commands-v0": "*",
     "fabricloader": ">=0.4.0"
   }
 }

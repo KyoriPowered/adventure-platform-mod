@@ -15,8 +15,6 @@ val versionMinecraft: String by project
 val versionAdventure: String by project
 val versionMappings: String by project
 val versionLoader: String by project
-val versionFabricApiBase: String by project
-val versionFabricApiCommands: String by project
 
 group = "ca.stellardrift"
 version = "$versionSelf+$versionAdventure"
@@ -43,10 +41,6 @@ dependencies {
 
     implementationInclude(adventure("text-serializer-gson", versionAdventure)) {
         exclude("com.google.code.gson")
-    }
-
-    listOf("commands-v0:$versionFabricApiCommands", "api-base:$versionFabricApiBase").forEach {
-        implementationInclude("net.fabricmc.fabric-api:fabric-$it")
     }
 
     minecraft("com.mojang:minecraft:$versionMinecraft")

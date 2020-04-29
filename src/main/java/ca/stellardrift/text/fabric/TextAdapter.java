@@ -21,40 +21,29 @@
 
 package ca.stellardrift.text.fabric;
 
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.registry.CommandRegistry;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.KeybindComponent;
-import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.Style;
-import net.kyori.adventure.text.format.TextColor;
-import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.ComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.network.MessageType;
 import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
-import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.checker.nullness.qual.PolyNull;
 
 import java.util.EnumSet;
 import java.util.function.Function;
 
 import static java.util.Objects.requireNonNull;
-import static net.kyori.adventure.text.TextComponent.*;
-import static net.minecraft.server.command.CommandManager.literal;
 
 /**
  * Adapter methods for converting text objects between Minecraft and Adventure types
@@ -174,86 +163,5 @@ public class TextAdapter implements ModInitializer {
         // not much to do?
         this.container = FabricLoader.getInstance().getModContainer("text-adapter-fabric")
                 .orElseThrow(() -> new IllegalStateException("Mod ID for text-adapter-fabric has been changed without updating the initializer!"));
-        CommandRegistry.INSTANCE.register(false, disp -> disp.register(createInfoCommand()));
-    }
-
-    private static final String BLOCK = "█"; // full block
-    private static final int RGB_SQUARE_SIZE = 10;
-    private static final int RGB_WIDTH = RGB_SQUARE_SIZE;
-    private static final int RGB_HEIGHT = RGB_SQUARE_SIZE;
-
-    private static Component createColorScale(TextColor start, TextColor end, int steps) {
-        final short r0 = start.red(), g0 = start.green(), b0 = start.blue();
-        final int dr = (end.red() - r0) / steps, dg = (end.green() - g0) / steps, db = (end.blue() - b0) / steps;
-        int r = r0, g = g0, b = b0;
-        final TextComponent.Builder build = TextComponent.builder();
-        for (int i = 0; i < steps; ++i) {
-            build.append(TextComponent.of(BLOCK, TextColor.of(r, g, b)));
-            r += dr;
-            g += dg;
-            b += db;
-        }
-        return build.build();
-    }
-
-    private static Component addFlags(Component original, int width) {
-        @Nullable TextColor norm = original.color();
-        if (norm == null) {
-            norm = NamedTextColor.WHITE;
-        }
-        final TextColor light = TextColor.of((byte) (norm.red() * 1.1), (byte) (norm.green() * 1.1), (byte) (norm.blue() * 1.1));
-        final TextColor dark = TextColor.of((byte) (norm.red() * 0.9), (byte) (norm.green() * 0.9), (byte) (norm.blue() * 0.9));
-        final Component lightT = TextComponent.of(BLOCK, light);
-        final Component darkT = TextComponent.of(BLOCK, dark);
-        final TextComponent.Builder ret = TextComponent.builder();
-        for (int i = 0; i < width; ++i) {
-            ret.append(i % 2 == 0 ? darkT : lightT);
-        }
-        ret.append(space()).append(original).append(space());
-
-        for (int i = 0; i < width; ++i) {
-            ret.append(i % 2 == 0 ? lightT : darkT);
-        }
-        return ret.build();
-    }
-
-    public LiteralArgumentBuilder<ServerCommandSource> createInfoCommand() {
-        return literal("kyoritext")
-                .requires(it -> it.hasPermissionLevel(2))
-                .then(literal("rgb").executes(ctx -> {
-                    final ComponentCommandSource out = ComponentCommandSource.of(ctx.getSource());
-                    out.sendFeedback(createColorScale(NamedTextColor.BLACK, TextColor.of(0xFF, 0x00, 0x00), 10), false);
-                    out.sendFeedback(createColorScale(NamedTextColor.BLACK, TextColor.of(0x00, 0xFF, 0x00), 10), false);
-                    out.sendFeedback(createColorScale(NamedTextColor.BLACK, TextColor.of(0x00, 0x00, 0xFF), 10), false);
-                    out.sendFeedback(createColorScale(TextColor.of(0xEF22EE), TextColor.of(0x22AA33), 20), false);
-                    out.sendFeedback(addFlags(of("Hello world! 🌎", NamedTextColor.GOLD), 10), false);
-                    out.sendFeedback(builder("Hello ").append(of("unicode", Style.builder().font(Key.of("uniform")).build())).build(), true);
-                    /*final short r0 = 0, g0 = 0, b0 = 0;
-                    final int dr = (end.red() - r0) / steps, dg = (end.green() - g0) / steps, db = (end.blue() - b0) / steps;
-                    for (int y = 0; y < RGB_HEIGHT; ++y) {
-                        for (int x = 0; x < RGB_WIDTH; ++x) {
-
-                        }
-                    }*/
-                    return 1;
-                }))
-                .executes(ctx -> {
-                    String apiVersion = container.getMetadata().getCustomValue("text-version").getAsString();
-                    String adapterVersion = container.getMetadata().getVersion().getFriendlyString();
-                    ServerCommandSource src = ctx.getSource();
-                    ComponentCommandSource component = ComponentCommandSource.of(src);
-                    component.sendFeedback(make("KyoriPowered Text ", b -> {
-                        b.color(NamedTextColor.GRAY);
-                        b.append(highlight("v" + apiVersion));
-                        b.append(newline());
-                        b.append(make("text-adapter-fabric ", v -> v.append(highlight("v" + adapterVersion))));
-                    }), false);
-
-                    return 1;
-                });
-    }
-
-    private TextComponent highlight(String input) {
-        return TextComponent.of(input, NamedTextColor.LIGHT_PURPLE, TextDecoration.ITALIC);
     }
 }
