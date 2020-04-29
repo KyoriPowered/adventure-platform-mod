@@ -93,7 +93,29 @@ class MinecraftTextSerializer implements ComponentSerializer<Component, Componen
                 style.insertion(),
                 font == null ? null : TextAdapter.toIdentifier(font)
         );
+    }
 
+    Style styleWithParent(net.kyori.adventure.text.format.Style style, Style parent) {
+        if (parent == Style.EMPTY) {
+            return style(style);
+        }
+
+        final AccessorStyle pAccess = (AccessorStyle) parent;
+        @Nullable ClickEvent click = style.clickEvent();
+        @Nullable HoverEvent<?> hover = style.hoverEvent();
+        @Nullable Key font = style.font();
+        return AccessorStyle.createNew(
+                style.color() == null ? parent.getColor() : net.minecraft.text.TextColor.fromRgb(style.color().value()),
+                toBoolean(style.decoration(TextDecoration.BOLD), pAccess.getBold()),
+                toBoolean(style.decoration(TextDecoration.ITALIC), pAccess.getItalic()),
+                toBoolean(style.decoration(TextDecoration.UNDERLINED), pAccess.getUnderlined()),
+                toBoolean(style.decoration(TextDecoration.STRIKETHROUGH), pAccess.getStrikethrough()),
+                toBoolean(style.decoration(TextDecoration.OBFUSCATED), pAccess.getObfuscated()),
+                click == null ? parent.getClickEvent() : new net.minecraft.text.ClickEvent(GameEnums.CLICK_EVENT.toMinecraft(click.action()), click.value()),
+                hover == null ? parent.getHoverEvent() : null,
+                style.insertion() == null ? parent.getInsertion() : style.insertion(),
+                font == null ? parent.getFont() : TextAdapter.toIdentifier(font)
+        );
     }
 
     net.kyori.adventure.text.format.Style style(Style mcStyle) {
@@ -181,10 +203,14 @@ class MinecraftTextSerializer implements ComponentSerializer<Component, Componen
     }
 
     private @Nullable Boolean toBoolean(TextDecoration.State state) {
+        return toBoolean(state, null);
+    }
+    
+    private @Nullable Boolean toBoolean(TextDecoration.State state, @Nullable Boolean parentVal) {
         switch (state) {
             case TRUE: return true;
             case FALSE: return false;
-            case NOT_SET: return null;
+            case NOT_SET: return parentVal;
             default: throw new Error();
         }
     }

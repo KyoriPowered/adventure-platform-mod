@@ -31,6 +31,7 @@ import net.minecraft.text.Text;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 
 import java.util.List;
+import java.util.Optional;
 
 public final class ComponentText implements Text {
     private final Component wrapped;
@@ -56,11 +57,7 @@ public final class ComponentText implements Text {
 
     @Override
     public String asString() {
-        if (this.wrapped instanceof TextComponent) {
-            return ((TextComponent) this.wrapped).content();
-        } else {
-            return copy().asString();
-        }
+        return asString(this.wrapped);
     }
 
     @Override
@@ -83,5 +80,73 @@ public final class ComponentText implements Text {
     @Override
     public MutableText shallowCopy() {
         return TextAdapter.textNonWrapping().serialize(this.wrapped);
+    }
+
+    @Override
+    public <T> Optional<T> visit(StyledVisitor<T> visitor, Style style) {
+        return visit(this.wrapped, visitor, style);
+    }
+
+    @Override
+    public <T> Optional<T> visit(Visitor<T> visitor) {
+        return visit(this.wrapped, visitor);
+    }
+
+    // reimplement visitor methods but without creating a wrapper ComponentText instance
+    
+    private static <T> Optional<T> visit(Component comp, StyledVisitor<T> visitor, Style style) {
+        final Style filledStyle = TextAdapter.textNonWrapping().styleWithParent(comp.style(), style);
+        Optional<T> ret = visitSelf(comp, visitor, filledStyle);
+        if (ret.isPresent()) {
+            return ret;
+        }
+        
+        for (Component child : comp.children()) {
+            ret = visit(child, visitor, filledStyle);
+            if (ret.isPresent()) {
+                return ret;
+            }
+        }
+
+        return Optional.empty();
+    }
+    
+    private static <T> Optional<T> visit(Component comp, Visitor<T> visitor) {
+        Optional<T> ret = visitSelf(comp, visitor);
+        if (ret.isPresent()) {
+            return ret;
+        }
+        
+        for (Component child : comp.children()) {
+            Optional<T> response = visit(child, visitor);
+            if (response.isPresent()) {
+                return response;
+            }
+        }
+
+        return Optional.empty();
+    }
+
+    private static <T> Optional<T> visitSelf(Component comp, StyledVisitor<T> visitor, Style style) {
+        return visitor.accept(style, asString(comp));
+    }
+
+    private static <T> Optional<T> visitSelf(Component comp, Visitor<T> visitor) {
+        return visitor.accept(asString(comp));
+    }
+
+    /**
+     * Create a shallow string representation of the component. For text components, we can provide
+     * an accurate string, but for anything more complicated we delegate to the game.
+     *
+     * @param comp The component to represent
+     * @return a string
+     */
+    private static String asString(Component comp) {
+        if (comp instanceof TextComponent) {
+            return ((TextComponent) comp).content();
+        } else {
+            return TextAdapter.textNonWrapping().toText(comp).asString();
+        }
     }
 }
