@@ -1,3 +1,24 @@
+/*
+ * Copyright © 2020 zml [at] stellardrift [.] ca
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the “Software”), to deal in
+ * the Software without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ * the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 package ca.stellardrift.text.fabric;
 
 import ca.stellardrift.text.fabric.mixin.AccessorHoverEventShowItem;
@@ -9,9 +30,6 @@ import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Text;
 import net.minecraft.util.registry.Registry;
 import org.checkerframework.checker.nullness.qual.Nullable;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Adapters for the different HoverEvent types to convert between Minecraft and Adventure values
@@ -45,7 +63,7 @@ abstract class HoverEventAdapter<Mc, Adv> {
     }
 
     protected Text textToMc(final Component comp, final boolean deep) {
-        return (deep ? TextAdapter.textNonWrapping() : TextAdapter.text()).serialize(comp);
+        return deep ? TextAdapter.nonWrapping().serialize(comp) : TextAdapter.adapt(comp);
     }
 
     /**
@@ -71,7 +89,7 @@ abstract class HoverEventAdapter<Mc, Adv> {
 
         @Override
         public Component toAdventure(final Text mc) {
-            return TextAdapter.textNonWrapping().deserialize(mc);
+            return TextAdapter.nonWrapping().deserialize(mc);
         }
     }
 
@@ -83,15 +101,15 @@ abstract class HoverEventAdapter<Mc, Adv> {
 
         @Override
         public HoverEvent.EntityContent toMinecraft(final net.kyori.adventure.text.event.HoverEvent.ShowEntity showEntity, final boolean deep) {
-            final EntityType<?> type = Registry.ENTITY_TYPE.get(TextAdapter.toIdentifier(showEntity.type()));
+            final EntityType<?> type = Registry.ENTITY_TYPE.get(TextAdapter.adapt(showEntity.type()));
             return new HoverEvent.EntityContent(type, showEntity.id(), showEntity.name() == null ? null : textToMc(showEntity.name(), deep));
         }
 
         @Override
         public net.kyori.adventure.text.event.HoverEvent.ShowEntity toAdventure(final HoverEvent.EntityContent mc) {
-            final Key type = TextAdapter.toKey(Registry.ENTITY_TYPE.getId(mc.entityType));
+            final Key type = TextAdapter.adapt(Registry.ENTITY_TYPE.getId(mc.entityType));
             final @Nullable Text text = mc.name;
-            return new net.kyori.adventure.text.event.HoverEvent.ShowEntity(type, mc.uuid, text == null ? null : TextAdapter.text().deserialize(text));
+            return new net.kyori.adventure.text.event.HoverEvent.ShowEntity(type, mc.uuid, text == null ? null : TextAdapter.adapt(text));
         }
     }
 
@@ -109,7 +127,7 @@ abstract class HoverEventAdapter<Mc, Adv> {
         @Override
         public net.kyori.adventure.text.event.HoverEvent.ShowItem toAdventure(final HoverEvent.ItemStackContent itemStackContent) {
             AccessorHoverEventShowItem mc = (AccessorHoverEventShowItem) itemStackContent;
-            return new net.kyori.adventure.text.event.HoverEvent.ShowItem(TextAdapter.toKey(Registry.ITEM.getId(mc.getItem())), mc.getCount());
+            return new net.kyori.adventure.text.event.HoverEvent.ShowItem(TextAdapter.adapt(Registry.ITEM.getId(mc.getItem())), mc.getCount());
         }
     }
 

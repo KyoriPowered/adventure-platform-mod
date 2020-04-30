@@ -27,6 +27,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.ComponentBuilder;
 import net.kyori.adventure.text.KeybindComponent;
 import net.kyori.adventure.text.serializer.ComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
@@ -42,7 +43,11 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.checker.nullness.qual.PolyNull;
 
 import java.util.EnumSet;
+import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * Adapter methods for converting text objects between Minecraft and Adventure types
@@ -55,7 +60,6 @@ public class TextAdapter implements ModInitializer {
     private static @Nullable MinecraftServer server;
     private static final PlainComponentSerializer PLAIN;
     private static final MinecraftTextSerializer TEXT_NON_WRAPPING = new MinecraftTextSerializer();
-    private static final MinecraftWrappingTextSerializer TEXT = new MinecraftWrappingTextSerializer();
 
     /**
      * Get the active server instance. This instance may change
@@ -95,18 +99,31 @@ public class TextAdapter implements ModInitializer {
      *
      * @return a serializer instance
      */
-    public static MinecraftTextSerializer textNonWrapping() {
+    public static MinecraftTextSerializer nonWrapping() {
         return TEXT_NON_WRAPPING;
     }
 
-    /**
-     * Create a new component serializer that will convert between Adventure and Minecraft text objects by wrapping and
-     * unwrapping the Adventure versions of the object hierarchy.
-     *
-     * @return a serializer instance
-     */
-    public static ComponentSerializer<Component, Component, Text> text() {
-        return TEXT;
+
+    public static Text adapt(final Component component) {
+        return new ComponentText(component);
+    }
+
+    public static Component adapt(final Text text) {
+        if (text instanceof ComponentText) {
+            return ((ComponentText) text).getWrapped();
+        }
+        return nonWrapping().deserialize(text);
+    }
+
+    public static Text update(final Text input, final UnaryOperator<Component> modifier) {
+        Component modified;
+        if (input instanceof ComponentText) {
+            modified = requireNonNull(modifier).apply(((ComponentText) input).getWrapped());
+        } else {
+            final Component original = nonWrapping().deserialize(input);
+            modified = modifier.apply(original);
+        }
+        return new ComponentText(modified);
     }
 
 
@@ -116,7 +133,7 @@ public class TextAdapter implements ModInitializer {
      * @param ident The Identifier to convert
      * @return The equivalent data as a Key
      */
-    public static @PolyNull Key toKey(@PolyNull Identifier ident) {
+    public static @PolyNull Key adapt(@PolyNull final Identifier ident) {
         if (ident == null) {
             return null;
         }
@@ -130,25 +147,11 @@ public class TextAdapter implements ModInitializer {
      * @param key The Key to convert
      * @return The equivalent data as an Identifier
      */
-    public static @PolyNull Identifier toIdentifier(@PolyNull Key key) {
+    public static @PolyNull Identifier adapt(@PolyNull final Key key) {
         if (key == null) {
             return null;
         }
         return new Identifier(key.namespace(), key.value());
-    }
-
-    public static GameMessageS2CPacket createChatPacket(Component text, MessageType type) {
-        return new GameMessageS2CPacket(text().serialize(text), type);
-    }
-
-    private static final EnumSet<TitleS2CPacket.Action> ALLOWED_ACTIONS
-            = EnumSet.of(TitleS2CPacket.Action.TITLE, TitleS2CPacket.Action.SUBTITLE, TitleS2CPacket.Action.ACTIONBAR);
-
-    public static TitleS2CPacket createTitlePacket(TitleS2CPacket.Action action, Component text) {
-        if (!ALLOWED_ACTIONS.contains(action)) {
-            throw new IllegalArgumentException("Action provided was not one of supported actions " + ALLOWED_ACTIONS);
-        }
-        return new TitleS2CPacket(action, text().serialize(text));
     }
 
     /// Mod adapter implementation

@@ -34,7 +34,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-public class AdventureBossBar extends ServerBossBar implements BossBar {
+class AdventureBossBar extends ServerBossBar implements BossBar {
     private Set<Flag> flags = new HashSet<>();
 
     public AdventureBossBar(Component text, BossBar.Color color, BossBar.Overlay style) {
@@ -43,7 +43,7 @@ public class AdventureBossBar extends ServerBossBar implements BossBar {
 
     @Override
     public @NonNull Component name() {
-        return TextAdapter.text().deserialize(getName());
+        return TextAdapter.adapt(getName());
     }
 
     @Override

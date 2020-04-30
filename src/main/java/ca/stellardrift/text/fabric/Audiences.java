@@ -37,11 +37,11 @@ import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -116,10 +116,10 @@ public class Audiences {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
-    static class OnlinePlayersAudience implements FabricAudience {
+    static final class OnlinePlayersAudience implements FabricAudience {
         private final Predicate<ServerPlayerEntity> playerFilter;
-        private final Set<CommandOutput> unknownOthers;
         private final Set<Audience> others;
+        private final Set<CommandOutput> unknownOthers;
 
         OnlinePlayersAudience(Predicate<ServerPlayerEntity> playerFilter, Set<Audience> others, Set<CommandOutput> unknownOthers) {
             this.playerFilter = playerFilter;
@@ -166,7 +166,7 @@ public class Audiences {
 
             Iterator<ServerPlayerEntity> it = getOnlinePlayers().iterator();
             if (it.hasNext()) {
-                GameMessageS2CPacket pkt = TextAdapter.createChatPacket(text, type);
+                GameMessageS2CPacket pkt = new GameMessageS2CPacket(TextAdapter.adapt(text), type);
                 while (it.hasNext()) {
                     ServerPlayerEntity player = it.next();
                     if (playerFilter.test(player)) {
@@ -174,13 +174,20 @@ public class Audiences {
                     }
                 }
             }
+            others.forEach(aud -> {
+                if (aud instanceof FabricAudience) {
+                    ((FabricAudience) aud).message(MessageType.SYSTEM, text);
+                } else {
+                    aud.message(text);
+                }
+            });
         }
 
         @Override
         public void title(TitleS2CPacket.Action field, Component text) {
             Iterator<ServerPlayerEntity> it = getOnlinePlayers().iterator();
             if (it.hasNext()) {
-                TitleS2CPacket pkt = TextAdapter.createTitlePacket(field, text);
+                TitleS2CPacket pkt = new TitleS2CPacket(field, TextAdapter.adapt(text));
                 while (it.hasNext()) {
                     ServerPlayerEntity player = it.next();
                     if (playerFilter.test(player)) {
@@ -188,11 +195,13 @@ public class Audiences {
                     }
                 }
             }
-
+            if (field == TitleS2CPacket.Action.ACTIONBAR) {
+                others.forEach(aud -> aud.showActionBar(text));
+            }
         }
     }
 
-    static class MultiAudience implements FabricAudience {
+    static final class MultiAudience implements FabricAudience {
         private final Set<ServerPlayerEntity> players;
         private final Set<Audience> audiences;
         private final Set<CommandOutput> others;
@@ -238,7 +247,7 @@ public class Audiences {
         public void stopSound(@NonNull SoundStop stop) {
             if (!players.isEmpty()) {
                 Sound.Source src = stop.source();
-                StopSoundS2CPacket pkt = new StopSoundS2CPacket(TextAdapter.toIdentifier(stop.sound()),
+                StopSoundS2CPacket pkt = new StopSoundS2CPacket(TextAdapter.adapt(stop.sound()),
                         src == null ? null : GameEnums.SOUND_SOURCE.toMinecraft(src));
                 players.forEach(it -> it.networkHandler.sendPacket(pkt));
             }
@@ -254,9 +263,11 @@ public class Audiences {
                 title(TitleS2CPacket.Action.ACTIONBAR, text);
                 return;
             }
+            @MonotonicNonNull Text mcText = null;
 
             if (!players.isEmpty()) {
-                GameMessageS2CPacket pkt = TextAdapter.createChatPacket(text, type);
+                mcText = TextAdapter.adapt(text);
+                GameMessageS2CPacket pkt = new GameMessageS2CPacket(TextAdapter.adapt(text), type);
                 for (ServerPlayerEntity ply : players) {
                     ply.networkHandler.sendPacket(pkt);
                 }
@@ -265,15 +276,18 @@ public class Audiences {
                 audiences.forEach(it -> it.message(text));
             }
             if (!others.isEmpty()) {
-                final Text mcText = TextAdapter.text().serialize(text);
-                others.forEach(it -> it.sendSystemMessage(mcText));
+                if (mcText == null) {
+                    mcText = TextAdapter.adapt(text);
+                }
+                final Text finalMcText = mcText;
+                others.forEach(it -> it.sendSystemMessage(finalMcText));
             }
         }
 
         @Override
         public void title(TitleS2CPacket.Action field, Component text) {
             if (!players.isEmpty()) {
-                TitleS2CPacket pkt = TextAdapter.createTitlePacket(field, text);
+                TitleS2CPacket pkt = new TitleS2CPacket(field, TextAdapter.adapt(text));
                 for (ServerPlayerEntity ply : players) {
                     ply.networkHandler.sendPacket(pkt);
                 }

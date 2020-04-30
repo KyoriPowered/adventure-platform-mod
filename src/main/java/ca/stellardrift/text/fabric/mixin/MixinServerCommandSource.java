@@ -58,7 +58,7 @@ public abstract class MixinServerCommandSource implements ComponentCommandSource
         }
 
         if (sendToOps && getOutput().shouldBroadcastConsoleToOps() && !silent) {
-            this.sendToOps(TextAdapter.text().serialize(text));
+            this.sendToOps(TextAdapter.adapt(text));
         }
     }
 

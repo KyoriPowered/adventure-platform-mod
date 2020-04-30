@@ -24,7 +24,6 @@ package ca.stellardrift.text.fabric;
 import com.google.common.collect.ImmutableList;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
@@ -47,7 +46,7 @@ public final class ComponentText implements Text {
 
     @Override
     public Style getStyle() {
-        return TextAdapter.textNonWrapping().style(this.wrapped.style());
+        return TextAdapter.nonWrapping().style(this.wrapped.style(), false);
     }
 
     @Override
@@ -57,7 +56,11 @@ public final class ComponentText implements Text {
 
     @Override
     public String asString() {
-        return asString(this.wrapped);
+        if (this.wrapped instanceof TextComponent) {
+            return ((TextComponent) this.wrapped).content();
+        } else {
+            return TextAdapter.nonWrapping().toText(this.wrapped).asString();
+        }
     }
 
     @Override
@@ -74,12 +77,12 @@ public final class ComponentText implements Text {
 
     @Override
     public MutableText copy() {
-        return TextAdapter.textNonWrapping().toText(this.wrapped);
+        return TextAdapter.nonWrapping().toText(this.wrapped);
     }
 
     @Override
     public MutableText shallowCopy() {
-        return TextAdapter.textNonWrapping().serialize(this.wrapped);
+        return TextAdapter.nonWrapping().serialize(this.wrapped);
     }
 
     @Override
@@ -93,14 +96,14 @@ public final class ComponentText implements Text {
     }
 
     // reimplement visitor methods but without creating a wrapper ComponentText instance
-    
+
     private static <T> Optional<T> visit(Component comp, StyledVisitor<T> visitor, Style style) {
-        final Style filledStyle = TextAdapter.textNonWrapping().styleWithParent(comp.style(), style);
+        final Style filledStyle = TextAdapter.nonWrapping().styleWithParent(comp.style(), style, false);
         Optional<T> ret = visitSelf(comp, visitor, filledStyle);
         if (ret.isPresent()) {
             return ret;
         }
-        
+
         for (Component child : comp.children()) {
             ret = visit(child, visitor, filledStyle);
             if (ret.isPresent()) {
@@ -110,13 +113,13 @@ public final class ComponentText implements Text {
 
         return Optional.empty();
     }
-    
+
     private static <T> Optional<T> visit(Component comp, Visitor<T> visitor) {
         Optional<T> ret = visitSelf(comp, visitor);
         if (ret.isPresent()) {
             return ret;
         }
-        
+
         for (Component child : comp.children()) {
             Optional<T> response = visit(child, visitor);
             if (response.isPresent()) {
@@ -127,26 +130,37 @@ public final class ComponentText implements Text {
         return Optional.empty();
     }
 
+    /**
+     * Visit the provided component. For TextComponents we can provide
+     * an accurate string, but for anything more complicated we delegate to the game.
+     *
+     * @param comp    The component to represent
+     * @param visitor callback to handle the string content
+     * @param style   applicable style for the text
+     * @return an optional that is present to terminate the visit
+     */
     private static <T> Optional<T> visitSelf(Component comp, StyledVisitor<T> visitor, Style style) {
-        return visitor.accept(style, asString(comp));
-    }
-
-    private static <T> Optional<T> visitSelf(Component comp, Visitor<T> visitor) {
-        return visitor.accept(asString(comp));
+        if (comp instanceof TextComponent) {
+            return visitor.accept(style, ((TextComponent) comp).content());
+        } else {
+            return TextAdapter.nonWrapping().toText(comp).visitSelf(visitor, style);
+        }
     }
 
     /**
-     * Create a shallow string representation of the component. For text components, we can provide
-     * an accurate string, but for anything more complicated we delegate to the game.
+     * Visit the provided component in an unstyled manner
      *
-     * @param comp The component to represent
-     * @return a string
+     * @param comp The component to visit
+     * @param visitor The visitor to use
+     * @param <T> the type of the returned optional
+     * @return an optional that if present will terminate the visit
+     * @see #visitSelf(Component, StyledVisitor, Style) for details on how specific component types are handled
      */
-    private static String asString(Component comp) {
+    private static <T> Optional<T> visitSelf(Component comp, Visitor<T> visitor) {
         if (comp instanceof TextComponent) {
-            return ((TextComponent) comp).content();
+            return visitor.accept(((TextComponent) comp).content());
         } else {
-            return TextAdapter.textNonWrapping().toText(comp).asString();
+            return TextAdapter.nonWrapping().toText(comp).visitSelf(visitor);
         }
     }
 }

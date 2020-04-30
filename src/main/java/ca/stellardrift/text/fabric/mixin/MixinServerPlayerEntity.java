@@ -21,7 +21,6 @@
 
 package ca.stellardrift.text.fabric.mixin;
 
-import ca.stellardrift.text.fabric.AdventureBossBar;
 import ca.stellardrift.text.fabric.FabricAudience;
 import ca.stellardrift.text.fabric.GameEnums;
 import ca.stellardrift.text.fabric.TextAdapter;
@@ -30,6 +29,7 @@ import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.SoundStop;
 import net.kyori.adventure.text.Component;
+import net.minecraft.entity.boss.ServerBossBar;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.MessageType;
 import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
@@ -75,28 +75,28 @@ public abstract class MixinServerPlayerEntity extends PlayerEntity implements Fa
         if (type == MessageType.GAME_INFO) {
             title(TitleS2CPacket.Action.ACTIONBAR, text);
         } else {
-            networkHandler.sendPacket(new GameMessageS2CPacket(TextAdapter.text().serialize(text), type));
+            networkHandler.sendPacket(new GameMessageS2CPacket(TextAdapter.adapt(text), type));
         }
     }
 
     @Override
     public void title(TitleS2CPacket.Action field, Component text) {
-        networkHandler.sendPacket(new TitleS2CPacket(field, TextAdapter.text().serialize(text)));
+        networkHandler.sendPacket(new TitleS2CPacket(field, TextAdapter.adapt(text)));
     }
 
     @Override
     public void showBossBar(@NonNull BossBar bar) {
-        ((AdventureBossBar) bar).addPlayer((ServerPlayerEntity) (Object) this);
+        ((ServerBossBar) bar).addPlayer((ServerPlayerEntity) (Object) this);
     }
 
     @Override
     public void hideBossBar(@NonNull BossBar bar) {
-        ((AdventureBossBar) bar).removePlayer((ServerPlayerEntity) (Object) this);
+        ((ServerBossBar) bar).removePlayer((ServerPlayerEntity) (Object) this);
     }
 
     @Override
     public void playSound(@NonNull Sound sound) {
-        this.networkHandler.sendPacket(new PlaySoundIdS2CPacket(TextAdapter.toIdentifier(sound.name()),
+        this.networkHandler.sendPacket(new PlaySoundIdS2CPacket(TextAdapter.adapt(sound.name()),
                 GameEnums.SOUND_SOURCE.toMinecraft(sound.source()), this.getPos(), sound.volume(), sound.pitch()));
     }
 
@@ -104,6 +104,6 @@ public abstract class MixinServerPlayerEntity extends PlayerEntity implements Fa
     public void stopSound(@NonNull SoundStop stop) {
         Sound.@Nullable Source src = stop.source();
         @Nullable SoundCategory cat = src == null ? null : GameEnums.SOUND_SOURCE.toMinecraft(src);
-        this.networkHandler.sendPacket(new StopSoundS2CPacket(TextAdapter.toIdentifier(stop.sound()), cat));
+        this.networkHandler.sendPacket(new StopSoundS2CPacket(TextAdapter.adapt(stop.sound()), cat));
     }
 }

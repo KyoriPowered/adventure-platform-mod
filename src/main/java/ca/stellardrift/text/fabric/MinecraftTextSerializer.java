@@ -38,7 +38,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.ListIterator;
 
-import static ca.stellardrift.text.fabric.TextAdapter.toKey;
+import static ca.stellardrift.text.fabric.TextAdapter.adapt;
 
 class MinecraftTextSerializer implements ComponentSerializer<Component, Component, Text> {
 
@@ -79,28 +79,10 @@ class MinecraftTextSerializer implements ComponentSerializer<Component, Componen
     }
 
     Style style(net.kyori.adventure.text.format.Style style, boolean deep) {
-        @Nullable ClickEvent click = style.clickEvent();
-        @Nullable HoverEvent<?> hover = style.hoverEvent();
-        @Nullable Key font = style.font();
-        return AccessorStyle.createNew(
-                style.color() == null ? null : net.minecraft.text.TextColor.fromRgb(style.color().value()),
-                toBoolean(style.decoration(TextDecoration.BOLD)),
-                toBoolean(style.decoration(TextDecoration.ITALIC)),
-                toBoolean(style.decoration(TextDecoration.UNDERLINED)),
-                toBoolean(style.decoration(TextDecoration.STRIKETHROUGH)),
-                toBoolean(style.decoration(TextDecoration.OBFUSCATED)),
-                click == null ? null : new net.minecraft.text.ClickEvent(GameEnums.CLICK_EVENT.toMinecraft(click.action()), click.value()),
-                hover == null ? null : GameEnums.adaptHoverEvent(hover, deep),
-                style.insertion(),
-                font == null ? null : TextAdapter.toIdentifier(font)
-        );
+        return styleWithParent(style, Style.EMPTY, deep);
     }
 
-    Style styleWithParent(net.kyori.adventure.text.format.Style style, Style parent) {
-        if (parent == Style.EMPTY) {
-            return style(style);
-        }
-
+    Style styleWithParent(net.kyori.adventure.text.format.Style style, Style parent, boolean deep) {
         final AccessorStyle pAccess = (AccessorStyle) parent;
         @Nullable ClickEvent click = style.clickEvent();
         @Nullable HoverEvent<?> hover = style.hoverEvent();
@@ -113,9 +95,9 @@ class MinecraftTextSerializer implements ComponentSerializer<Component, Componen
                 toBoolean(style.decoration(TextDecoration.STRIKETHROUGH), pAccess.getStrikethrough()),
                 toBoolean(style.decoration(TextDecoration.OBFUSCATED), pAccess.getObfuscated()),
                 click == null ? parent.getClickEvent() : new net.minecraft.text.ClickEvent(GameEnums.CLICK_EVENT.toMinecraft(click.action()), click.value()),
-                hover == null ? parent.getHoverEvent() : null,
+                hover == null ? parent.getHoverEvent() : GameEnums.adaptHoverEvent(hover, deep),
                 style.insertion() == null ? parent.getInsertion() : style.insertion(),
-                font == null ? parent.getFont() : TextAdapter.toIdentifier(font)
+                font == null ? parent.getFont() : TextAdapter.adapt(font)
         );
     }
 
@@ -160,7 +142,7 @@ class MinecraftTextSerializer implements ComponentSerializer<Component, Componen
             }
 
             if (access.adventure$getFont() != null) {
-                b.font(TextAdapter.toKey(access.adventure$getFont()));
+                b.font(TextAdapter.adapt(access.adventure$getFont()));
             }
         });
     }
@@ -178,11 +160,6 @@ class MinecraftTextSerializer implements ComponentSerializer<Component, Componen
     private void applyStyle(MutableText text, net.kyori.adventure.text.format.Style format) {
         text.setStyle(style(format));
     }
-
-    private @Nullable Boolean toBoolean(TextDecoration.State state) {
-        return toBoolean(state, null);
-    }
-    
     private @Nullable Boolean toBoolean(TextDecoration.State state, @Nullable Boolean parentVal) {
         switch (state) {
             case TRUE: return true;
@@ -206,7 +183,7 @@ class MinecraftTextSerializer implements ComponentSerializer<Component, Componen
             } else if (text instanceof NbtText.EntityNbtText) {
                 builder = EntityNbtComponent.builder().selector(((NbtText.EntityNbtText) nbt).getSelector());
             } else if (text instanceof NbtText.StorageNbtText) {
-                builder = StorageNbtComponent.builder().storage(toKey(((NbtText.StorageNbtText) text).getId()));
+                builder = StorageNbtComponent.builder().storage(adapt(((NbtText.StorageNbtText) text).getId()));
             } else {
                 throw unknownType(text);
             }
@@ -251,7 +228,7 @@ class MinecraftTextSerializer implements ComponentSerializer<Component, Componen
             } else if (component instanceof EntityNbtComponent) {
                 return new NbtText.EntityNbtText(nbt.nbtPath(), nbt.interpret(), ((EntityNbtComponent) nbt).selector());
             } else if (component instanceof StorageNbtComponent) {
-                return new NbtText.StorageNbtText(nbt.nbtPath(), nbt.interpret(), TextAdapter.toIdentifier(((StorageNbtComponent) nbt).storage()));
+                return new NbtText.StorageNbtText(nbt.nbtPath(), nbt.interpret(), TextAdapter.adapt(((StorageNbtComponent) nbt).storage()));
             } else {
                 throw unknownType(component);
             }
