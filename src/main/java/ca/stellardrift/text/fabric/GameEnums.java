@@ -27,34 +27,65 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.ClickEvent;
+import net.minecraft.text.HoverEvent;
 import net.minecraft.util.Formatting;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class GameEnums {
-    public static final MappedEnum<Formatting, NamedTextColor> TEXT_COLOR
-            = MappedEnum.named(Formatting.class, Formatting::byName, Formatting::getName,
+    public static final MappedRegistry<Formatting, NamedTextColor> TEXT_COLOR
+            = MappedRegistry.named(Formatting.class, Formatting::byName,
             NamedTextColor.class, NamedTextColor.NAMES);
 
-/*
-    public static final MappedEnum<HoverEvent.class_5247, net.kyori.adventure.text.event.HoverEvent.Action> HOVER_EVENT
-            = MappedEnum.named(HoverEvent.class_5247.class, HoverEvent.class_5247::byName, HoverEvent.class_5247::getName,
-            net.kyori.adventure.text.event.HoverEvent.Action.class, net.kyori.adventure.text.event.HoverEvent.Action.NAMES);
-*/
-
-    public static final MappedEnum<ClickEvent.Action, net.kyori.adventure.text.event.ClickEvent.Action> CLICK_EVENT
-            = MappedEnum.named(ClickEvent.Action.class, ClickEvent.Action::byName, ClickEvent.Action::getName,
+    public static final MappedRegistry<ClickEvent.Action, net.kyori.adventure.text.event.ClickEvent.Action> CLICK_EVENT
+            = MappedRegistry.named(ClickEvent.Action.class, ClickEvent.Action::byName,
             net.kyori.adventure.text.event.ClickEvent.Action.class, net.kyori.adventure.text.event.ClickEvent.Action.NAMES);
 
-    public static final MappedEnum<BossBar.Color, net.kyori.adventure.bossbar.BossBar.Color> BOSS_BAR_COLOR
-            = MappedEnum.named(BossBar.Color.class, BossBar.Color::byName, BossBar.Color::getName,
+    public static final MappedRegistry<BossBar.Color, net.kyori.adventure.bossbar.BossBar.Color> BOSS_BAR_COLOR
+            = MappedRegistry.named(BossBar.Color.class, BossBar.Color::byName,
             net.kyori.adventure.bossbar.BossBar.Color.class, net.kyori.adventure.bossbar.BossBar.Color.NAMES);
 
-    public static final MappedEnum<BossBar.Style, Overlay> BOSS_BAR_OVERLAY
-            = MappedEnum.named(BossBar.Style.class, BossBar.Style::byName, BossBar.Style::getName,
+    public static final MappedRegistry<BossBar.Style, Overlay> BOSS_BAR_OVERLAY
+            = MappedRegistry.named(BossBar.Style.class, BossBar.Style::byName,
             Overlay.class, Overlay.NAMES);
 
-    public static final MappedEnum<SoundCategory, Sound.Source> SOUND_SOURCE
-            = MappedEnum.named(SoundCategory.class, SoundCategory::valueOf, SoundCategory::getName,
+    public static final MappedRegistry<SoundCategory, Sound.Source> SOUND_SOURCE
+            = MappedRegistry.named(SoundCategory.class, SoundCategory::valueOf,
             Sound.Source.class, Sound.Source.NAMES);
+
+
+    @SuppressWarnings({"unchecked", "SuspiciousMethodCalls"})
+    static <Adv> HoverEvent adaptHoverEvent(net.kyori.adventure.text.event.HoverEvent<Adv> adventure, boolean deep) {
+        HoverEventAdapter<?, Adv> adapter = (HoverEventAdapter<?, Adv>) MC_TO_ADAPTER.get(adventure.action());
+        if (adapter == null) {
+            throw new IllegalArgumentException("Unknown action type " + adventure.action());
+        }
+        return adapter.adapt(adventure, deep);
+    }
+
+    @SuppressWarnings({"unchecked", "SuspiciousMethodCalls"})
+    static <Adv> net.kyori.adventure.text.event.HoverEvent<Adv> adaptHoverEvent(HoverEvent event) {
+        HoverEventAdapter<?, Adv> adapter = (HoverEventAdapter<?, Adv>) ADV_TO_ADAPTER.get(event.getAction());
+        if (adapter == null) {
+            throw new IllegalArgumentException("Unknown action type " + event.getAction());
+        }
+        return adapter.adapt(event);
+    }
+
+    private static final Map<HoverEvent.Action<?>, HoverEventAdapter<?, ?>> MC_TO_ADAPTER = new HashMap<>();
+    private static final Map<net.kyori.adventure.text.event.HoverEvent.Action<?>, HoverEventAdapter<?, ?>> ADV_TO_ADAPTER = new HashMap<>();
+
+    private static <Adv, Mc> void register(HoverEventAdapter<Mc, Adv> adapter) {
+        MC_TO_ADAPTER.put(adapter.getMcAction(), adapter);
+        ADV_TO_ADAPTER.put(adapter.getAdventureAction(), adapter);
+    }
+
+    static {
+        register(new HoverEventAdapter.ShowEntity());
+        register(new HoverEventAdapter.ShowItem());
+        register(new HoverEventAdapter.ShowText());
+    }
 
     private GameEnums() {
     }

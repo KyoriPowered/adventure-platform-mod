@@ -22,17 +22,20 @@
 package ca.stellardrift.text.fabric;
 
 import net.kyori.adventure.util.NameMap;
-import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import static java.util.Objects.requireNonNull;
 
 /**
- * Represents a mapping between an enum controlled by Minecraft, and an enum controlled by
+ * Represents a mapping between an enum-like set of values controlled by Minecraft, and an enum-like set of values controlled by
  * Adventure.
  * <p>
  * Because these enums both refer to known constants, it is relatively easy to generate an automated
@@ -43,32 +46,44 @@ import static java.util.Objects.requireNonNull;
  * @param <Mc>  The Minecraft type
  * @param <Adv> The Adventure type
  */
-public class MappedEnum<Mc extends Enum<Mc>, Adv extends Enum<Adv>> {
-    private final EnumMap<Mc, Adv> mcToAdventure;
-    private final EnumMap<Adv, Mc> adventureToMc;
+public class MappedRegistry<Mc, Adv> {
+    private final Map<Mc, Adv> mcToAdventure;
+    private final Map<Adv, Mc> adventureToMc;
 
-    static <Mc extends Enum<Mc>, Adv extends Enum<Adv>> MappedEnum<Mc, Adv> named(Class<Mc> mcType, Function<String, @Nullable Mc> mcByName, Function<Mc, @Nullable String> mcToName, Class<Adv> advType, final NameMap<Adv> names) {
-        return new MappedEnum<>(mcType, mcByName, mcToName, advType, names::name, name -> names.value(name).orElse(null));
+    static <Mc extends Enum<Mc>, Adv extends Enum<Adv>> MappedRegistry<Mc, Adv> named(Class<Mc> mcType, Function<String, @Nullable Mc> mcByName, Class<Adv> advType, final NameMap<Adv> names) {
+        return new MappedRegistry.OfEnum<>(mcType, mcByName, advType, names::name);
     }
 
-    MappedEnum(Class<Mc> mcType, Function<String, @Nullable Mc> mcByName, Function<Mc, @Nullable String> mcToName, Class<Adv> advType, Function<Adv, @Nullable String> advToName, Function<String, @Nullable Adv> advByName) {
-        mcToAdventure = new EnumMap<>(mcType);
-        adventureToMc = new EnumMap<>(advType);
+    static <Mc, Adv> MappedRegistry<Mc, Adv> named(Function<String, @Nullable Mc> mcByName, Supplier<Iterable<Mc>> mcValues, final NameMap<Adv> names, final Supplier<Iterable<Adv>> adventureValues) {
+        return new MappedRegistry<>(mcByName, mcValues, names::name, adventureValues);
+    }
 
-        for (Adv advElement : advType.getEnumConstants()) {
+    protected Map<Mc, Adv> newMcMap() {
+        return new HashMap<>();
+    }
+
+    protected Map<Adv, Mc> newAdventureMap() {
+        return new HashMap<>();
+    }
+
+    MappedRegistry(Function<String, @Nullable Mc> mcByName, Supplier<Iterable<Mc>> mcValues, Function<Adv, @Nullable String> advToName, Supplier<Iterable<Adv>> adventureValues) {
+        mcToAdventure = newMcMap();
+        adventureToMc = newAdventureMap();
+
+        for (Adv advElement : adventureValues.get()) {
             @Nullable String mcName = advToName.apply(advElement);
             if (mcName == null) {
-                throw new ExceptionInInitializerError("Unable to get name for enum element " + advElement + " of " + advType);
+                throw new ExceptionInInitializerError("Unable to get name for enum-like element " + advElement);
             }
             @Nullable Mc mcElement = mcByName.apply(mcName);
             if (mcElement == null) {
-                throw new ExceptionInInitializerError("Unknown MC " + mcType + "  for Adventure " + mcName);
+                throw new ExceptionInInitializerError("Unknown MC element  for Adventure " + mcName);
             }
             mcToAdventure.put(mcElement, advElement);
             adventureToMc.put(advElement, mcElement);
         }
 
-        checkCoverage(adventureToMc, advType);
+        checkCoverage(mcToAdventure, mcValues.get());
     }
 
     /**
@@ -76,13 +91,13 @@ public class MappedEnum<Mc extends Enum<Mc>, Adv extends Enum<Adv>> {
      * IllegalStateException} if there is a missing value
      *
      * @param toCheck   The map to check
-     * @param enumClass The enum class to verify coverage
+     * @param values The values to verify are keys of the provided map
      * @param <T>       The type of enum
      */
-    private static <T extends Enum<T>> void checkCoverage(Map<T, ?> toCheck, Class<T> enumClass) throws IllegalStateException {
-        for (T value : enumClass.getEnumConstants()) {
+    private static <T> void checkCoverage(Map<T, ?> toCheck, Iterable<T> values) throws IllegalStateException {
+        for (T value : values) {
             if (!toCheck.containsKey(value)) {
-                throw new IllegalStateException("Unmapped " + enumClass.getSimpleName() + " element '" + value + '!');
+                throw new IllegalStateException("Unmapped " + value.getClass().getSimpleName() + " element '" + value + '!');
             }
         }
     }
@@ -105,5 +120,26 @@ public class MappedEnum<Mc extends Enum<Mc>, Adv extends Enum<Adv>> {
      */
     public Mc toMinecraft(Adv advItem) {
         return adventureToMc.get(advItem);
+    }
+
+    static class OfEnum<Mc extends Enum<Mc>, Adv extends Enum<Adv>> extends MappedRegistry<Mc, Adv> {
+        private final Class<Mc> mcType;
+        private final Class<Adv> advType;
+
+        OfEnum(Class<Mc> mcType, Function<String, @Nullable Mc> mcByName, Class<Adv> advType, Function<Adv, @Nullable String> advToName) {
+            super(mcByName, () -> Arrays.asList(mcType.getEnumConstants()), advToName, () -> Arrays.asList(advType.getEnumConstants()));
+            this.mcType = mcType;
+            this.advType = advType;
+        }
+
+        @Override
+        protected Map<Mc, Adv> newMcMap() {
+            return new EnumMap<>(mcType);
+        }
+
+        @Override
+        protected Map<Adv, Mc> newAdventureMap() {
+            return new EnumMap<>(advType);
+        }
     }
 }

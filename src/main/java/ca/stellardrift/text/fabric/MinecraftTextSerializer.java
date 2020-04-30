@@ -21,7 +21,6 @@
 
 package ca.stellardrift.text.fabric;
 
-import ca.stellardrift.text.fabric.mixin.AccessorHoverEventShowItem;
 import ca.stellardrift.text.fabric.mixin.AccessorStyle;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonPrimitive;
@@ -34,8 +33,6 @@ import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.ComponentSerializer;
 import net.kyori.adventure.text.serializer.gson.BlockNbtComponentPosSerializer;
 import net.minecraft.text.*;
-import net.minecraft.text.HoverEvent.Action;
-import net.minecraft.util.registry.Registry;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -78,6 +75,10 @@ class MinecraftTextSerializer implements ComponentSerializer<Component, Componen
     }
 
     Style style(net.kyori.adventure.text.format.Style style) {
+        return style(style, true);
+    }
+
+    Style style(net.kyori.adventure.text.format.Style style, boolean deep) {
         @Nullable ClickEvent click = style.clickEvent();
         @Nullable HoverEvent<?> hover = style.hoverEvent();
         @Nullable Key font = style.font();
@@ -89,7 +90,7 @@ class MinecraftTextSerializer implements ComponentSerializer<Component, Componen
                 toBoolean(style.decoration(TextDecoration.STRIKETHROUGH)),
                 toBoolean(style.decoration(TextDecoration.OBFUSCATED)),
                 click == null ? null : new net.minecraft.text.ClickEvent(GameEnums.CLICK_EVENT.toMinecraft(click.action()), click.value()),
-                null,
+                hover == null ? null : GameEnums.adaptHoverEvent(hover, deep),
                 style.insertion(),
                 font == null ? null : TextAdapter.toIdentifier(font)
         );
@@ -151,7 +152,7 @@ class MinecraftTextSerializer implements ComponentSerializer<Component, Componen
 
             if (mcStyle.getHoverEvent() != null) {
                 net.minecraft.text.HoverEvent ev = mcStyle.getHoverEvent();
-                b.hoverEvent(convertHoverEvent(ev));
+                b.hoverEvent(GameEnums.adaptHoverEvent(ev));
             }
 
             if (mcStyle.getInsertion() != null) {
@@ -176,30 +177,6 @@ class MinecraftTextSerializer implements ComponentSerializer<Component, Componen
 
     private void applyStyle(MutableText text, net.kyori.adventure.text.format.Style format) {
         text.setStyle(style(format));
-    }
-
-    private HoverEvent<?> convertHoverEvent(net.minecraft.text.HoverEvent mcEvent) {
-        Action<?> action = mcEvent.getAction();
-        if (action == Action.SHOW_TEXT) {
-            return HoverEvent.showText(deserialize(mcEvent.getValue(Action.SHOW_TEXT)));
-        } else if (action == Action.SHOW_ENTITY) {
-            return HoverEvent.showEntity(convertShowEntity(mcEvent.getValue(Action.SHOW_ENTITY)));
-        } else if (action == Action.SHOW_ITEM) {
-            return HoverEvent.showItem(convertShowItem(mcEvent.getValue(Action.SHOW_ITEM)));
-        } else {
-            throw unknownType(action);
-        }
-    }
-
-    private HoverEvent.ShowEntity convertShowEntity(net.minecraft.text.HoverEvent.EntityContent mcEntity) {
-        final Key type = TextAdapter.toKey(Registry.ENTITY_TYPE.getId(mcEntity.entityType));
-        final @Nullable Text text = mcEntity.name;
-        return new HoverEvent.ShowEntity(type, mcEntity.uuid, text == null ? null : deserialize(text));
-    }
-
-    private HoverEvent.ShowItem convertShowItem(net.minecraft.text.HoverEvent.ItemStackContent mcItem) {
-        AccessorHoverEventShowItem mc = (AccessorHoverEventShowItem) mcItem;
-        return new HoverEvent.ShowItem(TextAdapter.toKey(Registry.ITEM.getId(mc.getItem())), mc.getCount());
     }
 
     private @Nullable Boolean toBoolean(TextDecoration.State state) {
