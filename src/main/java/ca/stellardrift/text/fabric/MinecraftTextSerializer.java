@@ -43,6 +43,7 @@ import net.kyori.text.format.TextColor;
 import net.kyori.text.format.TextDecoration;
 import net.kyori.text.serializer.ComponentSerializer;
 import net.kyori.text.serializer.gson.BlockNbtComponentPosSerializer;
+import net.kyori.text.serializer.gson.GsonComponentSerializer;
 import net.minecraft.text.KeybindText;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.NbtText;
@@ -64,38 +65,55 @@ import static ca.stellardrift.text.fabric.TextAdapter.toKey;
 public class MinecraftTextSerializer implements ComponentSerializer<Component, Component, Text> {
     public static final MinecraftTextSerializer INSTANCE = new MinecraftTextSerializer();
     private static final EnumBiMap<TextColor, Formatting> TEXT_COLORS = EnumBiMap.create(TextColor.class, Formatting.class);
-    private static final EnumBiMap<HoverEvent.Action, net.minecraft.text.HoverEvent.Action> HOVER_EVENTS = EnumBiMap.create(HoverEvent.Action.class, net.minecraft.text.HoverEvent.Action.class);
-    private static final EnumBiMap<ClickEvent.Action, net.minecraft.text.ClickEvent.Action> CLICK_EVENTS = EnumBiMap.create(ClickEvent.Action.class, net.minecraft.text.ClickEvent.Action.class);
+    private static EnumBiMap<HoverEvent.Action, net.minecraft.text.HoverEvent.Action> HOVER_EVENTS;
+    private static EnumBiMap<ClickEvent.Action, net.minecraft.text.ClickEvent.Action> CLICK_EVENTS;
+    private static boolean fallbackMode;
 
     static {
-        // Colors
-        for (Formatting fmt : Formatting.values()) {
-            if (fmt.isColor()) {
-                TextColor color = TextColor.NAMES.value(fmt.getName()).orElseThrow(() -> new ExceptionInInitializerError("Unknown MC Formatting color " + fmt));
-                TEXT_COLORS.put(color, fmt);
-            }
-        }
-        checkCoverage(TEXT_COLORS, TextColor.class);
+        try {
+            CLICK_EVENTS = EnumBiMap.create(ClickEvent.Action.class, net.minecraft.text.ClickEvent.Action.class);
+            HOVER_EVENTS = EnumBiMap.create(HoverEvent.Action.class, net.minecraft.text.HoverEvent.Action.class);
 
-        // Click events
-        for (ClickEvent.Action action : ClickEvent.Action.values()) {
-            net.minecraft.text.ClickEvent.Action mcAction = net.minecraft.text.ClickEvent.Action.byName(action.name().toLowerCase(Locale.ROOT));
-            if (mcAction == null) {
-                throw new ExceptionInInitializerError("Unknown MC ClickAction for " + action.name());
-            }
-            CLICK_EVENTS.put(action, mcAction);
-        }
-        checkCoverage(CLICK_EVENTS.inverse(), net.minecraft.text.ClickEvent.Action.class);
 
-        // Hover events
-        for (HoverEvent.Action action : HoverEvent.Action.values()) {
-            net.minecraft.text.HoverEvent.Action mcAction = net.minecraft.text.HoverEvent.Action.byName(action.name().toLowerCase(Locale.ROOT));
-            if (mcAction == null) {
-                throw new ExceptionInInitializerError("Unknown MC HoverAction for " + action.name());
+            // Colors
+            for (Formatting fmt : Formatting.values()) {
+                if (fmt.isColor()) {
+                    TextColor color = TextColor.NAMES.value(fmt.getName()).orElseThrow(() -> new ExceptionInInitializerError("Unknown MC Formatting color " + fmt));
+                    TEXT_COLORS.put(color, fmt);
+                }
             }
-            HOVER_EVENTS.put(action, mcAction);
+            checkCoverage(TEXT_COLORS, TextColor.class);
+
+            // Click events
+            for (ClickEvent.Action action : ClickEvent.Action.values()) {
+                net.minecraft.text.ClickEvent.Action mcAction = net.minecraft.text.ClickEvent.Action.byName(action.name().toLowerCase(Locale.ROOT));
+                if (mcAction == null) {
+                    throw new ExceptionInInitializerError("Unknown MC ClickAction for " + action.name());
+                }
+                CLICK_EVENTS.put(action, mcAction);
+            }
+            checkCoverage(CLICK_EVENTS.inverse(), net.minecraft.text.ClickEvent.Action.class);
+
+            // Hover events
+            for (HoverEvent.Action action : HoverEvent.Action.values()) {
+                net.minecraft.text.HoverEvent.Action mcAction = net.minecraft.text.HoverEvent.Action.byName(action.name().toLowerCase(Locale.ROOT));
+                if (mcAction == null) {
+                    throw new ExceptionInInitializerError("Unknown MC HoverAction for " + action.name());
+                }
+                HOVER_EVENTS.put(action, mcAction);
+            }
+            checkCoverage(HOVER_EVENTS.inverse(), net.minecraft.text.HoverEvent.Action.class);
+            fallbackMode = false;
+        } catch (Throwable e) {
+            enterFallbackMode(e);
         }
-        checkCoverage(HOVER_EVENTS.inverse(), net.minecraft.text.HoverEvent.Action.class);
+    }
+
+    private static void enterFallbackMode(Throwable t) {
+        if (!fallbackMode) {
+            TextAdapter.LOGGER.error("Unable to initialize text adapter, entering fallback mode. Is there an update available?", t);
+            fallbackMode = true;
+        }
     }
 
     /**
@@ -121,26 +139,40 @@ public class MinecraftTextSerializer implements ComponentSerializer<Component, C
     @NonNull
     @Override
     public Component deserialize(@NonNull Text input) {
-        ComponentBuilder<?, ?> builder = toBuilder(input);
-        applyStyle(builder, input.getStyle());
+        if (!fallbackMode) {
+            try {
+                ComponentBuilder<?, ?> builder = toBuilder(input);
+                applyStyle(builder, input.getStyle());
 
-        for (Text child : input.getSiblings()) {
-            builder.append(deserialize(child));
+                for (Text child : input.getSiblings()) {
+                    builder.append(deserialize(child));
+                }
+                return builder.build();
+            } catch (Throwable t) {
+                enterFallbackMode(t);
+            }
         }
-        return builder.build();
+        return GsonComponentSerializer.INSTANCE.deserialize(Text.Serializer.toJson(input));
     }
 
     @NonNull
     @Override
     public Text serialize(@NonNull Component component) {
-        Text text = toText(component);
-        applyStyle(text, component.style());
+        if (!fallbackMode) {
+            try {
+                Text text = toText(component);
+                applyStyle(text, component.style());
 
-        for (Component child : component.children()) {
-            text.append(serialize(child));
+                for (Component child : component.children()) {
+                    text.append(serialize(child));
+                }
+
+                return text;
+            } catch (Throwable t) {
+                enterFallbackMode(t);
+            }
         }
-
-        return text;
+        return Text.Serializer.fromJson(GsonComponentSerializer.INSTANCE.serialize(component));
     }
 
     /**

@@ -43,7 +43,15 @@ public interface ComponentCommandOutput extends CommandOutput {
      * @return The original output, if it supports components directly, or a wrapper that converts
      */
     static ComponentCommandOutput of(CommandOutput out) {
-        return out == null ? null : new Wrapping(out);
+        if (out == null) {
+            return null;
+        }
+
+        if (out instanceof ComponentCommandOutput) {
+            return (ComponentCommandOutput) out;
+        }
+
+        return new Wrapping(out);
     }
 
     /**

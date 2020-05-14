@@ -31,15 +31,17 @@ import net.kyori.text.Component;
 import net.kyori.text.TextComponent;
 import net.kyori.text.format.TextColor;
 import net.kyori.text.format.TextDecoration;
-import net.minecraft.client.network.packet.ChatMessageS2CPacket;
-import net.minecraft.client.network.packet.TitleS2CPacket;
 import net.minecraft.network.MessageType;
+import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
+import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.EnumSet;
 
@@ -54,6 +56,7 @@ import static net.kyori.text.TextComponent.*;
  * @see ComponentCommandSource for sending to a single command source
  */
 public class TextAdapter implements ModInitializer {
+    static final Logger LOGGER = LogManager.getLogger();
 
     /**
      * Convert Minecraft-internal {@link Text} objects to Kyori-{@link Component Components}

@@ -25,7 +25,7 @@ import ca.stellardrift.text.fabric.ComponentHoldingPacket;
 import ca.stellardrift.text.fabric.TextAdapter;
 import net.kyori.text.Component;
 import net.kyori.text.serializer.gson.GsonComponentSerializer;
-import net.minecraft.client.network.packet.TitleS2CPacket;
+import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.text.Text;
 import net.minecraft.util.PacketByteBuf;
 import org.spongepowered.asm.mixin.Mixin;
