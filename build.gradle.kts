@@ -7,7 +7,7 @@ import net.fabricmc.loom.task.RemapSourcesJarTask
 plugins {
     id("ca.stellardrift.opinionated") version "2.0"
     id("ca.stellardrift.opinionated.publish") version "2.0"
-    id("fabric-loom") version "0.2.7-SNAPSHOT"
+    id("fabric-loom") version "0.4.3"
 }
 
 val versionSelf = "1.0.1"
