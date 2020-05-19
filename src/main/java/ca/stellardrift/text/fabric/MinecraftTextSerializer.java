@@ -152,7 +152,7 @@ public class MinecraftTextSerializer implements ComponentSerializer<Component, C
                 enterFallbackMode(t);
             }
         }
-        return GsonComponentSerializer.INSTANCE.deserialize(Text.Serializer.toJson(input));
+        return FallbackSerializer.toComponent(input);
     }
 
     @NonNull
@@ -172,7 +172,7 @@ public class MinecraftTextSerializer implements ComponentSerializer<Component, C
                 enterFallbackMode(t);
             }
         }
-        return Text.Serializer.fromJson(GsonComponentSerializer.INSTANCE.serialize(component));
+        return (Text) FallbackSerializer.toText(component);
     }
 
     /**
