@@ -24,6 +24,8 @@ package ca.stellardrift.text.fabric;
 import ca.stellardrift.text.fabric.mixin.AccessorStyle;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonPrimitive;
+import com.mojang.brigadier.StringReader;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.*;
 import net.kyori.adventure.text.event.ClickEvent;
@@ -31,7 +33,10 @@ import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.ComponentSerializer;
-import net.kyori.adventure.text.serializer.gson.BlockNbtComponentPosSerializer;
+import net.minecraft.command.arguments.BlockPosArgumentType;
+import net.minecraft.command.arguments.DefaultPosArgument;
+import net.minecraft.command.arguments.LookingPosArgument;
+import net.minecraft.command.arguments.PosArgument;
 import net.minecraft.text.*;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -174,9 +179,11 @@ class MinecraftTextSerializer implements ComponentSerializer<Component, Componen
             NbtText nbt = (NbtText) text;
             NbtComponentBuilder<?, ?> builder;
             if (text instanceof NbtText.BlockNbtText) {
+                // TODO: Implement
                 @Nullable String pos = ((NbtText.BlockNbtText) nbt).getPos();
                 if (pos != null) {
-                    builder = BlockNbtComponent.builder().pos(BlockNbtComponentPosSerializer.INSTANCE.deserialize(new JsonPrimitive(pos), null, null)); // TODO: Make this less bad
+                    builder = applyPos(BlockNbtComponent.builder(), pos);
+                    //builder = BlockNbtComponent.builder().pos(BlockNbtComponentPosSerializer.INSTANCE.deserialize(new JsonPrimitive(pos), null, null)); // TODO: Make this less bad
                 } else {
                     builder = BlockNbtComponent.builder();
                 }
@@ -218,6 +225,25 @@ class MinecraftTextSerializer implements ComponentSerializer<Component, Componen
         } else {
             throw unknownType(text);
         }
+    }
+
+    private BlockNbtComponent.Builder applyPos(BlockNbtComponent.Builder builder, String posString) { // TODO: Implement this conversion
+        final PosArgument arg;
+
+        try {
+            arg = new BlockPosArgumentType().parse(new StringReader(posString));
+        } catch(CommandSyntaxException e) {
+            return builder;
+        }
+
+        if (arg instanceof LookingPosArgument) {
+            final LookingPosArgument looking = (LookingPosArgument) arg;
+            // builder.pos(BlockNbtComponent.LocalPos.of());
+        } else if (arg instanceof DefaultPosArgument) {
+            final DefaultPosArgument def = (DefaultPosArgument) arg;
+            // builder.pos(BlockNbtComponent.WorldPos.of())
+        }
+        return builder;
     }
 
     MutableText toText(Component component) {

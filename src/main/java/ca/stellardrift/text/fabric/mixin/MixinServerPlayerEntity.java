@@ -25,10 +25,13 @@ import ca.stellardrift.text.fabric.FabricAudience;
 import ca.stellardrift.text.fabric.GameEnums;
 import ca.stellardrift.text.fabric.TextAdapter;
 import com.mojang.authlib.GameProfile;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.SoundStop;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.title.Title;
 import net.minecraft.entity.boss.ServerBossBar;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.MessageType;
@@ -40,6 +43,7 @@ import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -68,12 +72,12 @@ public abstract class MixinServerPlayerEntity extends PlayerEntity implements Fa
      * @param text The text to send
      */
     @Override
-    public void message(Component text) {
-        message(MessageType.SYSTEM, text);
+    public void sendMessage(Component text) {
+        sendMessage(MessageType.SYSTEM, text);
     }
 
     @Override
-    public void message(MessageType type, Component text, UUID source) {
+    public void sendMessage(MessageType type, Component text, UUID source) {
         if (type == MessageType.GAME_INFO) {
             title(TitleS2CPacket.Action.ACTIONBAR, text);
         } else {
@@ -108,4 +112,40 @@ public abstract class MixinServerPlayerEntity extends PlayerEntity implements Fa
         @Nullable SoundCategory cat = src == null ? null : GameEnums.SOUND_SOURCE.toMinecraft(src);
         this.networkHandler.sendPacket(new StopSoundS2CPacket(TextAdapter.adapt(stop.sound()), cat));
     }
+
+    @Override
+    public void showTitle(final @NonNull Title title) {
+        final @Nullable Text titleText = TextAdapter.adapt(title.title());
+        final @Nullable Text subtitle = TextAdapter.adapt(title.subtitle());
+
+        if (titleText != null) {
+            this.networkHandler.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.TITLE, titleText));
+        }
+        if (subtitle != null) {
+            this.networkHandler.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.SUBTITLE, titleText));
+        }
+
+        final int fadeIn = ticks(title.fadeInTime());
+        final int fadeOut = ticks(title.fadeOutTime());
+        final int dwell = ticks(title.stayTime());
+        if (fadeIn != -1 || fadeOut != -1 || dwell != -1) {
+            this.networkHandler.sendPacket(new TitleS2CPacket(fadeIn, dwell, fadeOut));
+        }
+
+    }
+
+    private int ticks(Duration duration) {
+        return (int) duration.get(ChronoUnit.SECONDS) * 20;
+    }
+
+    @Override
+    public void clearTitle() {
+        this.networkHandler.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.CLEAR, null));
+    }
+
+    @Override
+    public void resetTitle() {
+        this.networkHandler.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.RESET, null));
+    }
+
 }

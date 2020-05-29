@@ -28,6 +28,7 @@ import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.SoundStop;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.title.Title;
 import net.minecraft.network.MessageType;
 import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.StopSoundS2CPacket;
@@ -52,9 +53,9 @@ public class Audiences {
         // no
     }
 
-    public static FabricAudience console() {
+    public static Audience console() {
         final @Nullable MinecraftServer server = TextAdapter.server();
-        return server == null ? NoOpAudience.INSTANCE : (FabricAudience) server;
+        return server == null ? Audience.empty() : (FabricAudience) server;
     }
 
     public static FabricAudience of(ServerPlayerEntity player) {
@@ -144,11 +145,6 @@ public class Audiences {
         }
 
         @Override
-        public void showActionBar(@NonNull Component message) {
-            title(TitleS2CPacket.Action.ACTIONBAR, message);
-        }
-
-        @Override
         public void playSound(@NonNull Sound sound) {
 
         }
@@ -159,7 +155,22 @@ public class Audiences {
         }
 
         @Override
-        public void message(MessageType type, Component text, UUID source) {
+        public void showTitle(@NonNull final Title title) {
+
+        }
+
+        @Override
+        public void clearTitle() {
+
+        }
+
+        @Override
+        public void resetTitle() {
+
+        }
+
+        @Override
+        public void sendMessage(MessageType type, Component text, UUID source) {
             if (type == MessageType.GAME_INFO) {
                 title(TitleS2CPacket.Action.ACTIONBAR, text);
                 return;
@@ -177,9 +188,9 @@ public class Audiences {
             }
             others.forEach(aud -> {
                 if (aud instanceof FabricAudience) {
-                    ((FabricAudience) aud).message(MessageType.SYSTEM, text);
+                    ((FabricAudience) aud).sendMessage(MessageType.SYSTEM, text);
                 } else {
-                    aud.message(text);
+                    aud.sendMessage(text);
                 }
             });
         }
@@ -197,7 +208,7 @@ public class Audiences {
                 }
             }
             if (field == TitleS2CPacket.Action.ACTIONBAR) {
-                others.forEach(aud -> aud.showActionBar(text));
+                others.forEach(aud -> aud.sendActionBar(text));
             }
         }
     }
@@ -259,7 +270,22 @@ public class Audiences {
         }
 
         @Override
-        public void message(MessageType type, Component text, UUID source) {
+        public void showTitle(@NonNull final Title title) {
+
+        }
+
+        @Override
+        public void clearTitle() {
+
+        }
+
+        @Override
+        public void resetTitle() {
+
+        }
+
+        @Override
+        public void sendMessage(MessageType type, Component text, UUID source) {
             if (type == MessageType.GAME_INFO) {
                 title(TitleS2CPacket.Action.ACTIONBAR, text);
                 return;
@@ -276,9 +302,9 @@ public class Audiences {
             if (!audiences.isEmpty()) {
                 audiences.forEach(it -> {
                     if (it instanceof FabricAudience) {
-                        ((FabricAudience) it).message(type, text, source);
+                        ((FabricAudience) it).sendMessage(type, text, source);
                     } else {
-                        it.message(text);
+                        it.sendMessage(text);
                     }
                 });
             }
@@ -304,51 +330,10 @@ public class Audiences {
                     if (it instanceof FabricAudience) {
                         ((FabricAudience) it).title(field, text);
                     } else if (field == TitleS2CPacket.Action.ACTIONBAR) {
-                        it.showActionBar(text);
+                        it.sendActionBar(text);
                     }
                 });
             }
-        }
-    }
-
-    /**
-     * An audience that does nothing
-     */
-    static final class NoOpAudience implements FabricAudience {
-        static final NoOpAudience INSTANCE = new NoOpAudience();
-
-        private NoOpAudience() {}
-
-        @Override
-        public void message(MessageType type, Component text, UUID source) {
-        }
-
-        @Override
-        public void title(TitleS2CPacket.Action field, Component text) {
-        }
-
-        @Override
-        public void message(@NonNull Component message) {
-        }
-
-        @Override
-        public void showBossBar(@NonNull BossBar bar) {
-        }
-
-        @Override
-        public void hideBossBar(@NonNull BossBar bar) {
-        }
-
-        @Override
-        public void showActionBar(@NonNull Component message) {
-        }
-
-        @Override
-        public void playSound(@NonNull Sound sound) {
-        }
-
-        @Override
-        public void stopSound(@NonNull SoundStop stop) {
         }
     }
 }

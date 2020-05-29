@@ -24,5 +24,5 @@ package ca.stellardrift.text.fabric;
 import net.kyori.adventure.text.Component;
 
 public interface PlainAudience {
-    void message(Component text);
+    void sendMessage(Component text);
 }

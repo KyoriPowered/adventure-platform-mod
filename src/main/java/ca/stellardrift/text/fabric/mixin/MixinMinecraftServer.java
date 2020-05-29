@@ -50,13 +50,13 @@ public abstract class MixinMinecraftServer implements FabricAudience {
      * @param text The text to send
      */
     @Override
-    public void message(MessageType type, Component text) {
+    public void sendMessage(MessageType type, Component text) {
         LOGGER.info(TextAdapter.plain().serialize(text)); // TODO: Eventually will we support formatted output?
     }
 
     @Override
     public void title(TitleS2CPacket.Action field, Component text) {
-        message(text);
+        this.sendMessage(text);
     }
 
     @Override

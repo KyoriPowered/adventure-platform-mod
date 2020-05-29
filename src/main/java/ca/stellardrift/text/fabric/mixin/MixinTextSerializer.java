@@ -50,6 +50,6 @@ public class MixinTextSerializer {
     @Inject(method = "method_10878", at = @At(value = "INVOKE_ASSIGN", target = "com/google/gson/GsonBuilder.disableHtmlEscaping()Lcom/google/gson/GsonBuilder;", remap = false),
             locals = LocalCapture.CAPTURE_FAILEXCEPTION, remap = false)
     private static void injectKyoriGson(CallbackInfoReturnable<Gson> cir, GsonBuilder gson) {
-        GsonComponentSerializer.populate(gson);
+        GsonComponentSerializer.GSON_BUILDER_CONFIGURER.accept(gson);
     }
 }

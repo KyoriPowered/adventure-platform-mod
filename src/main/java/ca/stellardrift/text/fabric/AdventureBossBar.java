@@ -105,7 +105,17 @@ class AdventureBossBar extends ServerBossBar implements BossBar {
     public @NonNull BossBar removeFlags(@NonNull Flag @NonNull... flags) {
         return setFlags(false, flags);
     }
-    
+
+    @Override
+    public @NonNull BossBar addListener(@NonNull final Listener listener) {
+        return null;
+    }
+
+    @Override
+    public @NonNull BossBar removeListener(@NonNull final Listener listener) {
+        return null;
+    }
+
     private BossBar setFlags(boolean value, Flag... flags) {
         boolean changed = false;
         

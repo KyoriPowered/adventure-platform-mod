@@ -40,8 +40,8 @@ public interface FabricAudience extends Audience, PlainAudience {
      * @param text The contents of the message
      * @param type The type of message to send.
      */
-    default void message(MessageType type, Component text) {
-        message(type, text, Util.field_25140);
+    default void sendMessage(MessageType type, Component text) {
+        sendMessage(type, text, Util.field_25140);
     }
 
     /**
@@ -54,7 +54,7 @@ public interface FabricAudience extends Audience, PlainAudience {
      * @param type The type of message to send.
      * @param source The UUID of the message's sender, or {@link Util#field_25140}
      */
-    void message(MessageType type, Component text, UUID source);
+    void sendMessage(MessageType type, Component text, UUID source);
 
     /**
      * Send a field of a title as a component.
@@ -67,12 +67,12 @@ public interface FabricAudience extends Audience, PlainAudience {
     void title(TitleS2CPacket.Action field, Component text);
 
     @Override
-    default void message(@NonNull Component message) {
-        message(MessageType.SYSTEM, message);
+    default void sendMessage(@NonNull Component message) {
+        sendMessage(MessageType.SYSTEM, message);
     }
 
     @Override
-    default void showActionBar(@NonNull Component message) {
+    default void sendActionBar(@NonNull Component message) {
         title(TitleS2CPacket.Action.ACTIONBAR, message);
     }
 }
