@@ -64,12 +64,12 @@ class AdventureBossBar extends ServerBossBar implements BossBar {
     }
 
     @Override
-    public BossBar.@NonNull Color color() {
+    public BossBar.Color color() {
         return GameEnums.BOSS_BAR_COLOR.toAdventure(getColor());
     }
 
     @Override
-    public @NonNull BossBar color(BossBar.@NonNull Color color) {
+    public @NonNull BossBar color(BossBar.Color color) {
         setColor(GameEnums.BOSS_BAR_COLOR.toMinecraft(color));
         return this;
     }
@@ -172,7 +172,11 @@ class AdventureBossBar extends ServerBossBar implements BossBar {
 
         BossBarS2CPacket pkt = new BossBarS2CPacket(BossBarS2CPacket.Type.ADD, this);
         for (ServerPlayerEntity ply : players) {
-            ply.networkHandler.sendPacket(pkt, handler -> getMutablePlayers().add(ply));
+            ply.networkHandler.sendPacket(pkt, handler -> {
+                if (handler.isSuccess()) {
+                    getMutablePlayers().add(ply);
+                }
+            });
         }
     }
 

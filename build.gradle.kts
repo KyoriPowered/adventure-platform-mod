@@ -1,6 +1,6 @@
+
 import ca.stellardrift.build.apiInclude
 import ca.stellardrift.build.implementationInclude
-import ca.stellardrift.build.isRelease
 import net.fabricmc.loom.task.RemapJarTask
 import net.fabricmc.loom.task.RemapSourcesJarTask
 
@@ -65,19 +65,13 @@ bintray {
     pkg.version.released = null
 }
 
-val gitInfo by tasks.registering {
-    doLast {
-        println("Is release: ${isRelease()}")
-        val tags = grgit.repository.jgit.tagList().call()
-        val tagName = tags?.lastOrNull()?.name
-        println("Tag name: $tagName")
-        val grgitTag = grgit.resolve.toTag(tagName)
-        println("JGit tag: ${tags.lastOrNull()}")
-        println("Grgit tag: $grgitTag")
-        println("Commit: " + grgit.head())
-        println("Tag is commit: ${grgitTag.commit == grgit.head()}")
-    }
+tasks.withType(Javadoc::class).configureEach {
+    val options = this.options
+    if (options is StandardJavadocDocletOptions) {
+        options.links(
 
+        )
+    }
 }
 
 opinionated {

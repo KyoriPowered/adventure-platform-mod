@@ -25,7 +25,10 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.minecraft.network.MessageType;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
+import net.minecraft.util.Util;
 import org.checkerframework.checker.nullness.qual.NonNull;
+
+import java.util.UUID;
 
 public interface FabricAudience extends Audience, PlainAudience {
     /**
@@ -37,7 +40,21 @@ public interface FabricAudience extends Audience, PlainAudience {
      * @param text The contents of the message
      * @param type The type of message to send.
      */
-    void message(MessageType type, Component text);
+    default void message(MessageType type, Component text) {
+        message(type, text, Util.field_25140);
+    }
+
+    /**
+     * Send a chat message to this player.
+     *
+     * Messages of type {@link MessageType#GAME_INFO} should be
+     * sent as action bar titles to preserve formatting.
+     *
+     * @param text The contents of the message
+     * @param type The type of message to send.
+     * @param source The UUID of the message's sender, or {@link Util#field_25140}
+     */
+    void message(MessageType type, Component text, UUID source);
 
     /**
      * Send a field of a title as a component.

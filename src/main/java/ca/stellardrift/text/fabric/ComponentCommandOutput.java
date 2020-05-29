@@ -24,7 +24,10 @@ package ca.stellardrift.text.fabric;
 import net.kyori.adventure.text.Component;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.text.Text;
+import net.minecraft.util.Util;
 import org.checkerframework.checker.nullness.qual.Nullable;
+
+import java.util.UUID;
 
 /**
  * Represents a {@link CommandOutput} that can receive {@link Component} messages
@@ -35,7 +38,17 @@ public interface ComponentCommandOutput extends CommandOutput {
      *
      * @param text The text to send
      */
-    void message(Component text);
+    default void message(Component text) {
+        message(text, Util.field_25140);
+    }
+
+    /**
+     * Send a message to this receiver as a component
+     *
+     * @param text The text to send
+     * @param source The source who sent the message, or {@link Util#field_25140} for console
+     */
+    void message(Component text, UUID source);
 
     /**
      * Convert a standard {@link CommandOutput} into a ComponentCommandOutput.
@@ -67,13 +80,13 @@ public interface ComponentCommandOutput extends CommandOutput {
          * @param text The text to send
          */
         @Override
-        public void message(Component text) {
-           sendSystemMessage(TextAdapter.adapt(text));
+        public void message(Component text, UUID source) {
+           sendSystemMessage(TextAdapter.adapt(text), source);
         }
 
         @Override
-        public void sendSystemMessage(Text text) {
-            getOriginal().sendSystemMessage(text);
+        public void sendSystemMessage(Text message, UUID source) {
+           getOriginal().sendSystemMessage(message, source);
         }
 
         @Override

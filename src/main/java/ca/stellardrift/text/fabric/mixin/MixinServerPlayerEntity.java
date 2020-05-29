@@ -47,6 +47,8 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
+import java.util.UUID;
+
 @Mixin(ServerPlayerEntity.class)
 public abstract class MixinServerPlayerEntity extends PlayerEntity implements FabricAudience {
     @Shadow
@@ -71,11 +73,11 @@ public abstract class MixinServerPlayerEntity extends PlayerEntity implements Fa
     }
 
     @Override
-    public void message(MessageType type, Component text) {
+    public void message(MessageType type, Component text, UUID source) {
         if (type == MessageType.GAME_INFO) {
             title(TitleS2CPacket.Action.ACTIONBAR, text);
         } else {
-            networkHandler.sendPacket(new GameMessageS2CPacket(TextAdapter.adapt(text), type));
+            networkHandler.sendPacket(new GameMessageS2CPacket(TextAdapter.adapt(text), type, source));
         }
     }
 

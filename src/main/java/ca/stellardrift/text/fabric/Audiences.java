@@ -44,6 +44,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.UUID;
 import java.util.function.Predicate;
 
 public class Audiences {
@@ -158,7 +159,7 @@ public class Audiences {
         }
 
         @Override
-        public void message(MessageType type, Component text) {
+        public void message(MessageType type, Component text, UUID source) {
             if (type == MessageType.GAME_INFO) {
                 title(TitleS2CPacket.Action.ACTIONBAR, text);
                 return;
@@ -166,7 +167,7 @@ public class Audiences {
 
             Iterator<ServerPlayerEntity> it = getOnlinePlayers().iterator();
             if (it.hasNext()) {
-                GameMessageS2CPacket pkt = new GameMessageS2CPacket(TextAdapter.adapt(text), type);
+                GameMessageS2CPacket pkt = new GameMessageS2CPacket(TextAdapter.adapt(text), type, source);
                 while (it.hasNext()) {
                     ServerPlayerEntity player = it.next();
                     if (playerFilter.test(player)) {
@@ -258,7 +259,7 @@ public class Audiences {
         }
 
         @Override
-        public void message(MessageType type, Component text) {
+        public void message(MessageType type, Component text, UUID source) {
             if (type == MessageType.GAME_INFO) {
                 title(TitleS2CPacket.Action.ACTIONBAR, text);
                 return;
@@ -267,20 +268,26 @@ public class Audiences {
 
             if (!players.isEmpty()) {
                 mcText = TextAdapter.adapt(text);
-                GameMessageS2CPacket pkt = new GameMessageS2CPacket(TextAdapter.adapt(text), type);
+                GameMessageS2CPacket pkt = new GameMessageS2CPacket(TextAdapter.adapt(text), type, source);
                 for (ServerPlayerEntity ply : players) {
                     ply.networkHandler.sendPacket(pkt);
                 }
             }
             if (!audiences.isEmpty()) {
-                audiences.forEach(it -> it.message(text));
+                audiences.forEach(it -> {
+                    if (it instanceof FabricAudience) {
+                        ((FabricAudience) it).message(type, text, source);
+                    } else {
+                        it.message(text);
+                    }
+                });
             }
             if (!others.isEmpty()) {
                 if (mcText == null) {
                     mcText = TextAdapter.adapt(text);
                 }
                 final Text finalMcText = mcText;
-                others.forEach(it -> it.sendSystemMessage(finalMcText));
+                others.forEach(it -> it.sendSystemMessage(finalMcText, source));
             }
         }
 
@@ -313,7 +320,7 @@ public class Audiences {
         private NoOpAudience() {}
 
         @Override
-        public void message(MessageType type, Component text) {
+        public void message(MessageType type, Component text, UUID source) {
         }
 
         @Override
