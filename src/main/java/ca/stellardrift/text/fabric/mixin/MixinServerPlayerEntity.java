@@ -79,14 +79,14 @@ public abstract class MixinServerPlayerEntity extends PlayerEntity implements Fa
     @Override
     public void sendMessage(MessageType type, Component text, UUID source) {
         if (type == MessageType.GAME_INFO) {
-            title(TitleS2CPacket.Action.ACTIONBAR, text);
+            showTitle(TitleS2CPacket.Action.ACTIONBAR, text);
         } else {
             networkHandler.sendPacket(new GameMessageS2CPacket(TextAdapter.adapt(text), type, source));
         }
     }
 
     @Override
-    public void title(TitleS2CPacket.Action field, Component text) {
+    public void showTitle(TitleS2CPacket.Action field, Component text) {
         networkHandler.sendPacket(new TitleS2CPacket(field, TextAdapter.adapt(text)));
     }
 

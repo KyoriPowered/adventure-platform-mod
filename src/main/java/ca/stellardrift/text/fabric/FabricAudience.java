@@ -64,7 +64,7 @@ public interface FabricAudience extends Audience, PlainAudience {
      * {@link TitleS2CPacket.Action#SUBTITLE}, or {@link TitleS2CPacket.Action#ACTIONBAR}
      * @param text The text to set as the title
      */
-    void title(TitleS2CPacket.Action field, Component text);
+    void showTitle(TitleS2CPacket.Action field, Component text);
 
     @Override
     default void sendMessage(@NonNull Component message) {
@@ -73,6 +73,6 @@ public interface FabricAudience extends Audience, PlainAudience {
 
     @Override
     default void sendActionBar(@NonNull Component message) {
-        title(TitleS2CPacket.Action.ACTIONBAR, message);
+        showTitle(TitleS2CPacket.Action.ACTIONBAR, message);
     }
 }

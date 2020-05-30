@@ -25,7 +25,6 @@ import net.kyori.adventure.text.Component;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.UUID;
 
@@ -38,8 +37,8 @@ public interface ComponentCommandOutput extends CommandOutput {
      *
      * @param text The text to send
      */
-    default void message(Component text) {
-        message(text, Util.field_25140);
+    default void sendMessage(Component text) {
+        sendMessage(text, Util.field_25140);
     }
 
     /**
@@ -48,7 +47,7 @@ public interface ComponentCommandOutput extends CommandOutput {
      * @param text The text to send
      * @param source The source who sent the message, or {@link Util#field_25140} for console
      */
-    void message(Component text, UUID source);
+    void sendMessage(Component text, UUID source);
 
     /**
      * Convert a standard {@link CommandOutput} into a ComponentCommandOutput.
@@ -57,6 +56,10 @@ public interface ComponentCommandOutput extends CommandOutput {
      * @return The original output, if it supports components directly, or a wrapper that converts
      */
     static ComponentCommandOutput of(CommandOutput out) {
+        if (out instanceof ComponentCommandOutput) {
+            return (ComponentCommandOutput) out;
+        }
+
         return out == null ? null : new Wrapping(out);
     }
 
@@ -80,7 +83,7 @@ public interface ComponentCommandOutput extends CommandOutput {
          * @param text The text to send
          */
         @Override
-        public void message(Component text, UUID source) {
+        public void sendMessage(Component text, UUID source) {
            sendSystemMessage(TextAdapter.adapt(text), source);
         }
 

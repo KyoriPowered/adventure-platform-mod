@@ -21,7 +21,6 @@
 
 package ca.stellardrift.text.fabric;
 
-import com.google.common.collect.ImmutableList;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.minecraft.text.MutableText;
@@ -33,8 +32,8 @@ import java.util.List;
 import java.util.Optional;
 
 public final class ComponentText implements Text {
+    private @MonotonicNonNull Text converted;
     private final Component wrapped;
-    private volatile @MonotonicNonNull List<Text> siblings;
 
     ComponentText(final Component wrapped) {
         this.wrapped = wrapped;
@@ -44,9 +43,18 @@ public final class ComponentText implements Text {
         return this.wrapped;
     }
 
+    Text deepConverted() {
+        Text converted = this.converted;
+        if (converted == null) {
+            converted = this.converted = TextAdapter.nonWrapping().serialize(this.wrapped);
+        }
+        return converted;
+    }
+
     @Override
     public Style getStyle() {
-        return TextAdapter.nonWrapping().style(this.wrapped.style(), false);
+        return deepConverted().getStyle();
+        //return TextAdapter.nonWrapping().style(this.wrapped.style(), false);
     }
 
     @Override
@@ -59,108 +67,32 @@ public final class ComponentText implements Text {
         if (this.wrapped instanceof TextComponent) {
             return ((TextComponent) this.wrapped).content();
         } else {
-            return TextAdapter.nonWrapping().toText(this.wrapped).asString();
+            return deepConverted().asString();
         }
     }
 
     @Override
     public List<Text> getSiblings() {
-        if (this.siblings == null) {
-            final ImmutableList.Builder<Text> ret = ImmutableList.builder();
-            for (Component child : this.wrapped.children()) {
-                ret.add(new ComponentText(child));
-            }
-            return this.siblings = ret.build();
-        }
-        return this.siblings;
+        return deepConverted().getSiblings();
     }
 
     @Override
     public MutableText copy() {
-        return TextAdapter.nonWrapping().toText(this.wrapped);
+        return deepConverted().copy();
     }
 
     @Override
     public MutableText shallowCopy() {
-        return TextAdapter.nonWrapping().serialize(this.wrapped);
+        return deepConverted().shallowCopy();
     }
 
     @Override
     public <T> Optional<T> visit(StyledVisitor<T> visitor, Style style) {
-        return visit(this.wrapped, visitor, style);
+        return deepConverted().visit(visitor, style);
     }
 
     @Override
     public <T> Optional<T> visit(Visitor<T> visitor) {
-        return visit(this.wrapped, visitor);
-    }
-
-    // reimplement visitor methods but without creating a wrapper ComponentText instance
-
-    private static <T> Optional<T> visit(Component comp, StyledVisitor<T> visitor, Style style) {
-        final Style filledStyle = TextAdapter.nonWrapping().styleWithParent(comp.style(), style, false);
-        Optional<T> ret = visitSelf(comp, visitor, filledStyle);
-        if (ret.isPresent()) {
-            return ret;
-        }
-
-        for (Component child : comp.children()) {
-            ret = visit(child, visitor, filledStyle);
-            if (ret.isPresent()) {
-                return ret;
-            }
-        }
-
-        return Optional.empty();
-    }
-
-    private static <T> Optional<T> visit(Component comp, Visitor<T> visitor) {
-        Optional<T> ret = visitSelf(comp, visitor);
-        if (ret.isPresent()) {
-            return ret;
-        }
-
-        for (Component child : comp.children()) {
-            Optional<T> response = visit(child, visitor);
-            if (response.isPresent()) {
-                return response;
-            }
-        }
-
-        return Optional.empty();
-    }
-
-    /**
-     * Visit the provided component. For TextComponents we can provide
-     * an accurate string, but for anything more complicated we delegate to the game.
-     *
-     * @param comp    The component to represent
-     * @param visitor callback to handle the string content
-     * @param style   applicable style for the text
-     * @return an optional that is present to terminate the visit
-     */
-    private static <T> Optional<T> visitSelf(Component comp, StyledVisitor<T> visitor, Style style) {
-        if (comp instanceof TextComponent) {
-            return visitor.accept(style, ((TextComponent) comp).content());
-        } else {
-            return TextAdapter.nonWrapping().toText(comp).visitSelf(visitor, style);
-        }
-    }
-
-    /**
-     * Visit the provided component in an unstyled manner
-     *
-     * @param comp The component to visit
-     * @param visitor The visitor to use
-     * @param <T> the type of the returned optional
-     * @return an optional that if present will terminate the visit
-     * @see #visitSelf(Component, StyledVisitor, Style) for details on how specific component types are handled
-     */
-    private static <T> Optional<T> visitSelf(Component comp, Visitor<T> visitor) {
-        if (comp instanceof TextComponent) {
-            return visitor.accept(((TextComponent) comp).content());
-        } else {
-            return TextAdapter.nonWrapping().toText(comp).visitSelf(visitor);
-        }
+        return deepConverted().visit(visitor);
     }
 }

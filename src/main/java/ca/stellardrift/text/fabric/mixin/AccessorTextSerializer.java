@@ -21,37 +21,16 @@
 
 package ca.stellardrift.text.fabric.mixin;
 
-import net.minecraft.text.ClickEvent;
-import net.minecraft.text.HoverEvent;
-import net.minecraft.text.Style;
-import net.minecraft.text.TextColor;
-import net.minecraft.util.Identifier;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import com.google.gson.Gson;
+import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
-import org.spongepowered.asm.mixin.gen.Invoker;
 
-@Mixin(Style.class)
-@DefaultQualifier(Nullable.class)
-public interface AccessorStyle {
-    @Accessor
-    Boolean getBold();
-    @Accessor
-    Boolean getItalic();
-    @Accessor
-    Boolean getUnderlined();
-    @Accessor
-    Boolean getStrikethrough();
-    @Accessor
-    Boolean getObfuscated();
+@Mixin(Text.Serializer.class)
+public interface AccessorTextSerializer {
 
-    @Accessor("font")
-    Identifier adventure$getFont();
-
-    @Invoker("<init>")
-    static @NonNull Style createNew(TextColor color, Boolean bold, Boolean italic, Boolean underline, Boolean strikethrough, Boolean obfuscated, ClickEvent click, HoverEvent hover, String insertion, Identifier font) {
-        throw new UnsupportedOperationException("Mixin replacement");
-    }
+  @Accessor
+  static Gson getGSON() {
+    throw new UnsupportedOperationException("Not mixed in");
+  }
 }

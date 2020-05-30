@@ -172,7 +172,7 @@ public class Audiences {
         @Override
         public void sendMessage(MessageType type, Component text, UUID source) {
             if (type == MessageType.GAME_INFO) {
-                title(TitleS2CPacket.Action.ACTIONBAR, text);
+                showTitle(TitleS2CPacket.Action.ACTIONBAR, text);
                 return;
             }
 
@@ -196,7 +196,7 @@ public class Audiences {
         }
 
         @Override
-        public void title(TitleS2CPacket.Action field, Component text) {
+        public void showTitle(TitleS2CPacket.Action field, Component text) {
             Iterator<ServerPlayerEntity> it = getOnlinePlayers().iterator();
             if (it.hasNext()) {
                 TitleS2CPacket pkt = new TitleS2CPacket(field, TextAdapter.adapt(text));
@@ -287,7 +287,7 @@ public class Audiences {
         @Override
         public void sendMessage(MessageType type, Component text, UUID source) {
             if (type == MessageType.GAME_INFO) {
-                title(TitleS2CPacket.Action.ACTIONBAR, text);
+                showTitle(TitleS2CPacket.Action.ACTIONBAR, text);
                 return;
             }
             @MonotonicNonNull Text mcText = null;
@@ -318,7 +318,7 @@ public class Audiences {
         }
 
         @Override
-        public void title(TitleS2CPacket.Action field, Component text) {
+        public void showTitle(TitleS2CPacket.Action field, Component text) {
             if (!players.isEmpty()) {
                 TitleS2CPacket pkt = new TitleS2CPacket(field, TextAdapter.adapt(text));
                 for (ServerPlayerEntity ply : players) {
@@ -328,7 +328,7 @@ public class Audiences {
             if (!audiences.isEmpty()) {
                 audiences.forEach(it -> {
                     if (it instanceof FabricAudience) {
-                        ((FabricAudience) it).title(field, text);
+                        ((FabricAudience) it).showTitle(field, text);
                     } else if (field == TitleS2CPacket.Action.ACTIONBAR) {
                         it.sendActionBar(text);
                     }

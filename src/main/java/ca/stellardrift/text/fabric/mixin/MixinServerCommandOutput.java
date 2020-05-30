@@ -34,7 +34,7 @@ public abstract class MixinServerCommandOutput implements ComponentCommandOutput
     @Shadow @Final private StringBuffer buffer;
 
     @Override
-    public void message(Component text) {
+    public void sendMessage(Component text) {
         this.buffer.append(TextAdapter.plain().serialize(text));
     }
 

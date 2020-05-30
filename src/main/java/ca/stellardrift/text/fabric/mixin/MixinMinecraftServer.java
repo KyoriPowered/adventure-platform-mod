@@ -22,11 +22,13 @@
 package ca.stellardrift.text.fabric.mixin;
 
 import ca.stellardrift.text.fabric.FabricAudience;
+import ca.stellardrift.text.fabric.PlainAudience;
 import ca.stellardrift.text.fabric.TextAdapter;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.SoundStop;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.title.Title;
 import net.minecraft.network.MessageType;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.server.MinecraftServer;
@@ -55,27 +57,28 @@ public abstract class MixinMinecraftServer implements FabricAudience {
     }
 
     @Override
-    public void title(TitleS2CPacket.Action field, Component text) {
+    public void showTitle(TitleS2CPacket.Action field, Component text) {
         this.sendMessage(text);
     }
 
     @Override
-    public void showBossBar(@NonNull BossBar bar) {
-        // no-op
-    }
+    public void showBossBar(@NonNull BossBar bar) {}
 
     @Override
-    public void hideBossBar(@NonNull BossBar bar) {
-        // no-op
-    }
+    public void hideBossBar(@NonNull BossBar bar) {}
 
     @Override
-    public void playSound(@NonNull Sound sound) {
-        // no-op
-    }
+    public void playSound(@NonNull Sound sound) {}
 
     @Override
-    public void stopSound(@NonNull SoundStop stop) {
-        // no-op
-    }
+    public void stopSound(@NonNull SoundStop stop) {}
+
+    @Override
+    public void showTitle(@NonNull final Title title) {}
+
+    @Override
+    public void clearTitle() { }
+
+    @Override
+    public void resetTitle() {}
 }

@@ -54,7 +54,7 @@ public abstract class MixinServerCommandSource implements ComponentCommandSource
     @Override
     public void sendFeedback(Component text, boolean sendToOps) {
         if (getOutput().shouldReceiveFeedback() && !silent) {
-            getOutput().message(text);
+            getOutput().sendMessage(text);
         }
 
         if (sendToOps && getOutput().shouldBroadcastConsoleToOps() && !silent) {
@@ -65,7 +65,7 @@ public abstract class MixinServerCommandSource implements ComponentCommandSource
     @Override
     public void sendError(Component text) {
         if (getOutput().shouldTrackOutput()) {
-            getOutput().message(text.color(NamedTextColor.RED));
+            getOutput().sendMessage(text.color(NamedTextColor.RED));
         }
     }
 

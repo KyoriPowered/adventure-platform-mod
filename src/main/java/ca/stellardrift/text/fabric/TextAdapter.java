@@ -21,20 +21,17 @@
 
 package ca.stellardrift.text.fabric;
 
+import java.util.function.Function;
+import java.util.function.UnaryOperator;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.ComponentBuilder;
 import net.kyori.adventure.text.KeybindComponent;
-import net.kyori.adventure.text.serializer.ComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
 import net.minecraft.client.options.KeyBinding;
-import net.minecraft.network.MessageType;
-import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
-import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -42,18 +39,13 @@ import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.checker.nullness.qual.PolyNull;
 
-import java.util.EnumSet;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.UnaryOperator;
-
 import static java.util.Objects.requireNonNull;
 
 /**
  * Adapter methods for converting text objects between Minecraft and Adventure types
  *
  * @see Audiences for ways to send messages to different groups of people, including players
- * @see ComponentCommandOutput#message(Component) for sending to a single user
+ * @see ComponentCommandOutput#sendMessage(Component) for sending to a single user
  * @see ComponentCommandSource for sending to a single command source
  */
 public class TextAdapter implements ModInitializer {
@@ -80,7 +72,7 @@ public class TextAdapter implements ModInitializer {
         } else {
             keybindNamer = KeybindComponent::keybind;
         }
-        PLAIN = new PlainComponentSerializer(keybindNamer, trans -> TEXT_NON_WRAPPING.toText(trans).asString());
+        PLAIN = new PlainComponentSerializer(keybindNamer, trans -> adapt(trans).asString());
     }
 
     /**
