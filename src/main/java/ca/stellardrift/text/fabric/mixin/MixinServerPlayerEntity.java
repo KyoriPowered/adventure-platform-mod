@@ -31,6 +31,7 @@ import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.SoundStop;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.title.Title;
 import net.minecraft.entity.boss.ServerBossBar;
 import net.minecraft.entity.player.PlayerEntity;
@@ -115,14 +116,12 @@ public abstract class MixinServerPlayerEntity extends PlayerEntity implements Fa
 
     @Override
     public void showTitle(final @NonNull Title title) {
-        final @Nullable Text titleText = TextAdapter.adapt(title.title());
-        final @Nullable Text subtitle = TextAdapter.adapt(title.subtitle());
 
-        if (titleText != null) {
-            this.networkHandler.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.TITLE, titleText));
+        if (!TextComponent.empty().equals(title.title())) {
+            this.networkHandler.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.TITLE, TextAdapter.adapt(title.title())));
         }
-        if (subtitle != null) {
-            this.networkHandler.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.SUBTITLE, titleText));
+        if (!TextComponent.empty().equals(title.subtitle())) {
+            this.networkHandler.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.SUBTITLE, TextAdapter.adapt(title.subtitle())));
         }
 
         final int fadeIn = ticks(title.fadeInTime());
@@ -131,7 +130,6 @@ public abstract class MixinServerPlayerEntity extends PlayerEntity implements Fa
         if (fadeIn != -1 || fadeOut != -1 || dwell != -1) {
             this.networkHandler.sendPacket(new TitleS2CPacket(fadeIn, dwell, fadeOut));
         }
-
     }
 
     private int ticks(Duration duration) {
