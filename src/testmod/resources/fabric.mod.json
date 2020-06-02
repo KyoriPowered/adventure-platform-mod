@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "id": "${project.rootProject.name.toLowerCase()}-testmod",
+  "version": "${project.version}",
+  "name": "${project.rootProject.name} Tester",
+
+  "authors": [
+    "zml"
+  ],
+  "contact": {
+    "homepage": "https://github.com/PEXPlugins/text-adapter-fabric",
+    "issues": "https://github.com/PEXPlugins/text-adapter-fabric/issues",
+    "sources": "https://github.com/PEXPlugins/text-adapter-fabric"
+  },
+
+  "license": "MIT",
+
+  "entrypoints": {
+    "main": [
+      {
+        "value":"ca.stellardrift.text.fabric.test.AdventureTester"
+      }
+    ]
+  },
+  "custom": {
+  },
+
+  "depends": {
+    "fabricloader": ">=0.4.0",
+    "text-adapter-fabric": "*",
+    "fabric": "*"
+  }
+}

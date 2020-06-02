@@ -1,4 +1,5 @@
 
+import ca.stellardrift.build.common.adventure
 import net.fabricmc.loom.task.RemapJarTask
 import net.fabricmc.loom.task.RemapSourcesJarTask
 
@@ -12,6 +13,7 @@ val versionMinecraft: String by project
 val versionAdventure: String by project
 val versionMappings: String by project
 val versionLoader: String by project
+val versionFabricApi: String by project
 
 group = "ca.stellardrift"
 version = "$versionSelf+${versionAdventure.replace("-SNAPSHOT", "")}"
@@ -23,10 +25,6 @@ repositories {
     maven {
         url = uri("https://oss.sonatype.org/content/groups/public/")
     }
-}
-
-fun DependencyHandler.adventure(comp: String, version: Any): String {
-    return "net.kyori:adventure-$comp:$version"
 }
 
 dependencies {
@@ -43,14 +41,26 @@ dependencies {
     minecraft("com.mojang:minecraft:$versionMinecraft")
     mappings("net.fabricmc:yarn:$versionMinecraft+build.$versionMappings:v2")
     modImplementation("net.fabricmc:fabric-loader:$versionLoader")
+
+    // Testmod TODO figure out own scope
+    modImplementation("net.fabricmc.fabric-api:fabric-api:$versionFabricApi")
 }
 
 license {
     header = rootProject.file("LICENSE")
 }
 
-tasks.processResources.configure {
-    expand("project" to project)
+tasks.withType(ProcessResources::class).configureEach {
+    filesMatching("fabric.mod.json") {
+        expand("project" to project)
+    }
+}
+
+tasks.withType(Javadoc::class).configureEach {
+    val options = this.options
+    if (options is StandardJavadocDocletOptions) {
+        options.tags = listOf("reason:m:Reason for overwrite:") // Add Mixin @reason JD tag definition
+    }
 }
 
 opinionated {
