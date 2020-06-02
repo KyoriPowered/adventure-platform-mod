@@ -24,7 +24,6 @@ package ca.stellardrift.text.fabric;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.minecraft.network.MessageType;
-import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.util.Util;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -41,7 +40,7 @@ public interface FabricAudience extends Audience {
      * @param type The type of message to send.
      */
     default void sendMessage(MessageType type, Component text) {
-        sendMessage(type, text, Util.field_25140);
+        sendMessage(type, text, Util.NIL_UUID);
     }
 
     /**
@@ -52,7 +51,7 @@ public interface FabricAudience extends Audience {
      *
      * @param text The contents of the message
      * @param type The type of message to send.
-     * @param source The UUID of the message's sender, or {@link Util#field_25140}
+     * @param source The UUID of the message's sender, or {@link Util#NIL_UUID}
      */
     void sendMessage(MessageType type, Component text, UUID source);
 

@@ -21,14 +21,12 @@
 
 package ca.stellardrift.text.fabric.test;
 
-import com.google.gson.JsonParseException;
+import ca.stellardrift.text.fabric.AdventureCommandSource;
 import com.google.gson.JsonSyntaxException;
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import java.util.Collections;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.server.ServerStartCallback;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.bossbar.BossBar;
@@ -36,7 +34,6 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
-import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
@@ -47,11 +44,11 @@ public class AdventureTester implements ModInitializer {
   @Override
   public void onInitialize() {
 
-    ServerStartCallback.EVENT.register(server -> {
+    ServerStartCallback.EVENT.register(server -> { // TODO: workaround for broken command registration event
       final CommandDispatcher<ServerCommandSource> dispatcher = server.getCommandManager().getDispatcher();
       dispatcher.register(literal("adventure")
         .then(literal("echo").then(argument("text", StringArgumentType.greedyString()).executes(ctx -> {
-          final Audience audience = (Audience) ctx.getSource().getPlayer(); // TODO: Console
+          final Audience audience = AdventureCommandSource.of(ctx.getSource());
           final String arg = StringArgumentType.getString(ctx, "text");
           Component result;
           try {
@@ -65,7 +62,7 @@ public class AdventureTester implements ModInitializer {
           return 1;
         })))
         .then(literal("countdown").then(argument("seconds", integer()).executes(ctx -> {
-          final Audience audience = (Audience) ctx.getSource().getPlayer(); // TODO: Console
+          final Audience audience = AdventureCommandSource.of(ctx.getSource());
           BossBar bar = BossBar.of(TextComponent.of("countdown"), 1f, BossBar.Color.GREEN, BossBar.Overlay.PROGRESS, Collections.singleton(BossBar.Flag.PLAY_BOSS_MUSIC));
           audience.showBossBar(bar);
           return 1;

@@ -46,7 +46,7 @@ import static java.util.Objects.requireNonNull;
  *
  * @see Audiences for ways to send messages to different groups of people, including players
  * @see CommandOutputAudience#sendMessage(Component) for sending to a single user
- * @see ComponentCommandSource for sending to a single command source
+ * @see AdventureCommandSource for sending to a single command source
  */
 public class TextAdapter implements ModInitializer {
     private static @Nullable MinecraftServer server;

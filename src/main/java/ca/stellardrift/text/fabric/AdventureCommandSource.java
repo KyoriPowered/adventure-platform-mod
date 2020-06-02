@@ -29,7 +29,7 @@ import org.checkerframework.checker.nullness.qual.PolyNull;
 /**
  * An interface applied to {@link ServerCommandSource} to allow sending {@link Component Components}
  */
-public interface ComponentCommandSource extends ForwardingAudience {
+public interface AdventureCommandSource extends ForwardingAudience {
     /**
      * Send a result message to the command source
      *
@@ -44,15 +44,15 @@ public interface ComponentCommandSource extends ForwardingAudience {
      */
     void sendError(Component text);
 
-    static @PolyNull ComponentCommandSource of(@PolyNull ServerCommandSource src) {
+    static @PolyNull AdventureCommandSource of(@PolyNull ServerCommandSource src) {
         if (src == null) {
             return null;
         }
 
-        if (!(src instanceof ComponentCommandSource)) {
+        if (!(src instanceof AdventureCommandSource)) {
             throw new IllegalArgumentException("The ComponentCommandSource mixin failed!");
         }
 
-        return (ComponentCommandSource) src;
+        return (AdventureCommandSource) src;
     }
 }

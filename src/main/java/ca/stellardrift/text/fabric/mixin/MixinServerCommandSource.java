@@ -22,7 +22,7 @@
 package ca.stellardrift.text.fabric.mixin;
 
 import ca.stellardrift.text.fabric.CommandOutputAudience;
-import ca.stellardrift.text.fabric.ComponentCommandSource;
+import ca.stellardrift.text.fabric.AdventureCommandSource;
 import ca.stellardrift.text.fabric.FabricAudience;
 import ca.stellardrift.text.fabric.TextAdapter;
 import net.kyori.adventure.text.Component;
@@ -40,7 +40,7 @@ import org.spongepowered.asm.mixin.Shadow;
  *
  */
 @Mixin(ServerCommandSource.class)
-public abstract class MixinServerCommandSource implements ComponentCommandSource {
+public abstract class MixinServerCommandSource implements AdventureCommandSource {
     @Shadow @Final
     private CommandOutput output;
     @Shadow @Final
