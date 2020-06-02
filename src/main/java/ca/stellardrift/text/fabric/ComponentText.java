@@ -23,6 +23,7 @@ package ca.stellardrift.text.fabric;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
@@ -30,6 +31,7 @@ import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 
 import java.util.List;
 import java.util.Optional;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public final class ComponentText implements Text {
     private @MonotonicNonNull Text converted;
@@ -49,6 +51,10 @@ public final class ComponentText implements Text {
             converted = this.converted = TextAdapter.nonWrapping().serialize(this.wrapped);
         }
         return converted;
+    }
+
+    public @Nullable Text deepConvertedIfPresent() {
+        return this.converted;
     }
 
     @Override

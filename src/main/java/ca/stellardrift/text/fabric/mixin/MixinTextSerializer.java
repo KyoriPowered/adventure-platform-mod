@@ -29,20 +29,31 @@ import com.google.gson.JsonSerializationContext;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.minecraft.text.Text;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.lang.reflect.Type;
 
 @Mixin(Text.Serializer.class)
-public class MixinTextSerializer {
+public abstract class MixinTextSerializer {
+
+    @Shadow public abstract JsonElement serialize(final Text text, final Type type, final JsonSerializationContext jsonSerializationContext);
+
     @Inject(method = "serialize", at = @At("HEAD"), cancellable = true)
     public void writeComponentText(Text text, Type type, JsonSerializationContext ctx, CallbackInfoReturnable<JsonElement> cir) {
         if (text instanceof ComponentText) {
-            cir.setReturnValue(ctx.serialize(((ComponentText) text).getWrapped(), Component.class));
+            final @Nullable Text converted = ((ComponentText) text).deepConvertedIfPresent();
+            if (converted != null) {
+                cir.setReturnValue(serialize(text, type, ctx));
+            } else {
+                cir.setReturnValue(ctx.serialize(((ComponentText) text).getWrapped(), Component.class));
+            }
         }
     }
 

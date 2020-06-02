@@ -22,7 +22,6 @@
 package ca.stellardrift.text.fabric.mixin;
 
 import ca.stellardrift.text.fabric.FabricAudience;
-import ca.stellardrift.text.fabric.PlainAudience;
 import ca.stellardrift.text.fabric.TextAdapter;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.sound.Sound;
@@ -30,7 +29,6 @@ import net.kyori.adventure.sound.SoundStop;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
 import net.minecraft.network.MessageType;
-import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -54,11 +52,6 @@ public abstract class MixinMinecraftServer implements FabricAudience {
     @Override
     public void sendMessage(MessageType type, Component text) {
         LOGGER.info(TextAdapter.plain().serialize(text)); // TODO: Eventually will we support formatted output?
-    }
-
-    @Override
-    public void showTitle(TitleS2CPacket.Action field, Component text) {
-        this.sendMessage(text);
     }
 
     @Override
