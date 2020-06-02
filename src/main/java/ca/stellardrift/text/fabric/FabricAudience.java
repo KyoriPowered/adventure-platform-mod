@@ -30,7 +30,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.UUID;
 
-public interface FabricAudience extends Audience, PlainAudience {
+public interface FabricAudience extends Audience {
     /**
      * Send a chat message to this player.
      *

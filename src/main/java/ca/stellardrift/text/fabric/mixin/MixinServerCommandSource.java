@@ -21,8 +21,9 @@
 
 package ca.stellardrift.text.fabric.mixin;
 
-import ca.stellardrift.text.fabric.ComponentCommandOutput;
+import ca.stellardrift.text.fabric.CommandOutputAudience;
 import ca.stellardrift.text.fabric.ComponentCommandSource;
+import ca.stellardrift.text.fabric.FabricAudience;
 import ca.stellardrift.text.fabric.TextAdapter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -48,32 +49,31 @@ public abstract class MixinServerCommandSource implements ComponentCommandSource
     @Shadow
     protected abstract void sendToOps(Text text);
 
-    private @MonotonicNonNull ComponentCommandOutput ownOut;
-
+    private @MonotonicNonNull FabricAudience ownOut;
 
     @Override
     public void sendFeedback(Component text, boolean sendToOps) {
-        if (getOutput().shouldReceiveFeedback() && !silent) {
-            getOutput().sendMessage(text);
+        if (this.output.shouldReceiveFeedback() && !this.silent) {
+            audience().sendMessage(text);
         }
 
-        if (sendToOps && getOutput().shouldBroadcastConsoleToOps() && !silent) {
+        if (sendToOps && this.output.shouldBroadcastConsoleToOps() && !this.silent) {
             this.sendToOps(TextAdapter.adapt(text));
         }
     }
 
     @Override
     public void sendError(Component text) {
-        if (getOutput().shouldTrackOutput()) {
-            getOutput().sendMessage(text.color(NamedTextColor.RED));
+        if (this.output.shouldTrackOutput()) {
+            this.audience().sendMessage(text.color(NamedTextColor.RED));
         }
     }
 
     @Override
-    public ComponentCommandOutput getOutput() {
-        if (ownOut == null) {
-            ownOut = ComponentCommandOutput.of(output);
+    public FabricAudience audience() {
+        if (this.ownOut == null) {
+            this.ownOut = CommandOutputAudience.of(this.output);
         }
-        return ownOut;
+        return this.ownOut;
     }
 }

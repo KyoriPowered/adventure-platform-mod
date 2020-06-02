@@ -21,6 +21,7 @@
 
 package ca.stellardrift.text.fabric;
 
+import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.text.Component;
 import net.minecraft.server.command.ServerCommandSource;
 import org.checkerframework.checker.nullness.qual.PolyNull;
@@ -28,7 +29,7 @@ import org.checkerframework.checker.nullness.qual.PolyNull;
 /**
  * An interface applied to {@link ServerCommandSource} to allow sending {@link Component Components}
  */
-public interface ComponentCommandSource {
+public interface ComponentCommandSource extends ForwardingAudience {
     /**
      * Send a result message to the command source
      *
@@ -42,8 +43,6 @@ public interface ComponentCommandSource {
      * @param text The error
      */
     void sendError(Component text);
-
-    ComponentCommandOutput getOutput();
 
     static @PolyNull ComponentCommandSource of(@PolyNull ServerCommandSource src) {
         if (src == null) {

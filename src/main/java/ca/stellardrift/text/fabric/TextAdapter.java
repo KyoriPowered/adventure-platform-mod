@@ -45,7 +45,7 @@ import static java.util.Objects.requireNonNull;
  * Adapter methods for converting text objects between Minecraft and Adventure types
  *
  * @see Audiences for ways to send messages to different groups of people, including players
- * @see ComponentCommandOutput#sendMessage(Component) for sending to a single user
+ * @see CommandOutputAudience#sendMessage(Component) for sending to a single user
  * @see ComponentCommandSource for sending to a single command source
  */
 public class TextAdapter implements ModInitializer {
