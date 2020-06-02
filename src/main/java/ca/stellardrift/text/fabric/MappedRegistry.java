@@ -55,20 +55,12 @@ public class MappedRegistry<Mc, Adv> {
     }
 
     static <Mc, Adv> MappedRegistry<Mc, Adv> named(Function<String, @Nullable Mc> mcByName, Supplier<Iterable<Mc>> mcValues, final NameMap<Adv> names, final Supplier<Iterable<Adv>> adventureValues) {
-        return new MappedRegistry<>(mcByName, mcValues, names::name, adventureValues);
+        return new MappedRegistry<>(new HashMap<>(), new HashMap<>(), mcByName, mcValues, names::name, adventureValues);
     }
 
-    protected Map<Mc, Adv> newMcMap() {
-        return new HashMap<>();
-    }
-
-    protected Map<Adv, Mc> newAdventureMap() {
-        return new HashMap<>();
-    }
-
-    MappedRegistry(Function<String, @Nullable Mc> mcByName, Supplier<Iterable<Mc>> mcValues, Function<Adv, @Nullable String> advToName, Supplier<Iterable<Adv>> adventureValues) {
-        mcToAdventure = newMcMap();
-        adventureToMc = newAdventureMap();
+    MappedRegistry(Map<Mc, Adv> mcMap, Map<Adv, Mc> adventureMap, Function<String, @Nullable Mc> mcByName, Supplier<Iterable<Mc>> mcValues, Function<Adv, @Nullable String> advToName, Supplier<Iterable<Adv>> adventureValues) {
+        this.mcToAdventure = mcMap;
+        this.adventureToMc = adventureMap;
 
         for (Adv advElement : adventureValues.get()) {
             @Nullable String mcName = advToName.apply(advElement);
@@ -123,23 +115,9 @@ public class MappedRegistry<Mc, Adv> {
     }
 
     static class OfEnum<Mc extends Enum<Mc>, Adv extends Enum<Adv>> extends MappedRegistry<Mc, Adv> {
-        private final Class<Mc> mcType;
-        private final Class<Adv> advType;
 
         OfEnum(Class<Mc> mcType, Function<String, @Nullable Mc> mcByName, Class<Adv> advType, Function<Adv, @Nullable String> advToName) {
-            super(mcByName, () -> Arrays.asList(mcType.getEnumConstants()), advToName, () -> Arrays.asList(advType.getEnumConstants()));
-            this.mcType = mcType;
-            this.advType = advType;
-        }
-
-        @Override
-        protected Map<Mc, Adv> newMcMap() {
-            return new EnumMap<>(mcType);
-        }
-
-        @Override
-        protected Map<Adv, Mc> newAdventureMap() {
-            return new EnumMap<>(advType);
+            super(new EnumMap<>(mcType), new EnumMap<>(advType), mcByName, () -> Arrays.asList(mcType.getEnumConstants()), advToName, () -> Arrays.asList(advType.getEnumConstants()));
         }
     }
 }

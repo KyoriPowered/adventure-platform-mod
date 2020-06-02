@@ -21,6 +21,8 @@
 
 package ca.stellardrift.text.fabric;
 
+import ca.stellardrift.text.fabric.mixin.AccessorSoundCategory;
+import java.util.Locale;
 import net.kyori.adventure.bossbar.BossBar.Overlay;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -44,7 +46,7 @@ public class GameEnums {
             Overlay.class, Overlay.NAMES);
 
     public static final MappedRegistry<SoundCategory, Sound.Source> SOUND_SOURCE
-            = MappedRegistry.named(SoundCategory.class, SoundCategory::valueOf,
+            = MappedRegistry.named(SoundCategory.class, key -> AccessorSoundCategory.getNameMap().get(key),
             Sound.Source.class, Sound.Source.NAMES);
 
     private GameEnums() {

@@ -21,15 +21,44 @@
 
 package ca.stellardrift.text.fabric.mixin;
 
+import ca.stellardrift.text.fabric.BulkServerBossBar;
+import java.util.Collection;
+import net.minecraft.entity.boss.BossBar;
 import net.minecraft.entity.boss.ServerBossBar;
+import net.minecraft.network.packet.s2c.play.BossBarS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
 import java.util.Set;
 
 @Mixin(ServerBossBar.class)
-public interface AccessorServerBossBar {
-    @Accessor("players")
-    Set<ServerPlayerEntity> getMutablePlayers();
+public abstract class MixinServerBossBar implements BulkServerBossBar {
+
+
+  @Shadow @Final private Set<ServerPlayerEntity> players;
+
+  @Shadow public abstract boolean isVisible();
+
+  @Override
+  public void addAll(final Collection<ServerPlayerEntity> players) {
+    final BossBarS2CPacket pkt = new BossBarS2CPacket(BossBarS2CPacket.Type.ADD, (BossBar) (Object) this);
+    for (final ServerPlayerEntity player : players) {
+      if (this.players.add(player) && this.isVisible()) {
+        player.networkHandler.sendPacket(pkt);
+      }
+    }
+  }
+
+  @Override
+  public void removeAll(final Collection<ServerPlayerEntity> players) {
+    final BossBarS2CPacket pkt = new BossBarS2CPacket(BossBarS2CPacket.Type.REMOVE, (BossBar) (Object) this);
+    for (final ServerPlayerEntity player : players) {
+      if (this.players.remove(player) && this.isVisible()) {
+        player.networkHandler.sendPacket(pkt);
+      }
+    }
+  }
 }

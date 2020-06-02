@@ -3,9 +3,10 @@
   "package": "ca.stellardrift.text.fabric.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "AccessorServerBossBar",
+    "AccessorSoundCategory",
     "AccessorTextSerializer",
     "MixinMinecraftServer",
+    "MixinServerBossBar",
     "MixinServerCommandOutput",
     "MixinServerCommandSource",
     "MixinServerPlayerEntity",

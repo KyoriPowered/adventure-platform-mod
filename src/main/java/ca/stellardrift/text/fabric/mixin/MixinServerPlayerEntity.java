@@ -22,6 +22,7 @@
 package ca.stellardrift.text.fabric.mixin;
 
 import ca.stellardrift.text.fabric.FabricAudience;
+import ca.stellardrift.text.fabric.FabricBossBarListener;
 import ca.stellardrift.text.fabric.GameEnums;
 import ca.stellardrift.text.fabric.TextAdapter;
 import com.mojang.authlib.GameProfile;
@@ -33,7 +34,6 @@ import net.kyori.adventure.sound.SoundStop;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.title.Title;
-import net.minecraft.entity.boss.ServerBossBar;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.MessageType;
 import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
@@ -87,12 +87,12 @@ public abstract class MixinServerPlayerEntity extends PlayerEntity implements Fa
 
     @Override
     public void showBossBar(@NonNull BossBar bar) {
-        ((ServerBossBar) bar).addPlayer((ServerPlayerEntity) (Object) this);
+        FabricBossBarListener.INSTANCE.subscribe((ServerPlayerEntity) (Object) this, bar);
     }
 
     @Override
     public void hideBossBar(@NonNull BossBar bar) {
-        ((ServerBossBar) bar).removePlayer((ServerPlayerEntity) (Object) this);
+        FabricBossBarListener.INSTANCE.unsubscribe((ServerPlayerEntity) (Object) this, bar);
     }
 
     @Override
