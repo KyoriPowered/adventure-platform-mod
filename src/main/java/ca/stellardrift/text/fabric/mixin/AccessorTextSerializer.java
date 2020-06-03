@@ -22,9 +22,11 @@
 package ca.stellardrift.text.fabric.mixin;
 
 import com.google.gson.Gson;
+import com.google.gson.stream.JsonReader;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
+import org.spongepowered.asm.mixin.gen.Invoker;
 
 @Mixin(Text.Serializer.class)
 public interface AccessorTextSerializer {
@@ -32,5 +34,10 @@ public interface AccessorTextSerializer {
   @Accessor
   static Gson getGSON() {
     throw new UnsupportedOperationException("Not mixed in");
+  }
+
+  @Invoker("getPosition")
+  static int getPosition(JsonReader reader) {
+    throw new UnsupportedOperationException("mixin replaces this");
   }
 }

@@ -54,6 +54,8 @@ import net.minecraft.command.arguments.TextArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 
+import static ca.stellardrift.text.fabric.ComponentArgumentType.component;
+import static ca.stellardrift.text.fabric.ComponentArgumentType.getComponent;
 import static com.mojang.brigadier.arguments.IntegerArgumentType.getInteger;
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
@@ -77,17 +79,9 @@ public class AdventureTester implements ModInitializer {
     ServerStartCallback.EVENT.register(server -> { // TODO: workaround for broken command registration event
       final CommandDispatcher<ServerCommandSource> dispatcher = server.getCommandManager().getDispatcher();
       dispatcher.register(literal("adventure")
-        .then(literal("echo").then(argument(ARG_TEXT, greedyString()).executes(ctx -> {
+        .then(literal("echo").then(argument(ARG_TEXT, component()).executes(ctx -> {
           final Audience audience = AdventureCommandSource.of(ctx.getSource());
-          final String arg = getString(ctx, ARG_TEXT);
-          Component result;
-          try {
-            result = GsonComponentSerializer.INSTANCE.deserialize(arg);
-          } catch(JsonSyntaxException ex) {
-            audience.sendMessage(TextComponent.builder("Unable to parse provided text as JSON: ", NamedTextColor.RED)
-              .append(TextComponent.of(ex.getMessage(), NamedTextColor.DARK_RED)).build());
-            result = TextComponent.of(arg);
-          }
+          final Component result = getComponent(ctx, ARG_TEXT);
           audience.sendMessage(result);
           return 1;
         })))
@@ -102,16 +96,10 @@ public class AdventureTester implements ModInitializer {
           });
           return 1;
         })))
-      .then(literal("tellall").then(argument(ARG_TARGETS, players()).then(argument(ARG_TEXT, greedyString()).executes(ctx -> {
+      .then(literal("tellall").then(argument(ARG_TARGETS, players()).then(argument(ARG_TEXT, component()).executes(ctx -> {
         final Collection<ServerPlayerEntity> targets = getPlayers(ctx, ARG_TARGETS);
         final Audience source = AdventureCommandSource.of(ctx.getSource());
-        final String arg = getString(ctx, ARG_TEXT);
-        final Component message;
-        try { // TODO: Serverside-only argument types
-          message = GsonComponentSerializer.INSTANCE.deserialize(arg);
-        } catch(JsonSyntaxException ex) {
-          throw TextArgumentType.INVALID_COMPONENT_EXCEPTION.create(ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage());
-        }
+        final Component message = getComponent(ctx, ARG_TEXT);
         final Audience destination = Audiences.of(targets);
 
         destination.sendMessage(message);

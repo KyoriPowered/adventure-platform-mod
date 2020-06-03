@@ -32,6 +32,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.KeybindComponent;
 import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
 import net.minecraft.client.options.KeyBinding;
+import net.minecraft.command.arguments.ArgumentTypes;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -153,6 +154,9 @@ public class TextAdapter implements ModInitializer {
     @Override
     public void onInitialize() {
         // not much to do?
+        // TODO: make this client-optional when commands use it
+        ArgumentTypes.register("adventure:component", ComponentArgumentType.class, new ComponentArgumentType.Serializer());
+
         final Object game = FabricLoader.getInstance().getGameInstance();
         if (game instanceof MinecraftServer) {
             server = (MinecraftServer) game;
