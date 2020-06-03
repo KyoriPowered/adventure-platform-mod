@@ -143,11 +143,16 @@ public abstract class MixinServerPlayerEntity extends PlayerEntity implements Fa
         this.networkHandler.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.RESET, null));
     }
 
-    // Player tracking
+    // Player tracking for boss bars
 
     @Inject(method = "copyFrom", at = @At("RETURN"))
     private void copyBossBars(final ServerPlayerEntity old, boolean alive, final CallbackInfo ci) {
         FabricBossBarListener.INSTANCE.replacePlayer(old, (ServerPlayerEntity) (Object) this);
+    }
+
+    @Inject(method = "onDisconnect", at = @At("RETURN"))
+    private void removeBossBarsOnDisconnect(CallbackInfo ci) {
+        FabricBossBarListener.INSTANCE.unsubscribeFromAll((ServerPlayerEntity) (Object) this);
     }
 
 }

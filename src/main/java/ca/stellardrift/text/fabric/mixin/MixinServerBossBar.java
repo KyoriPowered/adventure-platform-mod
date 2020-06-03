@@ -41,7 +41,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerBossBar.class)
 public abstract class MixinServerBossBar extends BossBar implements BulkServerBossBar {
-  private static final float MINIMUM_PERCENT_CHANGE = 1e-3f;
+  private static final float MINIMUM_PERCENT_CHANGE = 5e-4f;
 
   private float adventure$lastSentPercent;
   @Shadow @Final private Set<ServerPlayerEntity> players;

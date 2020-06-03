@@ -23,6 +23,7 @@ package ca.stellardrift.text.fabric;
 
 import java.util.Collection;
 import java.util.IdentityHashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import net.kyori.adventure.bossbar.BossBar;
@@ -143,6 +144,23 @@ public class FabricBossBarListener implements BossBar.Listener {
     public void replacePlayer(final ServerPlayerEntity old, ServerPlayerEntity newPlayer) {
         for (final ServerBossBar bar : this.bars.values()) {
             ((BulkServerBossBar) bar).replaceSubscriber(old, newPlayer);
+        }
+    }
+
+    /**
+     * Remove the player from all associated boss bars.
+     *
+     * @param player The player to remove
+     */
+    public void unsubscribeFromAll(final ServerPlayerEntity player) {
+        for (Iterator<Map.Entry<BossBar, ServerBossBar>> it = this.bars.entrySet().iterator(); it.hasNext();) {
+            final ServerBossBar bar = it.next().getValue();
+            if (bar.getPlayers().contains(player)) {
+                bar.removePlayer(player);
+                if (bar.getPlayers().isEmpty()) {
+                    it.remove();
+                }
+            }
         }
     }
 }
