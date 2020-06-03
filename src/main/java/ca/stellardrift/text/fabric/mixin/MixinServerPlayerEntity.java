@@ -52,6 +52,9 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 import java.util.UUID;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerPlayerEntity.class)
 public abstract class MixinServerPlayerEntity extends PlayerEntity implements FabricAudience {
@@ -110,11 +113,12 @@ public abstract class MixinServerPlayerEntity extends PlayerEntity implements Fa
 
     @Override
     public void showTitle(final @NonNull Title title) {
-        if (!TextComponent.empty().equals(title.title())) {
-            this.networkHandler.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.TITLE, TextAdapter.adapt(title.title())));
-        }
         if (!TextComponent.empty().equals(title.subtitle())) {
             this.networkHandler.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.SUBTITLE, TextAdapter.adapt(title.subtitle())));
+        }
+
+        if (!TextComponent.empty().equals(title.title())) {
+            this.networkHandler.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.TITLE, TextAdapter.adapt(title.title())));
         }
 
         final int fadeIn = ticks(title.fadeInTime());
@@ -137,6 +141,13 @@ public abstract class MixinServerPlayerEntity extends PlayerEntity implements Fa
     @Override
     public void resetTitle() {
         this.networkHandler.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.RESET, null));
+    }
+
+    // Player tracking
+
+    @Inject(method = "copyFrom", at = @At("RETURN"))
+    private void copyBossBars(final ServerPlayerEntity old, boolean alive, final CallbackInfo ci) {
+        FabricBossBarListener.INSTANCE.replacePlayer(old, (ServerPlayerEntity) (Object) this);
     }
 
 }
