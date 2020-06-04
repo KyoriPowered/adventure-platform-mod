@@ -24,9 +24,6 @@ package ca.stellardrift.text.fabric.test;
 import ca.stellardrift.text.fabric.AdventureCommandSource;
 import ca.stellardrift.text.fabric.Audiences;
 import ca.stellardrift.text.fabric.TextAdapter;
-import com.google.gson.JsonSyntaxException;
-import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.StringArgumentType;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.Collections;
@@ -37,7 +34,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.event.server.ServerStartCallback;
+import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
@@ -46,20 +43,13 @@ import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.title.Title;
-import net.minecraft.command.arguments.EntityArgumentType;
-import net.minecraft.command.arguments.MessageArgumentType;
-import net.minecraft.command.arguments.TextArgumentType;
-import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 import static ca.stellardrift.text.fabric.ComponentArgumentType.component;
 import static ca.stellardrift.text.fabric.ComponentArgumentType.getComponent;
 import static com.mojang.brigadier.arguments.IntegerArgumentType.getInteger;
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
-import static com.mojang.brigadier.arguments.StringArgumentType.getString;
-import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
 import static net.kyori.adventure.text.TextComponent.newline;
 import static net.minecraft.command.arguments.EntityArgumentType.getPlayers;
 import static net.minecraft.command.arguments.EntityArgumentType.players;
@@ -76,8 +66,7 @@ public class AdventureTester implements ModInitializer {
   @Override
   public void onInitialize() {
 
-    ServerStartCallback.EVENT.register(server -> { // TODO: workaround for broken command registration event
-      final CommandDispatcher<ServerCommandSource> dispatcher = server.getCommandManager().getDispatcher();
+    CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
       dispatcher.register(literal("adventure")
         .then(literal("echo").then(argument(ARG_TEXT, component()).executes(ctx -> {
           final Audience audience = AdventureCommandSource.of(ctx.getSource());
