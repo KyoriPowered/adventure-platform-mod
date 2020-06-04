@@ -21,8 +21,11 @@
 
 package ca.stellardrift.text.fabric;
 
+import java.util.UUID;
 import net.kyori.text.Component;
 import net.kyori.text.serializer.gson.GsonComponentSerializer;
+import net.minecraft.network.MessageType;
+import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
 import net.minecraft.text.Text;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -36,7 +39,7 @@ import java.util.Arrays;
  *
  * This is kind of ugly, but it will minimize breakage across versions (at least on this codebase)
  */
-class FallbackSerializer {
+class Fallback {
     private static final MethodHandles.Lookup LOOKUP = MethodHandles.lookup();
     private static final String MINECRAFT_PREFIX = "net.minecraft.";
 
@@ -84,9 +87,38 @@ class FallbackSerializer {
         }
     }
 
+    private static final MethodHandle CHAT_MESSAGE_CONSTRUCTOR;
 
+    static {
+        MethodHandle chatConstructor;
 
-    private FallbackSerializer() {
+        try {
+            chatConstructor = LOOKUP.findConstructor(ChatMessageS2CPacket.class, MethodType.methodType(void.class, Text.class, MessageType.class, UUID.class));
+        } catch(NoSuchMethodException | IllegalAccessException ex) {
+            try {
+                chatConstructor = LOOKUP.findConstructor(ChatMessageS2CPacket.class, MethodType.methodType(void.class, Text.class, MessageType.class));
+                chatConstructor = MethodHandles.dropArguments(chatConstructor, 2, UUID.class);
+            } catch(NoSuchMethodException | IllegalAccessException e) {
+                throw new ExceptionInInitializerError(e);
+            }
+        }
+
+        CHAT_MESSAGE_CONSTRUCTOR = chatConstructor;
+    }
+
+    private Fallback() {
+    }
+
+    static ChatMessageS2CPacket newChatPacket(Text text, MessageType type, UUID senderId) {
+        try {
+            return (ChatMessageS2CPacket) CHAT_MESSAGE_CONSTRUCTOR.invoke(text, type, senderId);
+        } catch(Throwable throwable) {
+            if (throwable instanceof Error) {
+                throw (Error) throwable;
+            }
+
+            throw new RuntimeException(throwable);
+        }
     }
 
     public static Object toText(Component component) {

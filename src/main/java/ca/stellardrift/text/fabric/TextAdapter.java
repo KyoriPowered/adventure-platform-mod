@@ -22,6 +22,7 @@
 package ca.stellardrift.text.fabric;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import java.util.UUID;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.registry.CommandRegistry;
 import net.fabricmc.loader.api.ModContainer;
@@ -56,6 +57,7 @@ import static net.kyori.text.TextComponent.*;
  * @see ComponentCommandSource for sending to a single command source
  */
 public class TextAdapter implements ModInitializer {
+
     static final Logger LOGGER = LogManager.getLogger();
 
     /**
@@ -177,9 +179,10 @@ public class TextAdapter implements ModInitializer {
         }
     }
 
+    private static final UUID NIL_UUID = new UUID(0, 0);
 
     public static ChatMessageS2CPacket createChatPacket(Component text, MessageType type) {
-        ChatMessageS2CPacket pkt = new ChatMessageS2CPacket(null, type);
+        ChatMessageS2CPacket pkt = Fallback.newChatPacket(null, type, NIL_UUID);
         ((ComponentHoldingPacket) pkt).setComponent(text);
         return pkt;
     }

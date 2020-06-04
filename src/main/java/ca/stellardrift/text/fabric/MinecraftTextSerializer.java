@@ -43,7 +43,6 @@ import net.kyori.text.format.TextColor;
 import net.kyori.text.format.TextDecoration;
 import net.kyori.text.serializer.ComponentSerializer;
 import net.kyori.text.serializer.gson.BlockNbtComponentPosSerializer;
-import net.kyori.text.serializer.gson.GsonComponentSerializer;
 import net.minecraft.text.KeybindText;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.NbtText;
@@ -152,7 +151,7 @@ public class MinecraftTextSerializer implements ComponentSerializer<Component, C
                 enterFallbackMode(t);
             }
         }
-        return FallbackSerializer.toComponent(input);
+        return Fallback.toComponent(input);
     }
 
     @NonNull
@@ -172,7 +171,7 @@ public class MinecraftTextSerializer implements ComponentSerializer<Component, C
                 enterFallbackMode(t);
             }
         }
-        return (Text) FallbackSerializer.toText(component);
+        return (Text) Fallback.toText(component);
     }
 
     /**
