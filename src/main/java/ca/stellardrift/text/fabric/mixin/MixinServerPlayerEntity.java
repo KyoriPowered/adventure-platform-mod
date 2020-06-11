@@ -29,6 +29,7 @@ import com.mojang.authlib.GameProfile;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.SoundStop;
 import net.kyori.adventure.text.Component;
@@ -45,6 +46,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -105,10 +107,17 @@ public abstract class MixinServerPlayerEntity extends PlayerEntity implements Fa
     }
 
     @Override
+    public void playSound(final @NonNull Sound sound, final double x, final double y, final double z) {
+        this.networkHandler.sendPacket(new PlaySoundIdS2CPacket(TextAdapter.adapt(sound.name()),
+          GameEnums.SOUND_SOURCE.toMinecraft(sound.source()), new Vec3d(x, y, z), sound.volume(), sound.pitch()));
+    }
+
+    @Override
     public void stopSound(@NonNull SoundStop stop) {
+        final Key sound = stop.sound();
         Sound.@Nullable Source src = stop.source();
         @Nullable SoundCategory cat = src == null ? null : GameEnums.SOUND_SOURCE.toMinecraft(src);
-        this.networkHandler.sendPacket(new StopSoundS2CPacket(TextAdapter.adapt(stop.sound()), cat));
+        this.networkHandler.sendPacket(new StopSoundS2CPacket(sound == null ? null : TextAdapter.adapt(sound), cat));
     }
 
     @Override
