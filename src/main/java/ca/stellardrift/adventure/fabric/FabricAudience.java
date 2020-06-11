@@ -19,50 +19,49 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package ca.stellardrift.text.fabric.mixin;
+package ca.stellardrift.adventure.fabric;
 
-import ca.stellardrift.text.fabric.FabricAudience;
-import ca.stellardrift.text.fabric.TextAdapter;
-import java.util.UUID;
-import net.kyori.adventure.bossbar.BossBar;
-import net.kyori.adventure.sound.Sound;
-import net.kyori.adventure.sound.SoundStop;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.title.Title;
 import net.minecraft.network.MessageType;
-import net.minecraft.server.dedicated.ServerCommandOutput;
+import net.minecraft.util.Util;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 
-@Mixin(ServerCommandOutput.class)
-public abstract class MixinServerCommandOutput implements FabricAudience {
-    @Shadow @Final private StringBuffer buffer;
+import java.util.UUID;
+
+public interface FabricAudience extends Audience {
+    /**
+     * Send a chat message to this player.
+     *
+     * Messages of type {@link MessageType#GAME_INFO} should be
+     * sent as action bar titles to preserve formatting.
+     *
+     * @param text The contents of the message
+     * @param type The type of message to send.
+     */
+    default void sendMessage(MessageType type, Component text) {
+        sendMessage(type, text, Util.NIL_UUID);
+    }
+
+    /**
+     * Send a chat message to this player.
+     *
+     * Messages of type {@link MessageType#GAME_INFO} should be
+     * sent as action bar titles to preserve formatting.
+     *
+     * @param text The contents of the message
+     * @param type The type of message to send.
+     * @param source The UUID of the message's sender, or {@link Util#NIL_UUID}
+     */
+    void sendMessage(MessageType type, Component text, UUID source);
 
     @Override
-    public void sendMessage(final MessageType type, final Component text, final UUID source) {
-        this.buffer.append(TextAdapter.plain().serialize(text));
+    default void sendMessage(@NonNull Component message) {
+        sendMessage(MessageType.SYSTEM, message);
     }
 
     @Override
-    public void showBossBar(@NonNull final BossBar bar) { }
-
-    @Override
-    public void hideBossBar(@NonNull final BossBar bar) { }
-
-    @Override
-    public void playSound(@NonNull final Sound sound) { }
-
-    @Override
-    public void stopSound(@NonNull final SoundStop stop) { }
-
-    @Override
-    public void showTitle(@NonNull final Title title) { }
-
-    @Override
-    public void clearTitle() { }
-
-    @Override
-    public void resetTitle() { }
+    default void sendActionBar(@NonNull Component message) {
+        sendMessage(MessageType.GAME_INFO, message);
+    }
 }

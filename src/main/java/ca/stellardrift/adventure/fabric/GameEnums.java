@@ -19,21 +19,13 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package ca.stellardrift.text.fabric;
+package ca.stellardrift.adventure.fabric;
 
-import ca.stellardrift.text.fabric.mixin.AccessorSoundCategory;
-import java.util.Locale;
+import ca.stellardrift.adventure.fabric.mixin.AccessorSoundCategory;
 import net.kyori.adventure.bossbar.BossBar.Overlay;
 import net.kyori.adventure.sound.Sound;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.text.ClickEvent;
-import net.minecraft.text.HoverEvent;
-import net.minecraft.util.Formatting;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class GameEnums {
 

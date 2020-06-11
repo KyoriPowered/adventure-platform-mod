@@ -19,9 +19,9 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package ca.stellardrift.text.fabric.mixin;
+package ca.stellardrift.adventure.fabric.mixin;
 
-import ca.stellardrift.text.fabric.BulkServerBossBar;
+import ca.stellardrift.adventure.fabric.BulkServerBossBar;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;

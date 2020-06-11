@@ -19,4 +19,4 @@ pluginManagement {
     }
 }
 
-rootProject.name = "text-adapter-fabric"
+rootProject.name = "adventure-platform-fabric"

@@ -19,31 +19,40 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package ca.stellardrift.text.fabric;
+package ca.stellardrift.adventure.fabric;
 
-import ca.stellardrift.text.fabric.mixin.AccessorTextSerializer;
+import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.ComponentSerializer;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
+import net.minecraft.server.command.ServerCommandSource;
+import org.checkerframework.checker.nullness.qual.PolyNull;
 
+/**
+ * An interface applied to {@link ServerCommandSource} to allow sending {@link Component Components}
+ */
+public interface AdventureCommandSource extends ForwardingAudience {
+    /**
+     * Send a result message to the command source
+     *
+     * @param text The text to send
+     * @param sendToOps If this message should be sent to all ops listening
+     */
+    void sendFeedback(Component text, boolean sendToOps);
 
-class MinecraftTextSerializer implements ComponentSerializer<Component, Component, Text> {
+    /**
+     * Send an error message to the command source
+     * @param text The error
+     */
+    void sendError(Component text);
 
-  MinecraftTextSerializer() {
-  }
+    static @PolyNull AdventureCommandSource of(@PolyNull ServerCommandSource src) {
+        if (src == null) {
+            return null;
+        }
 
-  @Override
-  public Component deserialize(Text input) {
-    if(input instanceof ComponentText) {
-      return ((ComponentText) input).getWrapped();
+        if (!(src instanceof AdventureCommandSource)) {
+            throw new IllegalArgumentException("The ComponentCommandSource mixin failed!");
+        }
+
+        return (AdventureCommandSource) src;
     }
-
-    return AccessorTextSerializer.getGSON().fromJson(Text.Serializer.toJsonTree(input), Component.class);
-  }
-
-  @Override
-  public MutableText serialize(Component component) {
-    return Text.Serializer.fromJson(AccessorTextSerializer.getGSON().toJsonTree(component));
-  }
 }

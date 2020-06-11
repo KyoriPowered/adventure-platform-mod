@@ -19,9 +19,9 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package ca.stellardrift.text.fabric;
+package ca.stellardrift.adventure.fabric;
 
-import ca.stellardrift.text.fabric.mixin.AccessorTextSerializer;
+import ca.stellardrift.adventure.fabric.mixin.AccessorTextSerializer;
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;

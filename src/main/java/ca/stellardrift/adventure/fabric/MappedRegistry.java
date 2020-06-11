@@ -19,13 +19,12 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package ca.stellardrift.text.fabric;
+package ca.stellardrift.adventure.fabric;
 
 import net.kyori.adventure.util.NameMap;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;

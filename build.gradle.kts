@@ -57,13 +57,6 @@ tasks.withType(ProcessResources::class).configureEach {
     }
 }
 
-tasks.withType(Javadoc::class).configureEach {
-    val options = this.options
-    if (options is StandardJavadocDocletOptions) {
-        options.tags = listOf("reason:m:Reason for overwrite:") // Add Mixin @reason JD tag definition
-    }
-}
-
 opinionated {
     github("PEXPlugins", "text-adapter-fabric")
     mit()

@@ -18,12 +18,12 @@
   "entrypoints": {
     "main": [
       {
-        "value":"ca.stellardrift.text.fabric.TextAdapter"
+        "value":"ca.stellardrift.adventure.fabric.FabricPlatform"
       }
     ]
   },
   "mixins": [
-    "text-adapter-fabric.mixins.json"
+    "adventure-platform-fabric.mixins.json"
   ],
   "custom": {
     "text-version": "${project.ext['versionAdventure']}",

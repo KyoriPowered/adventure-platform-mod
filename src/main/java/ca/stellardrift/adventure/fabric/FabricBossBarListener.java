@@ -19,7 +19,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package ca.stellardrift.text.fabric;
+package ca.stellardrift.adventure.fabric;
 
 import java.util.Collection;
 import java.util.IdentityHashMap;
@@ -43,7 +43,7 @@ public class FabricBossBarListener implements BossBar.Listener {
     @Override
     public void bossBarNameChanged(@NonNull final BossBar bar, @NonNull final Component oldName, @NonNull final Component newName) {
         if(!oldName.equals(newName)) {
-            minecraft(bar).setName(TextAdapter.adapt(newName));
+            minecraft(bar).setName(FabricPlatform.adapt(newName));
         }
     }
 
@@ -91,7 +91,7 @@ public class FabricBossBarListener implements BossBar.Listener {
 
     private ServerBossBar minecraftCreating(BossBar bar) {
         return this.bars.computeIfAbsent(bar, key -> {
-            final ServerBossBar ret = new ServerBossBar(TextAdapter.adapt(key.name()),
+            final ServerBossBar ret = new ServerBossBar(FabricPlatform.adapt(key.name()),
               GameEnums.BOSS_BAR_COLOR.toMinecraft(key.color()), GameEnums.BOSS_BAR_OVERLAY.toMinecraft(key.overlay()));
             ret.setPercent(key.percent());
             updateFlags(ret, key.flags());

@@ -19,7 +19,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package ca.stellardrift.text.fabric;
+package ca.stellardrift.adventure.fabric;
 
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
@@ -49,7 +49,7 @@ import static java.util.Objects.requireNonNull;
  * @see CommandOutputAudience#sendMessage(Component) for sending to a single user
  * @see AdventureCommandSource for sending to a single command source
  */
-public class TextAdapter implements ModInitializer {
+public class FabricPlatform implements ModInitializer {
     private static @Nullable MinecraftServer server;
     private static final PlainComponentSerializer PLAIN;
     private static final MinecraftTextSerializer TEXT_NON_WRAPPING = new MinecraftTextSerializer();
@@ -153,7 +153,6 @@ public class TextAdapter implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        // not much to do?
         // TODO: make this client-optional when commands use it
         ArgumentTypes.register("adventure:component", ComponentArgumentType.class, new ComponentArgumentType.Serializer());
 
@@ -162,7 +161,7 @@ public class TextAdapter implements ModInitializer {
             server = (MinecraftServer) game;
         }
 
-        this.container = FabricLoader.getInstance().getModContainer("text-adapter-fabric")
-                .orElseThrow(() -> new IllegalStateException("Mod ID for text-adapter-fabric has been changed without updating the initializer!"));
+        this.container = FabricLoader.getInstance().getModContainer("adventure-platform-fabric")
+                .orElseThrow(() -> new IllegalStateException("Mod ID for adventure-platform-fabric has been changed without updating the initializer!"));
     }
 }

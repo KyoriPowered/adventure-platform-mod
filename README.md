@@ -1,4 +1,4 @@
-# text-compat-fabric
+# adventures-platform-fabric
 
  [ ![Download](https://api.bintray.com/packages/zml/stellardrift-repo/text-adapter-fabric/images/download.svg) ](https://bintray.com/zml/stellardrift-repo/text-adapter-fabric/_latestVersion) | [Javadoc](https://jitpack.io/ca/stellardrift/text-adapter-fabric/master-SNAPSHOT/javadoc/)
 

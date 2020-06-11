@@ -19,17 +19,31 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package ca.stellardrift.text.fabric;
+package ca.stellardrift.adventure.fabric;
 
-import java.util.Collection;
-import net.minecraft.entity.boss.ServerBossBar;
-import net.minecraft.server.network.ServerPlayerEntity;
+import ca.stellardrift.adventure.fabric.mixin.AccessorTextSerializer;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.ComponentSerializer;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
 
-/**
- * An interface for performing bulk adds and removes on a {@link ServerBossBar}
- */
-public interface BulkServerBossBar {
-  void addAll(Collection<ServerPlayerEntity> players);
-  void removeAll(Collection<ServerPlayerEntity> players);
-  void replaceSubscriber(ServerPlayerEntity oldSub, ServerPlayerEntity newSub);
+
+class MinecraftTextSerializer implements ComponentSerializer<Component, Component, Text> {
+
+  MinecraftTextSerializer() {
+  }
+
+  @Override
+  public Component deserialize(Text input) {
+    if(input instanceof ComponentText) {
+      return ((ComponentText) input).getWrapped();
+    }
+
+    return AccessorTextSerializer.getGSON().fromJson(Text.Serializer.toJsonTree(input), Component.class);
+  }
+
+  @Override
+  public MutableText serialize(Component component) {
+    return Text.Serializer.fromJson(AccessorTextSerializer.getGSON().toJsonTree(component));
+  }
 }

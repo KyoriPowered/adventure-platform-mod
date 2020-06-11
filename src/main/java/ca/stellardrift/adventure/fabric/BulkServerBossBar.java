@@ -19,17 +19,17 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package ca.stellardrift.text.fabric.mixin;
+package ca.stellardrift.adventure.fabric;
 
-import java.util.Map;
-import net.minecraft.sound.SoundCategory;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Accessor;
+import java.util.Collection;
+import net.minecraft.entity.boss.ServerBossBar;
+import net.minecraft.server.network.ServerPlayerEntity;
 
-@Mixin(SoundCategory.class)
-public interface AccessorSoundCategory {
-  @Accessor("NAME_MAP")
-  static Map<String, SoundCategory> getNameMap() {
-    throw new UnsupportedOperationException("mixin replaced");
-  }
+/**
+ * An interface for performing bulk adds and removes on a {@link ServerBossBar}
+ */
+public interface BulkServerBossBar {
+  void addAll(Collection<ServerPlayerEntity> players);
+  void removeAll(Collection<ServerPlayerEntity> players);
+  void replaceSubscriber(ServerPlayerEntity oldSub, ServerPlayerEntity newSub);
 }

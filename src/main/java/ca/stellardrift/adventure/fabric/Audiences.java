@@ -19,7 +19,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package ca.stellardrift.text.fabric;
+package ca.stellardrift.adventure.fabric;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
@@ -57,7 +57,7 @@ public class Audiences {
     }
 
     public static Audience console() {
-        final @Nullable MinecraftServer server = TextAdapter.server();
+        final @Nullable MinecraftServer server = FabricPlatform.server();
         return server == null ? Audience.empty() : (FabricAudience) server;
     }
 
@@ -103,7 +103,7 @@ public class Audiences {
      * @return An audience that targets all operators on the server
      */
     public static Audience operators() {
-        final @Nullable MinecraftServer server = TextAdapter.server();
+        final @Nullable MinecraftServer server = FabricPlatform.server();
         return operators(server == null ? 4 : server.getOpPermissionLevel());
     }
 
@@ -133,7 +133,7 @@ public class Audiences {
         }
 
         private static Iterable<ServerPlayerEntity> getOnlinePlayers() {
-            @Nullable MinecraftServer server = TextAdapter.server();
+            @Nullable MinecraftServer server = FabricPlatform.server();
             return server == null ? ImmutableList.of() : server.getPlayerManager().getPlayerList();
         }
 
@@ -196,9 +196,9 @@ public class Audiences {
             if (it.hasNext()) {
                 Packet<?> pkt;
                 if (type == MessageType.GAME_INFO) {
-                    pkt = new TitleS2CPacket(TitleS2CPacket.Action.ACTIONBAR, TextAdapter.adapt(text));
+                    pkt = new TitleS2CPacket(TitleS2CPacket.Action.ACTIONBAR, FabricPlatform.adapt(text));
                 } else {
-                    pkt = new GameMessageS2CPacket(TextAdapter.adapt(text), type, source);
+                    pkt = new GameMessageS2CPacket(FabricPlatform.adapt(text), type, source);
                 }
                 while (it.hasNext()) {
                     ServerPlayerEntity player = it.next();
@@ -313,8 +313,8 @@ public class Audiences {
 
         @Override
         public void sendMessage(MessageType type, Component text, UUID source) {
-            this.<GameMessageS2CPacket, Text>forEachUnwrapped(() -> new GameMessageS2CPacket(TextAdapter.adapt(text), type, source), (pkt, ply) -> ply.networkHandler.sendPacket(pkt),
-              () -> TextAdapter.adapt(text), (msg, out) -> out.sendSystemMessage(msg, source));
+            this.<GameMessageS2CPacket, Text>forEachUnwrapped(() -> new GameMessageS2CPacket(FabricPlatform.adapt(text), type, source), (pkt, ply) -> ply.networkHandler.sendPacket(pkt),
+              () -> FabricPlatform.adapt(text), (msg, out) -> out.sendSystemMessage(msg, source));
 
             /*if (!audiences.isEmpty()) {
                 audiences.forEach(it -> {

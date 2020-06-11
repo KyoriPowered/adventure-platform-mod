@@ -19,59 +19,65 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package ca.stellardrift.text.fabric.mixin;
+package ca.stellardrift.adventure.fabric;
 
-import ca.stellardrift.text.fabric.FabricAudience;
-import ca.stellardrift.text.fabric.TextAdapter;
+import java.util.UUID;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.SoundStop;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
 import net.minecraft.network.MessageType;
-import net.minecraft.server.MinecraftServer;
-import org.apache.logging.log4j.Logger;
+import net.minecraft.server.command.CommandOutput;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
+
+import static java.util.Objects.requireNonNull;
 
 /**
- * Implement ComponentCommandOutput for output to the server console
+ * Audience implementation that can wrap a CommandOutput
  */
-@Mixin(value = MinecraftServer.class)
-public abstract class MixinMinecraftServer implements FabricAudience {
-    @Shadow @Final
-    private static Logger LOGGER;
+public final class CommandOutputAudience implements FabricAudience {
+  private final CommandOutput output;
 
-    /**
-     * Send a message to this receiver as a component
-     *
-     * @param text The text to send
-     */
-    @Override
-    public void sendMessage(MessageType type, Component text) {
-        LOGGER.info(TextAdapter.plain().serialize(text)); // TODO: Eventually will we support formatted output?
+  CommandOutputAudience(final CommandOutput output) {
+    this.output = output;
+  }
+
+  public static FabricAudience of(final CommandOutput output) {
+    if (output instanceof FabricAudience) {
+      return (FabricAudience) output;
+    } else {
+      return new CommandOutputAudience(requireNonNull(output, "output"));
     }
+  }
 
-    @Override
-    public void showBossBar(@NonNull BossBar bar) {}
+  @Override
+  public void sendMessage(final MessageType type, final Component text, final UUID source) {
+    this.output.sendSystemMessage(FabricPlatform.adapt(text), source);
+  }
 
-    @Override
-    public void hideBossBar(@NonNull BossBar bar) {}
+  @Override
+  public void showBossBar(@NonNull final BossBar bar) { }
 
-    @Override
-    public void playSound(@NonNull Sound sound) {}
+  @Override
+  public void hideBossBar(@NonNull final BossBar bar) { }
 
-    @Override
-    public void stopSound(@NonNull SoundStop stop) {}
+  @Override
+  public void playSound(@NonNull final Sound sound) { }
 
-    @Override
-    public void showTitle(@NonNull final Title title) {}
+  @Override
+  public void playSound(final @NonNull Sound sound, final double x, final double y, final double z) {
+  }
 
-    @Override
-    public void clearTitle() { }
+  @Override
+  public void stopSound(@NonNull final SoundStop stop) { }
 
-    @Override
-    public void resetTitle() {}
+  @Override
+  public void showTitle(@NonNull final Title title) { }
+
+  @Override
+  public void clearTitle() { }
+
+  @Override
+  public void resetTitle() { }
 }

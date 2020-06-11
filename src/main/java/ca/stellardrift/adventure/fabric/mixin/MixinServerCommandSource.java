@@ -19,12 +19,12 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package ca.stellardrift.text.fabric.mixin;
+package ca.stellardrift.adventure.fabric.mixin;
 
-import ca.stellardrift.text.fabric.CommandOutputAudience;
-import ca.stellardrift.text.fabric.AdventureCommandSource;
-import ca.stellardrift.text.fabric.FabricAudience;
-import ca.stellardrift.text.fabric.TextAdapter;
+import ca.stellardrift.adventure.fabric.CommandOutputAudience;
+import ca.stellardrift.adventure.fabric.AdventureCommandSource;
+import ca.stellardrift.adventure.fabric.FabricAudience;
+import ca.stellardrift.adventure.fabric.FabricPlatform;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minecraft.server.command.CommandOutput;
@@ -58,7 +58,7 @@ public abstract class MixinServerCommandSource implements AdventureCommandSource
         }
 
         if (sendToOps && this.output.shouldBroadcastConsoleToOps() && !this.silent) {
-            this.sendToOps(TextAdapter.adapt(text));
+            this.sendToOps(FabricPlatform.adapt(text));
         }
     }
 

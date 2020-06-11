@@ -19,25 +19,17 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package ca.stellardrift.text.fabric.mixin;
+package ca.stellardrift.adventure.fabric.mixin;
 
-import com.google.gson.Gson;
-import com.google.gson.stream.JsonReader;
-import net.minecraft.text.Text;
+import java.util.Map;
+import net.minecraft.sound.SoundCategory;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
-import org.spongepowered.asm.mixin.gen.Invoker;
 
-@Mixin(Text.Serializer.class)
-public interface AccessorTextSerializer {
-
-  @Accessor
-  static Gson getGSON() {
-    throw new UnsupportedOperationException("Not mixed in");
-  }
-
-  @Invoker("getPosition")
-  static int getPosition(JsonReader reader) {
-    throw new UnsupportedOperationException("mixin replaces this");
+@Mixin(SoundCategory.class)
+public interface AccessorSoundCategory {
+  @Accessor("NAME_MAP")
+  static Map<String, SoundCategory> getNameMap() {
+    throw new UnsupportedOperationException("mixin replaced");
   }
 }

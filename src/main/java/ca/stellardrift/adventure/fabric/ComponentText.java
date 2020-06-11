@@ -19,11 +19,10 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package ca.stellardrift.text.fabric;
+package ca.stellardrift.adventure.fabric;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
-import net.minecraft.client.font.TextRenderer;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
@@ -48,7 +47,7 @@ public final class ComponentText implements Text {
     Text deepConverted() {
         Text converted = this.converted;
         if (converted == null) {
-            converted = this.converted = TextAdapter.nonWrapping().serialize(this.wrapped);
+            converted = this.converted = FabricPlatform.nonWrapping().serialize(this.wrapped);
         }
         return converted;
     }
@@ -64,7 +63,7 @@ public final class ComponentText implements Text {
 
     @Override
     public String getString() {
-        return TextAdapter.plain().serialize(this.wrapped);
+        return FabricPlatform.plain().serialize(this.wrapped);
     }
 
     @Override

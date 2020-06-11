@@ -20,7 +20,7 @@
  */
 
 @DefaultQualifier(NonNull.class)
-package ca.stellardrift.text.fabric;
+package ca.stellardrift.adventure.fabric;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;

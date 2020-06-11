@@ -19,11 +19,12 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package ca.stellardrift.text.fabric.test;
+package ca.stellardrift.adventure.fabric.test;
 
-import ca.stellardrift.text.fabric.AdventureCommandSource;
-import ca.stellardrift.text.fabric.Audiences;
-import ca.stellardrift.text.fabric.TextAdapter;
+import ca.stellardrift.adventure.fabric.AdventureCommandSource;
+import ca.stellardrift.adventure.fabric.Audiences;
+import ca.stellardrift.adventure.fabric.ComponentArgumentType;
+import ca.stellardrift.adventure.fabric.FabricPlatform;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.Collections;
@@ -37,6 +38,8 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.HoverEvent;
@@ -45,14 +48,15 @@ import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.Title;
 import net.minecraft.server.network.ServerPlayerEntity;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
-import static ca.stellardrift.text.fabric.ComponentArgumentType.component;
-import static ca.stellardrift.text.fabric.ComponentArgumentType.getComponent;
 import static com.mojang.brigadier.arguments.IntegerArgumentType.getInteger;
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
 import static net.kyori.adventure.text.TextComponent.newline;
 import static net.minecraft.command.arguments.EntityArgumentType.getPlayers;
 import static net.minecraft.command.arguments.EntityArgumentType.players;
+import static net.minecraft.command.arguments.IdentifierArgumentType.getIdentifier;
+import static net.minecraft.command.arguments.IdentifierArgumentType.identifier;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
@@ -60,6 +64,7 @@ public class AdventureTester implements ModInitializer {
   private static final String ARG_TEXT = "text";
   private static final String ARG_SECONDS = "seconds";
   private static final String ARG_TARGETS = "targets";
+  private static final String ARG_SOUND = "sound";
   private static final TextColor COLOR_RESPONSE = TextColor.of(0x22EE99);
   private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
@@ -68,9 +73,9 @@ public class AdventureTester implements ModInitializer {
 
     CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
       dispatcher.register(literal("adventure")
-        .then(literal("echo").then(argument(ARG_TEXT, component()).executes(ctx -> {
+        .then(literal("echo").then(argument(ARG_TEXT, ComponentArgumentType.component()).executes(ctx -> {
           final Audience audience = AdventureCommandSource.of(ctx.getSource());
-          final Component result = getComponent(ctx, ARG_TEXT);
+          final Component result = ComponentArgumentType.getComponent(ctx, ARG_TEXT);
           audience.sendMessage(result);
           return 1;
         })))
@@ -85,10 +90,10 @@ public class AdventureTester implements ModInitializer {
           });
           return 1;
         })))
-      .then(literal("tellall").then(argument(ARG_TARGETS, players()).then(argument(ARG_TEXT, component()).executes(ctx -> {
+      .then(literal("tellall").then(argument(ARG_TARGETS, players()).then(argument(ARG_TEXT, ComponentArgumentType.component()).executes(ctx -> {
         final Collection<ServerPlayerEntity> targets = getPlayers(ctx, ARG_TARGETS);
         final Audience source = AdventureCommandSource.of(ctx.getSource());
-        final Component message = getComponent(ctx, ARG_TEXT);
+        final Component message = ComponentArgumentType.getComponent(ctx, ARG_TEXT);
         final Audience destination = Audiences.of(targets);
 
         destination.sendMessage(message);
@@ -97,8 +102,36 @@ public class AdventureTester implements ModInitializer {
           b.color(COLOR_RESPONSE);
         }));
         return 1;
-      })))));
+      }))))
+      .then(literal("sound").then(argument(ARG_SOUND, identifier()).executes(ctx -> {
+        final ServerPlayerEntity player = ctx.getSource().getPlayer();
+        final Audience viewer = (Audience) player;
+        final Key sound = FabricPlatform.adapt(getIdentifier(ctx, ARG_SOUND));
+        viewer.sendMessage(TextComponent.make("Playing sound ", b -> b.append(represent(sound)).color(COLOR_RESPONSE)));
+        viewer.playSound(Sound.of(sound, Sound.Source.MASTER, 1f, 1f));
+        return 1;
+      }))));
     });
+  }
+  
+  private static final Component COLON = TextComponent.of(":", NamedTextColor.GRAY);
+  private static final TextColor COLOR_PATH = TextColor.of(0x18A4C2);
+  private static final TextColor COLOR_NAMESPACE = TextColor.of(0x0D6679);
+  private static final TextColor COLOR_NAMESPACE_VANILLA = TextColor.of(0x4A656B);
+  
+  private static Component represent(final @NonNull Key ident) {
+    final TextColor namespaceColor;
+    if(ident.namespace().equals("minecraft")) { // de-emphasize
+      namespaceColor = COLOR_NAMESPACE_VANILLA;
+    } else {
+      namespaceColor = COLOR_NAMESPACE;
+    }
+
+    return TextComponent.builder(ident.namespace(), namespaceColor)
+      .append(COLON)
+      .append(TextComponent.of(ident.value(), COLOR_PATH))
+      .build();
+    
   }
 
   private static Component listPlayers(Collection<? extends ServerPlayerEntity> players) {
@@ -109,9 +142,7 @@ public class AdventureTester implements ModInitializer {
           b.append(newline());
         }
         first = false;
-        Component component = TextAdapter.adapt(player.getDisplayName());
-        Audiences.of(player).sendMessage(TextComponent.builder("You are ", COLOR_RESPONSE).append(component).build());
-        b.append(component);
+        b.append(FabricPlatform.adapt(player.getDisplayName()));
       }
     }));
     return TextComponent.builder(players.size() + " players")

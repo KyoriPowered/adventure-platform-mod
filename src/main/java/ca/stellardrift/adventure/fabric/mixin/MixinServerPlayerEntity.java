@@ -19,12 +19,12 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package ca.stellardrift.text.fabric.mixin;
+package ca.stellardrift.adventure.fabric.mixin;
 
-import ca.stellardrift.text.fabric.FabricAudience;
-import ca.stellardrift.text.fabric.FabricBossBarListener;
-import ca.stellardrift.text.fabric.GameEnums;
-import ca.stellardrift.text.fabric.TextAdapter;
+import ca.stellardrift.adventure.fabric.FabricAudience;
+import ca.stellardrift.adventure.fabric.FabricBossBarListener;
+import ca.stellardrift.adventure.fabric.FabricPlatform;
+import ca.stellardrift.adventure.fabric.GameEnums;
 import com.mojang.authlib.GameProfile;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
@@ -84,9 +84,9 @@ public abstract class MixinServerPlayerEntity extends PlayerEntity implements Fa
     @Override
     public void sendMessage(MessageType type, Component text, UUID source) {
         if (type == MessageType.GAME_INFO) {
-            networkHandler.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.ACTIONBAR, TextAdapter.adapt(text)));
+            networkHandler.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.ACTIONBAR, FabricPlatform.adapt(text)));
         } else {
-            networkHandler.sendPacket(new GameMessageS2CPacket(TextAdapter.adapt(text), type, source));
+            networkHandler.sendPacket(new GameMessageS2CPacket(FabricPlatform.adapt(text), type, source));
         }
     }
 
@@ -102,13 +102,13 @@ public abstract class MixinServerPlayerEntity extends PlayerEntity implements Fa
 
     @Override
     public void playSound(@NonNull Sound sound) {
-        this.networkHandler.sendPacket(new PlaySoundIdS2CPacket(TextAdapter.adapt(sound.name()),
+        this.networkHandler.sendPacket(new PlaySoundIdS2CPacket(FabricPlatform.adapt(sound.name()),
                 GameEnums.SOUND_SOURCE.toMinecraft(sound.source()), this.getPos(), sound.volume(), sound.pitch()));
     }
 
     @Override
     public void playSound(final @NonNull Sound sound, final double x, final double y, final double z) {
-        this.networkHandler.sendPacket(new PlaySoundIdS2CPacket(TextAdapter.adapt(sound.name()),
+        this.networkHandler.sendPacket(new PlaySoundIdS2CPacket(FabricPlatform.adapt(sound.name()),
           GameEnums.SOUND_SOURCE.toMinecraft(sound.source()), new Vec3d(x, y, z), sound.volume(), sound.pitch()));
     }
 
@@ -117,17 +117,17 @@ public abstract class MixinServerPlayerEntity extends PlayerEntity implements Fa
         final Key sound = stop.sound();
         Sound.@Nullable Source src = stop.source();
         @Nullable SoundCategory cat = src == null ? null : GameEnums.SOUND_SOURCE.toMinecraft(src);
-        this.networkHandler.sendPacket(new StopSoundS2CPacket(sound == null ? null : TextAdapter.adapt(sound), cat));
+        this.networkHandler.sendPacket(new StopSoundS2CPacket(sound == null ? null : FabricPlatform.adapt(sound), cat));
     }
 
     @Override
     public void showTitle(final @NonNull Title title) {
         if (!TextComponent.empty().equals(title.subtitle())) {
-            this.networkHandler.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.SUBTITLE, TextAdapter.adapt(title.subtitle())));
+            this.networkHandler.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.SUBTITLE, FabricPlatform.adapt(title.subtitle())));
         }
 
         if (!TextComponent.empty().equals(title.title())) {
-            this.networkHandler.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.TITLE, TextAdapter.adapt(title.title())));
+            this.networkHandler.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.TITLE, FabricPlatform.adapt(title.title())));
         }
 
         final int fadeIn = ticks(title.fadeInTime());
