@@ -60,7 +60,6 @@ public final class ComponentText implements Text {
     @Override
     public Style getStyle() {
         return deepConverted().getStyle();
-        //return TextAdapter.nonWrapping().style(this.wrapped.style(), false);
     }
 
     @Override

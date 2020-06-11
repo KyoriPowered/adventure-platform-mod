@@ -44,6 +44,6 @@ class MinecraftTextSerializer implements ComponentSerializer<Component, Componen
 
   @Override
   public MutableText serialize(Component component) {
-    return Text.Serializer.fromJson(AccessorTextSerializer.getGSON().toJson(component));
+    return Text.Serializer.fromJson(AccessorTextSerializer.getGSON().toJsonTree(component));
   }
 }
