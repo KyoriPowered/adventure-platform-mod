@@ -4,6 +4,7 @@ import net.fabricmc.loom.task.RemapJarTask
 import net.fabricmc.loom.task.RemapSourcesJarTask
 
 plugins {
+    id("fabric-loom") version "0.4-SNAPSHOT"
     id("ca.stellardrift.opinionated.fabric") version "3.0"
     id("ca.stellardrift.opinionated.publish") version "3.0"
 }
