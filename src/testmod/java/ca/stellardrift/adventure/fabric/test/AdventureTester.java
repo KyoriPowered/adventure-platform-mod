@@ -25,6 +25,7 @@ import ca.stellardrift.adventure.fabric.AdventureCommandSource;
 import ca.stellardrift.adventure.fabric.Audiences;
 import ca.stellardrift.adventure.fabric.ComponentArgumentType;
 import ca.stellardrift.adventure.fabric.FabricPlatform;
+import com.mojang.brigadier.tree.LiteralCommandNode;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.Collections;
@@ -44,9 +45,11 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.Title;
+import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -61,6 +64,9 @@ import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
 public class AdventureTester implements ModInitializer {
+  private static final Key FONT_MEOW = Key.of("adventure", "meow");
+  private static final Key FONT_IOSEVKA = Key.of("adventure", "iosevka");
+
   private static final String ARG_TEXT = "text";
   private static final String ARG_SECONDS = "seconds";
   private static final String ARG_TARGETS = "targets";
@@ -85,8 +91,7 @@ public class AdventureTester implements ModInitializer {
             complete.sendActionBar(TextComponent.of("Countdown complete!", COLOR_RESPONSE));
           });
           beginCountdown(TextComponent.of("Faster Countdown"), getInteger(ctx, ARG_SECONDS) / 2, audience, BossBar.Color.PURPLE, complete -> {
-            complete.showTitle(Title.of(TextComponent.of("Faster Countdown"), TextComponent.of("Complete"), Duration.ofSeconds(2), Duration.ofSeconds(10), Duration.ofSeconds(5)));
-            complete.sendActionBar(TextComponent.of("Faster Countdown complete!", COLOR_RESPONSE));
+            complete.sendActionBar(TextComponent.builder("Faster Countdown complete! ", COLOR_RESPONSE).append(TextComponent.of('\uE042', Style.builder().font(FONT_MEOW).build())).build());
           });
           return 1;
         })))
@@ -159,7 +164,7 @@ public class AdventureTester implements ModInitializer {
    * @param completionAction callback to execute when countdown is complete
    */
   private void beginCountdown(Component title, final int timeSeconds, Audience targets, BossBar.Color color, Consumer<Audience> completionAction) {
-    final BossBar bar = BossBar.of(title.colorIfAbsent(textColor(color)), 1, color, BossBar.Overlay.PROGRESS, Collections.singleton(BossBar.Flag.PLAY_BOSS_MUSIC));
+    final BossBar bar = BossBar.of(title.style(builder -> builder.colorIfAbsent(textColor(color)).font(FONT_IOSEVKA)), 1, color, BossBar.Overlay.PROGRESS, Collections.singleton(BossBar.Flag.PLAY_BOSS_MUSIC));
 
     final int timeMs = timeSeconds * 1000; // total time ms
     final long[] times = new long[] {timeMs, System.currentTimeMillis()}; // remaining time in ms, last update time
