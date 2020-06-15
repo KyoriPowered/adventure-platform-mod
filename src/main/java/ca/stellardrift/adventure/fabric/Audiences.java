@@ -34,6 +34,7 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.audience.MultiAudience;
 import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.SoundStop;
 import net.kyori.adventure.text.Component;
@@ -159,6 +160,11 @@ public class Audiences {
 
         @Override
         public void stopSound(@NonNull SoundStop stop) {
+
+        }
+
+        @Override
+        public void openBook(final @NonNull Book book) {
 
         }
 

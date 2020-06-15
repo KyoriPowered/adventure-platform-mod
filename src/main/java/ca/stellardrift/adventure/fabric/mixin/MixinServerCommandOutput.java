@@ -25,6 +25,7 @@ import ca.stellardrift.adventure.fabric.FabricAudience;
 import ca.stellardrift.adventure.fabric.FabricPlatform;
 import java.util.UUID;
 import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.SoundStop;
 import net.kyori.adventure.text.Component;
@@ -56,6 +57,14 @@ public abstract class MixinServerCommandOutput implements FabricAudience {
 
     @Override
     public void stopSound(@NonNull final SoundStop stop) { }
+
+    @Override
+    public void playSound(final @NonNull Sound sound, final double x, final double y, final double z) {
+    }
+
+    @Override
+    public void openBook(final @NonNull Book book) {
+    }
 
     @Override
     public void showTitle(@NonNull final Title title) { }

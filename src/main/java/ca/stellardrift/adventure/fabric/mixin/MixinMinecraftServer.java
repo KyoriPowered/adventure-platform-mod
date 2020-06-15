@@ -23,7 +23,9 @@ package ca.stellardrift.adventure.fabric.mixin;
 
 import ca.stellardrift.adventure.fabric.FabricAudience;
 import ca.stellardrift.adventure.fabric.FabricPlatform;
+import java.util.UUID;
 import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.SoundStop;
 import net.kyori.adventure.text.Component;
@@ -50,7 +52,7 @@ public abstract class MixinMinecraftServer implements FabricAudience {
      * @param text The text to send
      */
     @Override
-    public void sendMessage(MessageType type, Component text) {
+    public void sendMessage(MessageType type, Component text, UUID source) {
         LOGGER.info(FabricPlatform.plain().serialize(text)); // TODO: Eventually will we support formatted output?
     }
 
@@ -65,6 +67,14 @@ public abstract class MixinMinecraftServer implements FabricAudience {
 
     @Override
     public void stopSound(@NonNull SoundStop stop) {}
+
+    @Override
+    public void playSound(final @NonNull Sound sound, final double x, final double y, final double z) {
+    }
+
+    @Override
+    public void openBook(final @NonNull Book book) {
+    }
 
     @Override
     public void showTitle(@NonNull final Title title) {}

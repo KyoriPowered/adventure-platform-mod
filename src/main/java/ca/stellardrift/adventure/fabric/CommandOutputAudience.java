@@ -23,6 +23,7 @@ package ca.stellardrift.adventure.fabric;
 
 import java.util.UUID;
 import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.SoundStop;
 import net.kyori.adventure.text.Component;
@@ -71,6 +72,10 @@ public final class CommandOutputAudience implements FabricAudience {
 
   @Override
   public void stopSound(@NonNull final SoundStop stop) { }
+
+  @Override
+  public void openBook(final @NonNull Book book) {
+  }
 
   @Override
   public void showTitle(@NonNull final Title title) { }

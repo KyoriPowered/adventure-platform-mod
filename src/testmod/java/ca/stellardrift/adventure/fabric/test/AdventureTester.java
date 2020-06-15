@@ -25,8 +25,6 @@ import ca.stellardrift.adventure.fabric.AdventureCommandSource;
 import ca.stellardrift.adventure.fabric.Audiences;
 import ca.stellardrift.adventure.fabric.ComponentArgumentType;
 import ca.stellardrift.adventure.fabric.FabricPlatform;
-import com.mojang.brigadier.tree.LiteralCommandNode;
-import java.time.Duration;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.Executors;
@@ -39,6 +37,7 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
@@ -48,8 +47,6 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import net.kyori.adventure.title.Title;
-import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -109,13 +106,22 @@ public class AdventureTester implements ModInitializer {
         return 1;
       }))))
       .then(literal("sound").then(argument(ARG_SOUND, identifier()).executes(ctx -> {
-        final ServerPlayerEntity player = ctx.getSource().getPlayer();
-        final Audience viewer = (Audience) player;
+        final Audience viewer = AdventureCommandSource.of(ctx.getSource());
         final Key sound = FabricPlatform.adapt(getIdentifier(ctx, ARG_SOUND));
         viewer.sendMessage(TextComponent.make("Playing sound ", b -> b.append(represent(sound)).color(COLOR_RESPONSE)));
         viewer.playSound(Sound.of(sound, Sound.Source.MASTER, 1f, 1f));
         return 1;
-      }))));
+      })))
+      .then(literal("book").executes(ctx -> {
+        final Audience viewer = AdventureCommandSource.of(ctx.getSource());
+        viewer.openBook(Book.builder()
+        .title(TextComponent.of("My book", NamedTextColor.RED))
+        .author(TextComponent.of("The adventure team", COLOR_RESPONSE))
+        .page(TextComponent.of("Welcome to our rules page"))
+        .page(TextComponent.of("Let's do a thing!"))
+        .build());
+        return 1;
+      })));
     });
   }
   
