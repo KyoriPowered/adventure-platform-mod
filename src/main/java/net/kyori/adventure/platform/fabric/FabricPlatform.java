@@ -54,14 +54,13 @@ import static java.util.Objects.requireNonNull;
  * The entry point for accessing Adventure.
  */
 public class FabricPlatform implements AdventurePlatform {
-
-  static final PlainComponentSerializer PLAIN;
+  private static final PlainComponentSerializer PLAIN;
   private static final MinecraftTextSerializer TEXT_NON_WRAPPING = new MinecraftTextSerializer();
 
   static {
     Function<KeybindComponent, String> keybindNamer;
 
-    if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
+    if(FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
       keybindNamer = keybind -> KeyBinding.getLocalizedName(keybind.keybind()).get().asString();
     } else {
       keybindNamer = KeybindComponent::keybind;
@@ -85,7 +84,7 @@ public class FabricPlatform implements AdventurePlatform {
    * @return the plain serializer instance
    */
   public static PlainComponentSerializer plainSerializer() {
-      return PLAIN;
+    return PLAIN;
   }
 
   /**
@@ -96,29 +95,29 @@ public class FabricPlatform implements AdventurePlatform {
    * @return a serializer instance
    */
   public static MinecraftTextSerializer nonWrappingSerializer() {
-      return TEXT_NON_WRAPPING;
+    return TEXT_NON_WRAPPING;
   }
 
   public static Text adapt(final Component component) {
-      return new ComponentText(component);
+    return new ComponentText(component);
   }
 
   public static Component adapt(final Text text) {
-      if (text instanceof ComponentText) {
-          return ((ComponentText) text).getWrapped();
-      }
-      return nonWrappingSerializer().deserialize(text);
+    if(text instanceof ComponentText) {
+      return ((ComponentText) text).getWrapped();
+    }
+    return nonWrappingSerializer().deserialize(text);
   }
 
   public static Text update(final Text input, final UnaryOperator<Component> modifier) {
-      Component modified;
-      if (input instanceof ComponentText) {
-          modified = requireNonNull(modifier).apply(((ComponentText) input).getWrapped());
-      } else {
-          final Component original = nonWrappingSerializer().deserialize(input);
-          modified = modifier.apply(original);
-      }
-      return new ComponentText(modified);
+    Component modified;
+    if(input instanceof ComponentText) {
+      modified = requireNonNull(modifier).apply(((ComponentText) input).getWrapped());
+    } else {
+      final Component original = nonWrappingSerializer().deserialize(input);
+      modified = modifier.apply(original);
+    }
+    return new ComponentText(modified);
   }
 
   /**
@@ -138,10 +137,10 @@ public class FabricPlatform implements AdventurePlatform {
    * @return The equivalent data as a Key
    */
   public static @PolyNull Key adapt(@PolyNull final Identifier ident) {
-      if (ident == null) {
-          return null;
-      }
-      return Key.of(ident.getNamespace(), ident.getPath());
+    if(ident == null) {
+      return null;
+    }
+    return Key.of(ident.getNamespace(), ident.getPath());
   }
 
   /**
@@ -151,10 +150,10 @@ public class FabricPlatform implements AdventurePlatform {
    * @return The equivalent data as an Identifier
    */
   public static @PolyNull Identifier adapt(@PolyNull final Key key) {
-      if (key == null) {
-          return null;
-      }
-      return new Identifier(key.namespace(), key.value());
+    if(key == null) {
+      return null;
+    }
+    return new Identifier(key.namespace(), key.value());
   }
 
   @Override
@@ -189,7 +188,7 @@ public class FabricPlatform implements AdventurePlatform {
   }
 
   public AdventureCommandSource audience(final @NonNull ServerCommandSource source) {
-    if (!(source instanceof AdventureCommandSource)) {
+    if(!(source instanceof AdventureCommandSource)) {
       throw new IllegalArgumentException("The AdventureCommandSource mixin failed!");
     }
 

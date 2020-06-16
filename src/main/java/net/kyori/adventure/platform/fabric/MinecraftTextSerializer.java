@@ -30,7 +30,6 @@ import net.kyori.adventure.text.serializer.ComponentSerializer;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 
-
 class MinecraftTextSerializer implements ComponentSerializer<Component, Component, Text> {
 
   MinecraftTextSerializer() {

@@ -24,26 +24,25 @@
 
 package net.kyori.adventure.platform.fabric;
 
-import net.kyori.adventure.platform.fabric.mixin.AccessorSoundCategory;
 import net.kyori.adventure.bossbar.BossBar.Overlay;
+import net.kyori.adventure.platform.fabric.mixin.AccessorSoundCategory;
 import net.kyori.adventure.sound.Sound;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.sound.SoundCategory;
 
 public class GameEnums {
+  public static final MappedRegistry<BossBar.Color, net.kyori.adventure.bossbar.BossBar.Color> BOSS_BAR_COLOR
+    = MappedRegistry.named(BossBar.Color.class, BossBar.Color::byName,
+    net.kyori.adventure.bossbar.BossBar.Color.class, net.kyori.adventure.bossbar.BossBar.Color.NAMES);
 
-    public static final MappedRegistry<BossBar.Color, net.kyori.adventure.bossbar.BossBar.Color> BOSS_BAR_COLOR
-            = MappedRegistry.named(BossBar.Color.class, BossBar.Color::byName,
-            net.kyori.adventure.bossbar.BossBar.Color.class, net.kyori.adventure.bossbar.BossBar.Color.NAMES);
+  public static final MappedRegistry<BossBar.Style, Overlay> BOSS_BAR_OVERLAY
+    = MappedRegistry.named(BossBar.Style.class, BossBar.Style::byName,
+    Overlay.class, Overlay.NAMES);
 
-    public static final MappedRegistry<BossBar.Style, Overlay> BOSS_BAR_OVERLAY
-            = MappedRegistry.named(BossBar.Style.class, BossBar.Style::byName,
-            Overlay.class, Overlay.NAMES);
+  public static final MappedRegistry<SoundCategory, Sound.Source> SOUND_SOURCE
+    = MappedRegistry.named(SoundCategory.class, key -> AccessorSoundCategory.getNameMap().get(key),
+    Sound.Source.class, Sound.Source.NAMES);
 
-    public static final MappedRegistry<SoundCategory, Sound.Source> SOUND_SOURCE
-            = MappedRegistry.named(SoundCategory.class, key -> AccessorSoundCategory.getNameMap().get(key),
-            Sound.Source.class, Sound.Source.NAMES);
-
-    private GameEnums() {
-    }
+  private GameEnums() {
+  }
 }

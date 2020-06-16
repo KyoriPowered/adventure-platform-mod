@@ -24,10 +24,10 @@
 
 package net.kyori.adventure.platform.fabric.mixin;
 
-import net.kyori.adventure.platform.fabric.CommandOutputAudience;
-import net.kyori.adventure.platform.fabric.AdventureCommandSource;
-import net.kyori.adventure.platform.fabric.FabricPlatform;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.platform.fabric.AdventureCommandSource;
+import net.kyori.adventure.platform.fabric.CommandOutputAudience;
+import net.kyori.adventure.platform.fabric.FabricPlatform;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minecraft.server.command.CommandOutput;
@@ -44,39 +44,36 @@ import org.spongepowered.asm.mixin.Shadow;
  */
 @Mixin(ServerCommandSource.class)
 public abstract class MixinServerCommandSource implements AdventureCommandSource {
-    @Shadow @Final
-    private CommandOutput output;
-    @Shadow @Final
-    private boolean silent;
+  @Shadow @Final private CommandOutput output;
+  @Shadow @Final private boolean silent;
 
-    @Shadow
-    protected abstract void sendToOps(Text text);
+  @Shadow protected abstract void sendToOps(Text text);
 
-    private @MonotonicNonNull Audience ownOut;
+  private @MonotonicNonNull Audience ownOut;
 
-    @Override
-    public void sendFeedback(Component text, boolean sendToOps) {
-        if (this.output.shouldReceiveFeedback() && !this.silent) {
-            audience().sendMessage(text);
-        }
-
-        if (sendToOps && this.output.shouldBroadcastConsoleToOps() && !this.silent) {
-            this.sendToOps(FabricPlatform.adapt(text));
-        }
+  @Override
+  public void sendFeedback(Component text, boolean sendToOps) {
+    if(this.output.shouldReceiveFeedback() && !this.silent) {
+      audience().sendMessage(text);
     }
 
-    @Override
-    public void sendError(Component text) {
-        if (this.output.shouldTrackOutput()) {
-            this.audience().sendMessage(text.color(NamedTextColor.RED));
-        }
+    if(sendToOps && this.output.shouldBroadcastConsoleToOps() && !this.silent) {
+      this.sendToOps(FabricPlatform.adapt(text));
     }
+  }
 
-    @Override
-    public Audience audience() {
-        if (this.ownOut == null) {
-            this.ownOut = CommandOutputAudience.of(this.output);
-        }
-        return this.ownOut;
+  @Override
+  public void sendError(Component text) {
+    if(this.output.shouldTrackOutput()) {
+      this.audience().sendMessage(text.color(NamedTextColor.RED));
     }
+  }
+
+  @Override
+  public Audience audience() {
+    if(this.ownOut == null) {
+      this.ownOut = CommandOutputAudience.of(this.output);
+    }
+    return this.ownOut;
+  }
 }

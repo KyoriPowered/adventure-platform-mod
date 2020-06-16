@@ -27,23 +27,22 @@ package net.kyori.adventure.platform.fabric;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.text.Component;
 import net.minecraft.server.command.ServerCommandSource;
-import org.checkerframework.checker.nullness.qual.PolyNull;
 
 /**
  * An interface applied to {@link ServerCommandSource} to allow sending {@link Component Components}
  */
 public interface AdventureCommandSource extends ForwardingAudience {
-    /**
-     * Send a result message to the command source
-     *
-     * @param text The text to send
-     * @param sendToOps If this message should be sent to all ops listening
-     */
-    void sendFeedback(Component text, boolean sendToOps);
+  /**
+   * Send a result message to the command source
+   *
+   * @param text The text to send
+   * @param sendToOps If this message should be sent to all ops listening
+   */
+  void sendFeedback(Component text, boolean sendToOps);
 
-    /**
-     * Send an error message to the command source
-     * @param text The error
-     */
-    void sendError(Component text);
+  /**
+   * Send an error message to the command source
+   * @param text The error
+   */
+  void sendError(Component text);
 }

@@ -24,10 +24,10 @@
 
 package net.kyori.adventure.platform.fabric.mixin;
 
-import net.kyori.adventure.platform.fabric.FabricPlatform;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.inventory.Book;
+import net.kyori.adventure.platform.fabric.FabricPlatform;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.SoundStop;
 import net.kyori.adventure.text.Component;
@@ -40,39 +40,46 @@ import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(ServerCommandOutput.class)
 public abstract class MixinServerCommandOutput implements Audience {
-    @Shadow @Final private StringBuffer buffer;
+  @Shadow @Final private StringBuffer buffer;
 
-    @Override
-    public void sendMessage(final Component text) {
-        this.buffer.append(FabricPlatform.plainSerializer().serialize(text));
-    }
+  @Override
+  public void sendMessage(final Component text) {
+    this.buffer.append(FabricPlatform.plainSerializer().serialize(text));
+  }
 
-    @Override
-    public void showBossBar(@NonNull final BossBar bar) { }
+  @Override
+  public void showBossBar(@NonNull final BossBar bar) {
+  }
 
-    @Override
-    public void hideBossBar(@NonNull final BossBar bar) { }
+  @Override
+  public void hideBossBar(@NonNull final BossBar bar) {
+  }
 
-    @Override
-    public void playSound(@NonNull final Sound sound) { }
+  @Override
+  public void playSound(@NonNull final Sound sound) {
+  }
 
-    @Override
-    public void stopSound(@NonNull final SoundStop stop) { }
+  @Override
+  public void stopSound(@NonNull final SoundStop stop) {
+  }
 
-    @Override
-    public void playSound(final @NonNull Sound sound, final double x, final double y, final double z) {
-    }
+  @Override
+  public void playSound(final @NonNull Sound sound, final double x, final double y, final double z) {
+  }
 
-    @Override
-    public void openBook(final @NonNull Book book) {
-    }
+  @Override
+  public void openBook(final @NonNull Book book) {
+  }
 
-    @Override
-    public void showTitle(@NonNull final Title title) { }
+  @Override
+  public void showTitle(@NonNull final Title title) {
+  }
 
-    @Override
-    public void clearTitle() { }
+  @Override
+  public void clearTitle() {
+  }
 
-    @Override
-    public void resetTitle() { }
+  @Override
+  public void resetTitle() {
+  }
 }

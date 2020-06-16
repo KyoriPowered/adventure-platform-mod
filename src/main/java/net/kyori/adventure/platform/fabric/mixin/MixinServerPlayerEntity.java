@@ -24,9 +24,6 @@
 
 package net.kyori.adventure.platform.fabric.mixin;
 
-import net.kyori.adventure.platform.fabric.FabricBossBarListener;
-import net.kyori.adventure.platform.fabric.FabricPlatform;
-import net.kyori.adventure.platform.fabric.GameEnums;
 import com.mojang.authlib.GameProfile;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
@@ -34,6 +31,9 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.platform.fabric.FabricBossBarListener;
+import net.kyori.adventure.platform.fabric.FabricPlatform;
+import net.kyori.adventure.platform.fabric.GameEnums;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.SoundStop;
 import net.kyori.adventure.text.Component;
@@ -70,128 +70,122 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerPlayerEntity.class)
 public abstract class MixinServerPlayerEntity extends PlayerEntity implements Audience {
-    @Shadow
-    public ServerPlayNetworkHandler networkHandler;
+  @Shadow public ServerPlayNetworkHandler networkHandler;
 
-    public MixinServerPlayerEntity(World world, BlockPos pos, GameProfile gameProfile) {
-        super(world, pos, gameProfile);
+  public MixinServerPlayerEntity(World world, BlockPos pos, GameProfile gameProfile) {
+    super(world, pos, gameProfile);
+  }
+
+  @Override
+  public void sendMessage(Component text) {
+    this.networkHandler.sendPacket(new GameMessageS2CPacket(FabricPlatform.adapt(text), MessageType.SYSTEM, Util.NIL_UUID));
+  }
+
+  @Override
+  public void sendActionBar(final @NonNull Component message) {
+    this.networkHandler.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.ACTIONBAR, FabricPlatform.adapt(message)));
+  }
+
+  @Override
+  public void showBossBar(@NonNull BossBar bar) {
+    FabricBossBarListener.INSTANCE.subscribe((ServerPlayerEntity) (Object) this, bar);
+  }
+
+  @Override
+  public void hideBossBar(@NonNull BossBar bar) {
+    FabricBossBarListener.INSTANCE.unsubscribe((ServerPlayerEntity) (Object) this, bar);
+  }
+
+  @Override
+  public void playSound(@NonNull Sound sound) {
+    this.networkHandler.sendPacket(new PlaySoundIdS2CPacket(FabricPlatform.adapt(sound.name()),
+      GameEnums.SOUND_SOURCE.toMinecraft(sound.source()), this.getPos(), sound.volume(), sound.pitch()));
+  }
+
+  @Override
+  public void playSound(final @NonNull Sound sound, final double x, final double y, final double z) {
+    this.networkHandler.sendPacket(new PlaySoundIdS2CPacket(FabricPlatform.adapt(sound.name()),
+      GameEnums.SOUND_SOURCE.toMinecraft(sound.source()), new Vec3d(x, y, z), sound.volume(), sound.pitch()));
+  }
+
+  @Override
+  public void stopSound(@NonNull SoundStop stop) {
+    final @Nullable Key sound = stop.sound();
+    Sound.@Nullable Source src = stop.source();
+    @Nullable SoundCategory cat = src == null ? null : GameEnums.SOUND_SOURCE.toMinecraft(src);
+    this.networkHandler.sendPacket(new StopSoundS2CPacket(sound == null ? null : FabricPlatform.adapt(sound), cat));
+  }
+
+  private static final String BOOK_TITLE = "title";
+  private static final String BOOK_AUTHOR = "author";
+  private static final String BOOK_PAGES = "pages";
+  private static final String BOOK_RESOLVED = "resolved";
+
+  @Override
+  public void openBook(final @NonNull Book book) {
+    final ItemStack bookStack = new ItemStack(Items.WRITTEN_BOOK, 1);
+    final CompoundTag bookTag = bookStack.getOrCreateTag();
+    bookTag.putString(BOOK_TITLE, adventure$serialize(book.title()));
+    bookTag.putString(BOOK_AUTHOR, adventure$serialize(book.author()));
+    final ListTag pages = new ListTag();
+    for(final Component page : book.pages()) {
+      pages.add(StringTag.of(adventure$serialize(page)));
+    }
+    bookTag.put(BOOK_PAGES, pages);
+    bookTag.putBoolean(BOOK_RESOLVED, true); // todo: any parseable texts?
+
+    final ItemStack previous = this.inventory.getMainHandStack();
+    this.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-2, this.inventory.selectedSlot, bookStack));
+    this.openEditBookScreen(bookStack, Hand.MAIN_HAND);
+    this.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-2, this.inventory.selectedSlot, previous));
+  }
+
+  private String adventure$serialize(final @NonNull Component component) {
+    return GsonComponentSerializer.INSTANCE.serialize(component);
+  }
+
+  @Override
+  public void showTitle(final @NonNull Title title) {
+    if(!EmptyComponent.empty().equals(title.subtitle())) {
+      this.networkHandler.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.SUBTITLE, FabricPlatform.adapt(title.subtitle())));
     }
 
-    /**
-     * Send a message to this receiver as a component
-     *
-     * @param text The text to send
-     */
-    @Override
-    public void sendMessage(Component text) {
-        this.networkHandler.sendPacket(new GameMessageS2CPacket(FabricPlatform.adapt(text), MessageType.SYSTEM, Util.NIL_UUID));
+    if(!EmptyComponent.empty().equals(title.title())) {
+      this.networkHandler.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.TITLE, FabricPlatform.adapt(title.title())));
     }
 
-    @Override
-    public void sendActionBar(final @NonNull Component message) {
-        this.networkHandler.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.ACTIONBAR, FabricPlatform.adapt(message)));
+    final int fadeIn = ticks(title.fadeInTime());
+    final int fadeOut = ticks(title.fadeOutTime());
+    final int dwell = ticks(title.stayTime());
+    if(fadeIn != -1 || fadeOut != -1 || dwell != -1) {
+      this.networkHandler.sendPacket(new TitleS2CPacket(fadeIn, dwell, fadeOut));
     }
+  }
 
-    @Override
-    public void showBossBar(@NonNull BossBar bar) {
-        FabricBossBarListener.INSTANCE.subscribe((ServerPlayerEntity) (Object) this, bar);
-    }
+  private int ticks(Duration duration) {
+    return (int) duration.get(ChronoUnit.SECONDS) * 20;
+  }
 
-    @Override
-    public void hideBossBar(@NonNull BossBar bar) {
-        FabricBossBarListener.INSTANCE.unsubscribe((ServerPlayerEntity) (Object) this, bar);
-    }
+  @Override
+  public void clearTitle() {
+    this.networkHandler.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.CLEAR, null));
+  }
 
-    @Override
-    public void playSound(@NonNull Sound sound) {
-        this.networkHandler.sendPacket(new PlaySoundIdS2CPacket(FabricPlatform.adapt(sound.name()),
-                GameEnums.SOUND_SOURCE.toMinecraft(sound.source()), this.getPos(), sound.volume(), sound.pitch()));
-    }
+  @Override
+  public void resetTitle() {
+    this.networkHandler.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.RESET, null));
+  }
 
-    @Override
-    public void playSound(final @NonNull Sound sound, final double x, final double y, final double z) {
-        this.networkHandler.sendPacket(new PlaySoundIdS2CPacket(FabricPlatform.adapt(sound.name()),
-          GameEnums.SOUND_SOURCE.toMinecraft(sound.source()), new Vec3d(x, y, z), sound.volume(), sound.pitch()));
-    }
+  // Player tracking for boss bars
 
-    @Override
-    public void stopSound(@NonNull SoundStop stop) {
-        final @Nullable Key sound = stop.sound();
-        Sound.@Nullable Source src = stop.source();
-        @Nullable SoundCategory cat = src == null ? null : GameEnums.SOUND_SOURCE.toMinecraft(src);
-        this.networkHandler.sendPacket(new StopSoundS2CPacket(sound == null ? null : FabricPlatform.adapt(sound), cat));
-    }
+  @Inject(method = "copyFrom", at = @At("RETURN"))
+  private void copyBossBars(final ServerPlayerEntity old, boolean alive, final CallbackInfo ci) {
+    FabricBossBarListener.INSTANCE.replacePlayer(old, (ServerPlayerEntity) (Object) this);
+  }
 
-    private static final String BOOK_TITLE = "title";
-    private static final String BOOK_AUTHOR = "author";
-    private static final String BOOK_PAGES = "pages";
-    private static final String BOOK_RESOLVED = "resolved";
-
-    @Override
-    public void openBook(final @NonNull Book book) {
-        final ItemStack bookStack = new ItemStack(Items.WRITTEN_BOOK, 1);
-        final CompoundTag bookTag = bookStack.getOrCreateTag();
-        bookTag.putString(BOOK_TITLE, adventure$serialize(book.title()));
-        bookTag.putString(BOOK_AUTHOR, adventure$serialize(book.author()));
-        final ListTag pages = new ListTag();
-        for(final Component page : book.pages()) {
-            pages.add(StringTag.of(adventure$serialize(page)));
-        }
-        bookTag.put(BOOK_PAGES, pages);
-        bookTag.putBoolean(BOOK_RESOLVED, true); // todo: any parseable texts?
-
-        final ItemStack previous = this.inventory.getMainHandStack();
-        this.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-2, this.inventory.selectedSlot, bookStack));
-        this.openEditBookScreen(bookStack, Hand.MAIN_HAND);
-        this.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-2, this.inventory.selectedSlot, previous));
-    }
-
-    private String adventure$serialize(final @NonNull Component component) {
-        return GsonComponentSerializer.INSTANCE.serialize(component);
-    }
-
-    @Override
-    public void showTitle(final @NonNull Title title) {
-        if (!EmptyComponent.empty().equals(title.subtitle())) {
-            this.networkHandler.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.SUBTITLE, FabricPlatform.adapt(title.subtitle())));
-        }
-
-        if (!EmptyComponent.empty().equals(title.title())) {
-            this.networkHandler.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.TITLE, FabricPlatform.adapt(title.title())));
-        }
-
-        final int fadeIn = ticks(title.fadeInTime());
-        final int fadeOut = ticks(title.fadeOutTime());
-        final int dwell = ticks(title.stayTime());
-        if (fadeIn != -1 || fadeOut != -1 || dwell != -1) {
-            this.networkHandler.sendPacket(new TitleS2CPacket(fadeIn, dwell, fadeOut));
-        }
-    }
-
-    private int ticks(Duration duration) {
-        return (int) duration.get(ChronoUnit.SECONDS) * 20;
-    }
-
-    @Override
-    public void clearTitle() {
-        this.networkHandler.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.CLEAR, null));
-    }
-
-    @Override
-    public void resetTitle() {
-        this.networkHandler.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.RESET, null));
-    }
-
-    // Player tracking for boss bars
-
-    @Inject(method = "copyFrom", at = @At("RETURN"))
-    private void copyBossBars(final ServerPlayerEntity old, boolean alive, final CallbackInfo ci) {
-        FabricBossBarListener.INSTANCE.replacePlayer(old, (ServerPlayerEntity) (Object) this);
-    }
-
-    @Inject(method = "onDisconnect", at = @At("RETURN"))
-    private void removeBossBarsOnDisconnect(CallbackInfo ci) {
-        FabricBossBarListener.INSTANCE.unsubscribeFromAll((ServerPlayerEntity) (Object) this);
-    }
+  @Inject(method = "onDisconnect", at = @At("RETURN"))
+  private void removeBossBarsOnDisconnect(CallbackInfo ci) {
+    FabricBossBarListener.INSTANCE.unsubscribeFromAll((ServerPlayerEntity) (Object) this);
+  }
 
 }
