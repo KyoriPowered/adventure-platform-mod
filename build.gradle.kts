@@ -48,10 +48,6 @@ dependencies {
     modImplementation("net.fabricmc.fabric-api:fabric-api:$versionFabricApi")
 }
 
-license {
-    header = rootProject.file("LICENSE")
-}
-
 tasks.withType(ProcessResources::class).configureEach {
     filesMatching("fabric.mod.json") {
         expand("project" to project)
