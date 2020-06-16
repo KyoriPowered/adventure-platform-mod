@@ -36,7 +36,7 @@ import net.kyori.adventure.platform.fabric.server.ServerBossBarListener;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.SoundStop;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.EmptyComponent;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.title.Title;
 import net.minecraft.entity.player.PlayerEntity;
@@ -145,12 +145,8 @@ public abstract class MixinServerPlayerEntity extends PlayerEntity implements Au
 
   @Override
   public void showTitle(final @NonNull Title title) {
-    if(!EmptyComponent.empty().equals(title.subtitle())) {
+    if(title.subtitle() != TextComponent.empty()) {
       this.networkHandler.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.SUBTITLE, FabricPlatform.adapt(title.subtitle())));
-    }
-
-    if(!EmptyComponent.empty().equals(title.title())) {
-      this.networkHandler.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.TITLE, FabricPlatform.adapt(title.title())));
     }
 
     final int fadeIn = ticks(title.fadeInTime());
@@ -158,6 +154,10 @@ public abstract class MixinServerPlayerEntity extends PlayerEntity implements Au
     final int dwell = ticks(title.stayTime());
     if(fadeIn != -1 || fadeOut != -1 || dwell != -1) {
       this.networkHandler.sendPacket(new TitleS2CPacket(fadeIn, dwell, fadeOut));
+    }
+
+    if(title.title() != TextComponent.empty()) {
+      this.networkHandler.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.TITLE, FabricPlatform.adapt(title.title())));
     }
   }
 

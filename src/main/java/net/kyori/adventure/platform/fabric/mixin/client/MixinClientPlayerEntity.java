@@ -37,7 +37,7 @@ import net.kyori.adventure.platform.fabric.client.BossBarHudBridge;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.SoundStop;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.EmptyComponent;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.title.Title;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.BookScreen;
@@ -79,8 +79,8 @@ public abstract class MixinClientPlayerEntity extends AbstractClientPlayerEntity
 
   @Override
   public void showTitle(final @NonNull Title title) {
-    final @Nullable Text titleText = title.title() instanceof EmptyComponent ? null : FabricPlatform.adapt(title.title());
-    final @Nullable Text subtitleText = title.subtitle() instanceof EmptyComponent ? null : FabricPlatform.adapt(title.subtitle());
+    final @Nullable Text titleText = title.title() == TextComponent.empty() ? null : FabricPlatform.adapt(title.title());
+    final @Nullable Text subtitleText = title.subtitle() == TextComponent.empty() ? null : FabricPlatform.adapt(title.subtitle());
     this.client.inGameHud.setTitles(titleText, subtitleText,
       adventure$ticks(title.fadeInTime()),
       adventure$ticks(title.stayTime()),
