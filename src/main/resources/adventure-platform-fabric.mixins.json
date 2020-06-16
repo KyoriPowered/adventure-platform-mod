@@ -6,6 +6,7 @@
     "AccessorSoundCategory",
     "AccessorTextSerializer",
     "MixinMinecraftServer",
+    "MixinPlayerManager",
     "MixinServerBossBar",
     "MixinServerCommandOutput",
     "MixinServerCommandSource",

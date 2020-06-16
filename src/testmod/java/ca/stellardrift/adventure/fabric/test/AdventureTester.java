@@ -21,8 +21,6 @@
 
 package ca.stellardrift.adventure.fabric.test;
 
-import ca.stellardrift.adventure.fabric.AdventureCommandSource;
-import ca.stellardrift.adventure.fabric.Audiences;
 import ca.stellardrift.adventure.fabric.ComponentArgumentType;
 import ca.stellardrift.adventure.fabric.FabricPlatform;
 import java.util.Collection;
@@ -35,6 +33,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.event.server.ServerStartCallback;
+import net.fabricmc.fabric.api.event.server.ServerStopCallback;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.inventory.Book;
@@ -49,9 +49,11 @@ import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.getInteger;
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
+import static java.util.Objects.requireNonNull;
 import static net.kyori.adventure.text.TextComponent.newline;
 import static net.minecraft.command.arguments.EntityArgumentType.getPlayers;
 import static net.minecraft.command.arguments.EntityArgumentType.players;
@@ -71,19 +73,28 @@ public class AdventureTester implements ModInitializer {
   private static final TextColor COLOR_RESPONSE = TextColor.of(0x22EE99);
   private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
+  private @Nullable FabricPlatform platform;
+
+  public FabricPlatform adventure() {
+    return requireNonNull(this.platform, "Tried to access Fabric platform without a running server");
+  }
+
   @Override
   public void onInitialize() {
+    // Set up platform
+    ServerStartCallback.EVENT.register(server -> this.platform = FabricPlatform.of(server));
+    ServerStopCallback.EVENT.register(server -> this.platform = null);
 
     CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
       dispatcher.register(literal("adventure")
         .then(literal("echo").then(argument(ARG_TEXT, ComponentArgumentType.component()).executes(ctx -> {
-          final Audience audience = AdventureCommandSource.of(ctx.getSource());
+          final Audience audience = adventure().audience(ctx.getSource());
           final Component result = ComponentArgumentType.getComponent(ctx, ARG_TEXT);
           audience.sendMessage(result);
           return 1;
         })))
         .then(literal("countdown").then(argument(ARG_SECONDS, integer()).executes(ctx -> { // multiple boss bars!
-          final Audience audience = AdventureCommandSource.of(ctx.getSource());
+          final Audience audience = adventure().audience(ctx.getSource());
           beginCountdown(TextComponent.of("Countdown"), getInteger(ctx, ARG_SECONDS), audience, BossBar.Color.RED, complete -> {
             complete.sendActionBar(TextComponent.of("Countdown complete!", COLOR_RESPONSE));
           });
@@ -94,9 +105,9 @@ public class AdventureTester implements ModInitializer {
         })))
       .then(literal("tellall").then(argument(ARG_TARGETS, players()).then(argument(ARG_TEXT, ComponentArgumentType.component()).executes(ctx -> {
         final Collection<ServerPlayerEntity> targets = getPlayers(ctx, ARG_TARGETS);
-        final Audience source = AdventureCommandSource.of(ctx.getSource());
+        final Audience source = adventure().audience(ctx.getSource());
         final Component message = ComponentArgumentType.getComponent(ctx, ARG_TEXT);
-        final Audience destination = Audiences.of(targets);
+        final Audience destination = adventure().audience(targets);
 
         destination.sendMessage(message);
         source.sendMessage(TextComponent.make("You have sent \"", b -> {
@@ -106,14 +117,14 @@ public class AdventureTester implements ModInitializer {
         return 1;
       }))))
       .then(literal("sound").then(argument(ARG_SOUND, identifier()).executes(ctx -> {
-        final Audience viewer = AdventureCommandSource.of(ctx.getSource());
+        final Audience viewer = adventure().audience(ctx.getSource());
         final Key sound = FabricPlatform.adapt(getIdentifier(ctx, ARG_SOUND));
         viewer.sendMessage(TextComponent.make("Playing sound ", b -> b.append(represent(sound)).color(COLOR_RESPONSE)));
         viewer.playSound(Sound.of(sound, Sound.Source.MASTER, 1f, 1f));
         return 1;
       })))
       .then(literal("book").executes(ctx -> {
-        final Audience viewer = AdventureCommandSource.of(ctx.getSource());
+        final Audience viewer = adventure().audience(ctx.getSource());
         viewer.openBook(Book.builder()
         .title(TextComponent.of("My book", NamedTextColor.RED))
         .author(TextComponent.of("The adventure team", COLOR_RESPONSE))

@@ -47,7 +47,7 @@ public final class ComponentText implements Text {
     Text deepConverted() {
         Text converted = this.converted;
         if (converted == null) {
-            converted = this.converted = FabricPlatform.nonWrapping().serialize(this.wrapped);
+            converted = this.converted = FabricPlatform.nonWrappingSerializer().serialize(this.wrapped);
         }
         return converted;
     }
@@ -63,7 +63,7 @@ public final class ComponentText implements Text {
 
     @Override
     public String getString() {
-        return FabricPlatform.plain().serialize(this.wrapped);
+        return FabricPlatform.plainSerializer().serialize(this.wrapped);
     }
 
     @Override

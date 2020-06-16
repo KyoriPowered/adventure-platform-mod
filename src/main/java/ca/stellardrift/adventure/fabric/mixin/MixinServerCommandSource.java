@@ -23,8 +23,8 @@ package ca.stellardrift.adventure.fabric.mixin;
 
 import ca.stellardrift.adventure.fabric.CommandOutputAudience;
 import ca.stellardrift.adventure.fabric.AdventureCommandSource;
-import ca.stellardrift.adventure.fabric.FabricAudience;
 import ca.stellardrift.adventure.fabric.FabricPlatform;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minecraft.server.command.CommandOutput;
@@ -49,7 +49,7 @@ public abstract class MixinServerCommandSource implements AdventureCommandSource
     @Shadow
     protected abstract void sendToOps(Text text);
 
-    private @MonotonicNonNull FabricAudience ownOut;
+    private @MonotonicNonNull Audience ownOut;
 
     @Override
     public void sendFeedback(Component text, boolean sendToOps) {
@@ -70,7 +70,7 @@ public abstract class MixinServerCommandSource implements AdventureCommandSource
     }
 
     @Override
-    public FabricAudience audience() {
+    public Audience audience() {
         if (this.ownOut == null) {
             this.ownOut = CommandOutputAudience.of(this.output);
         }

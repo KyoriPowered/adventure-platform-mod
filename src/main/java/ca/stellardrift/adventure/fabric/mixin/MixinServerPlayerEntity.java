@@ -21,14 +21,13 @@
 
 package ca.stellardrift.adventure.fabric.mixin;
 
-import ca.stellardrift.adventure.fabric.FabricAudience;
 import ca.stellardrift.adventure.fabric.FabricBossBarListener;
 import ca.stellardrift.adventure.fabric.FabricPlatform;
 import ca.stellardrift.adventure.fabric.GameEnums;
 import com.mojang.authlib.GameProfile;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
-import java.util.UUID;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.key.Key;
@@ -54,6 +53,7 @@ import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -66,7 +66,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerPlayerEntity.class)
-public abstract class MixinServerPlayerEntity extends PlayerEntity implements FabricAudience {
+public abstract class MixinServerPlayerEntity extends PlayerEntity implements Audience {
     @Shadow
     public ServerPlayNetworkHandler networkHandler;
 
@@ -81,16 +81,12 @@ public abstract class MixinServerPlayerEntity extends PlayerEntity implements Fa
      */
     @Override
     public void sendMessage(Component text) {
-        sendMessage(MessageType.SYSTEM, text);
+        this.networkHandler.sendPacket(new GameMessageS2CPacket(FabricPlatform.adapt(text), MessageType.SYSTEM, Util.NIL_UUID));
     }
 
     @Override
-    public void sendMessage(MessageType type, Component text, UUID source) {
-        if (type == MessageType.GAME_INFO) {
-            networkHandler.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.ACTIONBAR, FabricPlatform.adapt(text)));
-        } else {
-            networkHandler.sendPacket(new GameMessageS2CPacket(FabricPlatform.adapt(text), type, source));
-        }
+    public void sendActionBar(final @NonNull Component message) {
+        this.networkHandler.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.ACTIONBAR, FabricPlatform.adapt(message)));
     }
 
     @Override

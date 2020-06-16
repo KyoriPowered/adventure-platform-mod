@@ -68,7 +68,7 @@ public class MappedRegistry<Mc, Adv> {
             }
             @Nullable Mc mcElement = mcByName.apply(mcName);
             if (mcElement == null) {
-                throw new ExceptionInInitializerError("Unknown MC element  for Adventure " + mcName);
+                throw new ExceptionInInitializerError("Unknown MC element for Adventure " + mcName);
             }
             mcToAdventure.put(mcElement, advElement);
             adventureToMc.put(advElement, mcElement);

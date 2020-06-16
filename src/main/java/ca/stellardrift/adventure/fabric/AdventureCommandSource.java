@@ -43,16 +43,4 @@ public interface AdventureCommandSource extends ForwardingAudience {
      * @param text The error
      */
     void sendError(Component text);
-
-    static @PolyNull AdventureCommandSource of(@PolyNull ServerCommandSource src) {
-        if (src == null) {
-            return null;
-        }
-
-        if (!(src instanceof AdventureCommandSource)) {
-            throw new IllegalArgumentException("The ComponentCommandSource mixin failed!");
-        }
-
-        return (AdventureCommandSource) src;
-    }
 }

@@ -34,6 +34,7 @@ dependencies {
     api(include(adventure("api", versionAdventure))!!)
     api(include(adventure("text-feature-pagination", versionAdventure))!!)
     api(include(adventure("text-serializer-plain", versionAdventure))!!)
+    api(include(adventure("platform-common", versionAdventure))!!)
 
     implementation(include(adventure("text-serializer-gson", versionAdventure)) {
         exclude("com.google.code.gson")

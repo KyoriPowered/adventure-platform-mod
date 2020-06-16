@@ -21,15 +21,15 @@
 
 package ca.stellardrift.adventure.fabric;
 
-import java.util.UUID;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.SoundStop;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
-import net.minecraft.network.MessageType;
 import net.minecraft.server.command.CommandOutput;
+import net.minecraft.util.Util;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import static java.util.Objects.requireNonNull;
@@ -37,24 +37,29 @@ import static java.util.Objects.requireNonNull;
 /**
  * Audience implementation that can wrap a CommandOutput
  */
-public final class CommandOutputAudience implements FabricAudience {
+public final class CommandOutputAudience implements Audience {
   private final CommandOutput output;
 
-  CommandOutputAudience(final CommandOutput output) {
+  /* package */ CommandOutputAudience(final CommandOutput output) {
     this.output = output;
   }
 
-  public static FabricAudience of(final CommandOutput output) {
-    if (output instanceof FabricAudience) {
-      return (FabricAudience) output;
+  public static Audience of(final CommandOutput output) {
+    if (output instanceof Audience) {
+      return (Audience) output;
     } else {
       return new CommandOutputAudience(requireNonNull(output, "output"));
     }
   }
 
   @Override
-  public void sendMessage(final MessageType type, final Component text, final UUID source) {
-    this.output.sendSystemMessage(FabricPlatform.adapt(text), source);
+  public void sendMessage(final Component text) {
+    this.output.sendSystemMessage(FabricPlatform.adapt(text), Util.NIL_UUID);
+  }
+
+  @Override
+  public void sendActionBar(final @NonNull Component message) {
+    sendMessage(message);
   }
 
   @Override

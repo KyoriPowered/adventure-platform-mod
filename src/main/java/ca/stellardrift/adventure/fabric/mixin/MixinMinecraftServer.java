@@ -21,16 +21,14 @@
 
 package ca.stellardrift.adventure.fabric.mixin;
 
-import ca.stellardrift.adventure.fabric.FabricAudience;
 import ca.stellardrift.adventure.fabric.FabricPlatform;
-import java.util.UUID;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.SoundStop;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
-import net.minecraft.network.MessageType;
 import net.minecraft.server.MinecraftServer;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -42,7 +40,7 @@ import org.spongepowered.asm.mixin.Shadow;
  * Implement ComponentCommandOutput for output to the server console
  */
 @Mixin(value = MinecraftServer.class)
-public abstract class MixinMinecraftServer implements FabricAudience {
+public abstract class MixinMinecraftServer implements Audience {
     @Shadow @Final
     private static Logger LOGGER;
 
@@ -52,8 +50,13 @@ public abstract class MixinMinecraftServer implements FabricAudience {
      * @param text The text to send
      */
     @Override
-    public void sendMessage(MessageType type, Component text, UUID source) {
-        LOGGER.info(FabricPlatform.plain().serialize(text)); // TODO: Eventually will we support formatted output?
+    public void sendMessage(Component text) {
+        LOGGER.info(FabricPlatform.plainSerializer().serialize(text)); // TODO: Eventually will we support formatted output?
+    }
+
+    @Override
+    public void sendActionBar(final @NonNull Component message) {
+        sendMessage(message);
     }
 
     @Override

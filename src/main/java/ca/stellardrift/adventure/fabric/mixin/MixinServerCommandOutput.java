@@ -21,16 +21,14 @@
 
 package ca.stellardrift.adventure.fabric.mixin;
 
-import ca.stellardrift.adventure.fabric.FabricAudience;
 import ca.stellardrift.adventure.fabric.FabricPlatform;
-import java.util.UUID;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.SoundStop;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
-import net.minecraft.network.MessageType;
 import net.minecraft.server.dedicated.ServerCommandOutput;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.spongepowered.asm.mixin.Final;
@@ -38,12 +36,12 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(ServerCommandOutput.class)
-public abstract class MixinServerCommandOutput implements FabricAudience {
+public abstract class MixinServerCommandOutput implements Audience {
     @Shadow @Final private StringBuffer buffer;
 
     @Override
-    public void sendMessage(final MessageType type, final Component text, final UUID source) {
-        this.buffer.append(FabricPlatform.plain().serialize(text));
+    public void sendMessage(final Component text) {
+        this.buffer.append(FabricPlatform.plainSerializer().serialize(text));
     }
 
     @Override
