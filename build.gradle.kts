@@ -16,7 +16,7 @@ val versionMappings: String by project
 val versionLoader: String by project
 val versionFabricApi: String by project
 
-group = "ca.stellardrift"
+group = "net.kyori"
 version = "$versionSelf+${versionAdventure.replace("-SNAPSHOT", "")}"
 
 repositories {
@@ -55,7 +55,7 @@ tasks.withType(ProcessResources::class).configureEach {
 }
 
 opinionated {
-    github("PEXPlugins", "text-adapter-fabric")
+    github("KyoriPowered", "adventure-platform-fabric")
     mit()
     publication?.apply {
         val remapJar by tasks.getting(RemapJarTask::class)
