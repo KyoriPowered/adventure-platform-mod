@@ -18,7 +18,7 @@
   "entrypoints": {
     "main": [
       {
-        "value":"ca.stellardrift.adventure.fabric.FabricPlatform::init"
+        "value":"net.kyori.adventure.platform.fabric.FabricPlatform::init"
       }
     ]
   },

@@ -8,9 +8,9 @@
     "zml"
   ],
   "contact": {
-    "homepage": "https://github.com/PEXPlugins/text-adapter-fabric",
-    "issues": "https://github.com/PEXPlugins/text-adapter-fabric/issues",
-    "sources": "https://github.com/PEXPlugins/text-adapter-fabric"
+    "homepage": "https://github.com/KyoriPowered/adventure-platform-fabric",
+    "issues": "https://github.com/KyoriPowered/adventure-platform-fabric/issues",
+    "sources": "https://github.com/KyoriPowered/adventure-platform-fabric"
   },
 
   "license": "MIT",
@@ -18,7 +18,7 @@
   "entrypoints": {
     "main": [
       {
-        "value":"ca.stellardrift.adventure.fabric.test.AdventureTester"
+        "value":"net.kyori.adventure.platform.test.fabric.AdventureTester"
       }
     ]
   },
