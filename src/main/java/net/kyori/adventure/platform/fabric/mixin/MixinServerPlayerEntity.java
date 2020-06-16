@@ -26,14 +26,13 @@ package net.kyori.adventure.platform.fabric.mixin;
 
 import com.mojang.authlib.GameProfile;
 import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.key.Key;
-import net.kyori.adventure.platform.fabric.FabricBossBarListener;
 import net.kyori.adventure.platform.fabric.FabricPlatform;
 import net.kyori.adventure.platform.fabric.GameEnums;
+import net.kyori.adventure.platform.fabric.server.ServerBossBarListener;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.SoundStop;
 import net.kyori.adventure.text.Component;
@@ -88,12 +87,12 @@ public abstract class MixinServerPlayerEntity extends PlayerEntity implements Au
 
   @Override
   public void showBossBar(@NonNull BossBar bar) {
-    FabricBossBarListener.INSTANCE.subscribe((ServerPlayerEntity) (Object) this, bar);
+    ServerBossBarListener.INSTANCE.subscribe((ServerPlayerEntity) (Object) this, bar);
   }
 
   @Override
   public void hideBossBar(@NonNull BossBar bar) {
-    FabricBossBarListener.INSTANCE.unsubscribe((ServerPlayerEntity) (Object) this, bar);
+    ServerBossBarListener.INSTANCE.unsubscribe((ServerPlayerEntity) (Object) this, bar);
   }
 
   @Override
@@ -163,7 +162,7 @@ public abstract class MixinServerPlayerEntity extends PlayerEntity implements Au
   }
 
   private int ticks(Duration duration) {
-    return (int) duration.get(ChronoUnit.SECONDS) * 20;
+    return duration.getSeconds() == -1 ? -1 : (int) (duration.toMillis() / 50);
   }
 
   @Override
@@ -180,12 +179,12 @@ public abstract class MixinServerPlayerEntity extends PlayerEntity implements Au
 
   @Inject(method = "copyFrom", at = @At("RETURN"))
   private void copyBossBars(final ServerPlayerEntity old, boolean alive, final CallbackInfo ci) {
-    FabricBossBarListener.INSTANCE.replacePlayer(old, (ServerPlayerEntity) (Object) this);
+    ServerBossBarListener.INSTANCE.replacePlayer(old, (ServerPlayerEntity) (Object) this);
   }
 
   @Inject(method = "onDisconnect", at = @At("RETURN"))
   private void removeBossBarsOnDisconnect(CallbackInfo ci) {
-    FabricBossBarListener.INSTANCE.unsubscribeFromAll((ServerPlayerEntity) (Object) this);
+    ServerBossBarListener.INSTANCE.unsubscribeFromAll((ServerPlayerEntity) (Object) this);
   }
 
 }

@@ -3,6 +3,7 @@
   "package": "net.kyori.adventure.platform.fabric.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "AccessorBossBarS2CPacket",
     "AccessorSoundCategory",
     "AccessorTextSerializer",
     "MixinMinecraftServer",
@@ -12,6 +13,10 @@
     "MixinServerCommandSource",
     "MixinServerPlayerEntity",
     "MixinTextSerializer"
+  ],
+  "client": [
+    "client.MixinBossBarHud",
+    "client.MixinClientPlayerEntity"
   ],
   "injectors": {
     "defaultRequire": 1
