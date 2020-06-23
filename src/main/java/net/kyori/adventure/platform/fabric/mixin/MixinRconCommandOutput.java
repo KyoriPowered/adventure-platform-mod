@@ -32,14 +32,14 @@ import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.SoundStop;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
-import net.minecraft.server.dedicated.ServerCommandOutput;
+import net.minecraft.server.rcon.RconCommandOutput;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
-@Mixin(ServerCommandOutput.class)
-public abstract class MixinServerCommandOutput implements Audience {
+@Mixin(RconCommandOutput.class)
+public abstract class MixinRconCommandOutput implements Audience {
   @Shadow @Final private StringBuffer buffer;
 
   @Override

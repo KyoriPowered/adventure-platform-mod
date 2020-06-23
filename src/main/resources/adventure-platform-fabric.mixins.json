@@ -8,8 +8,8 @@
     "AccessorTextSerializer",
     "MixinMinecraftServer",
     "MixinPlayerManager",
+    "MixinRconCommandOutput",
     "MixinServerBossBar",
-    "MixinServerCommandOutput",
     "MixinServerCommandSource",
     "MixinServerPlayerEntity",
     "MixinTextSerializer"
