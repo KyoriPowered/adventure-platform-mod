@@ -24,6 +24,10 @@
 
 package net.kyori.adventure.platform.test.fabric;
 
+import com.google.common.base.Strings;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import net.kyori.adventure.platform.fabric.ComponentArgumentType;
 import net.kyori.adventure.platform.fabric.FabricPlatform;
 import java.util.Collection;
@@ -50,6 +54,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import net.minecraft.command.suggestion.SuggestionProviders;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -68,6 +73,11 @@ import static net.minecraft.server.command.CommandManager.literal;
 public class AdventureTester implements ModInitializer {
   private static final Key FONT_MEOW = Key.of("adventure", "meow");
   private static final Key FONT_IOSEVKA = Key.of("adventure", "iosevka");
+
+  private static final List<TextColor> LINE_COLOURS = IntStream.of(0x9400D3, 0x4B0082, 0x0000FF, 0x00FF00, 0xFFFF00, 0xFF7F00, 0xFF0000,
+                                                                  0x55CDFC, 0xF7A8B8, 0xFFFFFF, 0xF7A8B8, 0x55CDFC)
+                                                                  .mapToObj(TextColor::of).collect(Collectors.toList());
+  private static final Component LINE = TextComponent.of(Strings.repeat("\u2588", 10));
 
   private static final String ARG_TEXT = "text";
   private static final String ARG_SECONDS = "seconds";
@@ -119,7 +129,7 @@ public class AdventureTester implements ModInitializer {
         }));
         return 1;
       }))))
-      .then(literal("sound").then(argument(ARG_SOUND, identifier()).executes(ctx -> {
+      .then(literal("sound").then(argument(ARG_SOUND, identifier()).suggests(SuggestionProviders.AVAILABLE_SOUNDS).executes(ctx -> {
         final Audience viewer = adventure().audience(ctx.getSource());
         final Key sound = FabricPlatform.adapt(getIdentifier(ctx, ARG_SOUND));
         viewer.sendMessage(TextComponent.make("Playing sound ", b -> b.append(represent(sound)).color(COLOR_RESPONSE)));
@@ -134,6 +144,13 @@ public class AdventureTester implements ModInitializer {
         .page(TextComponent.of("Welcome to our rules page"))
         .page(TextComponent.of("Let's do a thing!"))
         .build());
+        return 1;
+      }))
+      .then(literal("rgb").executes(ctx -> {
+        final Audience viewer = adventure().audience(ctx.getSource());
+        for(TextColor color : LINE_COLOURS) {
+          viewer.sendMessage(LINE.color(color));
+        }
         return 1;
       })));
     });
