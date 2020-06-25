@@ -32,6 +32,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.AdventurePlatform;
+import net.kyori.adventure.platform.AdventureRenderer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.KeybindComponent;
 import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
@@ -44,6 +45,8 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.checker.nullness.qual.PolyNull;
@@ -69,13 +72,20 @@ public class FabricPlatform implements AdventurePlatform {
   }
 
   private final MinecraftServer server;
+  private final AdventureRenderer renderer;
 
   public static @NonNull FabricPlatform of(final @NonNull MinecraftServer server) {
-    return new FabricPlatform(requireNonNull(server, "server"));
+    return new FabricPlatform(requireNonNull(server, "server"), null);
   }
 
-  private FabricPlatform(final MinecraftServer server) {
+  public static @NonNull FabricPlatform of(final @NonNull MinecraftServer server, final @NonNull AdventureRenderer renderer) {
+    return new FabricPlatform(requireNonNull(server, "server"),
+      requireNonNull(renderer, "renderer"));
+  }
+
+  private FabricPlatform(final MinecraftServer server, final AdventureRenderer renderer) {
     this.server = server;
+    this.renderer = renderer;
   }
 
   /**
@@ -204,11 +214,10 @@ public class FabricPlatform implements AdventurePlatform {
   }
 
   @Override
-  public @NonNull Audience world(final @NonNull UUID worldId) {
-    for(ServerWorld world : this.server.getWorlds()) {
-      if(false) { // TODO: World UUIDs?
-        return Audience.of(audience(world.getPlayers()));
-      }
+  public @NonNull Audience world(final @NonNull Key worldId) {
+    final @Nullable ServerWorld world = this.server.getWorld(RegistryKey.of(Registry.DIMENSION, adapt(requireNonNull(worldId, "worldId"))));
+    if(world != null) {
+      return this.audience(world.getPlayers());
     }
     return Audience.of();
   }
@@ -216,6 +225,11 @@ public class FabricPlatform implements AdventurePlatform {
   @Override
   public @NonNull Audience server(final @NonNull String serverName) {
     return all();
+  }
+
+  @Override
+  public @NonNull AdventureRenderer renderer() {
+    return this.renderer; // TODO: actually use this
   }
 
   @Override
