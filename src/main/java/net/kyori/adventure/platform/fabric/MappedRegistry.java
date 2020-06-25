@@ -30,7 +30,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import net.kyori.adventure.util.NameMap;
+import net.kyori.adventure.util.Index;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import static java.util.Objects.requireNonNull;
@@ -51,12 +51,12 @@ public class MappedRegistry<Mc, Adv> {
   private final Map<Mc, Adv> mcToAdventure;
   private final Map<Adv, Mc> adventureToMc;
 
-  static <Mc extends Enum<Mc>, Adv extends Enum<Adv>> MappedRegistry<Mc, Adv> named(Class<Mc> mcType, Function<String, @Nullable Mc> mcByName, Class<Adv> advType, final NameMap<Adv> names) {
-    return new MappedRegistry.OfEnum<>(mcType, mcByName, advType, names::name);
+  static <Mc extends Enum<Mc>, Adv extends Enum<Adv>> MappedRegistry<Mc, Adv> named(Class<Mc> mcType, Function<String, @Nullable Mc> mcByName, Class<Adv> advType, final Index<String, Adv> names) {
+    return new MappedRegistry.OfEnum<>(mcType, mcByName, advType, names::key);
   }
 
-  static <Mc, Adv> MappedRegistry<Mc, Adv> named(Function<String, @Nullable Mc> mcByName, Supplier<Iterable<Mc>> mcValues, final NameMap<Adv> names, final Supplier<Iterable<Adv>> adventureValues) {
-    return new MappedRegistry<>(new HashMap<>(), new HashMap<>(), mcByName, mcValues, names::name, adventureValues);
+  static <Mc, Adv> MappedRegistry<Mc, Adv> named(Function<String, @Nullable Mc> mcByName, Supplier<Iterable<Mc>> mcValues, final Index<String, Adv> names, final Supplier<Iterable<Adv>> adventureValues) {
+    return new MappedRegistry<>(new HashMap<>(), new HashMap<>(), mcByName, mcValues, names::key, adventureValues);
   }
 
   MappedRegistry(Map<Mc, Adv> mcMap, Map<Adv, Mc> adventureMap, Function<String, @Nullable Mc> mcByName, Supplier<Iterable<Mc>> mcValues, Function<Adv, @Nullable String> advToName, Supplier<Iterable<Adv>> adventureValues) {
