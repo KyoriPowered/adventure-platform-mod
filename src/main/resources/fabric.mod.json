@@ -32,5 +32,9 @@
 
   "depends": {
     "fabricloader": ">=0.4.0"
+  },
+
+  "recommends": {
+    "colonel": ">=0.1"
   }
 }

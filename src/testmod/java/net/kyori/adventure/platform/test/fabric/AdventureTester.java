@@ -62,6 +62,8 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import static com.mojang.brigadier.arguments.IntegerArgumentType.getInteger;
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
 import static java.util.Objects.requireNonNull;
+import static net.kyori.adventure.platform.fabric.KeyArgumentType.getKey;
+import static net.kyori.adventure.platform.fabric.KeyArgumentType.key;
 import static net.kyori.adventure.text.TextComponent.newline;
 import static net.minecraft.command.arguments.EntityArgumentType.getPlayers;
 import static net.minecraft.command.arguments.EntityArgumentType.players;
@@ -129,9 +131,9 @@ public class AdventureTester implements ModInitializer {
         }));
         return 1;
       }))))
-      .then(literal("sound").then(argument(ARG_SOUND, identifier()).suggests(SuggestionProviders.AVAILABLE_SOUNDS).executes(ctx -> {
+      .then(literal("sound").then(argument(ARG_SOUND, key()).suggests(SuggestionProviders.AVAILABLE_SOUNDS).executes(ctx -> {
         final Audience viewer = adventure().audience(ctx.getSource());
-        final Key sound = FabricPlatform.adapt(getIdentifier(ctx, ARG_SOUND));
+        final Key sound = getKey(ctx, ARG_SOUND);
         viewer.sendMessage(TextComponent.make("Playing sound ", b -> b.append(represent(sound)).color(COLOR_RESPONSE)));
         viewer.playSound(Sound.of(sound, Sound.Source.MASTER, 1f, 1f));
         return 1;

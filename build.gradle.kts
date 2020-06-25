@@ -39,10 +39,12 @@ dependencies {
     implementation(include(adventure("text-serializer-gson", versionAdventure)) {
         exclude("com.google.code.gson")
     })
+    modImplementation("ca.stellardrift:colonel:0.1")
 
     minecraft("com.mojang:minecraft:$versionMinecraft")
     mappings("net.fabricmc:yarn:$versionMinecraft+build.$versionMappings:v2")
     modImplementation("net.fabricmc:fabric-loader:$versionLoader")
+
 
     // Testmod TODO figure out own scope
     modImplementation("net.fabricmc.fabric-api:fabric-api:$versionFabricApi")

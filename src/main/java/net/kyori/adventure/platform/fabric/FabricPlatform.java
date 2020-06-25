@@ -24,6 +24,7 @@
 
 package net.kyori.adventure.platform.fabric;
 
+import ca.stellardrift.colonel.api.ServerArgumentType;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
@@ -38,6 +39,9 @@ import net.kyori.adventure.text.KeybindComponent;
 import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.command.arguments.ArgumentTypes;
+import net.minecraft.command.arguments.IdentifierArgumentType;
+import net.minecraft.command.arguments.TextArgumentType;
+import net.minecraft.command.arguments.serialize.ConstantArgumentSerializer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.command.ServerCommandSource;
@@ -130,14 +134,34 @@ public class FabricPlatform implements AdventurePlatform {
     return new ComponentText(modified);
   }
 
+  private static Identifier id(final @NonNull String value) {
+    return new Identifier("adventure", value);
+  }
+
   /**
    * Internal mod initializer for registrations.
    *
    * <p>Should only be called by Loader</p>
    */
   public static void init() {
-    // TODO: make this client-optional when commands use it
-    ArgumentTypes.register("adventure:component", ComponentArgumentType.class, new ComponentArgumentType.Serializer());
+    // Register custom argument types
+    if(FabricLoader.getInstance().isModLoaded("colonel")) { // we can do server-only arg types
+    ServerArgumentType.<ComponentArgumentType>builder(id("component"))
+      .type(ComponentArgumentType.class)
+      .serializer(new ComponentArgumentType.Serializer())
+      .fallbackProvider(arg -> TextArgumentType.text())
+      .fallbackSuggestions(null) // client text parsing is fine
+      .register();
+    ServerArgumentType.<KeyArgumentType>builder(id("key"))
+      .type(KeyArgumentType.class)
+      .serializer(new ConstantArgumentSerializer<>(KeyArgumentType::key))
+      .fallbackProvider(arg -> IdentifierArgumentType.identifier())
+      .fallbackSuggestions(null)
+      .register();
+    } else {
+      ArgumentTypes.register("adventure:component", ComponentArgumentType.class, new ComponentArgumentType.Serializer());
+      ArgumentTypes.register("adventure:key", KeyArgumentType.class, new ConstantArgumentSerializer<>(KeyArgumentType::key));
+    }
   }
 
   /**
