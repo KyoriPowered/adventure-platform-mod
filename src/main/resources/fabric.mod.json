@@ -23,6 +23,7 @@
     ]
   },
   "mixins": [
+    "adventure-platform-fabric.accessor.mixins.json",
     "adventure-platform-fabric.mixins.json"
   ],
   "custom": {

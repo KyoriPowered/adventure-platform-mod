@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "package": "net.kyori.adventure.platform.fabric.mixin",
+  "refmap": "adventure-platform-fabric-accessor-refmap.json",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "AccessorBossBarS2CPacket",
+    "AccessorSoundCategory",
+    "AccessorTextSerializer",
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

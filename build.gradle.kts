@@ -1,12 +1,10 @@
 
 import ca.stellardrift.build.common.adventure
-import net.fabricmc.loom.task.RemapJarTask
-import net.fabricmc.loom.task.RemapSourcesJarTask
+import ca.stellardrift.build.common.sonatypeOss
 
 plugins {
-    id("fabric-loom") version "0.4-SNAPSHOT"
-    id("ca.stellardrift.opinionated.fabric") version "3.0"
-    id("ca.stellardrift.opinionated.publish") version "3.0"
+    id("ca.stellardrift.opinionated.fabric") version "3.1"
+    id("ca.stellardrift.opinionated.publish") version "3.1"
 }
 
 val versionSelf = "2.0-SNAPSHOT"
@@ -23,9 +21,7 @@ repositories {
     mavenLocal()
     jcenter()
     mavenCentral()
-    maven {
-        url = uri("https://oss.sonatype.org/content/groups/public/")
-    }
+    sonatypeOss()
 }
 
 dependencies {
@@ -45,7 +41,6 @@ dependencies {
     mappings("net.fabricmc:yarn:$versionMinecraft+build.$versionMappings:v2")
     modImplementation("net.fabricmc:fabric-loader:$versionLoader")
 
-
     // Testmod TODO figure out own scope
     modImplementation("net.fabricmc.fabric-api:fabric-api:$versionFabricApi")
 }
@@ -59,20 +54,5 @@ tasks.withType(ProcessResources::class).configureEach {
 opinionated {
     github("KyoriPowered", "adventure-platform-fabric")
     mit()
-    publication?.apply {
-        val remapJar by tasks.getting(RemapJarTask::class)
-        val remapSourcesJar by tasks.getting(RemapSourcesJarTask::class)
-        suppressAllPomMetadataWarnings()
-
-        artifact(tasks.jar.get()) {
-            classifier = "dev"
-        }
-        artifact(remapJar)
-
-        artifact(tasks.getByName("sourcesJar")) {
-            builtBy(remapSourcesJar)
-        }
-        artifact(tasks.getByName("javadocJar"))
-    }
     useJUnit5()
 }

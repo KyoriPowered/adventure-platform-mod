@@ -3,9 +3,6 @@
   "package": "net.kyori.adventure.platform.fabric.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "AccessorBossBarS2CPacket",
-    "AccessorSoundCategory",
-    "AccessorTextSerializer",
     "MixinMinecraftServer",
     "MixinPlayerManager",
     "MixinRconCommandOutput",
