@@ -140,7 +140,7 @@ public abstract class MixinServerPlayerEntity extends PlayerEntity implements Au
   }
 
   private String adventure$serialize(final @NonNull Component component) {
-    return GsonComponentSerializer.INSTANCE.serialize(component);
+    return GsonComponentSerializer.gson().serialize(component);
   }
 
   @Override
