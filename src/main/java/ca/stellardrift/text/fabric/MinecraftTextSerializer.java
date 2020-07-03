@@ -63,13 +63,14 @@ import static ca.stellardrift.text.fabric.TextAdapter.toKey;
 
 public class MinecraftTextSerializer implements ComponentSerializer<Component, Component, Text> {
     public static final MinecraftTextSerializer INSTANCE = new MinecraftTextSerializer();
-    private static final EnumBiMap<TextColor, Formatting> TEXT_COLORS = EnumBiMap.create(TextColor.class, Formatting.class);
+    private static EnumBiMap<TextColor, Formatting> TEXT_COLORS;
     private static EnumBiMap<HoverEvent.Action, net.minecraft.text.HoverEvent.Action> HOVER_EVENTS;
     private static EnumBiMap<ClickEvent.Action, net.minecraft.text.ClickEvent.Action> CLICK_EVENTS;
     private static boolean fallbackMode;
 
     static {
         try {
+            TEXT_COLORS = EnumBiMap.create(TextColor.class, Formatting.class);
             CLICK_EVENTS = EnumBiMap.create(ClickEvent.Action.class, net.minecraft.text.ClickEvent.Action.class);
             HOVER_EVENTS = EnumBiMap.create(HoverEvent.Action.class, net.minecraft.text.HoverEvent.Action.class);
 
