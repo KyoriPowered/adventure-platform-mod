@@ -21,23 +21,16 @@
 
 package ca.stellardrift.text.fabric;
 
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import java.util.UUID;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.registry.CommandRegistry;
 import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.kyori.minecraft.Key;
 import net.kyori.text.Component;
-import net.kyori.text.TextComponent;
-import net.kyori.text.format.TextColor;
-import net.kyori.text.format.TextDecoration;
 import net.minecraft.network.MessageType;
 import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
-import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.CommandOutput;
-import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -47,7 +40,6 @@ import org.apache.logging.log4j.Logger;
 import java.util.EnumSet;
 
 import static java.util.Objects.requireNonNull;
-import static net.kyori.text.TextComponent.*;
 
 /**
  * Adapter methods for sending {@link Component Components} to a variety of users
@@ -207,29 +199,5 @@ public class TextAdapter implements ModInitializer {
         // not much to do?
         this.container = FabricLoader.getInstance().getModContainer("text-adapter-fabric")
                 .orElseThrow(() -> new IllegalStateException("Mod ID for text-adapter-fabric has been changed without updating the initializer!"));
-        CommandRegistry.INSTANCE.register(false, disp -> disp.register(createInfoCommand()));
-    }
-
-    public LiteralArgumentBuilder<ServerCommandSource> createInfoCommand() {
-        return CommandManager.literal("kyoritext")
-                .requires(it -> it.hasPermissionLevel(2))
-                .executes(ctx -> {
-                    String apiVersion = container.getMetadata().getCustomValue("text-version").getAsString();
-                    String adapterVersion = container.getMetadata().getVersion().getFriendlyString();
-                    ServerCommandSource src = ctx.getSource();
-                    ComponentCommandSource component = ComponentCommandSource.of(src);
-                    component.sendFeedback(make("KyoriPowered Text ", b -> {
-                        b.color(TextColor.GRAY);
-                        b.append(highlight("v" + apiVersion));
-                        b.append(newline());
-                        b.append(make("text-adapter-fabric ", v -> v.append(highlight("v" + adapterVersion))));
-                    }), false);
-
-                    return 1;
-                });
-    }
-
-    private TextComponent highlight(String input) {
-        return TextComponent.of(input, TextColor.LIGHT_PURPLE, TextDecoration.ITALIC);
     }
 }

@@ -36,10 +36,6 @@ dependencies {
         exclude("com.google.code.gson")
     }
 
-    listOf("commands-v0", "api-base").forEach {
-        implementationInclude("net.fabricmc.fabric-api:fabric-$it:$versionFabricApi")
-    }
-
     minecraft("com.mojang:minecraft:$versionMinecraft")
     mappings("net.fabricmc:yarn:$versionMinecraft+build.$versionMappings:v2")
     modImplementation("net.fabricmc:fabric-loader:$versionLoader")
