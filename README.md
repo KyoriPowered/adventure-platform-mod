@@ -1,4 +1,4 @@
-# text-compat-fabric
+# text-adapter-fabric
 
  [ ![Download](https://api.bintray.com/packages/zml/stellardrift-repo/text-adapter-fabric/images/download.svg) ](https://bintray.com/zml/stellardrift-repo/text-adapter-fabric/_latestVersion) | [Javadoc](https://jitpack.io/ca/stellardrift/text-adapter-fabric/master-SNAPSHOT/javadoc/)
 
@@ -23,11 +23,9 @@ repositories {
 
 dependencies {
     // [...]
-    modImplementation("ca.stellardrift:text-adapter-fabric:1.0.1+3.0.4")
-    include("ca.stellardrift:text-adapter-fabric:1.0.1+3.0.4")
+    modImplementation("ca.stellardrift:text-adapter-fabric:1.1+3.0.4")
+    include("ca.stellardrift:text-adapter-fabric:1.1+3.0.4")
     // [...]
 }
 ```
-
-To test that the mod is installed and functioning correctly, the `/kyoritext` command is available to any user with at least operator level 2
 

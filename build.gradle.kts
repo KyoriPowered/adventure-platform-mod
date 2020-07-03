@@ -11,7 +11,7 @@ plugins {
     id("fabric-loom") version "0.2.7-SNAPSHOT"
 }
 
-val versionSelf = "1.1-SNAPSHOT"
+val versionSelf = "1.1"
 val versionMinecraft: String by project
 val versionText: String by project
 val versionMappings: String by project
@@ -59,7 +59,7 @@ bintray {
 }
 
 opinionated {
-    github("PEXPlugins", "text-adapter-fabric")
+    github("KyoriPowered", "adventure-platform-fabric")
     mit()
     publication?.apply {
         val remapJar by tasks.getting(RemapJarTask::class)
