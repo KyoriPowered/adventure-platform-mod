@@ -60,7 +60,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -71,12 +70,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class MixinServerPlayerEntity extends PlayerEntity implements Audience {
   @Shadow public ServerPlayNetworkHandler networkHandler;
 
-  public MixinServerPlayerEntity(World world, BlockPos pos, GameProfile gameProfile) {
+  public MixinServerPlayerEntity(final World world, final BlockPos pos, final GameProfile gameProfile) {
     super(world, pos, gameProfile);
   }
 
   @Override
-  public void sendMessage(Component text) {
+  public void sendMessage(final Component text) {
     this.networkHandler.sendPacket(new GameMessageS2CPacket(FabricPlatform.adapt(text), MessageType.SYSTEM, Util.NIL_UUID));
   }
 
@@ -86,17 +85,17 @@ public abstract class MixinServerPlayerEntity extends PlayerEntity implements Au
   }
 
   @Override
-  public void showBossBar(@NonNull BossBar bar) {
+  public void showBossBar(final @NonNull BossBar bar) {
     ServerBossBarListener.INSTANCE.subscribe((ServerPlayerEntity) (Object) this, bar);
   }
 
   @Override
-  public void hideBossBar(@NonNull BossBar bar) {
+  public void hideBossBar(final @NonNull BossBar bar) {
     ServerBossBarListener.INSTANCE.unsubscribe((ServerPlayerEntity) (Object) this, bar);
   }
 
   @Override
-  public void playSound(@NonNull Sound sound) {
+  public void playSound(final @NonNull Sound sound) {
     this.networkHandler.sendPacket(new PlaySoundIdS2CPacket(FabricPlatform.adapt(sound.name()),
       GameEnums.SOUND_SOURCE.toMinecraft(sound.source()), this.getPos(), sound.volume(), sound.pitch()));
   }
@@ -108,10 +107,10 @@ public abstract class MixinServerPlayerEntity extends PlayerEntity implements Au
   }
 
   @Override
-  public void stopSound(@NonNull SoundStop stop) {
-    final @Nullable Key sound = stop.sound();
-    Sound.@Nullable Source src = stop.source();
-    @Nullable SoundCategory cat = src == null ? null : GameEnums.SOUND_SOURCE.toMinecraft(src);
+  public void stopSound(final @NonNull SoundStop stop) {
+    final /* @Nullable */ Key sound = stop.sound();
+    final Sound./* @Nullable */ Source src = stop.source();
+    final /* @Nullable */ SoundCategory cat = src == null ? null : GameEnums.SOUND_SOURCE.toMinecraft(src);
     this.networkHandler.sendPacket(new StopSoundS2CPacket(sound == null ? null : FabricPlatform.adapt(sound), cat));
   }
 
@@ -124,11 +123,11 @@ public abstract class MixinServerPlayerEntity extends PlayerEntity implements Au
   public void openBook(final @NonNull Book book) {
     final ItemStack bookStack = new ItemStack(Items.WRITTEN_BOOK, 1);
     final CompoundTag bookTag = bookStack.getOrCreateTag();
-    bookTag.putString(BOOK_TITLE, adventure$serialize(book.title()));
-    bookTag.putString(BOOK_AUTHOR, adventure$serialize(book.author()));
+    bookTag.putString(BOOK_TITLE, this.adventure$serialize(book.title()));
+    bookTag.putString(BOOK_AUTHOR, this.adventure$serialize(book.author()));
     final ListTag pages = new ListTag();
     for(final Component page : book.pages()) {
-      pages.add(StringTag.of(adventure$serialize(page)));
+      pages.add(StringTag.of(this.adventure$serialize(page)));
     }
     bookTag.put(BOOK_PAGES, pages);
     bookTag.putBoolean(BOOK_RESOLVED, true); // todo: any parseable texts?
@@ -149,9 +148,9 @@ public abstract class MixinServerPlayerEntity extends PlayerEntity implements Au
       this.networkHandler.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.SUBTITLE, FabricPlatform.adapt(title.subtitle())));
     }
 
-    final int fadeIn = ticks(title.fadeInTime());
-    final int fadeOut = ticks(title.fadeOutTime());
-    final int dwell = ticks(title.stayTime());
+    final int fadeIn = this.ticks(title.fadeInTime());
+    final int fadeOut = this.ticks(title.fadeOutTime());
+    final int dwell = this.ticks(title.stayTime());
     if(fadeIn != -1 || fadeOut != -1 || dwell != -1) {
       this.networkHandler.sendPacket(new TitleS2CPacket(fadeIn, dwell, fadeOut));
     }
@@ -161,7 +160,7 @@ public abstract class MixinServerPlayerEntity extends PlayerEntity implements Au
     }
   }
 
-  private int ticks(Duration duration) {
+  private int ticks(final @NonNull Duration duration) {
     return duration.getSeconds() == -1 ? -1 : (int) (duration.toMillis() / 50);
   }
 
@@ -178,12 +177,12 @@ public abstract class MixinServerPlayerEntity extends PlayerEntity implements Au
   // Player tracking for boss bars
 
   @Inject(method = "copyFrom", at = @At("RETURN"))
-  private void copyBossBars(final ServerPlayerEntity old, boolean alive, final CallbackInfo ci) {
+  private void copyBossBars(final ServerPlayerEntity old, final boolean alive, final CallbackInfo ci) {
     ServerBossBarListener.INSTANCE.replacePlayer(old, (ServerPlayerEntity) (Object) this);
   }
 
   @Inject(method = "onDisconnect", at = @At("RETURN"))
-  private void removeBossBarsOnDisconnect(CallbackInfo ci) {
+  private void removeBossBarsOnDisconnect(final CallbackInfo ci) {
     ServerBossBarListener.INSTANCE.unsubscribeFromAll((ServerPlayerEntity) (Object) this);
   }
 

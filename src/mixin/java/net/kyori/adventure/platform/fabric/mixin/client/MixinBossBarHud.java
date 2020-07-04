@@ -49,16 +49,15 @@ public class MixinBossBarHud implements BossBarHudBridge {
     this.adventure$listener = new ClientBossBarListener(this.bossBars);
   }
 
-
   @Override
   public ClientBossBarListener adventure$listener() {
-    return adventure$listener;
+    return this.adventure$listener;
   }
 
   @Inject(method = "clear", at = @At("HEAD"))
   private void clearListener(final CallbackInfo ci) {
-    if(adventure$listener != null) {
-      adventure$listener.clear();
+    if(this.adventure$listener != null) {
+      this.adventure$listener.clear();
     }
   }
 }

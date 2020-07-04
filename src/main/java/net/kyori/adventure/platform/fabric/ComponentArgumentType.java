@@ -48,7 +48,7 @@ import net.minecraft.util.Identifier;
  * <p>At the moment, using this argument type will require this mod
  * <strong>both server- and clientside</strong>.
  */
-public class ComponentArgumentType implements ArgumentType<Component> {
+public final class ComponentArgumentType implements ArgumentType<Component> {
 
   private static final ComponentArgumentType INSTANCE = new ComponentArgumentType();
   private static final Set<String> EXAMPLES = ImmutableSet.of(
@@ -72,31 +72,31 @@ public class ComponentArgumentType implements ArgumentType<Component> {
    * @param key argument key
    * @return parsed component
    */
-  public static Component getComponent(CommandContext<?> ctx, String key) {
+  public static Component component(final CommandContext<?> ctx, final String key) {
     return ctx.getArgument(key, Component.class);
   }
 
-  private ComponentArgumentType() { }
+  private ComponentArgumentType() {
+  }
 
   @Override
   public Component parse(final StringReader reader) throws CommandSyntaxException {
-    try (final JsonReader json = new JsonReader(new java.io.StringReader(reader.getRemaining()))) {
+    try(final JsonReader json = new JsonReader(new java.io.StringReader(reader.getRemaining()))) {
       final Component ret = AccessorTextSerializer.getGSON().fromJson(json, Component.class);
       reader.setCursor(reader.getCursor() + AccessorTextSerializer.getPosition(json));
       return ret;
-    } catch(JsonParseException | IOException ex) {
+    } catch(final JsonParseException | IOException ex) {
       final String message = ex.getCause() == null ? ex.getMessage() : ex.getCause().getMessage();
       throw TextArgumentType.INVALID_COMPONENT_EXCEPTION.createWithContext(reader, message);
     }
   }
-
 
   @Override
   public Collection<String> getExamples() {
     return EXAMPLES;
   }
 
-  static class Serializer implements ArgumentSerializer<ComponentArgumentType> {
+  /* package */ static class Serializer implements ArgumentSerializer<ComponentArgumentType> {
     private static final Identifier SERIALIZER_GSON = new Identifier("adventure", "gson");
 
     @Override

@@ -66,7 +66,7 @@ public class ClientBossBarListener extends AbstractBossBarListener<ClientBossBar
   }
 
   public void clear() {
-    for(BossBar bar : this.bars.keySet()) {
+    for(final BossBar bar : this.bars.keySet()) {
       bar.removeListener(this);
     }
     this.bars.clear();

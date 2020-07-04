@@ -31,8 +31,6 @@ import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.minecraft.text.Text;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-
 
 public abstract class AbstractBossBarListener<T extends net.minecraft.entity.boss.BossBar> implements BossBar.Listener {
   protected final Map<BossBar, T> bars = new IdentityHashMap<>();
@@ -40,46 +38,46 @@ public abstract class AbstractBossBarListener<T extends net.minecraft.entity.bos
   @Override
   public void bossBarNameChanged(@NonNull final BossBar bar, @NonNull final Component oldName, @NonNull final Component newName) {
     if(!oldName.equals(newName)) {
-      minecraft(bar).setName(FabricPlatform.adapt(newName));
+      this.minecraft(bar).setName(FabricPlatform.adapt(newName));
     }
   }
 
   @Override
   public void bossBarPercentChanged(@NonNull final BossBar bar, final float oldPercent, final float newPercent) {
     if(oldPercent != newPercent) {
-      minecraft(bar).setPercent(newPercent);
+      this.minecraft(bar).setPercent(newPercent);
     }
   }
 
   @Override
   public void bossBarColorChanged(@NonNull final BossBar bar, final BossBar.@NonNull Color oldColor, final BossBar.@NonNull Color newColor) {
     if(oldColor != newColor) {
-      minecraft(bar).setColor(GameEnums.BOSS_BAR_COLOR.toMinecraft(newColor));
+      this.minecraft(bar).setColor(GameEnums.BOSS_BAR_COLOR.toMinecraft(newColor));
     }
   }
 
   @Override
   public void bossBarOverlayChanged(@NonNull final BossBar bar, final BossBar.@NonNull Overlay oldOverlay, final BossBar.@NonNull Overlay newOverlay) {
     if(oldOverlay != newOverlay) {
-      minecraft(bar).setOverlay(GameEnums.BOSS_BAR_OVERLAY.toMinecraft(newOverlay));
+      this.minecraft(bar).setOverlay(GameEnums.BOSS_BAR_OVERLAY.toMinecraft(newOverlay));
     }
   }
 
   @Override
   public void bossBarFlagsChanged(@NonNull final BossBar bar, @NonNull final Set<BossBar.Flag> oldFlags, @NonNull final Set<BossBar.Flag> newFlags) {
     if(!oldFlags.equals(newFlags)) {
-      updateFlags(minecraft(bar), newFlags);
+      updateFlags(this.minecraft(bar), newFlags);
     }
   }
 
-  private static void updateFlags(net.minecraft.entity.boss.BossBar bar, Set<BossBar.Flag> flags) {
+  private static void updateFlags(final net.minecraft.entity.boss.@NonNull BossBar bar, final @NonNull Set<BossBar.Flag> flags) {
     bar.setThickenFog(flags.contains(BossBar.Flag.CREATE_WORLD_FOG));
     bar.setDarkenSky(flags.contains(BossBar.Flag.DARKEN_SCREEN));
     bar.setDragonMusic(flags.contains(BossBar.Flag.PLAY_BOSS_MUSIC));
   }
 
-  private T minecraft(BossBar bar) {
-    final @Nullable T mc = this.bars.get(bar);
+  private T minecraft(final @NonNull BossBar bar) {
+    final /* @Nullable */ T mc = this.bars.get(bar);
     if(mc == null) {
       throw new IllegalArgumentException("Unknown boss bar instance " + bar);
     }
@@ -88,10 +86,12 @@ public abstract class AbstractBossBarListener<T extends net.minecraft.entity.bos
 
   protected abstract T newBar(final @NonNull Text title, final net.minecraft.entity.boss.BossBar.@NonNull Color color, final net.minecraft.entity.boss.BossBar.@NonNull Style style);
 
-  protected T minecraftCreating(BossBar bar) {
+  protected T minecraftCreating(final @NonNull BossBar bar) {
     return this.bars.computeIfAbsent(bar, key -> {
-      final T ret = newBar(FabricPlatform.adapt(key.name()),
-        GameEnums.BOSS_BAR_COLOR.toMinecraft(key.color()), GameEnums.BOSS_BAR_OVERLAY.toMinecraft(key.overlay()));
+      final T ret = this.newBar(FabricPlatform.adapt(key.name()),
+        GameEnums.BOSS_BAR_COLOR.toMinecraft(key.color()),
+        GameEnums.BOSS_BAR_OVERLAY.toMinecraft(key.overlay()));
+
       ret.setPercent(key.percent());
       updateFlags(ret, key.flags());
       key.addListener(this);

@@ -81,7 +81,7 @@ public class ServerBossBarListener extends AbstractBossBarListener<ServerBossBar
    * @param old old player
    * @param newPlayer new one
    */
-  public void replacePlayer(final ServerPlayerEntity old, ServerPlayerEntity newPlayer) {
+  public void replacePlayer(final ServerPlayerEntity old, final ServerPlayerEntity newPlayer) {
     for(final ServerBossBar bar : this.bars.values()) {
       ((BulkServerBossBar) bar).replaceSubscriber(old, newPlayer);
     }
@@ -93,7 +93,7 @@ public class ServerBossBarListener extends AbstractBossBarListener<ServerBossBar
    * @param player The player to remove
    */
   public void unsubscribeFromAll(final ServerPlayerEntity player) {
-    for(Iterator<Map.Entry<BossBar, ServerBossBar>> it = this.bars.entrySet().iterator(); it.hasNext(); ) {
+    for(final Iterator<Map.Entry<BossBar, ServerBossBar>> it = this.bars.entrySet().iterator(); it.hasNext();) {
       final ServerBossBar bar = it.next().getValue();
       if(bar.getPlayers().contains(player)) {
         bar.removePlayer(player);

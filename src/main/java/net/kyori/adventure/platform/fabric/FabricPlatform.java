@@ -25,6 +25,7 @@
 package net.kyori.adventure.platform.fabric;
 
 import ca.stellardrift.colonel.api.ServerArgumentType;
+import java.util.Locale;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
@@ -32,10 +33,10 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
-import net.kyori.adventure.platform.AdventurePlatform;
-import net.kyori.adventure.platform.AdventureRenderer;
+import net.kyori.adventure.platform.AudienceProvider;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.KeybindComponent;
+import net.kyori.adventure.text.renderer.ComponentRenderer;
 import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.command.arguments.ArgumentTypes;
@@ -52,7 +53,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.checker.nullness.qual.PolyNull;
 
 import static java.util.Objects.requireNonNull;
@@ -60,12 +60,12 @@ import static java.util.Objects.requireNonNull;
 /**
  * The entry point for accessing Adventure.
  */
-public class FabricPlatform implements AdventurePlatform {
+public final class FabricPlatform implements AudienceProvider {
   private static final PlainComponentSerializer PLAIN;
   private static final MinecraftTextSerializer TEXT_NON_WRAPPING = new MinecraftTextSerializer();
 
   static {
-    Function<KeybindComponent, String> keybindNamer;
+    final Function<KeybindComponent, String> keybindNamer;
 
     if(FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
       keybindNamer = keybind -> KeyBinding.getLocalizedName(keybind.keybind()).get().asString();
@@ -76,18 +76,17 @@ public class FabricPlatform implements AdventurePlatform {
   }
 
   private final MinecraftServer server;
-  private final AdventureRenderer renderer;
+  private final ComponentRenderer<Locale> renderer;
 
   public static @NonNull FabricPlatform of(final @NonNull MinecraftServer server) {
     return new FabricPlatform(requireNonNull(server, "server"), null);
   }
 
-  public static @NonNull FabricPlatform of(final @NonNull MinecraftServer server, final @NonNull AdventureRenderer renderer) {
-    return new FabricPlatform(requireNonNull(server, "server"),
-      requireNonNull(renderer, "renderer"));
+  public static @NonNull FabricPlatform of(final @NonNull MinecraftServer server, final @NonNull ComponentRenderer<Locale> renderer) {
+    return new FabricPlatform(requireNonNull(server, "server"), requireNonNull(renderer, "renderer"));
   }
 
-  private FabricPlatform(final MinecraftServer server, final AdventureRenderer renderer) {
+  private FabricPlatform(final MinecraftServer server, final ComponentRenderer<Locale> renderer) {
     this.server = server;
     this.renderer = renderer;
   }
@@ -118,15 +117,15 @@ public class FabricPlatform implements AdventurePlatform {
 
   public static Component adapt(final Text text) {
     if(text instanceof ComponentText) {
-      return ((ComponentText) text).getWrapped();
+      return ((ComponentText) text).wrapped();
     }
     return nonWrappingSerializer().deserialize(text);
   }
 
   public static Text update(final Text input, final UnaryOperator<Component> modifier) {
-    Component modified;
+    final Component modified;
     if(input instanceof ComponentText) {
-      modified = requireNonNull(modifier).apply(((ComponentText) input).getWrapped());
+      modified = requireNonNull(modifier).apply(((ComponentText) input).wrapped());
     } else {
       final Component original = nonWrappingSerializer().deserialize(input);
       modified = modifier.apply(original);
@@ -146,18 +145,18 @@ public class FabricPlatform implements AdventurePlatform {
   public static void init() {
     // Register custom argument types
     if(FabricLoader.getInstance().isModLoaded("colonel")) { // we can do server-only arg types
-    ServerArgumentType.<ComponentArgumentType>builder(id("component"))
-      .type(ComponentArgumentType.class)
-      .serializer(new ComponentArgumentType.Serializer())
-      .fallbackProvider(arg -> TextArgumentType.text())
-      .fallbackSuggestions(null) // client text parsing is fine
-      .register();
-    ServerArgumentType.<KeyArgumentType>builder(id("key"))
-      .type(KeyArgumentType.class)
-      .serializer(new ConstantArgumentSerializer<>(KeyArgumentType::key))
-      .fallbackProvider(arg -> IdentifierArgumentType.identifier())
-      .fallbackSuggestions(null)
-      .register();
+      ServerArgumentType.<ComponentArgumentType>builder(id("component"))
+        .type(ComponentArgumentType.class)
+        .serializer(new ComponentArgumentType.Serializer())
+        .fallbackProvider(arg -> TextArgumentType.text())
+        .fallbackSuggestions(null) // client text parsing is fine
+        .register();
+      ServerArgumentType.<KeyArgumentType>builder(id("key"))
+        .type(KeyArgumentType.class)
+        .serializer(new ConstantArgumentSerializer<>(KeyArgumentType::key))
+        .fallbackProvider(arg -> IdentifierArgumentType.identifier())
+        .fallbackSuggestions(null)
+        .register();
     } else {
       ArgumentTypes.register("adventure:component", ComponentArgumentType.class, new ComponentArgumentType.Serializer());
       ArgumentTypes.register("adventure:key", KeyArgumentType.class, new ConstantArgumentSerializer<>(KeyArgumentType::key));
@@ -192,7 +191,7 @@ public class FabricPlatform implements AdventurePlatform {
 
   @Override
   public @NonNull Audience all() {
-    return Audience.of(console(), players());
+    return Audience.of(this.console(), this.players());
   }
 
   @Override
@@ -202,12 +201,12 @@ public class FabricPlatform implements AdventurePlatform {
 
   @Override
   public @NonNull Audience players() {
-    return Audience.of(audiences(this.server.getPlayerManager().getPlayerList()));
+    return Audience.of(this.audiences(this.server.getPlayerManager().getPlayerList()));
   }
 
   @Override
   public @NonNull Audience player(final @NonNull UUID playerId) {
-    final @Nullable ServerPlayerEntity player = this.server.getPlayerManager().getPlayer(playerId);
+    final /* @Nullable */ ServerPlayerEntity player = this.server.getPlayerManager().getPlayer(playerId);
     return player != null ? (Audience) player : Audience.empty();
   }
 
@@ -234,12 +233,12 @@ public class FabricPlatform implements AdventurePlatform {
   }
 
   public Audience audience(final @NonNull Iterable<ServerPlayerEntity> players) {
-    return Audience.of(audiences(players));
+    return Audience.of(this.audiences(players));
   }
 
   @Override
   public @NonNull Audience world(final @NonNull Key worldId) {
-    final @Nullable ServerWorld world = this.server.getWorld(RegistryKey.of(Registry.DIMENSION, adapt(requireNonNull(worldId, "worldId"))));
+    final /* @Nullable */ ServerWorld world = this.server.getWorld(RegistryKey.of(Registry.DIMENSION, adapt(requireNonNull(worldId, "worldId"))));
     if(world != null) {
       return this.audience(world.getPlayers());
     }
@@ -248,12 +247,12 @@ public class FabricPlatform implements AdventurePlatform {
 
   @Override
   public @NonNull Audience server(final @NonNull String serverName) {
-    return all();
+    return this.all();
   }
 
   @Override
-  public @NonNull AdventureRenderer renderer() {
-    return this.renderer; // TODO: actually use this
+  public @NonNull ComponentRenderer<Locale> localeRenderer() {
+    return this.renderer;
   }
 
   @Override

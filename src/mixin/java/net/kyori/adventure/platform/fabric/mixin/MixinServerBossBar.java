@@ -51,7 +51,7 @@ public abstract class MixinServerBossBar extends BossBar implements BulkServerBo
 
   public MixinServerBossBar(final UUID uuid, final Text name, final Color color, final Style style) {
     super(uuid, name, color, style);
-    adventure$lastSentPercent = percent;
+    this.adventure$lastSentPercent = this.percent;
   }
 
   @Shadow
@@ -68,7 +68,7 @@ public abstract class MixinServerBossBar extends BossBar implements BulkServerBo
     }
 
     final UUID testId = ((ServerPlayerEntity) player).getUuid();
-    for(Iterator<?> it = instance.iterator(); it.hasNext(); ) {
+    for(final Iterator<?> it = instance.iterator(); it.hasNext();) {
       if(((ServerPlayerEntity) it.next()).getUuid().equals(testId)) {
         it.remove();
         return true;
@@ -107,12 +107,12 @@ public abstract class MixinServerBossBar extends BossBar implements BulkServerBo
   // Optimization -- don't send a packet for tiny changes
 
   @Inject(method = "setPercent", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/boss/BossBar;setPercent(F)V"), cancellable = true, require = 0)
-  private void onlySetPercentIfBigEnough(float newPercent, CallbackInfo ci) {
-    if(Math.abs(newPercent - adventure$lastSentPercent) < MINIMUM_PERCENT_CHANGE) {
+  private void onlySetPercentIfBigEnough(final float newPercent, final CallbackInfo ci) {
+    if(Math.abs(newPercent - this.adventure$lastSentPercent) < MINIMUM_PERCENT_CHANGE) {
       this.percent = newPercent;
       ci.cancel();
     } else {
-      adventure$lastSentPercent = newPercent;
+      this.adventure$lastSentPercent = newPercent;
       // continue as normal
     }
   }

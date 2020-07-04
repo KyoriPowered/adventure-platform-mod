@@ -51,32 +51,32 @@ public class MappedRegistry<Mc, Adv> {
   private final Map<Mc, Adv> mcToAdventure;
   private final Map<Adv, Mc> adventureToMc;
 
-  static <Mc extends Enum<Mc>, Adv extends Enum<Adv>> MappedRegistry<Mc, Adv> named(Class<Mc> mcType, Function<String, @Nullable Mc> mcByName, Class<Adv> advType, final Index<String, Adv> names) {
+  /* package */ static <Mc extends Enum<Mc>, Adv extends Enum<Adv>> MappedRegistry<Mc, Adv> named(final Class<Mc> mcType, final Function<String, @Nullable Mc> mcByName, final Class<Adv> advType, final Index<String, Adv> names) {
     return new MappedRegistry.OfEnum<>(mcType, mcByName, advType, names::key);
   }
 
-  static <Mc, Adv> MappedRegistry<Mc, Adv> named(Function<String, @Nullable Mc> mcByName, Supplier<Iterable<Mc>> mcValues, final Index<String, Adv> names, final Supplier<Iterable<Adv>> adventureValues) {
+  /* package */ static <Mc, Adv> MappedRegistry<Mc, Adv> named(final Function<String, @Nullable Mc> mcByName, final Supplier<Iterable<Mc>> mcValues, final Index<String, Adv> names, final Supplier<Iterable<Adv>> adventureValues) {
     return new MappedRegistry<>(new HashMap<>(), new HashMap<>(), mcByName, mcValues, names::key, adventureValues);
   }
 
-  MappedRegistry(Map<Mc, Adv> mcMap, Map<Adv, Mc> adventureMap, Function<String, @Nullable Mc> mcByName, Supplier<Iterable<Mc>> mcValues, Function<Adv, @Nullable String> advToName, Supplier<Iterable<Adv>> adventureValues) {
+  MappedRegistry(final Map<Mc, Adv> mcMap, final Map<Adv, Mc> adventureMap, final Function<String, @Nullable Mc> mcByName, final Supplier<Iterable<Mc>> mcValues, final Function<Adv, @Nullable String> advToName, final Supplier<Iterable<Adv>> adventureValues) {
     this.mcToAdventure = mcMap;
     this.adventureToMc = adventureMap;
 
-    for(Adv advElement : adventureValues.get()) {
-      @Nullable String mcName = advToName.apply(advElement);
+    for(final Adv advElement : adventureValues.get()) {
+      final /* @Nullable */ String mcName = advToName.apply(advElement);
       if(mcName == null) {
         throw new ExceptionInInitializerError("Unable to get name for enum-like element " + advElement);
       }
-      @Nullable Mc mcElement = mcByName.apply(mcName);
+      final /* @Nullable */ Mc mcElement = mcByName.apply(mcName);
       if(mcElement == null) {
         throw new ExceptionInInitializerError("Unknown MC element for Adventure " + mcName);
       }
-      mcToAdventure.put(mcElement, advElement);
-      adventureToMc.put(advElement, mcElement);
+      this.mcToAdventure.put(mcElement, advElement);
+      this.adventureToMc.put(advElement, mcElement);
     }
 
-    checkCoverage(mcToAdventure, mcValues.get());
+    checkCoverage(this.mcToAdventure, mcValues.get());
   }
 
   /**
@@ -87,8 +87,8 @@ public class MappedRegistry<Mc, Adv> {
    * @param values The values to verify are keys of the provided map
    * @param <T>       The type of enum
    */
-  private static <T> void checkCoverage(Map<T, ?> toCheck, Iterable<T> values) throws IllegalStateException {
-    for(T value : values) {
+  private static <T> void checkCoverage(final Map<T, ?> toCheck, final Iterable<T> values) throws IllegalStateException {
+    for(final T value : values) {
       if(!toCheck.containsKey(value)) {
         throw new IllegalStateException("Unmapped " + value.getClass().getSimpleName() + " element '" + value + '!');
       }
@@ -101,8 +101,8 @@ public class MappedRegistry<Mc, Adv> {
    * @param mcItem The Minecraft element
    * @return The adventure equivalent.
    */
-  public Adv toAdventure(Mc mcItem) {
-    return requireNonNull(mcToAdventure.get(mcItem), "Invalid enum value presented: " + mcItem);
+  public Adv toAdventure(final Mc mcItem) {
+    return requireNonNull(this.mcToAdventure.get(mcItem), "Invalid enum value presented: " + mcItem);
   }
 
   /**
@@ -111,13 +111,13 @@ public class MappedRegistry<Mc, Adv> {
    * @param advItem The Minecraft element
    * @return The adventure equivalent.
    */
-  public Mc toMinecraft(Adv advItem) {
-    return adventureToMc.get(advItem);
+  public Mc toMinecraft(final Adv advItem) {
+    return this.adventureToMc.get(advItem);
   }
 
-  static class OfEnum<Mc extends Enum<Mc>, Adv extends Enum<Adv>> extends MappedRegistry<Mc, Adv> {
+  /* package */ static class OfEnum<Mc extends Enum<Mc>, Adv extends Enum<Adv>> extends MappedRegistry<Mc, Adv> {
 
-    OfEnum(Class<Mc> mcType, Function<String, @Nullable Mc> mcByName, Class<Adv> advType, Function<Adv, @Nullable String> advToName) {
+    OfEnum(final Class<Mc> mcType, final Function<String, @Nullable Mc> mcByName, final Class<Adv> advType, final Function<Adv, @Nullable String> advToName) {
       super(new EnumMap<>(mcType), new EnumMap<>(advType), mcByName, () -> Arrays.asList(mcType.getEnumConstants()), advToName, () -> Arrays.asList(advType.getEnumConstants()));
     }
   }

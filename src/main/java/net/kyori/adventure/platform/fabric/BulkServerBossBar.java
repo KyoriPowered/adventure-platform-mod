@@ -33,6 +33,8 @@ import net.minecraft.server.network.ServerPlayerEntity;
  */
 public interface BulkServerBossBar {
   void addAll(Collection<ServerPlayerEntity> players);
+  
   void removeAll(Collection<ServerPlayerEntity> players);
+  
   void replaceSubscriber(ServerPlayerEntity oldSub, ServerPlayerEntity newSub);
 }

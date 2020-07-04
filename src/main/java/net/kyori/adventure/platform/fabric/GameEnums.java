@@ -30,7 +30,7 @@ import net.kyori.adventure.sound.Sound;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.sound.SoundCategory;
 
-public class GameEnums {
+public final class GameEnums {
   public static final MappedRegistry<BossBar.Color, net.kyori.adventure.bossbar.BossBar.Color> BOSS_BAR_COLOR
     = MappedRegistry.named(BossBar.Color.class, BossBar.Color::byName,
     net.kyori.adventure.bossbar.BossBar.Color.class, net.kyori.adventure.bossbar.BossBar.Color.NAMES);

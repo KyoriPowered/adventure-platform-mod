@@ -30,22 +30,22 @@ import net.kyori.adventure.text.serializer.ComponentSerializer;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 
-class MinecraftTextSerializer implements ComponentSerializer<Component, Component, Text> {
+/* package */ class MinecraftTextSerializer implements ComponentSerializer<Component, Component, Text> {
 
   MinecraftTextSerializer() {
   }
 
   @Override
-  public Component deserialize(Text input) {
+  public Component deserialize(final Text input) {
     if(input instanceof ComponentText) {
-      return ((ComponentText) input).getWrapped();
+      return ((ComponentText) input).wrapped();
     }
 
     return AccessorTextSerializer.getGSON().fromJson(Text.Serializer.toJsonTree(input), Component.class);
   }
 
   @Override
-  public MutableText serialize(Component component) {
+  public MutableText serialize(final Component component) {
     return Text.Serializer.fromJson(AccessorTextSerializer.getGSON().toJsonTree(component));
   }
 }

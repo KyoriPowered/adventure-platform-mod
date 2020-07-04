@@ -33,7 +33,6 @@ import net.kyori.adventure.platform.fabric.ComponentText;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.minecraft.text.Text;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -46,13 +45,13 @@ public abstract class MixinTextSerializer {
   @Shadow public abstract JsonElement serialize(final Text text, final Type type, final JsonSerializationContext jsonSerializationContext);
 
   @Inject(method = "serialize", at = @At("HEAD"), cancellable = true)
-  public void writeComponentText(Text text, Type type, JsonSerializationContext ctx, CallbackInfoReturnable<JsonElement> cir) {
+  public void writeComponentText(final Text text, final Type type, final JsonSerializationContext ctx, final CallbackInfoReturnable<JsonElement> cir) {
     if(text instanceof ComponentText) {
-      final @Nullable Text converted = ((ComponentText) text).deepConvertedIfPresent();
+      final /* @Nullable */ Text converted = ((ComponentText) text).deepConvertedIfPresent();
       if(converted != null) {
-        cir.setReturnValue(serialize(text, type, ctx));
+        cir.setReturnValue(this.serialize(text, type, ctx));
       } else {
-        cir.setReturnValue(ctx.serialize(((ComponentText) text).getWrapped(), Component.class));
+        cir.setReturnValue(ctx.serialize(((ComponentText) text).wrapped(), Component.class));
       }
     }
   }
@@ -60,7 +59,7 @@ public abstract class MixinTextSerializer {
   // inject into the anonymous function to build a gson instance
   @Inject(method = "*()Lcom/google/gson/Gson;", at = @At(value = "INVOKE_ASSIGN", target = "com/google/gson/GsonBuilder.disableHtmlEscaping()Lcom/google/gson/GsonBuilder;", remap = false),
     locals = LocalCapture.CAPTURE_FAILEXCEPTION, remap = false)
-  private static void injectKyoriGson(CallbackInfoReturnable<Gson> cir, GsonBuilder gson) {
+  private static void injectKyoriGson(final CallbackInfoReturnable<Gson> cir, final GsonBuilder gson) {
     GsonComponentSerializer.gson().populator().apply(gson);
   }
 }

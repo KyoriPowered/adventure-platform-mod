@@ -34,18 +34,19 @@ import net.minecraft.util.Identifier;
 /**
  * An argument that will be decoded as a Key
  */
-public class KeyArgumentType implements ArgumentType<Key> {
+public final class KeyArgumentType implements ArgumentType<Key> {
   private static final KeyArgumentType INSTANCE = new KeyArgumentType();
 
   public static KeyArgumentType key() {
     return INSTANCE;
   }
 
-  public static Key getKey(final CommandContext<?> ctx, final String id) {
+  public static Key key(final CommandContext<?> ctx, final String id) {
     return ctx.getArgument(id, Key.class);
   }
 
-  private KeyArgumentType() {}
+  private KeyArgumentType() {
+  }
 
   @Override
   public Key parse(final StringReader reader) throws CommandSyntaxException {

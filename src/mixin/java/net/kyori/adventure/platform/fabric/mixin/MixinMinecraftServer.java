@@ -25,13 +25,8 @@
 package net.kyori.adventure.platform.fabric.mixin;
 
 import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.bossbar.BossBar;
-import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.platform.fabric.FabricPlatform;
-import net.kyori.adventure.sound.Sound;
-import net.kyori.adventure.sound.SoundStop;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.title.Title;
 import net.minecraft.server.MinecraftServer;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -52,48 +47,12 @@ public abstract class MixinMinecraftServer implements Audience {
    * @param text The text to send
    */
   @Override
-  public void sendMessage(Component text) {
+  public void sendMessage(final Component text) {
     LOGGER.info(FabricPlatform.plainSerializer().serialize(text)); // TODO: Eventually will we support formatted output?
   }
 
   @Override
   public void sendActionBar(final @NonNull Component message) {
-    sendMessage(message);
-  }
-
-  @Override
-  public void showBossBar(@NonNull BossBar bar) {
-  }
-
-  @Override
-  public void hideBossBar(@NonNull BossBar bar) {
-  }
-
-  @Override
-  public void playSound(@NonNull Sound sound) {
-  }
-
-  @Override
-  public void stopSound(@NonNull SoundStop stop) {
-  }
-
-  @Override
-  public void playSound(final @NonNull Sound sound, final double x, final double y, final double z) {
-  }
-
-  @Override
-  public void openBook(final @NonNull Book book) {
-  }
-
-  @Override
-  public void showTitle(@NonNull final Title title) {
-  }
-
-  @Override
-  public void clearTitle() {
-  }
-
-  @Override
-  public void resetTitle() {
+    this.sendMessage(message);
   }
 }

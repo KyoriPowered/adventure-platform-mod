@@ -50,7 +50,6 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -64,7 +63,6 @@ public abstract class MixinClientPlayerEntity extends AbstractClientPlayerEntity
     super(world, profile);
   }
 
-  @Shadow public abstract void sendMessage(final Text message, final boolean actionBar);
   @Shadow @Final protected MinecraftClient client;
 
   @Override
@@ -79,15 +77,15 @@ public abstract class MixinClientPlayerEntity extends AbstractClientPlayerEntity
 
   @Override
   public void showTitle(final @NonNull Title title) {
-    final @Nullable Text titleText = title.title() == TextComponent.empty() ? null : FabricPlatform.adapt(title.title());
-    final @Nullable Text subtitleText = title.subtitle() == TextComponent.empty() ? null : FabricPlatform.adapt(title.subtitle());
+    final /* @Nullable */ Text titleText = title.title() == TextComponent.empty() ? null : FabricPlatform.adapt(title.title());
+    final /* @Nullable */ Text subtitleText = title.subtitle() == TextComponent.empty() ? null : FabricPlatform.adapt(title.subtitle());
     this.client.inGameHud.setTitles(titleText, subtitleText,
-      adventure$ticks(title.fadeInTime()),
-      adventure$ticks(title.stayTime()),
-      adventure$ticks(title.fadeOutTime()));
+      this.adventure$ticks(title.fadeInTime()),
+      this.adventure$ticks(title.stayTime()),
+      this.adventure$ticks(title.fadeOutTime()));
   }
 
-  private int adventure$ticks(Duration duration) {
+  private int adventure$ticks(final Duration duration) {
     return duration.getSeconds() == -1 ? -1 : (int) (duration.toMillis() / 50);
   }
 
@@ -113,7 +111,7 @@ public abstract class MixinClientPlayerEntity extends AbstractClientPlayerEntity
 
   @Override
   public void playSound(final @NonNull Sound sound) {
-    playSound(sound, this.getX(), getY(), getZ());
+    this.playSound(sound, this.getX(), this.getY(), this.getZ());
   }
 
   @Override
@@ -124,10 +122,10 @@ public abstract class MixinClientPlayerEntity extends AbstractClientPlayerEntity
 
   @Override
   public void stopSound(final @NonNull SoundStop stop) {
-    final @Nullable Key sound = stop.sound();
-    final @Nullable Identifier soundIdent = sound == null ? null : FabricPlatform.adapt(sound);
-    final Sound.@Nullable Source source = stop.source();
-    final @Nullable SoundCategory category = source == null ? null : GameEnums.SOUND_SOURCE.toMinecraft(source);
+    final /* @Nullable */ Key sound = stop.sound();
+    final /* @Nullable */ Identifier soundIdent = sound == null ? null : FabricPlatform.adapt(sound);
+    final Sound./* @Nullable */ Source source = stop.source();
+    final /* @Nullable */ SoundCategory category = source == null ? null : GameEnums.SOUND_SOURCE.toMinecraft(source);
     this.client.getSoundManager().stopSounds(soundIdent, category);
   }
 

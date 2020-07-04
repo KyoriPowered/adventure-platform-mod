@@ -31,8 +31,9 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 /**
  * Adventure operations implemented to act directly on the client player.
  */
-public class ClientAdventure {
-  private ClientAdventure() {}
+public final class ClientAudiences {
+  private ClientAudiences() {
+  }
 
   /**
    * Get an audience for the client's player

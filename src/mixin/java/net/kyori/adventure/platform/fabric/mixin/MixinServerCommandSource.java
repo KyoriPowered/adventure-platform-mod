@@ -24,6 +24,8 @@
 
 package net.kyori.adventure.platform.fabric.mixin;
 
+import java.util.Collection;
+import java.util.Collections;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.platform.fabric.AdventureCommandSource;
 import net.kyori.adventure.platform.fabric.CommandOutputAudience;
@@ -34,6 +36,7 @@ import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -49,12 +52,13 @@ public abstract class MixinServerCommandSource implements AdventureCommandSource
 
   @Shadow protected abstract void sendToOps(Text text);
 
-  private @MonotonicNonNull Audience ownOut;
+  private @MonotonicNonNull Audience out;
+  private @MonotonicNonNull Collection<Audience> ownOut;
 
   @Override
-  public void sendFeedback(Component text, boolean sendToOps) {
+  public void sendFeedback(final Component text, final boolean sendToOps) {
     if(this.output.shouldReceiveFeedback() && !this.silent) {
-      audience().sendMessage(text);
+      this.out.sendMessage(text);
     }
 
     if(sendToOps && this.output.shouldBroadcastConsoleToOps() && !this.silent) {
@@ -63,16 +67,16 @@ public abstract class MixinServerCommandSource implements AdventureCommandSource
   }
 
   @Override
-  public void sendError(Component text) {
+  public void sendError(final Component text) {
     if(this.output.shouldTrackOutput()) {
-      this.audience().sendMessage(text.color(NamedTextColor.RED));
+      this.out.sendMessage(text.color(NamedTextColor.RED));
     }
   }
 
   @Override
-  public Audience audience() {
+  public @NonNull Iterable<? extends Audience> audiences() {
     if(this.ownOut == null) {
-      this.ownOut = CommandOutputAudience.of(this.output);
+      this.ownOut = Collections.singleton(this.out = CommandOutputAudience.of(this.output));
     }
     return this.ownOut;
   }

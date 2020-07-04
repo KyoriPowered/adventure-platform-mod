@@ -28,7 +28,6 @@ import com.google.common.base.Strings;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import net.kyori.adventure.platform.fabric.ComponentArgumentType;
 import net.kyori.adventure.platform.fabric.FabricPlatform;
 import java.util.Collection;
 import java.util.Collections;
@@ -46,6 +45,7 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.platform.fabric.KeyArgumentType;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -62,13 +62,11 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import static com.mojang.brigadier.arguments.IntegerArgumentType.getInteger;
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
 import static java.util.Objects.requireNonNull;
-import static net.kyori.adventure.platform.fabric.KeyArgumentType.getKey;
+import static net.kyori.adventure.platform.fabric.ComponentArgumentType.component;
 import static net.kyori.adventure.platform.fabric.KeyArgumentType.key;
 import static net.kyori.adventure.text.TextComponent.newline;
 import static net.minecraft.command.arguments.EntityArgumentType.getPlayers;
 import static net.minecraft.command.arguments.EntityArgumentType.players;
-import static net.minecraft.command.arguments.IdentifierArgumentType.getIdentifier;
-import static net.minecraft.command.arguments.IdentifierArgumentType.identifier;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
@@ -79,7 +77,7 @@ public class AdventureTester implements ModInitializer {
   private static final List<TextColor> LINE_COLOURS = IntStream.of(0x9400D3, 0x4B0082, 0x0000FF, 0x00FF00, 0xFFFF00, 0xFF7F00, 0xFF0000,
                                                                   0x55CDFC, 0xF7A8B8, 0xFFFFFF, 0xF7A8B8, 0x55CDFC)
                                                                   .mapToObj(TextColor::of).collect(Collectors.toList());
-  private static final Component LINE = TextComponent.of(Strings.repeat("\u2588", 10));
+  private static final Component LINE = TextComponent.of(Strings.repeat("█", 10));
 
   private static final String ARG_TEXT = "text";
   private static final String ARG_SECONDS = "seconds";
@@ -102,27 +100,28 @@ public class AdventureTester implements ModInitializer {
 
     CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
       dispatcher.register(literal("adventure")
-        .then(literal("echo").then(argument(ARG_TEXT, ComponentArgumentType.component()).executes(ctx -> {
-          final Audience audience = adventure().audience(ctx.getSource());
-          final Component result = ComponentArgumentType.getComponent(ctx, ARG_TEXT);
+        .then(literal("echo").then(argument(ARG_TEXT, component()).executes(ctx -> {
+          final Audience audience = this.adventure().audience(ctx.getSource());
+          final Component result = component(ctx, ARG_TEXT);
           audience.sendMessage(result);
           return 1;
         })))
         .then(literal("countdown").then(argument(ARG_SECONDS, integer()).executes(ctx -> { // multiple boss bars!
-          final Audience audience = adventure().audience(ctx.getSource());
-          beginCountdown(TextComponent.of("Countdown"), getInteger(ctx, ARG_SECONDS), audience, BossBar.Color.RED, complete -> {
+          final Audience audience = this.adventure().audience(ctx.getSource());
+          this.beginCountdown(TextComponent.of("Countdown"), getInteger(ctx, ARG_SECONDS), audience, BossBar.Color.RED, complete -> {
             complete.sendActionBar(TextComponent.of("Countdown complete!", COLOR_RESPONSE));
           });
-          beginCountdown(TextComponent.of("Faster Countdown"), getInteger(ctx, ARG_SECONDS) / 2, audience, BossBar.Color.PURPLE, complete -> {
-            complete.sendActionBar(TextComponent.builder("Faster Countdown complete! ", COLOR_RESPONSE).append(TextComponent.of('\uE042', Style.builder().font(FONT_MEOW).build())).build());
+          this.beginCountdown(TextComponent.of("Faster Countdown"), getInteger(ctx, ARG_SECONDS) / 2, audience, BossBar.Color.PURPLE, complete -> {
+            complete.sendActionBar(TextComponent.builder("Faster Countdown complete! ", COLOR_RESPONSE)
+              .append(TextComponent.of('\uE042', Style.builder().font(FONT_MEOW).build())).build()); // private use kitten in font
           });
           return 1;
         })))
-      .then(literal("tellall").then(argument(ARG_TARGETS, players()).then(argument(ARG_TEXT, ComponentArgumentType.component()).executes(ctx -> {
+      .then(literal("tellall").then(argument(ARG_TARGETS, players()).then(argument(ARG_TEXT, component()).executes(ctx -> {
         final Collection<ServerPlayerEntity> targets = getPlayers(ctx, ARG_TARGETS);
-        final Audience source = adventure().audience(ctx.getSource());
-        final Component message = ComponentArgumentType.getComponent(ctx, ARG_TEXT);
-        final Audience destination = adventure().audience(targets);
+        final Audience source = this.adventure().audience(ctx.getSource());
+        final Component message = component(ctx, ARG_TEXT);
+        final Audience destination = this.adventure().audience(targets);
 
         destination.sendMessage(message);
         source.sendMessage(TextComponent.make("You have sent \"", b -> {
@@ -132,14 +131,14 @@ public class AdventureTester implements ModInitializer {
         return 1;
       }))))
       .then(literal("sound").then(argument(ARG_SOUND, key()).suggests(SuggestionProviders.AVAILABLE_SOUNDS).executes(ctx -> {
-        final Audience viewer = adventure().audience(ctx.getSource());
-        final Key sound = getKey(ctx, ARG_SOUND);
+        final Audience viewer = this.adventure().audience(ctx.getSource());
+        final Key sound = KeyArgumentType.key(ctx, ARG_SOUND);
         viewer.sendMessage(TextComponent.make("Playing sound ", b -> b.append(represent(sound)).color(COLOR_RESPONSE)));
         viewer.playSound(Sound.of(sound, Sound.Source.MASTER, 1f, 1f));
         return 1;
       })))
       .then(literal("book").executes(ctx -> {
-        final Audience viewer = adventure().audience(ctx.getSource());
+        final Audience viewer = this.adventure().audience(ctx.getSource());
         viewer.openBook(Book.builder()
         .title(TextComponent.of("My book", NamedTextColor.RED))
         .author(TextComponent.of("The adventure team", COLOR_RESPONSE))
@@ -149,20 +148,20 @@ public class AdventureTester implements ModInitializer {
         return 1;
       }))
       .then(literal("rgb").executes(ctx -> {
-        final Audience viewer = adventure().audience(ctx.getSource());
-        for(TextColor color : LINE_COLOURS) {
+        final Audience viewer = this.adventure().audience(ctx.getSource());
+        for(final TextColor color : LINE_COLOURS) {
           viewer.sendMessage(LINE.color(color));
         }
         return 1;
       })));
     });
   }
-  
+
   private static final Component COLON = TextComponent.of(":", NamedTextColor.GRAY);
   private static final TextColor COLOR_PATH = TextColor.of(0x18A4C2);
   private static final TextColor COLOR_NAMESPACE = TextColor.of(0x0D6679);
   private static final TextColor COLOR_NAMESPACE_VANILLA = TextColor.of(0x4A656B);
-  
+
   private static Component represent(final @NonNull Key ident) {
     final TextColor namespaceColor;
     if(ident.namespace().equals("minecraft")) { // de-emphasize
@@ -175,14 +174,14 @@ public class AdventureTester implements ModInitializer {
       .append(COLON)
       .append(TextComponent.of(ident.value(), COLOR_PATH))
       .build();
-    
+
   }
 
-  private static Component listPlayers(Collection<? extends ServerPlayerEntity> players) {
+  private static Component listPlayers(final Collection<? extends ServerPlayerEntity> players) {
     final HoverEvent<Component> hover = HoverEvent.showText(TextComponent.make(b -> {
       boolean first = true;
-      for (ServerPlayerEntity player : players) {
-        if (!first) {
+      for(final ServerPlayerEntity player : players) {
+        if(!first) {
           b.append(newline());
         }
         first = false;
@@ -202,22 +201,22 @@ public class AdventureTester implements ModInitializer {
    * @param targets viewers of the action
    * @param completionAction callback to execute when countdown is complete
    */
-  private void beginCountdown(Component title, final int timeSeconds, Audience targets, BossBar.Color color, Consumer<Audience> completionAction) {
+  private void beginCountdown(final Component title, final int timeSeconds, final Audience targets, final BossBar.Color color, final Consumer<Audience> completionAction) {
     final BossBar bar = BossBar.of(title.style(builder -> builder.colorIfAbsent(textColor(color)).font(FONT_IOSEVKA)), 1, color, BossBar.Overlay.PROGRESS, Collections.singleton(BossBar.Flag.PLAY_BOSS_MUSIC));
 
     final int timeMs = timeSeconds * 1000; // total time ms
     final long[] times = new long[] {timeMs, System.currentTimeMillis()}; // remaining time in ms, last update time
     final AtomicReference<ScheduledFuture<?>> task = new AtomicReference<>();
 
-    task.set(executor.scheduleAtFixedRate(() -> {
+    task.set(this.executor.scheduleAtFixedRate(() -> {
       final long now = System.currentTimeMillis();
       final long dt = now - times[1];
       times[0] -= dt;
       times[1] = now;
 
-      if (times[0] <= 0) { // we are complete
+      if(times[0] <= 0) { // we are complete
         final ScheduledFuture<?> future = task.getAndSet(null);
-        if (future != null) {
+        if(future != null) {
           future.cancel(false);
         }
         targets.hideBossBar(bar);
@@ -232,7 +231,7 @@ public class AdventureTester implements ModInitializer {
     targets.showBossBar(bar);
   }
 
-  static TextColor textColor(final BossBar.Color barColor) {
+  /* package */ static TextColor textColor(final BossBar.Color barColor) {
     switch(barColor) {
       case PINK: return NamedTextColor.LIGHT_PURPLE;
       case BLUE: return NamedTextColor.BLUE;

@@ -48,7 +48,7 @@ public final class CommandOutputAudience implements Audience {
   }
 
   public static Audience of(final CommandOutput output) {
-    if (output instanceof Audience) {
+    if(output instanceof Audience) {
       return (Audience) output;
     } else {
       return new CommandOutputAudience(requireNonNull(output, "output"));
@@ -62,35 +62,42 @@ public final class CommandOutputAudience implements Audience {
 
   @Override
   public void sendActionBar(final @NonNull Component message) {
-    sendMessage(message);
+    this.sendMessage(message);
   }
 
   @Override
-  public void showBossBar(@NonNull final BossBar bar) { }
+  public void showBossBar(@NonNull final BossBar bar) {
+  }
 
   @Override
-  public void hideBossBar(@NonNull final BossBar bar) { }
+  public void hideBossBar(@NonNull final BossBar bar) {
+  }
 
   @Override
-  public void playSound(@NonNull final Sound sound) { }
+  public void playSound(@NonNull final Sound sound) {
+  }
 
   @Override
   public void playSound(final @NonNull Sound sound, final double x, final double y, final double z) {
   }
 
   @Override
-  public void stopSound(@NonNull final SoundStop stop) { }
+  public void stopSound(@NonNull final SoundStop stop) {
+  }
 
   @Override
   public void openBook(final @NonNull Book book) {
   }
 
   @Override
-  public void showTitle(@NonNull final Title title) { }
+  public void showTitle(@NonNull final Title title) {
+  }
 
   @Override
-  public void clearTitle() { }
+  public void clearTitle() {
+  }
 
   @Override
-  public void resetTitle() { }
+  public void resetTitle() {
+  }
 }

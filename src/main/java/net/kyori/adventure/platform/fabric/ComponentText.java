@@ -42,11 +42,11 @@ public final class ComponentText implements Text {
     this.wrapped = wrapped;
   }
 
-  public Component getWrapped() {
+  public Component wrapped() {
     return this.wrapped;
   }
 
-  Text deepConverted() {
+  /* package */ Text deepConverted() {
     Text converted = this.converted;
     if(converted == null) {
       converted = this.converted = FabricPlatform.nonWrappingSerializer().serialize(this.wrapped);
@@ -60,7 +60,7 @@ public final class ComponentText implements Text {
 
   @Override
   public Style getStyle() {
-    return deepConverted().getStyle();
+    return this.deepConverted().getStyle();
   }
 
   @Override
@@ -73,32 +73,32 @@ public final class ComponentText implements Text {
     if(this.wrapped instanceof TextComponent) {
       return ((TextComponent) this.wrapped).content();
     } else {
-      return deepConverted().asString();
+      return this.deepConverted().asString();
     }
   }
 
   @Override
   public List<Text> getSiblings() {
-    return deepConverted().getSiblings();
+    return this.deepConverted().getSiblings();
   }
 
   @Override
   public MutableText copy() {
-    return deepConverted().copy();
+    return this.deepConverted().copy();
   }
 
   @Override
   public MutableText shallowCopy() {
-    return deepConverted().shallowCopy();
+    return this.deepConverted().shallowCopy();
   }
 
   @Override
-  public <T> Optional<T> visit(StyledVisitor<T> visitor, Style style) {
-    return deepConverted().visit(visitor, style);
+  public <T> Optional<T> visit(final StyledVisitor<T> visitor, final Style style) {
+    return this.deepConverted().visit(visitor, style);
   }
 
   @Override
-  public <T> Optional<T> visit(Visitor<T> visitor) {
-    return deepConverted().visit(visitor);
+  public <T> Optional<T> visit(final Visitor<T> visitor) {
+    return this.deepConverted().visit(visitor);
   }
 }
