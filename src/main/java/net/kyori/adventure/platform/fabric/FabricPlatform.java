@@ -37,6 +37,7 @@ import net.kyori.adventure.platform.AudienceProvider;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.KeybindComponent;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.command.arguments.ArgumentTypes;
@@ -63,6 +64,7 @@ import static java.util.Objects.requireNonNull;
 public final class FabricPlatform implements AudienceProvider {
   private static final PlainComponentSerializer PLAIN;
   private static final MinecraftTextSerializer TEXT_NON_WRAPPING = new MinecraftTextSerializer();
+  public static final GsonComponentSerializer GSON = GsonComponentSerializer.builder().legacyHoverEventSerializer(NBTLegacyHoverEventSerializer.INSTANCE).build();
 
   static {
     final Function<KeybindComponent, String> keybindNamer;
@@ -253,6 +255,11 @@ public final class FabricPlatform implements AudienceProvider {
   @Override
   public @NonNull ComponentRenderer<Locale> localeRenderer() {
     return this.renderer;
+  }
+
+  @Override
+  public @NonNull GsonComponentSerializer gsonSerializer() {
+    return GSON;
   }
 
   @Override

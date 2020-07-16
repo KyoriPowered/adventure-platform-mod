@@ -30,8 +30,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonSerializationContext;
 import java.lang.reflect.Type;
 import net.kyori.adventure.platform.fabric.ComponentText;
+import net.kyori.adventure.platform.fabric.FabricPlatform;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -60,6 +60,6 @@ public abstract class MixinTextSerializer {
   @Inject(method = "*()Lcom/google/gson/Gson;", at = @At(value = "INVOKE_ASSIGN", target = "com/google/gson/GsonBuilder.disableHtmlEscaping()Lcom/google/gson/GsonBuilder;", remap = false),
     locals = LocalCapture.CAPTURE_FAILEXCEPTION, remap = false)
   private static void injectKyoriGson(final CallbackInfoReturnable<Gson> cir, final GsonBuilder gson) {
-    GsonComponentSerializer.gson().populator().apply(gson);
+    FabricPlatform.GSON.populator().apply(gson);
   }
 }
