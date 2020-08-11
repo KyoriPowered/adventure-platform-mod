@@ -39,6 +39,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.title.Title;
+import net.minecraft.client.options.ChatVisibility;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -70,13 +71,28 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class MixinServerPlayerEntity extends PlayerEntity implements Audience {
   @Shadow public ServerPlayNetworkHandler networkHandler;
 
-  public MixinServerPlayerEntity(final World world, final BlockPos pos, final GameProfile gameProfile) {
-    super(world, pos, gameProfile);
+  @Shadow
+  private ChatVisibility clientChatVisibility;
+
+  public MixinServerPlayerEntity(final World world, final BlockPos pos, final float yaw, final GameProfile gameProfile) {
+    super(world, pos, yaw, gameProfile);
   }
 
   @Override
-  public void sendMessage(final Component text) {
-    this.networkHandler.sendPacket(new GameMessageS2CPacket(FabricPlatform.adapt(text), MessageType.SYSTEM, Util.NIL_UUID));
+  public void sendMessage(final Component text, final net.kyori.adventure.audience.MessageType type) {
+    final MessageType mcType;
+    final boolean shouldSend;
+    if(type == net.kyori.adventure.audience.MessageType.CHAT) {
+      mcType = MessageType.CHAT;
+      shouldSend = this.clientChatVisibility == ChatVisibility.FULL;
+    } else {
+      mcType = MessageType.SYSTEM;
+      shouldSend = this.clientChatVisibility == ChatVisibility.FULL || this.clientChatVisibility == ChatVisibility.SYSTEM;
+    }
+
+    if(shouldSend) {
+      this.networkHandler.sendPacket(new GameMessageS2CPacket(FabricPlatform.adapt(text), mcType, Util.NIL_UUID));
+    }
   }
 
   @Override

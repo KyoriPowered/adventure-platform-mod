@@ -29,6 +29,7 @@ import java.util.Optional;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.minecraft.text.MutableText;
+import net.minecraft.text.OrderedText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
@@ -69,6 +70,11 @@ public final class ComponentText implements Text {
   }
 
   @Override
+  public String asTruncatedString(final int length) {
+    return this.deepConverted().asTruncatedString(length);
+  }
+
+  @Override
   public String asString() {
     if(this.wrapped instanceof TextComponent) {
       return ((TextComponent) this.wrapped).content();
@@ -90,6 +96,11 @@ public final class ComponentText implements Text {
   @Override
   public MutableText shallowCopy() {
     return this.deepConverted().shallowCopy();
+  }
+
+  @Override
+  public OrderedText asOrderedText() {
+    return this.deepConverted().asOrderedText();
   }
 
   @Override

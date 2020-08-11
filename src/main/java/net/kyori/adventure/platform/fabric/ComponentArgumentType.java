@@ -37,8 +37,8 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Set;
 import net.kyori.adventure.text.Component;
-import net.minecraft.command.arguments.TextArgumentType;
-import net.minecraft.command.arguments.serialize.ArgumentSerializer;
+import net.minecraft.command.argument.TextArgumentType;
+import net.minecraft.command.argument.serialize.ArgumentSerializer;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 

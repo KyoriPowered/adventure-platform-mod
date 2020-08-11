@@ -27,7 +27,7 @@ package net.kyori.adventure.platform.fabric.client;
 import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.platform.fabric.FabricPlatform;
 import net.minecraft.client.gui.screen.ingame.BookScreen;
-import net.minecraft.text.StringRenderable;
+import net.minecraft.text.StringVisitable;
 
 import static java.util.Objects.requireNonNull;
 
@@ -51,7 +51,7 @@ public class AdventureBookContents implements BookScreen.Contents {
   }
 
   @Override
-  public StringRenderable getPageUnchecked(final int index) {
+  public StringVisitable getPageUnchecked(final int index) {
     return FabricPlatform.adapt(this.book.pages().get(index));
   }
 }

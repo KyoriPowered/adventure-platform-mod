@@ -27,6 +27,7 @@ package net.kyori.adventure.platform.fabric.mixin.client;
 import com.mojang.authlib.GameProfile;
 import java.time.Duration;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.key.Key;
@@ -43,6 +44,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.BookScreen;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.options.ChatVisibility;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.client.world.ClientWorld;
@@ -66,8 +68,19 @@ public abstract class MixinClientPlayerEntity extends AbstractClientPlayerEntity
   @Shadow @Final protected MinecraftClient client;
 
   @Override
-  public void sendMessage(final @NonNull Component message) {
-    this.sendMessage(FabricPlatform.adapt(message), false);
+  public void sendMessage(final @NonNull Component message, final @NonNull MessageType type) {
+    final ChatVisibility visibility = this.client.options.chatVisibility;
+    if(type == MessageType.CHAT) {
+      // Add to chat queue (following delay and such)
+      if(visibility == ChatVisibility.FULL) {
+        this.client.inGameHud.getChatHud().method_27147(FabricPlatform.adapt(message));
+      }
+    } else {
+      // Add immediately as a system message
+      if(visibility == ChatVisibility.FULL || visibility == ChatVisibility.SYSTEM) {
+        this.client.inGameHud.getChatHud().addMessage(FabricPlatform.adapt(message));
+      }
+    }
   }
 
   @Override

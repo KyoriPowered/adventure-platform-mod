@@ -32,7 +32,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.registry.RegistryTracker;
+import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.WorldSaveHandler;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -52,7 +52,7 @@ public class MixinPlayerManager {
   @Shadow @Final @Mutable private Map<UUID, ServerPlayerEntity> playerMap;
 
   @Inject(method = "<init>", at = @At("RETURN"), require = 0)
-  private void replacePlayerLists(final MinecraftServer server, final RegistryTracker.Modifiable tracker, final WorldSaveHandler handler, final int i, final CallbackInfo ci) {
+  private void replacePlayerLists(final MinecraftServer server, final DynamicRegistryManager.Impl tracker, final WorldSaveHandler handler, final int i, final CallbackInfo ci) {
     this.players = new CopyOnWriteArrayList<>();
     this.playerMap = new ConcurrentHashMap<>();
   }

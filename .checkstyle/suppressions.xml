@@ -4,7 +4,7 @@
   "http://checkstyle.org/dtds/suppressions_1_2.dtd">
 <suppressions>
   <!-- add any necessary suppressions here -->
-  <suppress files="src/test/java/.*" checks="RequireExplicitVisibilityModifier"/>
-  <suppress files=".*/mixin/Accessor.*\.java" checks="MethodName"/>
-  <suppress files=".*/mixin/Accessor.*\.java" checks="EmptyLineSeparator"/>
+  <suppress files="src[\\/]test[\\/]java[\\/].*" checks="RequireExplicitVisibilityModifier"/>
+  <suppress files=".*[\\/]mixin[\\/]Accessor.*\.java" checks="MethodName"/>
+  <suppress files=".*[\\/]mixin[\\/]Accessor.*\.java" checks="EmptyLineSeparator"/>
 </suppressions>

@@ -28,6 +28,7 @@ import com.google.common.base.Strings;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.kyori.adventure.platform.fabric.FabricPlatform;
 import java.util.Collection;
 import java.util.Collections;
@@ -39,8 +40,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
-import net.fabricmc.fabric.api.event.server.ServerStartCallback;
-import net.fabricmc.fabric.api.event.server.ServerStopCallback;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.inventory.Book;
@@ -65,8 +64,8 @@ import static java.util.Objects.requireNonNull;
 import static net.kyori.adventure.platform.fabric.ComponentArgumentType.component;
 import static net.kyori.adventure.platform.fabric.KeyArgumentType.key;
 import static net.kyori.adventure.text.TextComponent.newline;
-import static net.minecraft.command.arguments.EntityArgumentType.getPlayers;
-import static net.minecraft.command.arguments.EntityArgumentType.players;
+import static net.minecraft.command.argument.EntityArgumentType.getPlayers;
+import static net.minecraft.command.argument.EntityArgumentType.players;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
@@ -95,8 +94,8 @@ public class AdventureTester implements ModInitializer {
   @Override
   public void onInitialize() {
     // Set up platform
-    ServerStartCallback.EVENT.register(server -> this.platform = FabricPlatform.of(server));
-    ServerStopCallback.EVENT.register(server -> this.platform = null);
+    ServerLifecycleEvents.SERVER_STARTING.register(server -> this.platform = FabricPlatform.of(server));
+    ServerLifecycleEvents.SERVER_STOPPED.register(server -> this.platform = null);
 
     CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
       dispatcher.register(literal("adventure")
@@ -142,8 +141,8 @@ public class AdventureTester implements ModInitializer {
         viewer.openBook(Book.builder()
         .title(TextComponent.of("My book", NamedTextColor.RED))
         .author(TextComponent.of("The adventure team", COLOR_RESPONSE))
-        .page(TextComponent.of("Welcome to our rules page"))
-        .page(TextComponent.of("Let's do a thing!"))
+        .addPage(TextComponent.of("Welcome to our rules page"))
+        .addPage(TextComponent.of("Let's do a thing!"))
         .build());
         return 1;
       }))
