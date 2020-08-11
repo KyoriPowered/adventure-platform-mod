@@ -64,10 +64,8 @@ public abstract class AbstractBossBarListener<T extends net.minecraft.entity.bos
   }
 
   @Override
-  public void bossBarFlagsChanged(@NonNull final BossBar bar, @NonNull final Set<BossBar.Flag> oldFlags, @NonNull final Set<BossBar.Flag> newFlags) {
-    if(!oldFlags.equals(newFlags)) {
-      updateFlags(this.minecraft(bar), newFlags);
-    }
+  public void bossBarFlagsChanged(@NonNull final BossBar bar, @NonNull final Set<BossBar.Flag> flagsRemoved, @NonNull final Set<BossBar.Flag> flagsAdded) {
+    updateFlags(this.minecraft(bar), bar.flags());
   }
 
   private static void updateFlags(final net.minecraft.entity.boss.@NonNull BossBar bar, final @NonNull Set<BossBar.Flag> flags) {
