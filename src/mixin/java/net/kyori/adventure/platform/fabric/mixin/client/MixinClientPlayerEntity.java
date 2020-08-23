@@ -52,6 +52,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -92,14 +93,15 @@ public abstract class MixinClientPlayerEntity extends AbstractClientPlayerEntity
   public void showTitle(final @NonNull Title title) {
     final /* @Nullable */ Text titleText = title.title() == TextComponent.empty() ? null : FabricPlatform.adapt(title.title());
     final /* @Nullable */ Text subtitleText = title.subtitle() == TextComponent.empty() ? null : FabricPlatform.adapt(title.subtitle());
+    final /* @Nullable */ Title.Times times = title.times();
     this.client.inGameHud.setTitles(titleText, subtitleText,
-      this.adventure$ticks(title.fadeInTime()),
-      this.adventure$ticks(title.stayTime()),
-      this.adventure$ticks(title.fadeOutTime()));
+      this.adventure$ticks(times == null ? null : times.fadeIn()),
+      this.adventure$ticks(times == null ? null : times.stay()),
+      this.adventure$ticks(times == null ? null : times.fadeOut()));
   }
 
-  private int adventure$ticks(final Duration duration) {
-    return duration.getSeconds() == -1 ? -1 : (int) (duration.toMillis() / 50);
+  private int adventure$ticks(final @Nullable Duration duration) {
+    return duration == null || duration.getSeconds() == -1 ? -1 : (int) (duration.toMillis() / 50);
   }
 
   @Override

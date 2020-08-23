@@ -164,11 +164,14 @@ public abstract class MixinServerPlayerEntity extends PlayerEntity implements Au
       this.networkHandler.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.SUBTITLE, FabricPlatform.adapt(title.subtitle())));
     }
 
-    final int fadeIn = this.ticks(title.fadeInTime());
-    final int fadeOut = this.ticks(title.fadeOutTime());
-    final int dwell = this.ticks(title.stayTime());
-    if(fadeIn != -1 || fadeOut != -1 || dwell != -1) {
-      this.networkHandler.sendPacket(new TitleS2CPacket(fadeIn, dwell, fadeOut));
+    final /* @Nullable */ Title.Times times = title.times();
+    if(times != null) {
+      final int fadeIn = this.ticks(times.fadeIn());
+      final int fadeOut = this.ticks(times.fadeOut());
+      final int dwell = this.ticks(times.stay());
+      if(fadeIn != -1 || fadeOut != -1 || dwell != -1) {
+        this.networkHandler.sendPacket(new TitleS2CPacket(fadeIn, dwell, fadeOut));
+      }
     }
 
     if(title.title() != TextComponent.empty()) {
