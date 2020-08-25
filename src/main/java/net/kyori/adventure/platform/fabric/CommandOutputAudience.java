@@ -43,7 +43,7 @@ import static java.util.Objects.requireNonNull;
 public final class CommandOutputAudience implements Audience {
   private final CommandOutput output;
 
-  /* package */ CommandOutputAudience(final CommandOutput output) {
+   CommandOutputAudience(final CommandOutput output) {
     this.output = output;
   }
 

@@ -230,7 +230,7 @@ public class AdventureTester implements ModInitializer {
     targets.showBossBar(bar);
   }
 
-  /* package */ static TextColor textColor(final BossBar.Color barColor) {
+   static TextColor textColor(final BossBar.Color barColor) {
     switch(barColor) {
       case PINK: return NamedTextColor.LIGHT_PURPLE;
       case BLUE: return NamedTextColor.BLUE;

@@ -96,7 +96,7 @@ public final class ComponentArgumentType implements ArgumentType<Component> {
     return EXAMPLES;
   }
 
-  /* package */ static class Serializer implements ArgumentSerializer<ComponentArgumentType> {
+   static class Serializer implements ArgumentSerializer<ComponentArgumentType> {
     private static final Identifier SERIALIZER_GSON = new Identifier("adventure", "gson");
 
     @Override

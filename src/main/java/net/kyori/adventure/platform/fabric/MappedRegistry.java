@@ -51,11 +51,11 @@ public class MappedRegistry<Mc, Adv> {
   private final Map<Mc, Adv> mcToAdventure;
   private final Map<Adv, Mc> adventureToMc;
 
-  /* package */ static <Mc extends Enum<Mc>, Adv extends Enum<Adv>> MappedRegistry<Mc, Adv> named(final Class<Mc> mcType, final Function<String, @Nullable Mc> mcByName, final Class<Adv> advType, final Index<String, Adv> names) {
+   static <Mc extends Enum<Mc>, Adv extends Enum<Adv>> MappedRegistry<Mc, Adv> named(final Class<Mc> mcType, final Function<String, @Nullable Mc> mcByName, final Class<Adv> advType, final Index<String, Adv> names) {
     return new MappedRegistry.OfEnum<>(mcType, mcByName, advType, names::key);
   }
 
-  /* package */ static <Mc, Adv> MappedRegistry<Mc, Adv> named(final Function<String, @Nullable Mc> mcByName, final Supplier<Iterable<Mc>> mcValues, final Index<String, Adv> names, final Supplier<Iterable<Adv>> adventureValues) {
+   static <Mc, Adv> MappedRegistry<Mc, Adv> named(final Function<String, @Nullable Mc> mcByName, final Supplier<Iterable<Mc>> mcValues, final Index<String, Adv> names, final Supplier<Iterable<Adv>> adventureValues) {
     return new MappedRegistry<>(new HashMap<>(), new HashMap<>(), mcByName, mcValues, names::key, adventureValues);
   }
 
@@ -115,7 +115,7 @@ public class MappedRegistry<Mc, Adv> {
     return this.adventureToMc.get(advItem);
   }
 
-  /* package */ static class OfEnum<Mc extends Enum<Mc>, Adv extends Enum<Adv>> extends MappedRegistry<Mc, Adv> {
+   static class OfEnum<Mc extends Enum<Mc>, Adv extends Enum<Adv>> extends MappedRegistry<Mc, Adv> {
 
     OfEnum(final Class<Mc> mcType, final Function<String, @Nullable Mc> mcByName, final Class<Adv> advType, final Function<Adv, @Nullable String> advToName) {
       super(new EnumMap<>(mcType), new EnumMap<>(advType), mcByName, () -> Arrays.asList(mcType.getEnumConstants()), advToName, () -> Arrays.asList(advType.getEnumConstants()));

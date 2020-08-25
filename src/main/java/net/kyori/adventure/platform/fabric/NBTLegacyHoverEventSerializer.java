@@ -39,7 +39,7 @@ import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.nbt.Tag;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-/* package */ final class NBTLegacyHoverEventSerializer implements LegacyHoverEventSerializer {
+ final class NBTLegacyHoverEventSerializer implements LegacyHoverEventSerializer {
   public static final NBTLegacyHoverEventSerializer INSTANCE = new NBTLegacyHoverEventSerializer();
   private static final Codec<CompoundTag, String, CommandSyntaxException, RuntimeException> SNBT_CODEC = Codec.of(StringNbtReader::parse, Tag::toString);
 

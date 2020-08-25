@@ -47,7 +47,7 @@ public final class ComponentText implements Text {
     return this.wrapped;
   }
 
-  /* package */ Text deepConverted() {
+   Text deepConverted() {
     Text converted = this.converted;
     if(converted == null) {
       converted = this.converted = FabricPlatform.nonWrappingSerializer().serialize(this.wrapped);
