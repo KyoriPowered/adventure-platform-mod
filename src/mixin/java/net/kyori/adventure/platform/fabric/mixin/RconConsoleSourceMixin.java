@@ -22,47 +22,29 @@
  * SOFTWARE.
  */
 
-package net.kyori.adventure.platform.fabric;
+package net.kyori.adventure.platform.fabric.mixin;
 
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.inventory.Book;
+import net.kyori.adventure.platform.fabric.FabricPlatform;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.SoundStop;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
-import net.minecraft.server.command.CommandOutput;
-import net.minecraft.util.Util;
+import net.minecraft.server.rcon.RconConsoleSource;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 
-import static java.util.Objects.requireNonNull;
-
-/**
- * Audience implementation that can wrap a CommandOutput
- */
-public final class CommandOutputAudience implements Audience {
-  private final CommandOutput output;
-
-   CommandOutputAudience(final CommandOutput output) {
-    this.output = output;
-  }
-
-  public static Audience of(final CommandOutput output) {
-    if(output instanceof Audience) {
-      return (Audience) output;
-    } else {
-      return new CommandOutputAudience(requireNonNull(output, "output"));
-    }
-  }
+@Mixin(RconConsoleSource.class)
+public abstract class RconConsoleSourceMixin implements Audience {
+  @Shadow @Final private StringBuffer buffer;
 
   @Override
   public void sendMessage(final Component text) {
-    this.output.sendSystemMessage(FabricPlatform.adapt(text), Util.NIL_UUID);
-  }
-
-  @Override
-  public void sendActionBar(final @NonNull Component message) {
-    this.sendMessage(message);
+    this.buffer.append(FabricPlatform.plainSerializer().serialize(text));
   }
 
   @Override
@@ -78,11 +60,11 @@ public final class CommandOutputAudience implements Audience {
   }
 
   @Override
-  public void playSound(final @NonNull Sound sound, final double x, final double y, final double z) {
+  public void stopSound(@NonNull final SoundStop stop) {
   }
 
   @Override
-  public void stopSound(@NonNull final SoundStop stop) {
+  public void playSound(final @NonNull Sound sound, final double x, final double y, final double z) {
   }
 
   @Override

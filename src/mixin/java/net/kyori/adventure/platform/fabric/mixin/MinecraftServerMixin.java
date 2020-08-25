@@ -24,37 +24,35 @@
 
 package net.kyori.adventure.platform.fabric.mixin;
 
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.platform.fabric.FabricPlatform;
+import net.kyori.adventure.text.Component;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.PlayerManager;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.world.WorldSaveHandler;
+import org.apache.logging.log4j.Logger;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Replace the player list fields so we can safely access and iterate them off the server thread.
+ * Implement ComponentCommandOutput for output to the server console
  */
-@Mixin(PlayerManager.class)
-public class MixinPlayerManager {
+@Mixin(value = MinecraftServer.class)
+public abstract class MinecraftServerMixin implements Audience {
+  @Shadow @Final private static Logger LOGGER;
 
-  @Shadow @Final @Mutable private List<ServerPlayerEntity> players;
-  @Shadow @Final @Mutable private Map<UUID, ServerPlayerEntity> playerMap;
-
-  @Inject(method = "<init>", at = @At("RETURN"), require = 0)
-  private void replacePlayerLists(final MinecraftServer server, final DynamicRegistryManager.Impl tracker, final WorldSaveHandler handler, final int i, final CallbackInfo ci) {
-    this.players = new CopyOnWriteArrayList<>();
-    this.playerMap = new ConcurrentHashMap<>();
+  /**
+   * Send a message to this receiver as a component
+   *
+   * @param text The text to send
+   */
+  @Override
+  public void sendMessage(final Component text) {
+    LOGGER.info(FabricPlatform.plainSerializer().serialize(text)); // TODO: Eventually will we support formatted output?
   }
 
+  @Override
+  public void sendActionBar(final @NonNull Component message) {
+    this.sendMessage(message);
+  }
 }

@@ -25,16 +25,15 @@
 package net.kyori.adventure.platform.fabric;
 
 import java.util.Collection;
-import net.minecraft.entity.boss.ServerBossBar;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
 
 /**
- * An interface for performing bulk adds and removes on a {@link ServerBossBar}
+ * An interface for performing bulk adds and removes on a {@link net.minecraft.server.level.ServerBossEvent}
  */
 public interface BulkServerBossBar {
-  void addAll(Collection<ServerPlayerEntity> players);
+  void addAll(Collection<ServerPlayer> players);
   
-  void removeAll(Collection<ServerPlayerEntity> players);
+  void removeAll(Collection<ServerPlayer> players);
   
-  void replaceSubscriber(ServerPlayerEntity oldSub, ServerPlayerEntity newSub);
+  void replaceSubscriber(ServerPlayer oldSub, ServerPlayer newSub);
 }

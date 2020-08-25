@@ -22,36 +22,25 @@
  * SOFTWARE.
  */
 
-package net.kyori.adventure.platform.fabric.client;
+package net.kyori.adventure.platform.fabric.mixin;
 
-import net.kyori.adventure.inventory.Book;
-import net.kyori.adventure.platform.fabric.FabricPlatform;
-import net.minecraft.client.gui.screen.ingame.BookScreen;
-import net.minecraft.text.StringVisitable;
+import com.google.gson.Gson;
+import com.google.gson.stream.JsonReader;
+import net.minecraft.network.chat.Component;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Accessor;
+import org.spongepowered.asm.mixin.gen.Invoker;
 
-import static java.util.Objects.requireNonNull;
+@Mixin(Component.Serializer.class)
+public interface ComponentSerializerAccess {
 
-/**
- * An implementation of the book GUI's contents.
- *
- * <p>This implementation gets its data directly from an
- * Adventure {@link Book}, without needing
- * an {@link net.minecraft.item.ItemStack}.</p>
- */
-public class AdventureBookContents implements BookScreen.Contents {
-  private final Book book;
-
-  public AdventureBookContents(final Book book) {
-    this.book = requireNonNull(book, "book");
+  @Accessor
+  static Gson getGSON() {
+    throw new AssertionError();
   }
 
-  @Override
-  public int getPageCount() {
-    return this.book.pages().size();
-  }
-
-  @Override
-  public StringVisitable getPageUnchecked(final int index) {
-    return FabricPlatform.adapt(this.book.pages().get(index));
+  @Invoker("getPos")
+  static int getPos(JsonReader reader) {
+    throw new AssertionError();
   }
 }

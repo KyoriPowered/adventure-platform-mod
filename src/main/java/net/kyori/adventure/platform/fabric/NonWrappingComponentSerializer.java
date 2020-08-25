@@ -24,25 +24,27 @@
 
 package net.kyori.adventure.platform.fabric;
 
-import net.kyori.adventure.audience.ForwardingAudience;
+import net.kyori.adventure.platform.fabric.mixin.ComponentSerializerAccess;
 import net.kyori.adventure.text.Component;
-import net.minecraft.server.command.ServerCommandSource;
+import net.kyori.adventure.text.serializer.ComponentSerializer;
+import net.minecraft.network.chat.MutableComponent;
 
-/**
- * An interface applied to {@link ServerCommandSource} to allow sending {@link Component Components}
- */
-public interface AdventureCommandSource extends ForwardingAudience {
-  /**
-   * Send a result message to the command source
-   *
-   * @param text The text to send
-   * @param sendToOps If this message should be sent to all ops listening
-   */
-  void sendFeedback(Component text, boolean sendToOps);
+class NonWrappingComponentSerializer implements ComponentSerializer<Component, Component, net.minecraft.network.chat.Component> {
 
-  /**
-   * Send an error message to the command source
-   * @param text The error
-   */
-  void sendError(Component text);
+  NonWrappingComponentSerializer() {
+  }
+
+  @Override
+  public Component deserialize(final net.minecraft.network.chat.Component input) {
+    if(input instanceof WrappedComponent) {
+      return ((WrappedComponent) input).wrapped();
+    }
+
+    return ComponentSerializerAccess.getGSON().fromJson(net.minecraft.network.chat.Component.Serializer.toJsonTree(input), Component.class);
+  }
+
+  @Override
+  public MutableComponent serialize(final Component component) {
+    return net.minecraft.network.chat.Component.Serializer.fromJson(ComponentSerializerAccess.getGSON().toJsonTree(component));
+  }
 }

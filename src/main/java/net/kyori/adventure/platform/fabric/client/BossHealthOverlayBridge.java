@@ -22,37 +22,21 @@
  * SOFTWARE.
  */
 
-package net.kyori.adventure.platform.fabric.mixin;
+package net.kyori.adventure.platform.fabric.client;
 
-import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.platform.fabric.FabricPlatform;
-import net.kyori.adventure.text.Component;
-import net.minecraft.server.MinecraftServer;
-import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
+
+import static java.util.Objects.requireNonNull;
+
+import net.minecraft.client.gui.components.BossHealthOverlay;
 
 /**
- * Implement ComponentCommandOutput for output to the server console
+ * Accessor for our listener stored in the client HUD.
  */
-@Mixin(value = MinecraftServer.class)
-public abstract class MixinMinecraftServer implements Audience {
-  @Shadow @Final private static Logger LOGGER;
+public interface BossHealthOverlayBridge {
+  ClientBossBarListener adventure$listener();
 
-  /**
-   * Send a message to this receiver as a component
-   *
-   * @param text The text to send
-   */
-  @Override
-  public void sendMessage(final Component text) {
-    LOGGER.info(FabricPlatform.plainSerializer().serialize(text)); // TODO: Eventually will we support formatted output?
-  }
-
-  @Override
-  public void sendActionBar(final @NonNull Component message) {
-    this.sendMessage(message);
+  static ClientBossBarListener listener(final @NonNull BossHealthOverlay hud) {
+    return ((BossHealthOverlayBridge) requireNonNull(hud, "hud")).adventure$listener();
   }
 }

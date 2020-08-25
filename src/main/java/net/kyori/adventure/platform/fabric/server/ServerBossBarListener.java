@@ -30,25 +30,25 @@ import java.util.Map;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.platform.fabric.AbstractBossBarListener;
 import net.kyori.adventure.platform.fabric.BulkServerBossBar;
-import net.minecraft.entity.boss.ServerBossBar;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerBossEvent;
+import net.minecraft.server.level.ServerPlayer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import static java.util.Objects.requireNonNull;
 
-public class ServerBossBarListener extends AbstractBossBarListener<ServerBossBar> {
+public class ServerBossBarListener extends AbstractBossBarListener<ServerBossEvent> {
   public static final ServerBossBarListener INSTANCE = new ServerBossBarListener();
 
-  public void subscribe(final ServerPlayerEntity player, final BossBar bar) {
+  public void subscribe(final ServerPlayer player, final BossBar bar) {
     minecraftCreating(requireNonNull(bar, "bar")).addPlayer(requireNonNull(player, "player"));
   }
 
-  public void subscribeAll(final Collection<ServerPlayerEntity> players, final BossBar bar) {
+  public void subscribeAll(final Collection<ServerPlayer> players, final BossBar bar) {
     ((BulkServerBossBar) minecraftCreating(requireNonNull(bar, "bar"))).addAll(players);
   }
 
-  public void unsubscribe(final ServerPlayerEntity player, final BossBar bar) {
+  public void unsubscribe(final ServerPlayer player, final BossBar bar) {
     this.bars.computeIfPresent(bar, (key, old) -> {
       old.removePlayer(player);
       if(old.getPlayers().isEmpty()) {
@@ -60,7 +60,7 @@ public class ServerBossBarListener extends AbstractBossBarListener<ServerBossBar
     });
   }
 
-  public void unsubscribeAll(final Collection<ServerPlayerEntity> players, final BossBar bar) {
+  public void unsubscribeAll(final Collection<ServerPlayer> players, final BossBar bar) {
     this.bars.computeIfPresent(bar, (key, old) -> {
       ((BulkServerBossBar) old).removeAll(players);
       if(old.getPlayers().isEmpty()) {
@@ -81,8 +81,8 @@ public class ServerBossBarListener extends AbstractBossBarListener<ServerBossBar
    * @param old old player
    * @param newPlayer new one
    */
-  public void replacePlayer(final ServerPlayerEntity old, final ServerPlayerEntity newPlayer) {
-    for(final ServerBossBar bar : this.bars.values()) {
+  public void replacePlayer(final ServerPlayer old, final ServerPlayer newPlayer) {
+    for(final ServerBossEvent bar : this.bars.values()) {
       ((BulkServerBossBar) bar).replaceSubscriber(old, newPlayer);
     }
   }
@@ -92,9 +92,9 @@ public class ServerBossBarListener extends AbstractBossBarListener<ServerBossBar
    *
    * @param player The player to remove
    */
-  public void unsubscribeFromAll(final ServerPlayerEntity player) {
-    for(final Iterator<Map.Entry<BossBar, ServerBossBar>> it = this.bars.entrySet().iterator(); it.hasNext();) {
-      final ServerBossBar bar = it.next().getValue();
+  public void unsubscribeFromAll(final ServerPlayer player) {
+    for(final Iterator<Map.Entry<BossBar, ServerBossEvent>> it = this.bars.entrySet().iterator(); it.hasNext();) {
+      final ServerBossEvent bar = it.next().getValue();
       if(bar.getPlayers().contains(player)) {
         bar.removePlayer(player);
         if(bar.getPlayers().isEmpty()) {
@@ -105,7 +105,7 @@ public class ServerBossBarListener extends AbstractBossBarListener<ServerBossBar
   }
 
   @Override
-  protected ServerBossBar newBar(final @NonNull Text title, final net.minecraft.entity.boss.BossBar.@NonNull Color color, final net.minecraft.entity.boss.BossBar.@NonNull Style style) {
-    return new ServerBossBar(title, color, style);
+  protected ServerBossEvent newBar(final @NonNull Component title, final net.minecraft.world.BossEvent.@NonNull BossBarColor color, final net.minecraft.world.BossEvent.@NonNull BossBarOverlay style) {
+    return new ServerBossEvent(title, color, style);
   }
 }

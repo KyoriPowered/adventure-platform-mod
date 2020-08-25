@@ -28,40 +28,41 @@ import java.util.Map;
 import java.util.UUID;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.platform.fabric.AbstractBossBarListener;
-import net.kyori.adventure.platform.fabric.mixin.AccessorBossBarS2CPacket;
-import net.minecraft.client.gui.hud.ClientBossBar;
-import net.minecraft.network.packet.s2c.play.BossBarS2CPacket;
-import net.minecraft.text.Text;
+import net.kyori.adventure.platform.fabric.mixin.ClientboundBossEventPacketAccess;
+import net.minecraft.client.gui.components.LerpingBossEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundBossEventPacket;
+import net.minecraft.world.BossEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-public class ClientBossBarListener extends AbstractBossBarListener<ClientBossBar> {
-  private final Map<UUID, ClientBossBar> hudBars;
+public class ClientBossBarListener extends AbstractBossBarListener<LerpingBossEvent> {
+  private final Map<UUID, LerpingBossEvent> hudBars;
 
-  public ClientBossBarListener(final Map<UUID, ClientBossBar> hudBars) {
+  public ClientBossBarListener(final Map<UUID, LerpingBossEvent> hudBars) {
     this.hudBars = hudBars;
   }
 
   @Override
-  protected ClientBossBar newBar(final @NonNull Text title, final net.minecraft.entity.boss.BossBar.@NonNull Color color, final net.minecraft.entity.boss.BossBar.@NonNull Style style) {
-    final BossBarS2CPacket pkt = new BossBarS2CPacket();
-    final AccessorBossBarS2CPacket access = (AccessorBossBarS2CPacket) pkt;
-    access.setUuid(UUID.randomUUID());
+  protected LerpingBossEvent newBar(final @NonNull Component title, final BossEvent.@NonNull BossBarColor color, final BossEvent.@NonNull BossBarOverlay style) {
+    final ClientboundBossEventPacket pkt = new ClientboundBossEventPacket();
+    final ClientboundBossEventPacketAccess access = (ClientboundBossEventPacketAccess) pkt;
+    access.setId(UUID.randomUUID());
     access.setName(title);
     access.setColor(color);
     access.setOverlay(style);
-    return new ClientBossBar(pkt); // the only constructor uses a packet, so we use that
+    return new LerpingBossEvent(pkt); // the only constructor uses a packet, so we use that
   }
 
   public void add(final BossBar bar) {
-    final ClientBossBar mc = this.minecraftCreating(bar);
-    this.hudBars.put(mc.getUuid(), mc);
+    final LerpingBossEvent mc = this.minecraftCreating(bar);
+    this.hudBars.put(mc.getId(), mc);
   }
 
   public void remove(final BossBar bar) {
-    final ClientBossBar mc = this.bars.remove(bar);
+    final LerpingBossEvent mc = this.bars.remove(bar);
     if(mc != null) {
       bar.removeListener(this);
-      this.hudBars.remove(mc.getUuid());
+      this.hudBars.remove(mc.getId());
     }
   }
 

@@ -39,20 +39,19 @@ import net.kyori.adventure.text.KeybindComponent;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
-import net.minecraft.client.options.KeyBinding;
-import net.minecraft.command.argument.ArgumentTypes;
-import net.minecraft.command.argument.IdentifierArgumentType;
-import net.minecraft.command.argument.TextArgumentType;
-import net.minecraft.command.argument.serialize.ConstantArgumentSerializer;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.commands.CommandSource;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.arguments.ComponentArgument;
+import net.minecraft.commands.arguments.ResourceLocationArgument;
+import net.minecraft.commands.synchronization.ArgumentTypes;
+import net.minecraft.commands.synchronization.EmptyArgumentSerializer;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.command.CommandOutput;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.PolyNull;
 
@@ -63,18 +62,18 @@ import static java.util.Objects.requireNonNull;
  */
 public final class FabricPlatform implements AudienceProvider {
   private static final PlainComponentSerializer PLAIN;
-  private static final MinecraftTextSerializer TEXT_NON_WRAPPING = new MinecraftTextSerializer();
+  private static final NonWrappingComponentSerializer TEXT_NON_WRAPPING = new NonWrappingComponentSerializer();
   public static final GsonComponentSerializer GSON = GsonComponentSerializer.builder().legacyHoverEventSerializer(NBTLegacyHoverEventSerializer.INSTANCE).build();
 
   static {
     final Function<KeybindComponent, String> keybindNamer;
 
     if(FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
-      keybindNamer = keybind -> KeyBinding.getLocalizedName(keybind.keybind()).get().asString();
+      keybindNamer = keybind -> KeyMapping.createNameSupplier(keybind.keybind()).get().getContents();
     } else {
       keybindNamer = KeybindComponent::keybind;
     }
-    PLAIN = new PlainComponentSerializer(keybindNamer, trans -> FabricPlatform.adapt(trans).asString());
+    PLAIN = new PlainComponentSerializer(keybindNamer, trans -> FabricPlatform.adapt(trans).getContents());
   }
 
   private final MinecraftServer server;
@@ -103,40 +102,42 @@ public final class FabricPlatform implements AudienceProvider {
   }
 
   /**
-   * Return a TextSerializer instance that will do deep conversions between Adventure {@link Component Components} and Minecraft {@link Text} objects.
+   * Return a TextSerializer instance that will do deep conversions between
+   * Adventure {@link Component Components} and Minecraft {@link net.minecraft.network.chat.Component Components}.
    * <p>
-   * This serializer will never wrap text, and can provide {@link net.minecraft.text.MutableText} instances suitable for passing around the game.
+   * This serializer will never wrap text, and can provide {@link net.minecraft.network.chat.MutableComponent}
+   * instances suitable for passing around the game.
    *
    * @return a serializer instance
    */
-  public static MinecraftTextSerializer nonWrappingSerializer() {
+  public static NonWrappingComponentSerializer nonWrappingSerializer() {
     return TEXT_NON_WRAPPING;
   }
 
-  public static Text adapt(final Component component) {
-    return new ComponentText(component);
+  public static net.minecraft.network.chat.Component adapt(final Component component) {
+    return new WrappedComponent(component);
   }
 
-  public static Component adapt(final Text text) {
-    if(text instanceof ComponentText) {
-      return ((ComponentText) text).wrapped();
+  public static Component adapt(final net.minecraft.network.chat.Component text) {
+    if(text instanceof WrappedComponent) {
+      return ((WrappedComponent) text).wrapped();
     }
     return nonWrappingSerializer().deserialize(text);
   }
 
-  public static Text update(final Text input, final UnaryOperator<Component> modifier) {
+  public static net.minecraft.network.chat.Component update(final net.minecraft.network.chat.Component input, final UnaryOperator<Component> modifier) {
     final Component modified;
-    if(input instanceof ComponentText) {
-      modified = requireNonNull(modifier).apply(((ComponentText) input).wrapped());
+    if(input instanceof WrappedComponent) {
+      modified = requireNonNull(modifier).apply(((WrappedComponent) input).wrapped());
     } else {
       final Component original = nonWrappingSerializer().deserialize(input);
       modified = modifier.apply(original);
     }
-    return new ComponentText(modified);
+    return new WrappedComponent(modified);
   }
 
-  private static Identifier id(final @NonNull String value) {
-    return new Identifier("adventure", value);
+  private static ResourceLocation id(final @NonNull String value) {
+    return new ResourceLocation("adventure", value);
   }
 
   /**
@@ -150,45 +151,45 @@ public final class FabricPlatform implements AudienceProvider {
       ServerArgumentType.<ComponentArgumentType>builder(id("component"))
         .type(ComponentArgumentType.class)
         .serializer(new ComponentArgumentType.Serializer())
-        .fallbackProvider(arg -> TextArgumentType.text())
+        .fallbackProvider(arg -> ComponentArgument.textComponent())
         .fallbackSuggestions(null) // client text parsing is fine
         .register();
       ServerArgumentType.<KeyArgumentType>builder(id("key"))
         .type(KeyArgumentType.class)
-        .serializer(new ConstantArgumentSerializer<>(KeyArgumentType::key))
-        .fallbackProvider(arg -> IdentifierArgumentType.identifier())
+        .serializer(new EmptyArgumentSerializer<>(KeyArgumentType::key))
+        .fallbackProvider(arg -> ResourceLocationArgument.id())
         .fallbackSuggestions(null)
         .register();
     } else {
       ArgumentTypes.register("adventure:component", ComponentArgumentType.class, new ComponentArgumentType.Serializer());
-      ArgumentTypes.register("adventure:key", KeyArgumentType.class, new ConstantArgumentSerializer<>(KeyArgumentType::key));
+      ArgumentTypes.register("adventure:key", KeyArgumentType.class, new EmptyArgumentSerializer<>(KeyArgumentType::key));
     }
   }
 
   /**
-   * Convert a MC {@link Identifier} instance to a text Key
+   * Convert a MC {@link ResourceLocation} instance to a text Key
    *
-   * @param ident The Identifier to convert
+   * @param loc The Identifier to convert
    * @return The equivalent data as a Key
    */
-  public static @PolyNull Key adapt(@PolyNull final Identifier ident) {
-    if(ident == null) {
+  public static @PolyNull Key adapt(@PolyNull final ResourceLocation loc) {
+    if(loc == null) {
       return null;
     }
-    return Key.of(ident.getNamespace(), ident.getPath());
+    return Key.of(loc.getNamespace(), loc.getPath());
   }
 
   /**
-   * Convert a Kyori {@link Key} instance to a MC Identifier
+   * Convert a Kyori {@link Key} instance to a MC ResourceLocation
    *
    * @param key The Key to convert
    * @return The equivalent data as an Identifier
    */
-  public static @PolyNull Identifier adapt(@PolyNull final Key key) {
+  public static @PolyNull ResourceLocation adapt(@PolyNull final Key key) {
     if(key == null) {
       return null;
     }
-    return new Identifier(key.namespace(), key.value());
+    return new ResourceLocation(key.namespace(), key.value());
   }
 
   @Override
@@ -203,17 +204,17 @@ public final class FabricPlatform implements AudienceProvider {
 
   @Override
   public @NonNull Audience players() {
-    return Audience.of(this.audiences(this.server.getPlayerManager().getPlayerList()));
+    return Audience.of(this.audiences(this.server.getPlayerList().getPlayers()));
   }
 
   @Override
   public @NonNull Audience player(final @NonNull UUID playerId) {
-    final /* @Nullable */ ServerPlayerEntity player = this.server.getPlayerManager().getPlayer(playerId);
+    final /* @Nullable */ ServerPlayer player = this.server.getPlayerList().getPlayer(playerId);
     return player != null ? (Audience) player : Audience.empty();
   }
 
   @SuppressWarnings({"unchecked", "rawtypes"})
-  private Iterable<Audience> audiences(final Iterable<? extends ServerPlayerEntity> players) {
+  private Iterable<Audience> audiences(final Iterable<? extends ServerPlayer> players) {
     return (Iterable) players;
   }
 
@@ -222,27 +223,27 @@ public final class FabricPlatform implements AudienceProvider {
     return Audience.of(); // TODO: permissions api
   }
 
-  public AdventureCommandSource audience(final @NonNull ServerCommandSource source) {
-    if(!(source instanceof AdventureCommandSource)) {
+  public AdventureCommandSourceStack audience(final @NonNull CommandSourceStack source) {
+    if(!(source instanceof AdventureCommandSourceStack)) {
       throw new IllegalArgumentException("The AdventureCommandSource mixin failed!");
     }
 
-    return (AdventureCommandSource) source;
+    return (AdventureCommandSourceStack) source;
   }
 
-  public Audience audience(final @NonNull CommandOutput output) {
-    return CommandOutputAudience.of(output);
+  public Audience audience(final @NonNull CommandSource output) {
+    return CommandSourceAudience.of(output);
   }
 
-  public Audience audience(final @NonNull Iterable<ServerPlayerEntity> players) {
+  public Audience audience(final @NonNull Iterable<ServerPlayer> players) {
     return Audience.of(this.audiences(players));
   }
 
   @Override
   public @NonNull Audience world(final @NonNull Key worldId) {
-    final /* @Nullable */ ServerWorld world = this.server.getWorld(RegistryKey.of(Registry.DIMENSION, adapt(requireNonNull(worldId, "worldId"))));
-    if(world != null) {
-      return this.audience(world.getPlayers());
+    final /* @Nullable */ ServerLevel level = this.server.getLevel(ResourceKey.create(Registry.DIMENSION_REGISTRY, adapt(requireNonNull(worldId, "worldId"))));
+    if(level != null) {
+      return this.audience(level.players());
     }
     return Audience.of();
   }

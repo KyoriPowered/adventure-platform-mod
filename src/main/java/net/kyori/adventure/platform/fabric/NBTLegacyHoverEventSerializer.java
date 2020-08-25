@@ -35,13 +35,13 @@ import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.serializer.gson.LegacyHoverEventSerializer;
 import net.kyori.adventure.util.Codec;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.TagParser;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
- final class NBTLegacyHoverEventSerializer implements LegacyHoverEventSerializer {
+final class NBTLegacyHoverEventSerializer implements LegacyHoverEventSerializer {
   public static final NBTLegacyHoverEventSerializer INSTANCE = new NBTLegacyHoverEventSerializer();
-  private static final Codec<CompoundTag, String, CommandSyntaxException, RuntimeException> SNBT_CODEC = Codec.of(StringNbtReader::parse, Tag::toString);
+  private static final Codec<CompoundTag, String, CommandSyntaxException, RuntimeException> SNBT_CODEC = Codec.of(TagParser::parseTag, Tag::toString);
 
   static final String ITEM_TYPE = "id";
   static final String ITEM_COUNT = "Count";

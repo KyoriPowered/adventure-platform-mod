@@ -5,6 +5,6 @@
 <suppressions>
   <!-- add any necessary suppressions here -->
   <suppress files="src[\\/]test[\\/]java[\\/].*" checks="RequireExplicitVisibilityModifier"/>
-  <suppress files=".*[\\/]mixin[\\/]Accessor.*\.java" checks="MethodName"/>
-  <suppress files=".*[\\/]mixin[\\/]Accessor.*\.java" checks="EmptyLineSeparator"/>
+  <suppress files=".*[\\/]mixin[\\/].*Access\.java" checks="MethodName"/>
+  <suppress files=".*[\\/]mixin[\\/].*Access\.java" checks="EmptyLineSeparator"/>
 </suppressions>

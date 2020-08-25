@@ -24,7 +24,7 @@
 
 package net.kyori.adventure.platform.fabric;
 
-import net.kyori.adventure.platform.fabric.mixin.AccessorTextSerializer;
+import net.kyori.adventure.platform.fabric.mixin.ComponentSerializerAccess;
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
@@ -37,10 +37,10 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Set;
 import net.kyori.adventure.text.Component;
-import net.minecraft.command.argument.TextArgumentType;
-import net.minecraft.command.argument.serialize.ArgumentSerializer;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.Identifier;
+import net.minecraft.commands.arguments.ComponentArgument;
+import net.minecraft.commands.synchronization.ArgumentSerializer;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * An argument that takes JSON-format text.
@@ -82,12 +82,12 @@ public final class ComponentArgumentType implements ArgumentType<Component> {
   @Override
   public Component parse(final StringReader reader) throws CommandSyntaxException {
     try(final JsonReader json = new JsonReader(new java.io.StringReader(reader.getRemaining()))) {
-      final Component ret = AccessorTextSerializer.getGSON().fromJson(json, Component.class);
-      reader.setCursor(reader.getCursor() + AccessorTextSerializer.getPosition(json));
+      final Component ret = ComponentSerializerAccess.getGSON().fromJson(json, Component.class);
+      reader.setCursor(reader.getCursor() + ComponentSerializerAccess.getPos(json));
       return ret;
     } catch(final JsonParseException | IOException ex) {
       final String message = ex.getCause() == null ? ex.getMessage() : ex.getCause().getMessage();
-      throw TextArgumentType.INVALID_COMPONENT_EXCEPTION.createWithContext(reader, message);
+      throw ComponentArgument.ERROR_INVALID_JSON.createWithContext(reader, message);
     }
   }
 
@@ -96,23 +96,23 @@ public final class ComponentArgumentType implements ArgumentType<Component> {
     return EXAMPLES;
   }
 
-   static class Serializer implements ArgumentSerializer<ComponentArgumentType> {
-    private static final Identifier SERIALIZER_GSON = new Identifier("adventure", "gson");
+  static class Serializer implements ArgumentSerializer<ComponentArgumentType> {
+    private static final ResourceLocation SERIALIZER_GSON = new ResourceLocation("adventure", "gson");
 
     @Override
-    public void toPacket(final ComponentArgumentType type, final PacketByteBuf buffer) {
-      buffer.writeIdentifier(SERIALIZER_GSON);
+    public void serializeToNetwork(final ComponentArgumentType type, final FriendlyByteBuf buffer) {
+      buffer.writeResourceLocation(SERIALIZER_GSON);
     }
 
     @Override
-    public ComponentArgumentType fromPacket(final PacketByteBuf buffer) {
-      buffer.readIdentifier(); // TODO: Serializer type
+    public ComponentArgumentType deserializeFromNetwork(final FriendlyByteBuf buffer) {
+      buffer.readResourceLocation(); // TODO: Serializer type
       return ComponentArgumentType.component();
     }
 
     @Override
-    public void toJson(final ComponentArgumentType type, final JsonObject json) {
-      json.add("serializer", AccessorTextSerializer.getGSON().toJsonTree(SERIALIZER_GSON));
+    public void serializeToJson(final ComponentArgumentType type, final JsonObject json) {
+      json.add("serializer", ComponentSerializerAccess.getGSON().toJsonTree(SERIALIZER_GSON));
     }
   }
 }

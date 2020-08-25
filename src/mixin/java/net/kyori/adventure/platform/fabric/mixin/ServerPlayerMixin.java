@@ -39,27 +39,27 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.title.Title;
-import net.minecraft.client.options.ChatVisibility;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
+import net.minecraft.Util;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
-import net.minecraft.network.MessageType;
-import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
-import net.minecraft.network.packet.s2c.play.PlaySoundIdS2CPacket;
-import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
-import net.minecraft.network.packet.s2c.play.StopSoundS2CPacket;
-import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
-import net.minecraft.server.network.ServerPlayNetworkHandler;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.util.Hand;
-import net.minecraft.util.Util;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.minecraft.network.chat.ChatType;
+import net.minecraft.network.protocol.game.ClientboundChatPacket;
+import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
+import net.minecraft.network.protocol.game.ClientboundCustomSoundPacket;
+import net.minecraft.network.protocol.game.ClientboundSetTitlesPacket;
+import net.minecraft.network.protocol.game.ClientboundStopSoundPacket;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.ChatVisiblity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -67,67 +67,67 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(ServerPlayerEntity.class)
-public abstract class MixinServerPlayerEntity extends PlayerEntity implements Audience {
-  @Shadow public ServerPlayNetworkHandler networkHandler;
+@Mixin(ServerPlayer.class)
+public abstract class ServerPlayerMixin extends Player implements Audience {
 
-  @Shadow
-  private ChatVisibility clientChatVisibility;
+  @Shadow private ChatVisiblity chatVisibility;
 
-  public MixinServerPlayerEntity(final World world, final BlockPos pos, final float yaw, final GameProfile gameProfile) {
-    super(world, pos, yaw, gameProfile);
+  @Shadow public ServerGamePacketListenerImpl connection;
+
+  public ServerPlayerMixin(final Level level, final BlockPos pos, final float yaw, final GameProfile gameProfile) {
+    super(level, pos, yaw, gameProfile);
   }
 
   @Override
   public void sendMessage(final Component text, final net.kyori.adventure.audience.MessageType type) {
-    final MessageType mcType;
+    final ChatType mcType;
     final boolean shouldSend;
     if(type == net.kyori.adventure.audience.MessageType.CHAT) {
-      mcType = MessageType.CHAT;
-      shouldSend = this.clientChatVisibility == ChatVisibility.FULL;
+      mcType = ChatType.CHAT;
+      shouldSend = this.chatVisibility == ChatVisiblity.FULL;
     } else {
-      mcType = MessageType.SYSTEM;
-      shouldSend = this.clientChatVisibility == ChatVisibility.FULL || this.clientChatVisibility == ChatVisibility.SYSTEM;
+      mcType = ChatType.SYSTEM;
+      shouldSend = this.chatVisibility == ChatVisiblity.FULL || this.chatVisibility == ChatVisiblity.SYSTEM;
     }
 
     if(shouldSend) {
-      this.networkHandler.sendPacket(new GameMessageS2CPacket(FabricPlatform.adapt(text), mcType, Util.NIL_UUID));
+      this.connection.send(new ClientboundChatPacket(FabricPlatform.adapt(text), mcType, Util.NIL_UUID));
     }
   }
 
   @Override
   public void sendActionBar(final @NonNull Component message) {
-    this.networkHandler.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.ACTIONBAR, FabricPlatform.adapt(message)));
+    this.connection.send(new ClientboundSetTitlesPacket(ClientboundSetTitlesPacket.Type.ACTIONBAR, FabricPlatform.adapt(message)));
   }
 
   @Override
   public void showBossBar(final @NonNull BossBar bar) {
-    ServerBossBarListener.INSTANCE.subscribe((ServerPlayerEntity) (Object) this, bar);
+    ServerBossBarListener.INSTANCE.subscribe((ServerPlayer) (Object) this, bar);
   }
 
   @Override
   public void hideBossBar(final @NonNull BossBar bar) {
-    ServerBossBarListener.INSTANCE.unsubscribe((ServerPlayerEntity) (Object) this, bar);
+    ServerBossBarListener.INSTANCE.unsubscribe((ServerPlayer) (Object) this, bar);
   }
 
   @Override
   public void playSound(final @NonNull Sound sound) {
-    this.networkHandler.sendPacket(new PlaySoundIdS2CPacket(FabricPlatform.adapt(sound.name()),
-      GameEnums.SOUND_SOURCE.toMinecraft(sound.source()), this.getPos(), sound.volume(), sound.pitch()));
+    this.connection.send(new ClientboundCustomSoundPacket(FabricPlatform.adapt(sound.name()),
+      GameEnums.SOUND_SOURCE.toMinecraft(sound.source()), this.position(), sound.volume(), sound.pitch()));
   }
 
   @Override
   public void playSound(final @NonNull Sound sound, final double x, final double y, final double z) {
-    this.networkHandler.sendPacket(new PlaySoundIdS2CPacket(FabricPlatform.adapt(sound.name()),
-      GameEnums.SOUND_SOURCE.toMinecraft(sound.source()), new Vec3d(x, y, z), sound.volume(), sound.pitch()));
+    this.connection.send(new ClientboundCustomSoundPacket(FabricPlatform.adapt(sound.name()),
+      GameEnums.SOUND_SOURCE.toMinecraft(sound.source()), new Vec3(x, y, z), sound.volume(), sound.pitch()));
   }
 
   @Override
   public void stopSound(final @NonNull SoundStop stop) {
     final /* @Nullable */ Key sound = stop.sound();
     final Sound./* @Nullable */ Source src = stop.source();
-    final /* @Nullable */ SoundCategory cat = src == null ? null : GameEnums.SOUND_SOURCE.toMinecraft(src);
-    this.networkHandler.sendPacket(new StopSoundS2CPacket(sound == null ? null : FabricPlatform.adapt(sound), cat));
+    final /* @Nullable */ SoundSource cat = src == null ? null : GameEnums.SOUND_SOURCE.toMinecraft(src);
+    this.connection.send(new ClientboundStopSoundPacket(sound == null ? null : FabricPlatform.adapt(sound), cat));
   }
 
   private static final String BOOK_TITLE = "title";
@@ -143,15 +143,15 @@ public abstract class MixinServerPlayerEntity extends PlayerEntity implements Au
     bookTag.putString(BOOK_AUTHOR, this.adventure$serialize(book.author()));
     final ListTag pages = new ListTag();
     for(final Component page : book.pages()) {
-      pages.add(StringTag.of(this.adventure$serialize(page)));
+      pages.add(StringTag.valueOf(this.adventure$serialize(page)));
     }
     bookTag.put(BOOK_PAGES, pages);
     bookTag.putBoolean(BOOK_RESOLVED, true); // todo: any parseable texts?
 
-    final ItemStack previous = this.inventory.getMainHandStack();
-    this.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-2, this.inventory.selectedSlot, bookStack));
-    this.openEditBookScreen(bookStack, Hand.MAIN_HAND);
-    this.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-2, this.inventory.selectedSlot, previous));
+    final ItemStack previous = this.inventory.getSelected();
+    this.connection.send(new ClientboundContainerSetSlotPacket(-2, this.inventory.selected, bookStack));
+    this.openItemGui(bookStack, InteractionHand.MAIN_HAND);
+    this.connection.send(new ClientboundContainerSetSlotPacket(-2, this.inventory.selected, previous));
   }
 
   private String adventure$serialize(final @NonNull Component component) {
@@ -161,7 +161,7 @@ public abstract class MixinServerPlayerEntity extends PlayerEntity implements Au
   @Override
   public void showTitle(final @NonNull Title title) {
     if(title.subtitle() != TextComponent.empty()) {
-      this.networkHandler.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.SUBTITLE, FabricPlatform.adapt(title.subtitle())));
+      this.connection.send(new ClientboundSetTitlesPacket(ClientboundSetTitlesPacket.Type.SUBTITLE, FabricPlatform.adapt(title.subtitle())));
     }
 
     final /* @Nullable */ Title.Times times = title.times();
@@ -170,12 +170,12 @@ public abstract class MixinServerPlayerEntity extends PlayerEntity implements Au
       final int fadeOut = this.ticks(times.fadeOut());
       final int dwell = this.ticks(times.stay());
       if(fadeIn != -1 || fadeOut != -1 || dwell != -1) {
-        this.networkHandler.sendPacket(new TitleS2CPacket(fadeIn, dwell, fadeOut));
+        this.connection.send(new ClientboundSetTitlesPacket(fadeIn, dwell, fadeOut));
       }
     }
 
     if(title.title() != TextComponent.empty()) {
-      this.networkHandler.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.TITLE, FabricPlatform.adapt(title.title())));
+      this.connection.send(new ClientboundSetTitlesPacket(ClientboundSetTitlesPacket.Type.TITLE, FabricPlatform.adapt(title.title())));
     }
   }
 
@@ -185,24 +185,24 @@ public abstract class MixinServerPlayerEntity extends PlayerEntity implements Au
 
   @Override
   public void clearTitle() {
-    this.networkHandler.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.CLEAR, null));
+    this.connection.send(new ClientboundSetTitlesPacket(ClientboundSetTitlesPacket.Type.CLEAR, null));
   }
 
   @Override
   public void resetTitle() {
-    this.networkHandler.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.RESET, null));
+    this.connection.send(new ClientboundSetTitlesPacket(ClientboundSetTitlesPacket.Type.RESET, null));
   }
 
   // Player tracking for boss bars
 
-  @Inject(method = "copyFrom", at = @At("RETURN"))
-  private void copyBossBars(final ServerPlayerEntity old, final boolean alive, final CallbackInfo ci) {
-    ServerBossBarListener.INSTANCE.replacePlayer(old, (ServerPlayerEntity) (Object) this);
+  @Inject(method = "restoreFrom", at = @At("RETURN"))
+  private void copyBossBars(final ServerPlayer old, final boolean alive, final CallbackInfo ci) {
+    ServerBossBarListener.INSTANCE.replacePlayer(old, (ServerPlayer) (Object) this);
   }
 
-  @Inject(method = "onDisconnect", at = @At("RETURN"))
+  @Inject(method = "disconnect", at = @At("RETURN"))
   private void removeBossBarsOnDisconnect(final CallbackInfo ci) {
-    ServerBossBarListener.INSTANCE.unsubscribeFromAll((ServerPlayerEntity) (Object) this);
+    ServerBossBarListener.INSTANCE.unsubscribeFromAll((ServerPlayer) (Object) this);
   }
 
 }

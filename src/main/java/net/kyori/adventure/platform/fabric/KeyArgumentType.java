@@ -29,7 +29,7 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kyori.adventure.key.Key;
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * An argument that will be decoded as a Key
@@ -50,7 +50,7 @@ public final class KeyArgumentType implements ArgumentType<Key> {
 
   @Override
   public Key parse(final StringReader reader) throws CommandSyntaxException {
-    // TODO: do this without creating an Identifier instance
-    return FabricPlatform.adapt(Identifier.fromCommandInput(reader));
+    // TODO: do this without creating a ResourceLocation instance
+    return FabricPlatform.adapt(ResourceLocation.read(reader));
   }
 }

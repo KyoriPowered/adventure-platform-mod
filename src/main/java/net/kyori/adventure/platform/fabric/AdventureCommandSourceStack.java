@@ -22,25 +22,26 @@
  * SOFTWARE.
  */
 
-package net.kyori.adventure.platform.fabric.mixin;
+package net.kyori.adventure.platform.fabric;
 
-import com.google.gson.Gson;
-import com.google.gson.stream.JsonReader;
-import net.minecraft.text.Text;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Accessor;
-import org.spongepowered.asm.mixin.gen.Invoker;
+import net.kyori.adventure.audience.ForwardingAudience;
+import net.kyori.adventure.text.Component;
 
-@Mixin(Text.Serializer.class)
-public interface AccessorTextSerializer {
+/**
+ * An interface applied to {@link net.minecraft.commands.CommandSourceStack} to allow sending {@link Component Components}
+ */
+public interface AdventureCommandSourceStack extends ForwardingAudience {
+  /**
+   * Send a result message to the command source
+   *
+   * @param text The text to send
+   * @param sendToOps If this message should be sent to all ops listening
+   */
+  void sendSuccess(Component text, boolean sendToOps);
 
-  @Accessor
-  static Gson getGSON() {
-    throw new UnsupportedOperationException("Not mixed in");
-  }
-
-  @Invoker("getPosition")
-  static int getPosition(JsonReader reader) {
-    throw new UnsupportedOperationException("mixin replaces this");
-  }
+  /**
+   * Send an error message to the command source
+   * @param text The error
+   */
+  void sendFailure(Component text);
 }

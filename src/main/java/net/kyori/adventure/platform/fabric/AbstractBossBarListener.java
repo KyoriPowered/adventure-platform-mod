@@ -29,49 +29,49 @@ import java.util.Map;
 import java.util.Set;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
-import net.minecraft.text.Text;
+import net.minecraft.world.BossEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-public abstract class AbstractBossBarListener<T extends net.minecraft.entity.boss.BossBar> implements BossBar.Listener {
+public abstract class AbstractBossBarListener<T extends BossEvent> implements BossBar.Listener {
   protected final Map<BossBar, T> bars = new IdentityHashMap<>();
 
   @Override
-  public void bossBarNameChanged(@NonNull final BossBar bar, @NonNull final Component oldName, @NonNull final Component newName) {
+  public void bossBarNameChanged(final @NonNull BossBar bar, final @NonNull Component oldName, final @NonNull Component newName) {
     if(!oldName.equals(newName)) {
       this.minecraft(bar).setName(FabricPlatform.adapt(newName));
     }
   }
 
   @Override
-  public void bossBarPercentChanged(@NonNull final BossBar bar, final float oldPercent, final float newPercent) {
+  public void bossBarPercentChanged(final @NonNull BossBar bar, final float oldPercent, final float newPercent) {
     if(oldPercent != newPercent) {
       this.minecraft(bar).setPercent(newPercent);
     }
   }
 
   @Override
-  public void bossBarColorChanged(@NonNull final BossBar bar, final BossBar.@NonNull Color oldColor, final BossBar.@NonNull Color newColor) {
+  public void bossBarColorChanged(final @NonNull BossBar bar, final BossBar.@NonNull Color oldColor, final BossBar.@NonNull Color newColor) {
     if(oldColor != newColor) {
       this.minecraft(bar).setColor(GameEnums.BOSS_BAR_COLOR.toMinecraft(newColor));
     }
   }
 
   @Override
-  public void bossBarOverlayChanged(@NonNull final BossBar bar, final BossBar.@NonNull Overlay oldOverlay, final BossBar.@NonNull Overlay newOverlay) {
+  public void bossBarOverlayChanged(final @NonNull BossBar bar, final BossBar.@NonNull Overlay oldOverlay, final BossBar.@NonNull Overlay newOverlay) {
     if(oldOverlay != newOverlay) {
       this.minecraft(bar).setOverlay(GameEnums.BOSS_BAR_OVERLAY.toMinecraft(newOverlay));
     }
   }
 
   @Override
-  public void bossBarFlagsChanged(@NonNull final BossBar bar, @NonNull final Set<BossBar.Flag> flagsRemoved, @NonNull final Set<BossBar.Flag> flagsAdded) {
+  public void bossBarFlagsChanged(final @NonNull BossBar bar, final @NonNull Set<BossBar.Flag> flagsRemoved, final @NonNull Set<BossBar.Flag> flagsAdded) {
     updateFlags(this.minecraft(bar), bar.flags());
   }
 
-  private static void updateFlags(final net.minecraft.entity.boss.@NonNull BossBar bar, final @NonNull Set<BossBar.Flag> flags) {
-    bar.setThickenFog(flags.contains(BossBar.Flag.CREATE_WORLD_FOG));
-    bar.setDarkenSky(flags.contains(BossBar.Flag.DARKEN_SCREEN));
-    bar.setDragonMusic(flags.contains(BossBar.Flag.PLAY_BOSS_MUSIC));
+  private static void updateFlags(final @NonNull BossEvent bar, final @NonNull Set<BossBar.Flag> flags) {
+    bar.setCreateWorldFog(flags.contains(BossBar.Flag.CREATE_WORLD_FOG));
+    bar.setDarkenScreen(flags.contains(BossBar.Flag.DARKEN_SCREEN));
+    bar.setPlayBossMusic(flags.contains(BossBar.Flag.PLAY_BOSS_MUSIC));
   }
 
   private T minecraft(final @NonNull BossBar bar) {
@@ -82,7 +82,9 @@ public abstract class AbstractBossBarListener<T extends net.minecraft.entity.bos
     return mc;
   }
 
-  protected abstract T newBar(final @NonNull Text title, final net.minecraft.entity.boss.BossBar.@NonNull Color color, final net.minecraft.entity.boss.BossBar.@NonNull Style style);
+  protected abstract T newBar(final net.minecraft.network.chat.@NonNull Component title,
+          final BossEvent.@NonNull BossBarColor color,
+          final BossEvent.@NonNull BossBarOverlay style);
 
   protected T minecraftCreating(final @NonNull BossBar bar) {
     return this.bars.computeIfAbsent(bar, key -> {

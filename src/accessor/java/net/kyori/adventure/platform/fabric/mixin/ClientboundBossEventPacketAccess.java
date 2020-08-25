@@ -24,15 +24,17 @@
 
 package net.kyori.adventure.platform.fabric.mixin;
 
-import java.util.Map;
-import net.minecraft.sound.SoundCategory;
+import java.util.UUID;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundBossEventPacket;
+import net.minecraft.world.BossEvent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(SoundCategory.class)
-public interface AccessorSoundCategory {
-  @Accessor("NAME_MAP")
-  static Map<String, SoundCategory> getNameMap() {
-    throw new UnsupportedOperationException("mixin replaced");
-  }
+@Mixin(ClientboundBossEventPacket.class)
+public interface ClientboundBossEventPacketAccess {
+  @Accessor void setId(final UUID id);
+  @Accessor void setName(final Component name);
+  @Accessor void setColor(final BossEvent.BossBarColor color);
+  @Accessor void setOverlay(final BossEvent.BossBarOverlay overlay);
 }

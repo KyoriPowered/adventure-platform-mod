@@ -24,62 +24,59 @@
 
 package net.kyori.adventure.platform.fabric.mixin;
 
+import java.util.Collection;
+import java.util.Collections;
 import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.bossbar.BossBar;
-import net.kyori.adventure.inventory.Book;
+import net.kyori.adventure.platform.fabric.AdventureCommandSourceStack;
+import net.kyori.adventure.platform.fabric.CommandSourceAudience;
 import net.kyori.adventure.platform.fabric.FabricPlatform;
-import net.kyori.adventure.sound.Sound;
-import net.kyori.adventure.sound.SoundStop;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.title.Title;
-import net.minecraft.server.rcon.RconCommandOutput;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.minecraft.commands.CommandSource;
+import net.minecraft.commands.CommandSourceStack;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
-@Mixin(RconCommandOutput.class)
-public abstract class MixinRconCommandOutput implements Audience {
-  @Shadow @Final private StringBuffer buffer;
+/**
+ * The methods in this class should match the implementations of their Text-using counterparts in {@link CommandSourceStack}
+ *
+ */
+@Mixin(CommandSourceStack.class)
+public abstract class CommandSourceStackMixin implements AdventureCommandSourceStack {
+  @Shadow @Final private CommandSource source;
+  @Shadow @Final private boolean silent;
+
+  @Shadow protected abstract void broadcastToAdmins(net.minecraft.network.chat.Component text);
+
+  private @MonotonicNonNull Audience out;
+  private @MonotonicNonNull Collection<Audience> ownOut;
 
   @Override
-  public void sendMessage(final Component text) {
-    this.buffer.append(FabricPlatform.plainSerializer().serialize(text));
+  public void sendSuccess(final Component text, final boolean sendToOps) {
+    if(this.source.acceptsSuccess() && !this.silent) {
+      this.out.sendMessage(text);
+    }
+
+    if(sendToOps && this.source.shouldInformAdmins() && !this.silent) {
+      this.broadcastToAdmins(FabricPlatform.adapt(text));
+    }
   }
 
   @Override
-  public void showBossBar(@NonNull final BossBar bar) {
+  public void sendFailure(final Component text) {
+    if(this.source.acceptsFailure()) {
+      this.out.sendMessage(text.color(NamedTextColor.RED));
+    }
   }
 
   @Override
-  public void hideBossBar(@NonNull final BossBar bar) {
-  }
-
-  @Override
-  public void playSound(@NonNull final Sound sound) {
-  }
-
-  @Override
-  public void stopSound(@NonNull final SoundStop stop) {
-  }
-
-  @Override
-  public void playSound(final @NonNull Sound sound, final double x, final double y, final double z) {
-  }
-
-  @Override
-  public void openBook(final @NonNull Book book) {
-  }
-
-  @Override
-  public void showTitle(@NonNull final Title title) {
-  }
-
-  @Override
-  public void clearTitle() {
-  }
-
-  @Override
-  public void resetTitle() {
+  public @NonNull Iterable<? extends Audience> audiences() {
+    if(this.ownOut == null) {
+      this.ownOut = Collections.singleton(this.out = CommandSourceAudience.of(this.source));
+    }
+    return this.ownOut;
   }
 }

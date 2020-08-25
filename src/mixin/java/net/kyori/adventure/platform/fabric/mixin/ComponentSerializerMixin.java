@@ -29,10 +29,9 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSerializationContext;
 import java.lang.reflect.Type;
-import net.kyori.adventure.platform.fabric.ComponentText;
+import net.kyori.adventure.platform.fabric.WrappedComponent;
 import net.kyori.adventure.platform.fabric.FabricPlatform;
-import net.kyori.adventure.text.Component;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -40,18 +39,18 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
-@Mixin(Text.Serializer.class)
-public abstract class MixinTextSerializer {
-  @Shadow public abstract JsonElement serialize(final Text text, final Type type, final JsonSerializationContext jsonSerializationContext);
+@Mixin(net.minecraft.network.chat.Component.Serializer.class)
+public abstract class ComponentSerializerMixin {
+  @Shadow public abstract JsonElement serialize(final Component text, final Type type, final JsonSerializationContext jsonSerializationContext);
 
   @Inject(method = "serialize", at = @At("HEAD"), cancellable = true)
-  public void writeComponentText(final Text text, final Type type, final JsonSerializationContext ctx, final CallbackInfoReturnable<JsonElement> cir) {
-    if(text instanceof ComponentText) {
-      final /* @Nullable */ Text converted = ((ComponentText) text).deepConvertedIfPresent();
+  public void writeComponentText(final Component text, final Type type, final JsonSerializationContext ctx, final CallbackInfoReturnable<JsonElement> cir) {
+    if(text instanceof WrappedComponent) {
+      final /* @Nullable */ Component converted = ((WrappedComponent) text).deepConvertedIfPresent();
       if(converted != null) {
         cir.setReturnValue(this.serialize(text, type, ctx));
       } else {
-        cir.setReturnValue(ctx.serialize(((ComponentText) text).wrapped(), Component.class));
+        cir.setReturnValue(ctx.serialize(((WrappedComponent) text).wrapped(), net.kyori.adventure.text.Component.class));
       }
     }
   }
@@ -59,7 +58,7 @@ public abstract class MixinTextSerializer {
   // inject into the anonymous function to build a gson instance
   @Inject(method = "*()Lcom/google/gson/Gson;", at = @At(value = "INVOKE_ASSIGN", target = "com/google/gson/GsonBuilder.disableHtmlEscaping()Lcom/google/gson/GsonBuilder;", remap = false),
     locals = LocalCapture.CAPTURE_FAILEXCEPTION, remap = false)
-  private static void injectKyoriGson(final CallbackInfoReturnable<Gson> cir, final GsonBuilder gson) {
+  private static void injectAdventureGson(final CallbackInfoReturnable<Gson> cir, final GsonBuilder gson) {
     FabricPlatform.GSON.populator().apply(gson);
   }
 }

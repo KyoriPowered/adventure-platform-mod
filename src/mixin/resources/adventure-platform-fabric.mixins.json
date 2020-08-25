@@ -3,17 +3,17 @@
   "package": "net.kyori.adventure.platform.fabric.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "MixinMinecraftServer",
-    "MixinPlayerManager",
-    "MixinRconCommandOutput",
-    "MixinServerBossBar",
-    "MixinServerCommandSource",
-    "MixinServerPlayerEntity",
-    "MixinTextSerializer"
+    "CommandSourceStackMixin",
+    "ComponentSerializerMixin",
+    "MinecraftServerMixin",
+    "PlayerListMixin",
+    "RconConsoleSourceMixin",
+    "ServerBossEventMixin",
+    "ServerPlayerMixin"
   ],
   "client": [
-    "client.MixinBossBarHud",
-    "client.MixinClientPlayerEntity"
+    "client.BossHealthOverlayMixin",
+    "client.LocalPlayerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

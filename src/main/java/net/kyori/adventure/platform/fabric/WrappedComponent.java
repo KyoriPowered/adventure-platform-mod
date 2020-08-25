@@ -26,36 +26,35 @@ package net.kyori.adventure.platform.fabric;
 
 import java.util.List;
 import java.util.Optional;
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.OrderedText;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
+import net.minecraft.util.FormattedCharSequence;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-public final class ComponentText implements Text {
-  private @MonotonicNonNull Text converted;
-  private final Component wrapped;
+public final class WrappedComponent implements Component {
+  private @MonotonicNonNull Component converted;
+  private final net.kyori.adventure.text.Component wrapped;
 
-  ComponentText(final Component wrapped) {
+  WrappedComponent(final net.kyori.adventure.text.Component wrapped) {
     this.wrapped = wrapped;
   }
 
-  public Component wrapped() {
+  public net.kyori.adventure.text.Component wrapped() {
     return this.wrapped;
   }
 
-   Text deepConverted() {
-    Text converted = this.converted;
+   net.minecraft.network.chat.Component deepConverted() {
+    net.minecraft.network.chat.Component converted = this.converted;
     if(converted == null) {
       converted = this.converted = FabricPlatform.nonWrappingSerializer().serialize(this.wrapped);
     }
     return converted;
   }
 
-  public @Nullable Text deepConvertedIfPresent() {
+  public @Nullable Component deepConvertedIfPresent() {
     return this.converted;
   }
 
@@ -70,46 +69,46 @@ public final class ComponentText implements Text {
   }
 
   @Override
-  public String asTruncatedString(final int length) {
-    return this.deepConverted().asTruncatedString(length);
+  public String getString(final int length) {
+    return this.deepConverted().getString(length);
   }
 
   @Override
-  public String asString() {
+  public String getContents() {
     if(this.wrapped instanceof TextComponent) {
       return ((TextComponent) this.wrapped).content();
     } else {
-      return this.deepConverted().asString();
+      return this.deepConverted().getContents();
     }
   }
 
   @Override
-  public List<Text> getSiblings() {
+  public List<Component> getSiblings() {
     return this.deepConverted().getSiblings();
   }
 
   @Override
-  public MutableText copy() {
+  public MutableComponent plainCopy() {
+    return this.deepConverted().plainCopy();
+  }
+
+  @Override
+  public MutableComponent copy() {
     return this.deepConverted().copy();
   }
 
   @Override
-  public MutableText shallowCopy() {
-    return this.deepConverted().shallowCopy();
+  public FormattedCharSequence getVisualOrderText() {
+    return this.deepConverted().getVisualOrderText();
   }
 
   @Override
-  public OrderedText asOrderedText() {
-    return this.deepConverted().asOrderedText();
-  }
-
-  @Override
-  public <T> Optional<T> visit(final StyledVisitor<T> visitor, final Style style) {
+  public <T> Optional<T> visit(final StyledContentConsumer<T> visitor, final Style style) {
     return this.deepConverted().visit(visitor, style);
   }
 
   @Override
-  public <T> Optional<T> visit(final Visitor<T> visitor) {
+  public <T> Optional<T> visit(final ContentConsumer<T> visitor) {
     return this.deepConverted().visit(visitor);
   }
 }

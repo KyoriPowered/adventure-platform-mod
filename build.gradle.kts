@@ -43,7 +43,7 @@ dependencies {
   modImplementation("ca.stellardrift:colonel:0.1")
 
   minecraft("com.mojang:minecraft:$versionMinecraft")
-  mappings("net.fabricmc:yarn:$versionMinecraft+build.$versionMappings:v2")
+  mappings(minecraft.officialMojangMappings())
   modImplementation("net.fabricmc:fabric-loader:$versionLoader")
 
   // Testmod TODO figure out own scope

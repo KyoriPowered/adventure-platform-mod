@@ -33,68 +33,69 @@ import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.fabric.FabricPlatform;
 import net.kyori.adventure.platform.fabric.GameEnums;
-import net.kyori.adventure.platform.fabric.client.AdventureBookContents;
-import net.kyori.adventure.platform.fabric.client.BossBarHudBridge;
+import net.kyori.adventure.platform.fabric.client.AdventureBookAccess;
+import net.kyori.adventure.platform.fabric.client.BossHealthOverlayBridge;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.SoundStop;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.title.Title;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.ingame.BookScreen;
-import net.minecraft.client.network.AbstractClientPlayerEntity;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.options.ChatVisibility;
-import net.minecraft.client.sound.PositionedSoundInstance;
-import net.minecraft.client.sound.SoundInstance;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.inventory.BookViewScreen;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.client.resources.sounds.SoundInstance;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.player.ChatVisiblity;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
-@Mixin(ClientPlayerEntity.class)
-public abstract class MixinClientPlayerEntity extends AbstractClientPlayerEntity implements Audience {
+@Mixin(LocalPlayer.class)
+public abstract class LocalPlayerMixin extends AbstractClientPlayer implements Audience {
 
   // TODO: Do we want to enforce synchronization with the client thread?
 
-  private MixinClientPlayerEntity(final ClientWorld world, final GameProfile profile) { // mixin will strip
-    super(world, profile);
+  private LocalPlayerMixin(final ClientLevel level, final GameProfile profile) { // mixin will strip
+    super(level, profile);
   }
 
-  @Shadow @Final protected MinecraftClient client;
+  @Shadow @Final protected Minecraft minecraft;
+
+  @Shadow public abstract void displayClientMessage(net.minecraft.network.chat.Component component, boolean bl);
 
   @Override
   public void sendMessage(final @NonNull Component message, final @NonNull MessageType type) {
-    final ChatVisibility visibility = this.client.options.chatVisibility;
+    final ChatVisiblity visibility = this.minecraft.options.chatVisibility;
     if(type == MessageType.CHAT) {
       // Add to chat queue (following delay and such)
-      if(visibility == ChatVisibility.FULL) {
-        this.client.inGameHud.getChatHud().method_27147(FabricPlatform.adapt(message));
+      if(visibility == ChatVisiblity.FULL) {
+        this.minecraft.gui.getChat().enqueueMessage(FabricPlatform.adapt(message));
       }
     } else {
       // Add immediately as a system message
-      if(visibility == ChatVisibility.FULL || visibility == ChatVisibility.SYSTEM) {
-        this.client.inGameHud.getChatHud().addMessage(FabricPlatform.adapt(message));
+      if(visibility == ChatVisiblity.FULL || visibility == ChatVisiblity.SYSTEM) {
+        this.minecraft.gui.getChat().addMessage(FabricPlatform.adapt(message));
       }
     }
   }
 
   @Override
   public void sendActionBar(final @NonNull Component message) {
-    this.sendMessage(FabricPlatform.adapt(message), true);
+    this.displayClientMessage(FabricPlatform.adapt(message), true);
   }
 
   @Override
   public void showTitle(final @NonNull Title title) {
-    final /* @Nullable */ Text titleText = title.title() == TextComponent.empty() ? null : FabricPlatform.adapt(title.title());
-    final /* @Nullable */ Text subtitleText = title.subtitle() == TextComponent.empty() ? null : FabricPlatform.adapt(title.subtitle());
+    final /* @Nullable */ net.minecraft.network.chat.Component titleText = title.title() == TextComponent.empty() ? null : FabricPlatform.adapt(title.title());
+    final /* @Nullable */ net.minecraft.network.chat.Component subtitleText = title.subtitle() == TextComponent.empty() ? null : FabricPlatform.adapt(title.subtitle());
     final /* @Nullable */ Title.Times times = title.times();
-    this.client.inGameHud.setTitles(titleText, subtitleText,
+    this.minecraft.gui.setTitles(titleText, subtitleText,
       this.adventure$ticks(times == null ? null : times.fadeIn()),
       this.adventure$ticks(times == null ? null : times.stay()),
       this.adventure$ticks(times == null ? null : times.fadeOut()));
@@ -106,22 +107,22 @@ public abstract class MixinClientPlayerEntity extends AbstractClientPlayerEntity
 
   @Override
   public void clearTitle() {
-    this.client.inGameHud.setTitles(null, null, -1, -1, -1);
+    this.minecraft.gui.setTitles(null, null, -1, -1, -1);
   }
 
   @Override
   public void resetTitle() {
-    this.client.inGameHud.setDefaultTitleFade();
+    this.minecraft.gui.resetTitleTimes();
   }
 
   @Override
   public void showBossBar(final @NonNull BossBar bar) {
-    BossBarHudBridge.listener(this.client.inGameHud.getBossBarHud()).add(bar);
+    BossHealthOverlayBridge.listener(this.minecraft.gui.getBossOverlay()).add(bar);
   }
 
   @Override
   public void hideBossBar(final @NonNull BossBar bar) {
-    BossBarHudBridge.listener(this.client.inGameHud.getBossBarHud()).remove(bar);
+    BossHealthOverlayBridge.listener(this.minecraft.gui.getBossOverlay()).remove(bar);
   }
 
   @Override
@@ -131,21 +132,21 @@ public abstract class MixinClientPlayerEntity extends AbstractClientPlayerEntity
 
   @Override
   public void playSound(final @NonNull Sound sound, final double x, final double y, final double z) {
-    this.client.getSoundManager().play(new PositionedSoundInstance(FabricPlatform.adapt(sound.name()), GameEnums.SOUND_SOURCE.toMinecraft(sound.source()),
-      sound.volume(), sound.pitch(), false, 0, SoundInstance.AttenuationType.LINEAR, x, y, z, false));
+    this.minecraft.getSoundManager().play(new SimpleSoundInstance(FabricPlatform.adapt(sound.name()), GameEnums.SOUND_SOURCE.toMinecraft(sound.source()),
+      sound.volume(), sound.pitch(), false, 0, SoundInstance.Attenuation.LINEAR, x, y, z, false));
   }
 
   @Override
   public void stopSound(final @NonNull SoundStop stop) {
     final /* @Nullable */ Key sound = stop.sound();
-    final /* @Nullable */ Identifier soundIdent = sound == null ? null : FabricPlatform.adapt(sound);
+    final /* @Nullable */ ResourceLocation soundIdent = sound == null ? null : FabricPlatform.adapt(sound);
     final Sound./* @Nullable */ Source source = stop.source();
-    final /* @Nullable */ SoundCategory category = source == null ? null : GameEnums.SOUND_SOURCE.toMinecraft(source);
-    this.client.getSoundManager().stopSounds(soundIdent, category);
+    final /* @Nullable */ SoundSource category = source == null ? null : GameEnums.SOUND_SOURCE.toMinecraft(source);
+    this.minecraft.getSoundManager().stop(soundIdent, category);
   }
 
   @Override
   public void openBook(final @NonNull Book book) {
-    this.client.openScreen(new BookScreen(new AdventureBookContents(book)));
+    this.minecraft.setScreen(new BookViewScreen(new AdventureBookAccess(book)));
   }
 }

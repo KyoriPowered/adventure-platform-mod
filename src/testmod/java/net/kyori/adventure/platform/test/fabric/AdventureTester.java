@@ -53,8 +53,8 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import net.minecraft.command.suggestion.SuggestionProviders;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.commands.synchronization.SuggestionProviders;
+import net.minecraft.server.level.ServerPlayer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -64,10 +64,10 @@ import static java.util.Objects.requireNonNull;
 import static net.kyori.adventure.platform.fabric.ComponentArgumentType.component;
 import static net.kyori.adventure.platform.fabric.KeyArgumentType.key;
 import static net.kyori.adventure.text.TextComponent.newline;
-import static net.minecraft.command.argument.EntityArgumentType.getPlayers;
-import static net.minecraft.command.argument.EntityArgumentType.players;
-import static net.minecraft.server.command.CommandManager.argument;
-import static net.minecraft.server.command.CommandManager.literal;
+import static net.minecraft.commands.Commands.argument;
+import static net.minecraft.commands.Commands.literal;
+import static net.minecraft.commands.arguments.EntityArgument.getPlayers;
+import static net.minecraft.commands.arguments.EntityArgument.players;
 
 public class AdventureTester implements ModInitializer {
   private static final Key FONT_MEOW = Key.of("adventure", "meow");
@@ -117,7 +117,7 @@ public class AdventureTester implements ModInitializer {
           return 1;
         })))
       .then(literal("tellall").then(argument(ARG_TARGETS, players()).then(argument(ARG_TEXT, component()).executes(ctx -> {
-        final Collection<ServerPlayerEntity> targets = getPlayers(ctx, ARG_TARGETS);
+        final Collection<ServerPlayer> targets = getPlayers(ctx, ARG_TARGETS);
         final Audience source = this.adventure().audience(ctx.getSource());
         final Component message = component(ctx, ARG_TEXT);
         final Audience destination = this.adventure().audience(targets);
@@ -176,10 +176,10 @@ public class AdventureTester implements ModInitializer {
 
   }
 
-  private static Component listPlayers(final Collection<? extends ServerPlayerEntity> players) {
+  private static Component listPlayers(final Collection<? extends ServerPlayer> players) {
     final HoverEvent<Component> hover = HoverEvent.showText(TextComponent.make(b -> {
       boolean first = true;
-      for(final ServerPlayerEntity player : players) {
+      for(final ServerPlayer player : players) {
         if(!first) {
           b.append(newline());
         }
@@ -230,7 +230,7 @@ public class AdventureTester implements ModInitializer {
     targets.showBossBar(bar);
   }
 
-   static TextColor textColor(final BossBar.Color barColor) {
+  static TextColor textColor(final BossBar.Color barColor) {
     switch(barColor) {
       case PINK: return NamedTextColor.LIGHT_PURPLE;
       case BLUE: return NamedTextColor.BLUE;

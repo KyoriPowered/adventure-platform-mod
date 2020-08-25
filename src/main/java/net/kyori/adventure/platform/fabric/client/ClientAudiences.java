@@ -25,7 +25,7 @@
 package net.kyori.adventure.platform.fabric.client;
 
 import net.kyori.adventure.audience.Audience;
-import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.player.LocalPlayer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
@@ -40,7 +40,7 @@ public final class ClientAudiences {
    * @param player The player
    * @return the player's audience
    */
-  public static Audience audience(final @NonNull ClientPlayerEntity player) {
+  public static Audience audience(final @NonNull LocalPlayer player) {
     return (Audience) player;
   }
 }

@@ -22,30 +22,17 @@
  * SOFTWARE.
  */
 
-package net.kyori.adventure.platform.fabric;
+package net.kyori.adventure.platform.fabric.mixin;
 
-import net.kyori.adventure.platform.fabric.mixin.AccessorTextSerializer;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.ComponentSerializer;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
+import java.util.Map;
+import net.minecraft.sounds.SoundSource;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Accessor;
 
- class MinecraftTextSerializer implements ComponentSerializer<Component, Component, Text> {
-
-  MinecraftTextSerializer() {
-  }
-
-  @Override
-  public Component deserialize(final Text input) {
-    if(input instanceof ComponentText) {
-      return ((ComponentText) input).wrapped();
-    }
-
-    return AccessorTextSerializer.getGSON().fromJson(Text.Serializer.toJsonTree(input), Component.class);
-  }
-
-  @Override
-  public MutableText serialize(final Component component) {
-    return Text.Serializer.fromJson(AccessorTextSerializer.getGSON().toJsonTree(component));
+@Mixin(SoundSource.class)
+public interface SoundSourceAccess {
+  @Accessor("BY_NAME")
+  static Map<String, SoundSource> getNameMap() {
+    throw new AssertionError();
   }
 }

@@ -24,18 +24,34 @@
 
 package net.kyori.adventure.platform.fabric.client;
 
-import net.minecraft.client.gui.hud.BossBarHud;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import net.kyori.adventure.inventory.Book;
+import net.kyori.adventure.platform.fabric.FabricPlatform;
+import net.minecraft.client.gui.screens.inventory.BookViewScreen;
+import net.minecraft.network.chat.FormattedText;
 
 import static java.util.Objects.requireNonNull;
 
 /**
- * Accessor for our listener stored in the client HUD.
+ * An implementation of the book GUI's contents.
+ *
+ * <p>This implementation gets its data directly from an
+ * Adventure {@link Book}, without needing
+ * an {@link net.minecraft.world.item.ItemStack}.</p>
  */
-public interface BossBarHudBridge {
-  ClientBossBarListener adventure$listener();
+public class AdventureBookAccess implements BookViewScreen.BookAccess {
+  private final Book book;
 
-  static ClientBossBarListener listener(final @NonNull BossBarHud hud) {
-    return ((BossBarHudBridge) requireNonNull(hud, "hud")).adventure$listener();
+  public AdventureBookAccess(final Book book) {
+    this.book = requireNonNull(book, "book");
+  }
+
+  @Override
+  public int getPageCount() {
+    return this.book.pages().size();
+  }
+
+  @Override
+  public FormattedText getPageRaw(final int index) {
+    return FabricPlatform.adapt(this.book.pages().get(index));
   }
 }
