@@ -22,35 +22,14 @@
  * SOFTWARE.
  */
 
-package net.kyori.adventure.platform.fabric;
-
-import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.arguments.ArgumentType;
-import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.kyori.adventure.key.Key;
-import net.minecraft.resources.ResourceLocation;
-
 /**
- * An argument that will be decoded as a Key
+ * Internal implementation of the adventure platform
+ *
+ * <p>Direct access to classes in this package is
+ * unsupported, and changes may occur at any time.</p>
  */
-public final class KeyArgumentType implements ArgumentType<Key> {
-  private static final KeyArgumentType INSTANCE = new KeyArgumentType();
+@DefaultQualifier(NonNull.class)
+package net.kyori.adventure.platform.fabric.impl;
 
-  public static KeyArgumentType key() {
-    return INSTANCE;
-  }
-
-  public static Key key(final CommandContext<?> ctx, final String id) {
-    return ctx.getArgument(id, Key.class);
-  }
-
-  private KeyArgumentType() {
-  }
-
-  @Override
-  public Key parse(final StringReader reader) throws CommandSyntaxException {
-    // TODO: do this without creating a ResourceLocation instance
-    return FabricAudienceProvider.adapt(ResourceLocation.read(reader));
-  }
-}
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.framework.qual.DefaultQualifier;

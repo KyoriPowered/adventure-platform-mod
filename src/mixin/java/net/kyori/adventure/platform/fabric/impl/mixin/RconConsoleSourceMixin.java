@@ -22,35 +22,24 @@
  * SOFTWARE.
  */
 
-package net.kyori.adventure.platform.fabric;
+package net.kyori.adventure.platform.fabric.impl.mixin;
 
-import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.arguments.ArgumentType;
-import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.kyori.adventure.key.Key;
-import net.minecraft.resources.ResourceLocation;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.audience.MessageType;
+import net.kyori.adventure.platform.fabric.FabricAudienceProvider;
+import net.kyori.adventure.text.Component;
+import net.minecraft.server.rcon.RconConsoleSource;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 
-/**
- * An argument that will be decoded as a Key
- */
-public final class KeyArgumentType implements ArgumentType<Key> {
-  private static final KeyArgumentType INSTANCE = new KeyArgumentType();
-
-  public static KeyArgumentType key() {
-    return INSTANCE;
-  }
-
-  public static Key key(final CommandContext<?> ctx, final String id) {
-    return ctx.getArgument(id, Key.class);
-  }
-
-  private KeyArgumentType() {
-  }
+@Mixin(RconConsoleSource.class)
+public abstract class RconConsoleSourceMixin implements Audience {
+  @Shadow @Final private StringBuffer buffer;
 
   @Override
-  public Key parse(final StringReader reader) throws CommandSyntaxException {
-    // TODO: do this without creating a ResourceLocation instance
-    return FabricAudienceProvider.adapt(ResourceLocation.read(reader));
+  public void sendMessage(final Component text, final MessageType type) {
+    this.buffer.append(FabricAudienceProvider.plainSerializer().serialize(text));
   }
+
 }

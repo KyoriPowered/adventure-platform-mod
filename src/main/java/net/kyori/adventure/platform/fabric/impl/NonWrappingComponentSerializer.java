@@ -22,35 +22,29 @@
  * SOFTWARE.
  */
 
-package net.kyori.adventure.platform.fabric;
+package net.kyori.adventure.platform.fabric.impl;
 
-import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.arguments.ArgumentType;
-import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.kyori.adventure.key.Key;
-import net.minecraft.resources.ResourceLocation;
+import net.kyori.adventure.platform.fabric.impl.accessor.ComponentSerializerAccess;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.ComponentSerializer;
+import net.minecraft.network.chat.MutableComponent;
 
-/**
- * An argument that will be decoded as a Key
- */
-public final class KeyArgumentType implements ArgumentType<Key> {
-  private static final KeyArgumentType INSTANCE = new KeyArgumentType();
+class NonWrappingComponentSerializer implements ComponentSerializer<Component, Component, net.minecraft.network.chat.Component> {
 
-  public static KeyArgumentType key() {
-    return INSTANCE;
-  }
-
-  public static Key key(final CommandContext<?> ctx, final String id) {
-    return ctx.getArgument(id, Key.class);
-  }
-
-  private KeyArgumentType() {
+  NonWrappingComponentSerializer() {
   }
 
   @Override
-  public Key parse(final StringReader reader) throws CommandSyntaxException {
-    // TODO: do this without creating a ResourceLocation instance
-    return FabricAudienceProvider.adapt(ResourceLocation.read(reader));
+  public Component deserialize(final net.minecraft.network.chat.Component input) {
+    if(input instanceof WrappedComponent) {
+      return ((WrappedComponent) input).wrapped();
+    }
+
+    return ComponentSerializerAccess.getGSON().fromJson(net.minecraft.network.chat.Component.Serializer.toJsonTree(input), Component.class);
+  }
+
+  @Override
+  public MutableComponent serialize(final Component component) {
+    return net.minecraft.network.chat.Component.Serializer.fromJson(ComponentSerializerAccess.getGSON().toJsonTree(component));
   }
 }

@@ -22,35 +22,26 @@
  * SOFTWARE.
  */
 
-package net.kyori.adventure.platform.fabric;
+package net.kyori.adventure.platform.fabric.impl.client;
 
-import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.arguments.ArgumentType;
-import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.kyori.adventure.key.Key;
-import net.minecraft.resources.ResourceLocation;
+import java.util.Locale;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.platform.fabric.FabricClientAudienceProvider;
+import net.kyori.adventure.text.renderer.ComponentRenderer;
+import net.kyori.adventure.text.renderer.TranslatableComponentRenderer;
+import net.minecraft.client.player.LocalPlayer;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
-/**
- * An argument that will be decoded as a Key
- */
-public final class KeyArgumentType implements ArgumentType<Key> {
-  private static final KeyArgumentType INSTANCE = new KeyArgumentType();
+public class FabricClientAudienceProviderImpl implements FabricClientAudienceProvider {
+  public static final FabricClientAudienceProvider INSTANCE = new FabricClientAudienceProviderImpl(TranslatableComponentRenderer.get());
+  private final ComponentRenderer<Locale> renderer;
 
-  public static KeyArgumentType key() {
-    return INSTANCE;
-  }
-
-  public static Key key(final CommandContext<?> ctx, final String id) {
-    return ctx.getArgument(id, Key.class);
-  }
-
-  private KeyArgumentType() {
+  public FabricClientAudienceProviderImpl(final ComponentRenderer<Locale> renderer) {
+    this.renderer = renderer;
   }
 
   @Override
-  public Key parse(final StringReader reader) throws CommandSyntaxException {
-    // TODO: do this without creating a ResourceLocation instance
-    return FabricAudienceProvider.adapt(ResourceLocation.read(reader));
+  public Audience audience(final @NonNull LocalPlayer player) {
+    return (Audience) player;
   }
 }

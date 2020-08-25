@@ -22,35 +22,37 @@
  * SOFTWARE.
  */
 
-package net.kyori.adventure.platform.fabric;
+package net.kyori.adventure.platform.fabric.impl.mixin;
 
-import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.arguments.ArgumentType;
-import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.kyori.adventure.key.Key;
-import net.minecraft.resources.ResourceLocation;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.platform.fabric.FabricAudienceProvider;
+import net.kyori.adventure.text.Component;
+import net.minecraft.server.MinecraftServer;
+import org.apache.logging.log4j.Logger;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 
 /**
- * An argument that will be decoded as a Key
+ * Implement ComponentCommandOutput for output to the server console
  */
-public final class KeyArgumentType implements ArgumentType<Key> {
-  private static final KeyArgumentType INSTANCE = new KeyArgumentType();
+@Mixin(value = MinecraftServer.class)
+public abstract class MinecraftServerMixin implements Audience {
+  @Shadow @Final private static Logger LOGGER;
 
-  public static KeyArgumentType key() {
-    return INSTANCE;
-  }
-
-  public static Key key(final CommandContext<?> ctx, final String id) {
-    return ctx.getArgument(id, Key.class);
-  }
-
-  private KeyArgumentType() {
+  /**
+   * Send a message to this receiver as a component
+   *
+   * @param text The text to send
+   */
+  @Override
+  public void sendMessage(final Component text) {
+    LOGGER.info(FabricAudienceProvider.plainSerializer().serialize(text)); // TODO: Eventually will we support formatted output?
   }
 
   @Override
-  public Key parse(final StringReader reader) throws CommandSyntaxException {
-    // TODO: do this without creating a ResourceLocation instance
-    return FabricAudienceProvider.adapt(ResourceLocation.read(reader));
+  public void sendActionBar(final @NonNull Component message) {
+    this.sendMessage(message);
   }
 }

@@ -24,9 +24,8 @@
 
 package net.kyori.adventure.platform.fabric;
 
-import net.kyori.adventure.platform.fabric.mixin.ComponentSerializerAccess;
+import net.kyori.adventure.platform.fabric.impl.accessor.ComponentSerializerAccess;
 import com.google.common.collect.ImmutableSet;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.stream.JsonReader;
 import com.mojang.brigadier.StringReader;
@@ -38,9 +37,6 @@ import java.util.Collection;
 import java.util.Set;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.arguments.ComponentArgument;
-import net.minecraft.commands.synchronization.ArgumentSerializer;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
 
 /**
  * An argument that takes JSON-format text.
@@ -96,23 +92,4 @@ public final class ComponentArgumentType implements ArgumentType<Component> {
     return EXAMPLES;
   }
 
-  static class Serializer implements ArgumentSerializer<ComponentArgumentType> {
-    private static final ResourceLocation SERIALIZER_GSON = new ResourceLocation("adventure", "gson");
-
-    @Override
-    public void serializeToNetwork(final ComponentArgumentType type, final FriendlyByteBuf buffer) {
-      buffer.writeResourceLocation(SERIALIZER_GSON);
-    }
-
-    @Override
-    public ComponentArgumentType deserializeFromNetwork(final FriendlyByteBuf buffer) {
-      buffer.readResourceLocation(); // TODO: Serializer type
-      return ComponentArgumentType.component();
-    }
-
-    @Override
-    public void serializeToJson(final ComponentArgumentType type, final JsonObject json) {
-      json.add("serializer", ComponentSerializerAccess.getGSON().toJsonTree(SERIALIZER_GSON));
-    }
-  }
 }

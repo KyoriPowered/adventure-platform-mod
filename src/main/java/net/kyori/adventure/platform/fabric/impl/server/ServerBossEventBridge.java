@@ -22,35 +22,18 @@
  * SOFTWARE.
  */
 
-package net.kyori.adventure.platform.fabric;
+package net.kyori.adventure.platform.fabric.impl.server;
 
-import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.arguments.ArgumentType;
-import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.kyori.adventure.key.Key;
-import net.minecraft.resources.ResourceLocation;
+import java.util.Collection;
+import net.minecraft.server.level.ServerPlayer;
 
 /**
- * An argument that will be decoded as a Key
+ * An interface for performing bulk adds and removes on a {@link net.minecraft.server.level.ServerBossEvent}
  */
-public final class KeyArgumentType implements ArgumentType<Key> {
-  private static final KeyArgumentType INSTANCE = new KeyArgumentType();
+public interface ServerBossEventBridge {
+  void addAll(Collection<ServerPlayer> players);
 
-  public static KeyArgumentType key() {
-    return INSTANCE;
-  }
+  void removeAll(Collection<ServerPlayer> players);
 
-  public static Key key(final CommandContext<?> ctx, final String id) {
-    return ctx.getArgument(id, Key.class);
-  }
-
-  private KeyArgumentType() {
-  }
-
-  @Override
-  public Key parse(final StringReader reader) throws CommandSyntaxException {
-    // TODO: do this without creating a ResourceLocation instance
-    return FabricAudienceProvider.adapt(ResourceLocation.read(reader));
-  }
+  void replaceSubscriber(ServerPlayer oldSub, ServerPlayer newSub);
 }

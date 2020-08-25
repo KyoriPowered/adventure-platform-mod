@@ -1,6 +1,6 @@
 {
   "required": true,
-  "package": "net.kyori.adventure.platform.fabric.mixin",
+  "package": "net.kyori.adventure.platform.fabric.impl.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "CommandSourceStackMixin",

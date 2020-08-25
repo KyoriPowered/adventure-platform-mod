@@ -5,7 +5,7 @@
   "name": "${project.rootProject.name}",
 
   "authors": [
-    "zml"
+    "kashike","zml", "Luck", "Electroid"
   ],
   "contact": {
     "homepage": "https://github.com/KyoriPowered/adventure-platform-fabric",
@@ -18,7 +18,7 @@
   "entrypoints": {
     "main": [
       {
-        "value":"net.kyori.adventure.platform.fabric.FabricPlatform::init"
+        "value":"net.kyori.adventure.platform.fabric.impl.AdventureInit"
       }
     ]
   },
@@ -27,7 +27,6 @@
     "adventure-platform-fabric.mixins.json"
   ],
   "custom": {
-    "text-version": "${project.ext['versionAdventure']}",
     "modmenu:api": true
   },
 

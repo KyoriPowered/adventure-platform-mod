@@ -29,7 +29,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.kyori.adventure.platform.fabric.FabricPlatform;
+import net.kyori.adventure.platform.fabric.FabricAudienceProvider;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.Executors;
@@ -85,16 +86,16 @@ public class AdventureTester implements ModInitializer {
   private static final TextColor COLOR_RESPONSE = TextColor.of(0x22EE99);
   private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
-  private @Nullable FabricPlatform platform;
+  private @Nullable FabricAudienceProvider platform;
 
-  public FabricPlatform adventure() {
+  public FabricAudienceProvider adventure() {
     return requireNonNull(this.platform, "Tried to access Fabric platform without a running server");
   }
 
   @Override
   public void onInitialize() {
     // Set up platform
-    ServerLifecycleEvents.SERVER_STARTING.register(server -> this.platform = FabricPlatform.of(server));
+    ServerLifecycleEvents.SERVER_STARTING.register(server -> this.platform = FabricAudienceProvider.of(server));
     ServerLifecycleEvents.SERVER_STOPPED.register(server -> this.platform = null);
 
     CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
@@ -184,7 +185,7 @@ public class AdventureTester implements ModInitializer {
           b.append(newline());
         }
         first = false;
-        b.append(FabricPlatform.adapt(player.getDisplayName()));
+        b.append(FabricAudienceProvider.adapt(player.getDisplayName()));
       }
     }));
     return TextComponent.builder(players.size() + " players")

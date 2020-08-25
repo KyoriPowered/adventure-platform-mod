@@ -25,12 +25,7 @@
 package net.kyori.adventure.platform.fabric;
 
 import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.bossbar.BossBar;
-import net.kyori.adventure.inventory.Book;
-import net.kyori.adventure.sound.Sound;
-import net.kyori.adventure.sound.SoundStop;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.title.Title;
 import net.minecraft.Util;
 import net.minecraft.commands.CommandSource;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -57,47 +52,11 @@ public final class CommandSourceAudience implements Audience {
 
   @Override
   public void sendMessage(final Component text) {
-    this.output.sendMessage(FabricPlatform.adapt(text), Util.NIL_UUID);
+    this.output.sendMessage(FabricAudienceProvider.adapt(text), Util.NIL_UUID);
   }
 
   @Override
   public void sendActionBar(final @NonNull Component message) {
     this.sendMessage(message);
-  }
-
-  @Override
-  public void showBossBar(@NonNull final BossBar bar) {
-  }
-
-  @Override
-  public void hideBossBar(@NonNull final BossBar bar) {
-  }
-
-  @Override
-  public void playSound(@NonNull final Sound sound) {
-  }
-
-  @Override
-  public void playSound(final @NonNull Sound sound, final double x, final double y, final double z) {
-  }
-
-  @Override
-  public void stopSound(@NonNull final SoundStop stop) {
-  }
-
-  @Override
-  public void openBook(final @NonNull Book book) {
-  }
-
-  @Override
-  public void showTitle(@NonNull final Title title) {
-  }
-
-  @Override
-  public void clearTitle() {
-  }
-
-  @Override
-  public void resetTitle() {
   }
 }

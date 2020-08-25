@@ -10,6 +10,7 @@
 pluginManagement {
     repositories {
         mavenLocal()
+        maven("https://oss.sonatype.org/content/groups/public/")
         jcenter()
         maven {
             name = "Fabric"

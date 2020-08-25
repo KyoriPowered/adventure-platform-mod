@@ -22,35 +22,36 @@
  * SOFTWARE.
  */
 
-package net.kyori.adventure.platform.fabric;
+package net.kyori.adventure.platform.fabric.impl.client;
 
-import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.arguments.ArgumentType;
-import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.kyori.adventure.key.Key;
-import net.minecraft.resources.ResourceLocation;
+import net.kyori.adventure.inventory.Book;
+import net.kyori.adventure.platform.fabric.FabricAudienceProvider;
+import net.minecraft.client.gui.screens.inventory.BookViewScreen;
+import net.minecraft.network.chat.FormattedText;
+
+import static java.util.Objects.requireNonNull;
 
 /**
- * An argument that will be decoded as a Key
+ * An implementation of the book GUI's contents.
+ *
+ * <p>This implementation gets its data directly from an
+ * Adventure {@link Book}, without needing
+ * an {@link net.minecraft.world.item.ItemStack}.</p>
  */
-public final class KeyArgumentType implements ArgumentType<Key> {
-  private static final KeyArgumentType INSTANCE = new KeyArgumentType();
+public class AdventureBookAccess implements BookViewScreen.BookAccess {
+  private final Book book;
 
-  public static KeyArgumentType key() {
-    return INSTANCE;
-  }
-
-  public static Key key(final CommandContext<?> ctx, final String id) {
-    return ctx.getArgument(id, Key.class);
-  }
-
-  private KeyArgumentType() {
+  public AdventureBookAccess(final Book book) {
+    this.book = requireNonNull(book, "book");
   }
 
   @Override
-  public Key parse(final StringReader reader) throws CommandSyntaxException {
-    // TODO: do this without creating a ResourceLocation instance
-    return FabricAudienceProvider.adapt(ResourceLocation.read(reader));
+  public int getPageCount() {
+    return this.book.pages().size();
+  }
+
+  @Override
+  public FormattedText getPageRaw(final int index) {
+    return FabricAudienceProvider.adapt(this.book.pages().get(index));
   }
 }

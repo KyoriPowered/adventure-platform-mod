@@ -22,35 +22,28 @@
  * SOFTWARE.
  */
 
-package net.kyori.adventure.platform.fabric;
+package net.kyori.adventure.platform.fabric.impl;
 
-import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.arguments.ArgumentType;
-import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.kyori.adventure.key.Key;
-import net.minecraft.resources.ResourceLocation;
+import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.bossbar.BossBar.Overlay;
+import net.kyori.adventure.platform.fabric.impl.accessor.SoundSourceAccess;
+import net.kyori.adventure.sound.Sound;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.BossEvent;
 
-/**
- * An argument that will be decoded as a Key
- */
-public final class KeyArgumentType implements ArgumentType<Key> {
-  private static final KeyArgumentType INSTANCE = new KeyArgumentType();
+public final class GameEnums {
+  public static final MappedRegistry<BossEvent.BossBarColor, BossBar.Color> BOSS_BAR_COLOR
+    = MappedRegistry.named(BossEvent.BossBarColor.class, BossEvent.BossBarColor::byName,
+    BossBar.Color.class, BossBar.Color.NAMES);
 
-  public static KeyArgumentType key() {
-    return INSTANCE;
-  }
+  public static final MappedRegistry<BossEvent.BossBarOverlay, Overlay> BOSS_BAR_OVERLAY
+    = MappedRegistry.named(BossEvent.BossBarOverlay.class, BossEvent.BossBarOverlay::byName,
+    Overlay.class, Overlay.NAMES);
 
-  public static Key key(final CommandContext<?> ctx, final String id) {
-    return ctx.getArgument(id, Key.class);
-  }
+  public static final MappedRegistry<SoundSource, Sound.Source> SOUND_SOURCE
+    = MappedRegistry.named(SoundSource.class, key -> SoundSourceAccess.getNameMap().get(key),
+    Sound.Source.class, Sound.Source.NAMES);
 
-  private KeyArgumentType() {
-  }
-
-  @Override
-  public Key parse(final StringReader reader) throws CommandSyntaxException {
-    // TODO: do this without creating a ResourceLocation instance
-    return FabricAudienceProvider.adapt(ResourceLocation.read(reader));
+  private GameEnums() {
   }
 }

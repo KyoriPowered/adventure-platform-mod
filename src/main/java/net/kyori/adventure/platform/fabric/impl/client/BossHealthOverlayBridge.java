@@ -22,35 +22,21 @@
  * SOFTWARE.
  */
 
-package net.kyori.adventure.platform.fabric;
+package net.kyori.adventure.platform.fabric.impl.client;
 
-import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.arguments.ArgumentType;
-import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.kyori.adventure.key.Key;
-import net.minecraft.resources.ResourceLocation;
+import org.checkerframework.checker.nullness.qual.NonNull;
+
+import static java.util.Objects.requireNonNull;
+
+import net.minecraft.client.gui.components.BossHealthOverlay;
 
 /**
- * An argument that will be decoded as a Key
+ * Accessor for our listener stored in the client HUD.
  */
-public final class KeyArgumentType implements ArgumentType<Key> {
-  private static final KeyArgumentType INSTANCE = new KeyArgumentType();
+public interface BossHealthOverlayBridge {
+  ClientBossBarListener adventure$listener();
 
-  public static KeyArgumentType key() {
-    return INSTANCE;
-  }
-
-  public static Key key(final CommandContext<?> ctx, final String id) {
-    return ctx.getArgument(id, Key.class);
-  }
-
-  private KeyArgumentType() {
-  }
-
-  @Override
-  public Key parse(final StringReader reader) throws CommandSyntaxException {
-    // TODO: do this without creating a ResourceLocation instance
-    return FabricAudienceProvider.adapt(ResourceLocation.read(reader));
+  static ClientBossBarListener listener(final @NonNull BossHealthOverlay hud) {
+    return ((BossHealthOverlayBridge) requireNonNull(hud, "hud")).adventure$listener();
   }
 }

@@ -71,7 +71,7 @@ opinionated {
   useJUnit5()
   publication?.apply {
     pom {
-      url.set("https://github.com/KyoriPowered/adventure")
+      url.set("https://github.com/KyoriPowered/adventure-platform-fabric")
 
       developers {
         developer {

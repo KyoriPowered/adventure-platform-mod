@@ -22,35 +22,32 @@
  * SOFTWARE.
  */
 
-package net.kyori.adventure.platform.fabric;
+package net.kyori.adventure.platform.fabric.impl;
 
-import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.arguments.ArgumentType;
-import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.kyori.adventure.key.Key;
+import com.google.gson.JsonObject;
+import net.kyori.adventure.platform.fabric.ComponentArgumentType;
+import net.kyori.adventure.platform.fabric.impl.accessor.ComponentSerializerAccess;
+import net.minecraft.commands.synchronization.ArgumentSerializer;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 
-/**
- * An argument that will be decoded as a Key
- */
-public final class KeyArgumentType implements ArgumentType<Key> {
-  private static final KeyArgumentType INSTANCE = new KeyArgumentType();
+public class ComponentArgumentTypeSerializer implements ArgumentSerializer<ComponentArgumentType> {
 
-  public static KeyArgumentType key() {
-    return INSTANCE;
-  }
+  private static final ResourceLocation SERIALIZER_GSON = new ResourceLocation("adventure", "gson");
 
-  public static Key key(final CommandContext<?> ctx, final String id) {
-    return ctx.getArgument(id, Key.class);
-  }
-
-  private KeyArgumentType() {
+  @Override
+  public void serializeToNetwork(final ComponentArgumentType type, final FriendlyByteBuf buffer) {
+    buffer.writeResourceLocation(SERIALIZER_GSON);
   }
 
   @Override
-  public Key parse(final StringReader reader) throws CommandSyntaxException {
-    // TODO: do this without creating a ResourceLocation instance
-    return FabricAudienceProvider.adapt(ResourceLocation.read(reader));
+  public ComponentArgumentType deserializeFromNetwork(final FriendlyByteBuf buffer) {
+    buffer.readResourceLocation(); // TODO: Serializer type
+    return ComponentArgumentType.component();
+  }
+
+  @Override
+  public void serializeToJson(final ComponentArgumentType type, final JsonObject json) {
+    json.add("serializer", ComponentSerializerAccess.getGSON().toJsonTree(SERIALIZER_GSON));
   }
 }
