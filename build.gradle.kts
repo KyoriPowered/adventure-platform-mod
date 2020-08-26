@@ -10,7 +10,6 @@ plugins {
   checkstyle
 }
 
-val versionSelf = "2.0-SNAPSHOT"
 val versionMinecraft: String by project
 val versionAdventure: String by project
 val versionMappings: String by project
@@ -18,7 +17,7 @@ val versionLoader: String by project
 val versionFabricApi: String by project
 
 group = "net.kyori"
-version = "$versionSelf+${versionAdventure.replace("-SNAPSHOT", "")}"
+version = "4.0.0-SNAPSHOT"
 
 repositories {
   mavenLocal()
