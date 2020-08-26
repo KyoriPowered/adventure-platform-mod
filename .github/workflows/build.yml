@@ -17,4 +17,4 @@ jobs:
         with:
           java-version: "${{ matrix.java }}"
       - name: "build"
-        run: "./gradlew build"
+        run: "./gradlew build --stacktrace"
