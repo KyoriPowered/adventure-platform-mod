@@ -30,7 +30,7 @@ import net.kyori.adventure.text.Component;
 /**
  * An interface applied to {@link net.minecraft.commands.CommandSourceStack} to allow sending {@link Component Components}
  */
-public interface AdventureCommandSourceStack extends ForwardingAudience {
+public interface AdventureCommandSourceStack extends ForwardingAudience.Single {
   /**
    * Send a result message to the command source
    *
