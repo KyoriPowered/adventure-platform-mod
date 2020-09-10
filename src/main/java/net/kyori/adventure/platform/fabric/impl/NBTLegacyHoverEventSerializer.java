@@ -61,7 +61,7 @@ final class NBTLegacyHoverEventSerializer implements LegacyHoverEventSerializer 
     try {
       final CompoundTag contents = SNBT_CODEC.decode(raw);
       final CompoundTag tag = contents.getCompound(ITEM_TAG);
-      return new HoverEvent.ShowItem(
+      return HoverEvent.ShowItem.of(
         Key.of(contents.getString(ITEM_TYPE)),
         contents.contains(ITEM_COUNT) ? contents.getByte(ITEM_COUNT) : 1,
         tag.isEmpty() ? null : BinaryTagHolder.encode(tag, SNBT_CODEC)
@@ -76,7 +76,7 @@ final class NBTLegacyHoverEventSerializer implements LegacyHoverEventSerializer 
     final String raw = FabricAudienceProvider.plainSerializer().serialize(input);
     try {
       final CompoundTag contents = SNBT_CODEC.decode(raw);
-      return new HoverEvent.ShowEntity(
+      return HoverEvent.ShowEntity.of(
         Key.of(contents.getString(ENTITY_TYPE)),
         UUID.fromString(contents.getString(ENTITY_ID)),
         componentCodec.decode(contents.getString(ENTITY_NAME))
