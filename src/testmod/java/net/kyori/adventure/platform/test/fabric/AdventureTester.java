@@ -26,8 +26,10 @@ package net.kyori.adventure.platform.test.fabric;
 
 import com.google.common.base.Strings;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.kyori.adventure.platform.fabric.FabricAudienceProvider;
 
@@ -49,11 +51,13 @@ import net.kyori.adventure.platform.fabric.KeyArgumentType;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.TranslatableComponent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.translation.TranslationRegistry;
 import net.minecraft.commands.synchronization.SuggestionProviders;
 import net.minecraft.server.level.ServerPlayer;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -94,12 +98,22 @@ public class AdventureTester implements ModInitializer {
 
   @Override
   public void onInitialize() {
+    // Register localizations
+    Stream.of(Locale.ENGLISH, Locale.GERMAN).forEach(lang -> {
+      TranslationRegistry.get().registerAll(lang, "net.kyori.adventure.platform.test.fabric.messages", false);
+    });
     // Set up platform
     ServerLifecycleEvents.SERVER_STARTING.register(server -> this.platform = FabricAudienceProvider.of(server));
     ServerLifecycleEvents.SERVER_STOPPED.register(server -> this.platform = null);
 
     CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
       dispatcher.register(literal("adventure")
+        .then(literal("about").executes(ctx -> {
+          final Audience audience = this.adventure().audience(ctx.getSource());
+          audience.sendMessage(TranslatableComponent.of("adventure.test.welcome", COLOR_RESPONSE, FabricAudienceProvider.adapt(ctx.getSource().getDisplayName())));
+          audience.sendMessage(TranslatableComponent.of("adventure.test.description", TextColor.of(0xc022cc)));
+          return 1;
+        }))
         .then(literal("echo").then(argument(ARG_TEXT, component()).executes(ctx -> {
           final Audience audience = this.adventure().audience(ctx.getSource());
           final Component result = component(ctx, ARG_TEXT);

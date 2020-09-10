@@ -5,7 +5,9 @@
   "mixins": [
     "CommandSourceStackMixin",
     "ComponentSerializerMixin",
+    "FriendlyByteBufMixin",
     "MinecraftServerMixin",
+    "PacketEncoderMixin",
     "PlayerListMixin",
     "RconConsoleSourceMixin",
     "ServerBossEventMixin",

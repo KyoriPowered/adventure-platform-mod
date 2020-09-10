@@ -6,6 +6,8 @@
   "mixins": [
     "ClientboundBossEventPacketAccess",
     "ComponentSerializerAccess",
+    "ConnectionAccess",
+    "ServerboundClientInformationPacketAccess",
     "SoundSourceAccess"
   ],
   "injectors": {

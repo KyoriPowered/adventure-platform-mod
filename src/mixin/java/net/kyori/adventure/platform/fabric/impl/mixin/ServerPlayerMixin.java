@@ -25,13 +25,18 @@
 package net.kyori.adventure.platform.fabric.impl.mixin;
 
 import com.mojang.authlib.GameProfile;
+import io.netty.channel.Channel;
 import java.time.Duration;
+import java.util.Locale;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.fabric.FabricAudienceProvider;
+import net.kyori.adventure.platform.fabric.impl.FriendlyByteBufBridge;
 import net.kyori.adventure.platform.fabric.impl.GameEnums;
+import net.kyori.adventure.platform.fabric.impl.accessor.ConnectionAccess;
+import net.kyori.adventure.platform.fabric.impl.accessor.ServerboundClientInformationPacketAccess;
 import net.kyori.adventure.platform.fabric.impl.server.ServerBossBarListener;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.SoundStop;
@@ -50,6 +55,7 @@ import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.network.protocol.game.ClientboundCustomSoundPacket;
 import net.minecraft.network.protocol.game.ClientboundSetTitlesPacket;
 import net.minecraft.network.protocol.game.ClientboundStopSoundPacket;
+import net.minecraft.network.protocol.game.ServerboundClientInformationPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.sounds.SoundSource;
@@ -61,6 +67,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -191,6 +198,35 @@ public abstract class ServerPlayerMixin extends Player implements Audience {
   @Override
   public void resetTitle() {
     this.connection.send(new ClientboundSetTitlesPacket(ClientboundSetTitlesPacket.Type.RESET, null));
+  }
+
+  // Locale tracking
+
+  @Inject(method = "updateOptions", at = @At("HEAD"))
+  private void handleLocaleUpdate(final ServerboundClientInformationPacket information, final CallbackInfo ci) {
+    final String language = ((ServerboundClientInformationPacketAccess) information).getLanguage();
+    final Channel channel = ((ConnectionAccess) this.connection.getConnection()).getChannel();
+    channel.attr(FriendlyByteBufBridge.CHANNEL_LOCALE).set(adventure$toLocale(language));
+  }
+
+  /**
+   * Take a locale string provided from a minecraft client and attempt to parse it as a locale.
+   * These are not strictly compliant with the iso standard, so we try to make things a bit more normalized.
+   *
+   * @param mcLocale The locale string, in the format provided by the Minecraft client
+   * @return A Locale object matching the provided locale string
+   */
+  private static @Nullable Locale adventure$toLocale(final @Nullable String mcLocale) {
+    if(mcLocale == null) return null;
+
+    final String[] parts = mcLocale.split("_", 3);
+    switch(parts.length) {
+      case 1: return parts[0].isEmpty() ? null : new Locale(parts[0]);
+      case 2: return new Locale(parts[0], parts[1]);
+      case 3: return new Locale(parts[0], parts[1], parts[2]);
+      case 0:
+      default: return null;
+    }
   }
 
   // Player tracking for boss bars

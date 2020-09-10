@@ -33,6 +33,7 @@ import net.kyori.adventure.platform.fabric.impl.FabricAudienceProviderImpl;
 import net.kyori.adventure.platform.fabric.impl.WrappedComponent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
+import net.kyori.adventure.text.renderer.TranslatableComponentRenderer;
 import net.kyori.adventure.text.serializer.ComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
 import net.minecraft.commands.CommandSource;
@@ -79,7 +80,7 @@ public interface FabricAudienceProvider extends AudienceProvider {
   }
 
   static net.minecraft.network.chat.Component adapt(Component component) {
-    return new WrappedComponent(component);
+    return new WrappedComponent(component, TranslatableComponentRenderer.get());
   }
 
   static Component adapt(net.minecraft.network.chat.Component text) {
@@ -89,15 +90,25 @@ public interface FabricAudienceProvider extends AudienceProvider {
     return nonWrappingSerializer().deserialize(text);
   }
 
+  /**
+   * Given an existing native component, convert it into an Adventure component for working with.
+   *
+   * @param input source component
+   * @param modifier operator to transform the component
+   * @return new component
+   */
   static net.minecraft.network.chat.Component update(net.minecraft.network.chat.Component input, UnaryOperator<Component> modifier) {
     final Component modified;
+    final /* @Nullable */ ComponentRenderer<Locale> renderer;
     if(input instanceof WrappedComponent) {
       modified = requireNonNull(modifier).apply(((WrappedComponent) input).wrapped());
+      renderer = ((WrappedComponent) input).renderer();
     } else {
       final Component original = nonWrappingSerializer().deserialize(input);
       modified = modifier.apply(original);
+      renderer = null;
     }
-    return new WrappedComponent(modified);
+    return new WrappedComponent(modified, renderer);
   }
 
   /**

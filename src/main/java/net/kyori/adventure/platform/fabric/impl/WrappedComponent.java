@@ -25,10 +25,13 @@
 package net.kyori.adventure.platform.fabric.impl;
 
 import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 import java.util.Optional;
 
 import net.kyori.adventure.platform.fabric.FabricAudienceProvider;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.renderer.ComponentRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
@@ -39,13 +42,34 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 public final class WrappedComponent implements Component {
   private @MonotonicNonNull Component converted;
   private final net.kyori.adventure.text.Component wrapped;
+  private final @Nullable ComponentRenderer<Locale> renderer;
+  private Locale lastLocale;
+  private WrappedComponent lastRendered;
 
-  public WrappedComponent(final net.kyori.adventure.text.Component wrapped) {
+  public WrappedComponent(final net.kyori.adventure.text.Component wrapped, final @Nullable ComponentRenderer<Locale> renderer) {
     this.wrapped = wrapped;
+    this.renderer = renderer;
+  }
+
+  /**
+   * Renderer to use to translate messages.
+   *
+   * @return the renderer, if any
+   */
+  public @Nullable ComponentRenderer<Locale> renderer() {
+    return this.renderer;
   }
 
   public net.kyori.adventure.text.Component wrapped() {
     return this.wrapped;
+  }
+
+  public synchronized WrappedComponent rendered(final Locale locale) {
+    if (Objects.equals(locale, lastLocale)) {
+      return this.lastRendered;
+    }
+    this.lastLocale = locale;
+    return this.lastRendered = this.renderer == null ? this : new WrappedComponent(this.renderer.render(this.wrapped, locale), null);
   }
 
   Component deepConverted() {
