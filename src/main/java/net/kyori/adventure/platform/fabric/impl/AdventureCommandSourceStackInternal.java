@@ -24,28 +24,25 @@
 
 package net.kyori.adventure.platform.fabric.impl;
 
-import net.kyori.adventure.platform.fabric.impl.accessor.ComponentSerializerAccess;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.ComponentSerializer;
-import net.minecraft.network.chat.MutableComponent;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.platform.fabric.AdventureCommandSourceStack;
+import net.kyori.adventure.platform.fabric.impl.server.FabricServerAudienceProviderImpl;
+import net.minecraft.commands.CommandSource;
 
-public final class NonWrappingComponentSerializer implements ComponentSerializer<Component, Component, net.minecraft.network.chat.Component> {
-  public static final NonWrappingComponentSerializer INSTANCE = new NonWrappingComponentSerializer();
+public interface AdventureCommandSourceStackInternal extends AdventureCommandSourceStack {
+  /**
+   * Set the audience to be delegated to
+   *
+   * @param wrapped wrapped audience
+   * @param controller controller to render with
+   * @return the wrapped audience
+   */
+  AdventureCommandSourceStack adventure$audience(final Audience wrapped, final FabricServerAudienceProviderImpl controller);
 
-  private NonWrappingComponentSerializer() {
-  }
-
-  @Override
-  public Component deserialize(final net.minecraft.network.chat.Component input) {
-    if(input instanceof WrappedComponent) {
-      return ((WrappedComponent) input).wrapped();
-    }
-
-    return ComponentSerializerAccess.getGSON().fromJson(net.minecraft.network.chat.Component.Serializer.toJsonTree(input), Component.class);
-  }
-
-  @Override
-  public MutableComponent serialize(final Component component) {
-    return net.minecraft.network.chat.Component.Serializer.fromJson(ComponentSerializerAccess.getGSON().toJsonTree(component));
-  }
+  /**
+   * The backing source for the command.
+   *
+   * @return backing source
+   */
+  CommandSource adventure$source();
 }

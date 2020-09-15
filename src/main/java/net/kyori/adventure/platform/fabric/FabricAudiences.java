@@ -24,71 +24,34 @@
 
 package net.kyori.adventure.platform.fabric;
 
-import static java.util.Objects.requireNonNull;
-
-import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.key.Key;
-import net.kyori.adventure.platform.AudienceProvider;
-import net.kyori.adventure.platform.fabric.impl.FabricAudienceProviderImpl;
-import net.kyori.adventure.platform.fabric.impl.WrappedComponent;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.renderer.ComponentRenderer;
-import net.kyori.adventure.text.renderer.TranslatableComponentRenderer;
-import net.kyori.adventure.text.serializer.ComponentSerializer;
-import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
-import net.minecraft.commands.CommandSource;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.level.ServerPlayer;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.PolyNull;
-
 import java.util.Locale;
 import java.util.function.UnaryOperator;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.platform.fabric.impl.NonWrappingComponentSerializer;
+import net.kyori.adventure.platform.fabric.impl.WrappedComponent;
+import net.kyori.adventure.platform.fabric.impl.accessor.ComponentSerializerAccess;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.renderer.ComponentRenderer;
+import net.kyori.adventure.text.serializer.ComponentSerializer;
+import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
+import net.minecraft.resources.ResourceLocation;
+import org.checkerframework.checker.nullness.qual.PolyNull;
 
-public interface FabricAudienceProvider extends AudienceProvider {
+import static java.util.Objects.requireNonNull;
 
-  static @NonNull FabricAudienceProvider of(@NonNull MinecraftServer server) {
-    return new FabricAudienceProviderImpl(requireNonNull(server, "server"), (component, ctx) -> component);
-  }
-
-  static @NonNull FabricAudienceProvider of(@NonNull MinecraftServer server, @NonNull ComponentRenderer<Locale> renderer) {
-    return new FabricAudienceProviderImpl(requireNonNull(server, "server"), requireNonNull(renderer, "renderer"));
-  }
-
+/**
+ * Common operations in both the client and server environments.
+ *
+ * <p>See {@link FabricServerAudienceProvider} for logical server-specific operations,
+ * and {@link FabricClientAudienceProvider} for logical client-specific operations</p>
+ */
+public interface FabricAudiences {
   /**
    * Return a {@link PlainComponentSerializer} instance that can resolve key bindings and translations using the game's data
    *
    * @return the plain serializer instance
    */
-  static PlainComponentSerializer plainSerializer() {
-    return FabricAudienceProviderImpl.PLAIN;
-  }
-
-  /**
-   * Return a TextSerializer instance that will do deep conversions between
-   * Adventure {@link Component Components} and Minecraft {@link net.minecraft.network.chat.Component Components}.
-   * <p>
-   * This serializer will never wrap text, and can provide {@link net.minecraft.network.chat.MutableComponent}
-   * instances suitable for passing around the game.
-   *
-   * @return a serializer instance
-   */
-  static ComponentSerializer<Component, Component, net.minecraft.network.chat.Component> nonWrappingSerializer() {
-    return FabricAudienceProviderImpl.TEXT_NON_WRAPPING;
-  }
-
-  static net.minecraft.network.chat.Component adapt(Component component) {
-    return new WrappedComponent(component, TranslatableComponentRenderer.get());
-  }
-
-  static Component adapt(net.minecraft.network.chat.Component text) {
-    if(text instanceof WrappedComponent) {
-      return ((WrappedComponent) text).wrapped();
-    }
-    return nonWrappingSerializer().deserialize(text);
-  }
+  PlainComponentSerializer plainSerializer();
 
   /**
    * Given an existing native component, convert it into an Adventure component for working with.
@@ -104,7 +67,7 @@ public interface FabricAudienceProvider extends AudienceProvider {
       modified = requireNonNull(modifier).apply(((WrappedComponent) input).wrapped());
       renderer = ((WrappedComponent) input).renderer();
     } else {
-      final Component original = nonWrappingSerializer().deserialize(input);
+      final Component original = ComponentSerializerAccess.getGSON().fromJson(net.minecraft.network.chat.Component.Serializer.toJsonTree(input), Component.class);
       modified = modifier.apply(original);
       renderer = null;
     }
@@ -117,7 +80,7 @@ public interface FabricAudienceProvider extends AudienceProvider {
    * @param loc The Identifier to convert
    * @return The equivalent data as a Key
    */
-  static @PolyNull Key adapt(@PolyNull ResourceLocation loc) {
+  static @PolyNull Key toAdventure(@PolyNull ResourceLocation loc) {
     if(loc == null) {
       return null;
     }
@@ -130,7 +93,7 @@ public interface FabricAudienceProvider extends AudienceProvider {
    * @param key The Key to convert
    * @return The equivalent data as an Identifier
    */
-  static @PolyNull ResourceLocation adapt(@PolyNull Key key) {
+  static @PolyNull ResourceLocation toNative(@PolyNull Key key) {
     if(key == null) {
       return null;
     }
@@ -138,17 +101,40 @@ public interface FabricAudienceProvider extends AudienceProvider {
   }
 
   /**
-   * Get an audience to send to a {@link CommandSourceStack}.
+   * Return a TextSerializer instance that will do deep conversions between
+   * Adventure {@link Component Components} and Minecraft {@link net.minecraft.network.chat.Component Components}.
+   * <p>
+   * This serializer will never wrap text, and can provide {@link net.minecraft.network.chat.MutableComponent}
+   * instances suitable for passing around the game.
    *
-   * This will delegate to the native implementation by the command source, or
-   * otherwise use a wrapping implementation.
-   *
-   * @param source source to send to.
-   * @return the audience
+   * @return a serializer instance
    */
-  AdventureCommandSourceStack audience(@NonNull CommandSourceStack source);
+  static ComponentSerializer<Component, Component, net.minecraft.network.chat.Component> nonWrappingSerializer() {
+    return NonWrappingComponentSerializer.INSTANCE;
+  }
 
-  Audience audience(@NonNull CommandSource output);
+  /**
+   * Active locale-based renderer for operations on provided audiences.
+   *
+   * @return Shared renderer
+   */
+  ComponentRenderer<Locale> localeRenderer();
 
-  Audience audience(@NonNull Iterable<ServerPlayer> players);
+  /**
+   * Get a native {@link net.minecraft.network.chat.Component} from an adventure {@link Component}.
+   *
+   * <p>The specific type of the returned component is undefined. For example, it may be a wrapper object.</p>
+   *
+   * @param adventure adventure input
+   * @return native representation
+   */
+  net.minecraft.network.chat.Component toNative(final Component adventure);
+
+  /**
+   * Get an adventure {@link Component} from a native {@link net.minecraft.network.chat.Component}
+   *
+   * @param vanilla the native component
+   * @return adventure component
+   */
+  Component toAdventure(final net.minecraft.network.chat.Component vanilla);
 }

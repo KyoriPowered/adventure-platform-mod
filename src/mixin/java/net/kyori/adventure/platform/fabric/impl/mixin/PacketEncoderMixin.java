@@ -26,7 +26,7 @@ package net.kyori.adventure.platform.fabric.impl.mixin;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import net.kyori.adventure.platform.fabric.impl.FriendlyByteBufBridge;
+import net.kyori.adventure.platform.fabric.impl.server.FriendlyByteBufBridge;
 import net.minecraft.network.ConnectionProtocol;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.PacketEncoder;

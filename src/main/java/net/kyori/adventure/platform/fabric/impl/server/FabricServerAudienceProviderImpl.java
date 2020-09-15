@@ -22,23 +22,29 @@
  * SOFTWARE.
  */
 
-package net.kyori.adventure.platform.fabric.impl;
+package net.kyori.adventure.platform.fabric.impl.server;
 
+import com.google.common.collect.Iterables;
+import java.util.Collections;
 import java.util.Locale;
+import java.util.Set;
 import java.util.UUID;
-import java.util.function.Function;
 
+import java.util.WeakHashMap;
+import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.fabric.AdventureCommandSourceStack;
-import net.kyori.adventure.platform.fabric.CommandSourceAudience;
-import net.kyori.adventure.platform.fabric.FabricAudienceProvider;
+import net.kyori.adventure.platform.fabric.impl.AdventureCommandSourceStackInternal;
+import net.kyori.adventure.platform.fabric.FabricAudiences;
+import net.kyori.adventure.platform.fabric.FabricServerAudienceProvider;
+import net.kyori.adventure.platform.fabric.impl.AdventureCommon;
+import net.kyori.adventure.platform.fabric.impl.WrappedComponent;
+import net.kyori.adventure.platform.fabric.impl.accessor.ComponentSerializerAccess;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.KeybindComponent;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
-import net.kyori.adventure.text.serializer.ComponentSerializer;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
 import net.minecraft.client.KeyMapping;
@@ -56,29 +62,39 @@ import static java.util.Objects.requireNonNull;
 /**
  * The entry point for accessing Adventure.
  */
-public final class FabricAudienceProviderImpl implements FabricAudienceProvider {
-  public static final PlainComponentSerializer PLAIN;
-  public static final ComponentSerializer<Component, Component, net.minecraft.network.chat.Component> TEXT_NON_WRAPPING =
-          new NonWrappingComponentSerializer();
-  public static final GsonComponentSerializer GSON = GsonComponentSerializer.builder().legacyHoverEventSerializer(NBTLegacyHoverEventSerializer.INSTANCE).build();
+public final class FabricServerAudienceProviderImpl implements FabricServerAudienceProvider {
+  private static final Set<FabricServerAudienceProviderImpl> INSTANCES = Collections.newSetFromMap(new WeakHashMap<>());
 
-  static {
-    final Function<KeybindComponent, String> keybindNamer;
-
-    if(FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
-      keybindNamer = keybind -> KeyMapping.createNameSupplier(keybind.keybind()).get().getContents();
-    } else {
-      keybindNamer = KeybindComponent::keybind;
+  /**
+   * Perform an action on every audience provider instance
+   *
+   * @param actor a consumer that will be called for every provider
+   */
+  public static void forEachInstance(final Consumer<FabricServerAudienceProviderImpl> actor) {
+    synchronized(INSTANCES) {
+      for(final FabricServerAudienceProviderImpl instance : INSTANCES) {
+        actor.accept(instance);
+      }
     }
-    PLAIN = new PlainComponentSerializer(keybindNamer, trans -> FabricAudienceProvider.adapt(trans).getContents());
   }
 
   private final MinecraftServer server;
   private final ComponentRenderer<Locale> renderer;
+  final ServerBossBarListener bossBars;
+  private final PlainComponentSerializer plainSerializer;
 
-  public FabricAudienceProviderImpl(final MinecraftServer server, final ComponentRenderer<Locale> renderer) {
+  public FabricServerAudienceProviderImpl(final MinecraftServer server, final ComponentRenderer<Locale> renderer) {
     this.server = server;
     this.renderer = renderer;
+    this.bossBars = new ServerBossBarListener(this);
+    if(FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
+      this.plainSerializer = new PlainComponentSerializer(comp -> KeyMapping.createNameSupplier(comp.keybind()).get().getString(), comp -> this.plainSerializer().serialize(this.renderer.render(comp, Locale.getDefault())));
+    } else {
+      this.plainSerializer = new PlainComponentSerializer(null, comp -> this.plainSerializer().serialize(this.renderer.render(comp, Locale.getDefault())));
+    }
+    synchronized(INSTANCES) {
+      INSTANCES.add(this);
+    }
   }
 
   @Override
@@ -88,7 +104,7 @@ public final class FabricAudienceProviderImpl implements FabricAudienceProvider 
 
   @Override
   public @NonNull Audience console() {
-    return (Audience) this.server;
+    return this.audience(this.server);
   }
 
   @Override
@@ -99,12 +115,11 @@ public final class FabricAudienceProviderImpl implements FabricAudienceProvider 
   @Override
   public @NonNull Audience player(final @NonNull UUID playerId) {
     final /* @Nullable */ ServerPlayer player = this.server.getPlayerList().getPlayer(playerId);
-    return player != null ? (Audience) player : Audience.empty();
+    return player != null ? this.audience(player) : Audience.empty();
   }
 
-  @SuppressWarnings({"unchecked", "rawtypes"})
   private Iterable<Audience> audiences(final Iterable<? extends ServerPlayer> players) {
-    return (Iterable) players;
+    return Iterables.transform(players, this::audience);
   }
 
   @Override
@@ -113,15 +128,23 @@ public final class FabricAudienceProviderImpl implements FabricAudienceProvider 
   }
 
   @Override public AdventureCommandSourceStack audience(final @NonNull CommandSourceStack source) {
-    if(!(source instanceof AdventureCommandSourceStack)) {
+    if(!(source instanceof AdventureCommandSourceStackInternal)) {
       throw new IllegalArgumentException("The AdventureCommandSource mixin failed!");
     }
 
-    return (AdventureCommandSourceStack) source;
+    final AdventureCommandSourceStackInternal internal = (AdventureCommandSourceStackInternal) source;
+    return internal.adventure$audience(this.audience(internal.adventure$source()), this);
   }
 
   @Override public Audience audience(final @NonNull CommandSource output) {
-    return CommandSourceAudience.of(output);
+    if(output instanceof RenderableAudience) {
+      return ((RenderableAudience) output).renderUsing(this);
+    } else if(output instanceof Audience) {
+      // TODO: How to pass component renderer through
+      return (Audience) output;
+    } else {
+      return new CommandSourceAudience(output, this);
+    }
   }
 
   @Override public Audience audience(final @NonNull Iterable<ServerPlayer> players) {
@@ -131,7 +154,7 @@ public final class FabricAudienceProviderImpl implements FabricAudienceProvider 
   @Override
   public @NonNull Audience world(final @NonNull Key worldId) {
     final /* @Nullable */ ServerLevel level = this.server.getLevel(ResourceKey.create(Registry.DIMENSION_REGISTRY,
-            FabricAudienceProvider.adapt(requireNonNull(worldId, "worldId"))));
+      FabricAudiences.toNative(requireNonNull(worldId, "worldId"))));
     if(level != null) {
       return this.audience(level.players());
     }
@@ -140,7 +163,12 @@ public final class FabricAudienceProviderImpl implements FabricAudienceProvider 
 
   @Override
   public @NonNull Audience server(final @NonNull String serverName) {
-    return this.all();
+    return Audience.empty();
+  }
+
+  @Override
+  public PlainComponentSerializer plainSerializer() {
+    return this.plainSerializer;
   }
 
   @Override
@@ -149,8 +177,26 @@ public final class FabricAudienceProviderImpl implements FabricAudienceProvider 
   }
 
   @Override
+  public net.minecraft.network.chat.Component toNative(final Component adventure) {
+    return new WrappedComponent(requireNonNull(adventure, "adventure"), this.renderer);
+  }
+
+  @Override
+  public Component toAdventure(final net.minecraft.network.chat.Component vanilla) {
+    if(vanilla instanceof WrappedComponent) {
+      return ((WrappedComponent) vanilla).wrapped();
+    } else {
+      return ComponentSerializerAccess.getGSON().fromJson(net.minecraft.network.chat.Component.Serializer.toJsonTree(vanilla), Component.class);
+    }
+  }
+
+  @Override
   public @NonNull GsonComponentSerializer gsonSerializer() {
-    return GSON;
+    return AdventureCommon.GSON;
+  }
+
+  public ServerBossBarListener bossBars() {
+    return this.bossBars;
   }
 
   @Override

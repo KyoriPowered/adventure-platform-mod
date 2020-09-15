@@ -18,7 +18,7 @@
   "entrypoints": {
     "main": [
       {
-        "value":"net.kyori.adventure.platform.fabric.impl.AdventureInit"
+        "value":"net.kyori.adventure.platform.fabric.impl.AdventureCommon"
       }
     ]
   },
@@ -31,7 +31,8 @@
   },
 
   "depends": {
-    "fabricloader": ">=0.4.0"
+    "fabricloader": ">=0.4.0",
+    "fabric-api-base": "*"
   },
 
   "recommends": {

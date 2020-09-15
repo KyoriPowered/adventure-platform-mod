@@ -51,6 +51,6 @@ public final class KeyArgumentType implements ArgumentType<Key> {
   @Override
   public Key parse(final StringReader reader) throws CommandSyntaxException {
     // TODO: do this without creating a ResourceLocation instance
-    return FabricAudienceProvider.adapt(ResourceLocation.read(reader));
+    return FabricAudiences.toAdventure(ResourceLocation.read(reader));
   }
 }

@@ -15,7 +15,8 @@
   ],
   "client": [
     "client.BossHealthOverlayMixin",
-    "client.LocalPlayerMixin"
+    "client.LocalPlayerMixin",
+    "client.OptionsMixin"
   ],
   "injectors": {
     "defaultRequire": 1

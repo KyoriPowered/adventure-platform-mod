@@ -28,18 +28,23 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Set;
 import net.kyori.adventure.bossbar.BossBar;
-import net.kyori.adventure.platform.fabric.FabricAudienceProvider;
+import net.kyori.adventure.platform.fabric.FabricAudiences;
 import net.kyori.adventure.text.Component;
 import net.minecraft.world.BossEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 public abstract class AbstractBossBarListener<T extends BossEvent> implements BossBar.Listener {
+  private final FabricAudiences controller;
   protected final Map<BossBar, T> bars = new IdentityHashMap<>();
+
+  protected AbstractBossBarListener(final FabricAudiences controller) {
+    this.controller = controller;
+  }
 
   @Override
   public void bossBarNameChanged(final @NonNull BossBar bar, final @NonNull Component oldName, final @NonNull Component newName) {
     if(!oldName.equals(newName)) {
-      this.minecraft(bar).setName(FabricAudienceProvider.adapt(newName));
+      this.minecraft(bar).setName(this.controller.toNative(newName));
     }
   }
 
@@ -89,7 +94,7 @@ public abstract class AbstractBossBarListener<T extends BossEvent> implements Bo
 
   protected T minecraftCreating(final @NonNull BossBar bar) {
     return this.bars.computeIfAbsent(bar, key -> {
-      final T ret = this.newBar(FabricAudienceProvider.adapt(key.name()),
+      final T ret = this.newBar(this.controller.toNative(key.name()),
         GameEnums.BOSS_BAR_COLOR.toMinecraft(key.color()),
         GameEnums.BOSS_BAR_OVERLAY.toMinecraft(key.overlay()));
 
@@ -99,5 +104,4 @@ public abstract class AbstractBossBarListener<T extends BossEvent> implements Bo
       return ret;
     });
   }
-
 }

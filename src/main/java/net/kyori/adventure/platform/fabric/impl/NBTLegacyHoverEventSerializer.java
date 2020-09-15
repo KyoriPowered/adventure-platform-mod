@@ -29,11 +29,11 @@ import java.io.IOException;
 import java.util.UUID;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.nbt.api.BinaryTagHolder;
-import net.kyori.adventure.platform.fabric.FabricAudienceProvider;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.serializer.gson.LegacyHoverEventSerializer;
+import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
 import net.kyori.adventure.util.Codec;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -57,7 +57,7 @@ final class NBTLegacyHoverEventSerializer implements LegacyHoverEventSerializer 
 
   @Override
   public HoverEvent.@NonNull ShowItem deserializeShowItem(final @NonNull Component input) throws IOException {
-    final String raw = FabricAudienceProvider.plainSerializer().serialize(input);
+    final String raw = PlainComponentSerializer.plain().serialize(input);
     try {
       final CompoundTag contents = SNBT_CODEC.decode(raw);
       final CompoundTag tag = contents.getCompound(ITEM_TAG);
@@ -73,7 +73,7 @@ final class NBTLegacyHoverEventSerializer implements LegacyHoverEventSerializer 
 
   @Override
   public HoverEvent.@NonNull ShowEntity deserializeShowEntity(final @NonNull Component input, final Codec.Decoder<Component, String, ? extends RuntimeException> componentCodec) throws IOException {
-    final String raw = FabricAudienceProvider.plainSerializer().serialize(input);
+    final String raw = PlainComponentSerializer.plain().serialize(input);
     try {
       final CompoundTag contents = SNBT_CODEC.decode(raw);
       return HoverEvent.ShowEntity.of(

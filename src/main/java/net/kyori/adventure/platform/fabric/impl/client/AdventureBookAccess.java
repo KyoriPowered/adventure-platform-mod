@@ -24,10 +24,13 @@
 
 package net.kyori.adventure.platform.fabric.impl.client;
 
+import java.util.Locale;
 import net.kyori.adventure.inventory.Book;
-import net.kyori.adventure.platform.fabric.FabricAudienceProvider;
+import net.kyori.adventure.platform.fabric.impl.WrappedComponent;
+import net.kyori.adventure.text.renderer.ComponentRenderer;
 import net.minecraft.client.gui.screens.inventory.BookViewScreen;
 import net.minecraft.network.chat.FormattedText;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import static java.util.Objects.requireNonNull;
 
@@ -40,9 +43,11 @@ import static java.util.Objects.requireNonNull;
  */
 public class AdventureBookAccess implements BookViewScreen.BookAccess {
   private final Book book;
+  private final @Nullable ComponentRenderer<Locale> renderer;
 
-  public AdventureBookAccess(final Book book) {
+  public AdventureBookAccess(final Book book, final @Nullable ComponentRenderer<Locale> renderer) {
     this.book = requireNonNull(book, "book");
+    this.renderer = renderer;
   }
 
   @Override
@@ -52,6 +57,6 @@ public class AdventureBookAccess implements BookViewScreen.BookAccess {
 
   @Override
   public FormattedText getPageRaw(final int index) {
-    return FabricAudienceProvider.adapt(this.book.pages().get(index));
+    return new WrappedComponent(this.book.pages().get(index), this.renderer);
   }
 }

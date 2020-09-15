@@ -24,28 +24,30 @@
 
 package net.kyori.adventure.platform.fabric.impl;
 
-import net.kyori.adventure.platform.fabric.impl.accessor.ComponentSerializerAccess;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.ComponentSerializer;
-import net.minecraft.network.chat.MutableComponent;
+import java.util.Locale;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-public final class NonWrappingComponentSerializer implements ComponentSerializer<Component, Component, net.minecraft.network.chat.Component> {
-  public static final NonWrappingComponentSerializer INSTANCE = new NonWrappingComponentSerializer();
+public interface LocaleHolderBridge {
+  /**
+   * Take a locale string provided from a minecraft client and attempt to parse it as a locale.
+   * These are not strictly compliant with the iso standard, so we try to make things a bit more normalized.
+   *
+   * @param mcLocale The locale string, in the format provided by the Minecraft client
+   * @return A Locale object matching the provided locale string
+   */
+  static @Nullable Locale toLocale(final @Nullable String mcLocale) {
+    if(mcLocale == null) return null;
 
-  private NonWrappingComponentSerializer() {
-  }
-
-  @Override
-  public Component deserialize(final net.minecraft.network.chat.Component input) {
-    if(input instanceof WrappedComponent) {
-      return ((WrappedComponent) input).wrapped();
+    final String[] parts = mcLocale.split("_", 3);
+    switch(parts.length) {
+      case 1: return parts[0].isEmpty() ? null : new Locale(parts[0]);
+      case 2: return new Locale(parts[0], parts[1]);
+      case 3: return new Locale(parts[0], parts[1], parts[2]);
+      case 0:
+      default:
+        return null;
     }
-
-    return ComponentSerializerAccess.getGSON().fromJson(net.minecraft.network.chat.Component.Serializer.toJsonTree(input), Component.class);
   }
 
-  @Override
-  public MutableComponent serialize(final Component component) {
-    return net.minecraft.network.chat.Component.Serializer.fromJson(ComponentSerializerAccess.getGSON().toJsonTree(component));
-  }
+  Locale adventure$locale();
 }

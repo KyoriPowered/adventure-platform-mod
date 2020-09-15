@@ -24,11 +24,12 @@
 
 package net.kyori.adventure.platform.fabric.impl.mixin.client;
 
+import com.google.common.collect.MapMaker;
 import java.util.Map;
 import java.util.UUID;
 import net.kyori.adventure.platform.fabric.impl.client.BossHealthOverlayBridge;
 import net.kyori.adventure.platform.fabric.impl.client.ClientBossBarListener;
-import net.minecraft.client.Minecraft;
+import net.kyori.adventure.platform.fabric.impl.client.FabricClientAudienceProviderImpl;
 import net.minecraft.client.gui.components.BossHealthOverlay;
 import net.minecraft.client.gui.components.LerpingBossEvent;
 import org.spongepowered.asm.mixin.Final;
@@ -43,16 +44,11 @@ public class BossHealthOverlayMixin implements BossHealthOverlayBridge {
 
   @Shadow @Final private Map<UUID, LerpingBossEvent> events;
 
-  private ClientBossBarListener adventure$listener;
-
-  @Inject(method = "<init>", at = @At("RETURN"))
-  private void initListener(final Minecraft client, final CallbackInfo ci) {
-    this.adventure$listener = new ClientBossBarListener(this.events);
-  }
+  private Map<FabricClientAudienceProviderImpl, ClientBossBarListener> adventure$listener = new MapMaker().weakKeys().makeMap();
 
   @Override
-  public ClientBossBarListener adventure$listener() {
-    return this.adventure$listener;
+  public ClientBossBarListener adventure$listener(final FabricClientAudienceProviderImpl controller) {
+    return this.adventure$listener.computeIfAbsent(controller, ctrl -> new ClientBossBarListener(ctrl, this.events));
   }
 
   @Inject(method = "reset", at = @At("HEAD"))

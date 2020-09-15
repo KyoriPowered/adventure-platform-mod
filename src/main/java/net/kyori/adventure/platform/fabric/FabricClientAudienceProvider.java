@@ -28,17 +28,14 @@ import java.util.Locale;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.platform.fabric.impl.client.FabricClientAudienceProviderImpl;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 import static java.util.Objects.requireNonNull;
 
 /**
  * Access the client's player as an {@link net.kyori.adventure.audience.Audience}
  */
-public interface FabricClientAudienceProvider {
+public interface FabricClientAudienceProvider extends FabricAudiences {
 
   /**
    * Get the common instance, that will render using the global translation registry.
@@ -60,20 +57,11 @@ public interface FabricClientAudienceProvider {
   }
 
   /**
-   * Get an audience for the active player, if any is present.
+   * Get an audience for the client's player.
+   *
+   * <p>When not in-game, most operations will no-op</p>
    *
    * @return player audience
    */
-  default @Nullable Audience audience() {
-    final LocalPlayer player = Minecraft.getInstance().player;
-    return player == null ? null : this.audience(player);
-  }
-
-  /**
-   * Get an audience for the provided client's player.
-   *
-   * @param player player to send to
-   * @return player as an audience
-   */
-  Audience audience(final @NonNull LocalPlayer player);
+  @NonNull Audience audience();
 }

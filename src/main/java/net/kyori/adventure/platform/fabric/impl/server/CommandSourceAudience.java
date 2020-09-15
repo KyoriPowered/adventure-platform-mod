@@ -22,37 +22,31 @@
  * SOFTWARE.
  */
 
-package net.kyori.adventure.platform.fabric;
+package net.kyori.adventure.platform.fabric.impl.server;
 
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.audience.MessageType;
+import net.kyori.adventure.platform.fabric.FabricAudiences;
 import net.kyori.adventure.text.Component;
 import net.minecraft.Util;
 import net.minecraft.commands.CommandSource;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-import static java.util.Objects.requireNonNull;
-
 /**
- * Audience implementation that can wrap a CommandOutput
+ * Audience implementation that can wrap a {@link CommandSource}
  */
-public final class CommandSourceAudience implements Audience {
+final class CommandSourceAudience implements Audience {
   private final CommandSource output;
+  private final FabricAudiences serializer;
 
-  CommandSourceAudience(final CommandSource output) {
+  CommandSourceAudience(final CommandSource output, final FabricAudiences serializer) {
     this.output = output;
-  }
-
-  public static Audience of(final CommandSource output) {
-    if(output instanceof Audience) {
-      return (Audience) output;
-    } else {
-      return new CommandSourceAudience(requireNonNull(output, "output"));
-    }
+    this.serializer = serializer;
   }
 
   @Override
-  public void sendMessage(final Component text) {
-    this.output.sendMessage(FabricAudienceProvider.adapt(text), Util.NIL_UUID);
+  public void sendMessage(final Component text, final MessageType type) {
+    this.output.sendMessage(this.serializer.toNative(text), Util.NIL_UUID);
   }
 
   @Override

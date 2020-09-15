@@ -26,22 +26,56 @@ package net.kyori.adventure.platform.fabric.impl.client;
 
 import java.util.Locale;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.platform.fabric.FabricAudiences;
 import net.kyori.adventure.platform.fabric.FabricClientAudienceProvider;
+import net.kyori.adventure.platform.fabric.impl.WrappedComponent;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
 import net.kyori.adventure.text.renderer.TranslatableComponentRenderer;
-import net.minecraft.client.player.LocalPlayer;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
+
+import static java.util.Objects.requireNonNull;
 
 public class FabricClientAudienceProviderImpl implements FabricClientAudienceProvider {
   public static final FabricClientAudienceProvider INSTANCE = new FabricClientAudienceProviderImpl(TranslatableComponentRenderer.get());
+  private final PlainComponentSerializer plainSerializer;
   private final ComponentRenderer<Locale> renderer;
+  private final ClientAudience audience;
 
   public FabricClientAudienceProviderImpl(final ComponentRenderer<Locale> renderer) {
     this.renderer = renderer;
+    this.audience = new ClientAudience(Minecraft.getInstance(), this);
+    this.plainSerializer = new PlainComponentSerializer(comp -> KeyMapping.createNameSupplier(comp.keybind()).get().getString(), comp -> this.plainSerializer().serialize(this.renderer.render(comp, Locale.getDefault())));
   }
 
   @Override
-  public Audience audience(final @NonNull LocalPlayer player) {
-    return (Audience) player;
+  public Audience audience() {
+    return this.audience;
+  }
+
+  @Override
+  public PlainComponentSerializer plainSerializer() {
+    return this.plainSerializer;
+  }
+
+  @Override
+  public ComponentRenderer<Locale> localeRenderer() {
+    return this.renderer;
+  }
+
+  @Override
+  public Component toNative(final net.kyori.adventure.text.Component adventure) {
+    return new WrappedComponent(requireNonNull(adventure, "adventure"), this.renderer);
+  }
+
+  @Override
+  public net.kyori.adventure.text.Component toAdventure(final Component vanilla) {
+    if(vanilla instanceof WrappedComponent) {
+      return ((WrappedComponent) vanilla).wrapped();
+    } else {
+      return FabricAudiences.nonWrappingSerializer().deserialize(vanilla);
+    }
   }
 }

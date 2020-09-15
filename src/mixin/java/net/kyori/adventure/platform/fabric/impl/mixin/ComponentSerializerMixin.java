@@ -30,7 +30,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonSerializationContext;
 import java.lang.reflect.Type;
 
-import net.kyori.adventure.platform.fabric.impl.FabricAudienceProviderImpl;
+import net.kyori.adventure.platform.fabric.impl.AdventureCommon;
 import net.kyori.adventure.platform.fabric.impl.WrappedComponent;
 import net.minecraft.network.chat.Component;
 import org.spongepowered.asm.mixin.Mixin;
@@ -60,6 +60,6 @@ public abstract class ComponentSerializerMixin {
   @Inject(method = "*()Lcom/google/gson/Gson;", at = @At(value = "INVOKE_ASSIGN", target = "com/google/gson/GsonBuilder.disableHtmlEscaping()Lcom/google/gson/GsonBuilder;", remap = false),
     locals = LocalCapture.CAPTURE_FAILEXCEPTION, remap = false)
   private static void injectAdventureGson(final CallbackInfoReturnable<Gson> cir, final GsonBuilder gson) {
-    FabricAudienceProviderImpl.GSON.populator().apply(gson);
+    AdventureCommon.GSON.populator().apply(gson);
   }
 }

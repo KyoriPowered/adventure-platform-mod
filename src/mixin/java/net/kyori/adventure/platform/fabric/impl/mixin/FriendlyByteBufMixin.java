@@ -25,7 +25,7 @@
 package net.kyori.adventure.platform.fabric.impl.mixin;
 
 import java.util.Locale;
-import net.kyori.adventure.platform.fabric.impl.FriendlyByteBufBridge;
+import net.kyori.adventure.platform.fabric.impl.server.FriendlyByteBufBridge;
 import net.kyori.adventure.platform.fabric.impl.WrappedComponent;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;

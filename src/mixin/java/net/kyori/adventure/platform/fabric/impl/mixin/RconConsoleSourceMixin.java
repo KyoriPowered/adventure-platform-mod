@@ -24,22 +24,37 @@
 
 package net.kyori.adventure.platform.fabric.impl.mixin;
 
+import com.google.common.collect.MapMaker;
+import java.util.Map;
 import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.audience.MessageType;
-import net.kyori.adventure.platform.fabric.FabricAudienceProvider;
-import net.kyori.adventure.text.Component;
+import net.kyori.adventure.audience.ForwardingAudience;
+import net.kyori.adventure.platform.fabric.FabricAudiences;
+import net.kyori.adventure.platform.fabric.FabricServerAudienceProvider;
+import net.kyori.adventure.platform.fabric.impl.server.FabricServerAudienceProviderImpl;
+import net.kyori.adventure.platform.fabric.impl.server.PlainAudience;
+import net.kyori.adventure.platform.fabric.impl.server.RenderableAudience;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.rcon.RconConsoleSource;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(RconConsoleSource.class)
-public abstract class RconConsoleSourceMixin implements Audience {
+public abstract class RconConsoleSourceMixin implements RenderableAudience, ForwardingAudience.Single {
   @Shadow @Final private StringBuffer buffer;
 
+  @Shadow @Final
+  private MinecraftServer server;
+  private final Map<FabricAudiences, Audience> adventure$renderers = new MapMaker().weakKeys().makeMap();
+
   @Override
-  public void sendMessage(final Component text, final MessageType type) {
-    this.buffer.append(FabricAudienceProvider.plainSerializer().serialize(text));
+  public Audience renderUsing(final FabricServerAudienceProviderImpl controller) {
+    return this.adventure$renderers.computeIfAbsent(controller, ctrl -> new PlainAudience(ctrl, this.buffer::append));
   }
 
+  @Override
+  public @NonNull Audience audience() {
+    return FabricServerAudienceProvider.of(this.server).audience((RconConsoleSource) (Object) this);
+  }
 }

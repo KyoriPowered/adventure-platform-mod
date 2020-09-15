@@ -25,13 +25,16 @@
 package net.kyori.adventure.platform.test.fabric;
 
 import com.google.common.base.Strings;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.kyori.adventure.platform.fabric.FabricAudienceProvider;
+import net.kyori.adventure.platform.fabric.FabricServerAudienceProvider;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -88,11 +91,12 @@ public class AdventureTester implements ModInitializer {
   private static final String ARG_TARGETS = "targets";
   private static final String ARG_SOUND = "sound";
   private static final TextColor COLOR_RESPONSE = TextColor.of(0x22EE99);
+
+  private final Map<UUID, BossBar> greetingBars = new HashMap<>();
   private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+  private @Nullable FabricServerAudienceProvider platform;
 
-  private @Nullable FabricAudienceProvider platform;
-
-  public FabricAudienceProvider adventure() {
+  public FabricServerAudienceProvider adventure() {
     return requireNonNull(this.platform, "Tried to access Fabric platform without a running server");
   }
 
@@ -103,14 +107,17 @@ public class AdventureTester implements ModInitializer {
       TranslationRegistry.get().registerAll(lang, "net.kyori.adventure.platform.test.fabric.messages", false);
     });
     // Set up platform
-    ServerLifecycleEvents.SERVER_STARTING.register(server -> this.platform = FabricAudienceProvider.of(server));
-    ServerLifecycleEvents.SERVER_STOPPED.register(server -> this.platform = null);
+    ServerLifecycleEvents.SERVER_STARTING.register(server -> this.platform = FabricServerAudienceProvider.of(server));
+    ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
+      this.platform = null;
+      this.greetingBars.clear();
+    });
 
     CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
       dispatcher.register(literal("adventure")
         .then(literal("about").executes(ctx -> {
           final Audience audience = this.adventure().audience(ctx.getSource());
-          audience.sendMessage(TranslatableComponent.of("adventure.test.welcome", COLOR_RESPONSE, FabricAudienceProvider.adapt(ctx.getSource().getDisplayName())));
+          audience.sendMessage(TranslatableComponent.of("adventure.test.welcome", COLOR_RESPONSE, this.adventure().toAdventure(ctx.getSource().getDisplayName())));
           audience.sendMessage(TranslatableComponent.of("adventure.test.description", TextColor.of(0xc022cc)));
           return 1;
         }))
@@ -139,7 +146,7 @@ public class AdventureTester implements ModInitializer {
 
         destination.sendMessage(message);
         source.sendMessage(TextComponent.make("You have sent \"", b -> {
-          b.append(message).append("\" to ").append(listPlayers(targets));
+          b.append(message).append("\" to ").append(this.listPlayers(targets));
           b.color(COLOR_RESPONSE);
         }));
         return 1;
@@ -167,6 +174,23 @@ public class AdventureTester implements ModInitializer {
           viewer.sendMessage(LINE.color(color));
         }
         return 1;
+      }))
+      .then(literal("baron").executes(ctx -> {
+        final ServerPlayer player = ctx.getSource().getPlayerOrException();
+        final BossBar greeting = this.greetingBars.computeIfAbsent(player.getUUID(), id -> {
+          return BossBar.of(TranslatableComponent.of("adventure.test.greeting", NamedTextColor.GOLD, this.adventure().toAdventure(player.getDisplayName())),
+          1, BossBar.Color.YELLOW, BossBar.Overlay.PROGRESS);
+        });
+
+        this.adventure().audience(ctx.getSource()).showBossBar(greeting);
+        return 1;
+      }))
+      .then(literal("baroff").executes(ctx -> {
+        final BossBar existing = this.greetingBars.remove(ctx.getSource().getPlayerOrException().getUUID());
+        if(existing != null) {
+          this.adventure().audience(ctx.getSource()).hideBossBar(existing);
+        }
+        return 1;
       })));
     });
   }
@@ -191,7 +215,7 @@ public class AdventureTester implements ModInitializer {
 
   }
 
-  private static Component listPlayers(final Collection<? extends ServerPlayer> players) {
+  private Component listPlayers(final Collection<? extends ServerPlayer> players) {
     final HoverEvent<Component> hover = HoverEvent.showText(TextComponent.make(b -> {
       boolean first = true;
       for(final ServerPlayer player : players) {
@@ -199,7 +223,7 @@ public class AdventureTester implements ModInitializer {
           b.append(newline());
         }
         first = false;
-        b.append(FabricAudienceProvider.adapt(player.getDisplayName()));
+        b.append(this.adventure().toAdventure(player.getDisplayName()));
       }
     }));
     return TextComponent.builder(players.size() + " players")
