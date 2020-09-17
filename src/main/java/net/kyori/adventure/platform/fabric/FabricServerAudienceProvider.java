@@ -29,8 +29,8 @@ import static java.util.Objects.requireNonNull;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.platform.AudienceProvider;
 import net.kyori.adventure.platform.fabric.impl.server.FabricServerAudienceProviderImpl;
+import net.kyori.adventure.platform.fabric.impl.server.MinecraftServerBridge;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
-import net.kyori.adventure.text.renderer.TranslatableComponentRenderer;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.MinecraftServer;
@@ -42,7 +42,7 @@ import java.util.Locale;
 public interface FabricServerAudienceProvider extends AudienceProvider, FabricAudiences {
 
   static @NonNull FabricServerAudienceProvider of(@NonNull MinecraftServer server) {
-    return new FabricServerAudienceProviderImpl(requireNonNull(server, "server"), TranslatableComponentRenderer.get());
+    return ((MinecraftServerBridge) server).adventure$globalProvider();
   }
 
   static @NonNull FabricServerAudienceProvider of(@NonNull MinecraftServer server, @NonNull ComponentRenderer<Locale> renderer) {
