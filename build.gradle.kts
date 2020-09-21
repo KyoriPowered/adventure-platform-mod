@@ -5,6 +5,7 @@ import ca.stellardrift.build.common.sonatypeOss
 
 plugins {
   id("fabric-loom") version "0.5-SNAPSHOT"
+  id("com.github.fudge.forgedflowerloom") version "2.0.0"
   id("ca.stellardrift.opinionated.publish") version "3.1"
   id("ca.stellardrift.opinionated.fabric") version "3.1"
   checkstyle
