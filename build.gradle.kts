@@ -59,9 +59,15 @@ checkstyle {
   configProperties = mapOf("basedir" to checkstyleDir)
 }
 
-tasks.withType(ProcessResources::class).configureEach {
+tasks.withType<ProcessResources>().configureEach {
   filesMatching("fabric.mod.json") {
     expand("project" to project)
+  }
+}
+
+tasks.withType<Javadoc>().configureEach {
+  (options as? CoreJavadocOptions)?.apply {
+    addBooleanOption("Xdoclint:-missing", true)
   }
 }
 
