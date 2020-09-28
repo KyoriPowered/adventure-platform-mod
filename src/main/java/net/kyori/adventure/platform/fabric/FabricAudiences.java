@@ -84,7 +84,7 @@ public interface FabricAudiences {
     if(loc == null) {
       return null;
     }
-    return Key.of(loc.getNamespace(), loc.getPath());
+    return Key.key(loc.getNamespace(), loc.getPath());
   }
 
   /**

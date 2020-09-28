@@ -36,7 +36,6 @@ import net.kyori.adventure.platform.fabric.impl.accessor.ConnectionAccess;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.SoundStop;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.title.Title;
 import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
@@ -159,7 +158,7 @@ public final class ServerPlayerAudience implements Audience {
 
   @Override
   public void showTitle(final @NonNull Title title) {
-    if(title.subtitle() != TextComponent.empty()) {
+    if(title.subtitle() != Component.empty()) {
       this.sendPacket(new ClientboundSetTitlesPacket(ClientboundSetTitlesPacket.Type.SUBTITLE, this.controller.toNative(title.subtitle())));
     }
 
@@ -173,7 +172,7 @@ public final class ServerPlayerAudience implements Audience {
       }
     }
 
-    if(title.title() != TextComponent.empty()) {
+    if(title.title() != Component.empty()) {
       this.sendPacket(new ClientboundSetTitlesPacket(ClientboundSetTitlesPacket.Type.TITLE, this.controller.toNative(title.title())));
     }
   }

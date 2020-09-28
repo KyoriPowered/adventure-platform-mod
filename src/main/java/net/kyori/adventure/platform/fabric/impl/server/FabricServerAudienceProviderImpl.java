@@ -99,7 +99,7 @@ public final class FabricServerAudienceProviderImpl implements FabricServerAudie
 
   @Override
   public @NonNull Audience all() {
-    return Audience.of(this.console(), this.players());
+    return Audience.audience(this.console(), this.players());
   }
 
   @Override
@@ -109,7 +109,7 @@ public final class FabricServerAudienceProviderImpl implements FabricServerAudie
 
   @Override
   public @NonNull Audience players() {
-    return Audience.of(this.audiences(this.server.getPlayerList().getPlayers()));
+    return Audience.audience(this.audiences(this.server.getPlayerList().getPlayers()));
   }
 
   @Override
@@ -124,7 +124,7 @@ public final class FabricServerAudienceProviderImpl implements FabricServerAudie
 
   @Override
   public @NonNull Audience permission(final @NonNull String permission) {
-    return Audience.of(); // TODO: permissions api
+    return Audience.empty(); // TODO: permissions api
   }
 
   @Override public AdventureCommandSourceStack audience(final @NonNull CommandSourceStack source) {
@@ -148,7 +148,7 @@ public final class FabricServerAudienceProviderImpl implements FabricServerAudie
   }
 
   @Override public Audience audience(final @NonNull Iterable<ServerPlayer> players) {
-    return Audience.of(this.audiences(players));
+    return Audience.audience(this.audiences(players));
   }
 
   @Override
@@ -158,7 +158,7 @@ public final class FabricServerAudienceProviderImpl implements FabricServerAudie
     if(level != null) {
       return this.audience(level.players());
     }
-    return Audience.of();
+    return Audience.empty();
   }
 
   @Override

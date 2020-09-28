@@ -35,7 +35,6 @@ import net.kyori.adventure.platform.fabric.impl.GameEnums;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.SoundStop;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.title.Title;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.BookViewScreen;
@@ -80,8 +79,8 @@ public class ClientAudience implements Audience {
 
   @Override
   public void showTitle(final @NonNull Title title) {
-    final /* @Nullable */ net.minecraft.network.chat.Component titleText = title.title() == TextComponent.empty() ? null : this.controller.toNative(title.title());
-    final /* @Nullable */ net.minecraft.network.chat.Component subtitleText = title.subtitle() == TextComponent.empty() ? null : this.controller.toNative(title.subtitle());
+    final /* @Nullable */ net.minecraft.network.chat.Component titleText = title.title() == Component.empty() ? null : this.controller.toNative(title.title());
+    final /* @Nullable */ net.minecraft.network.chat.Component subtitleText = title.subtitle() == Component.empty() ? null : this.controller.toNative(title.subtitle());
     final /* @Nullable */ Title.Times times = title.times();
     this.client.gui.setTitles(titleText, subtitleText,
       this.adventure$ticks(times == null ? null : times.fadeIn()),

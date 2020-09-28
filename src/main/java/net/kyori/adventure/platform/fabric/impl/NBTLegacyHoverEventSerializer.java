@@ -30,7 +30,6 @@ import java.util.UUID;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.nbt.api.BinaryTagHolder;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.serializer.gson.LegacyHoverEventSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
@@ -62,7 +61,7 @@ final class NBTLegacyHoverEventSerializer implements LegacyHoverEventSerializer 
       final CompoundTag contents = SNBT_CODEC.decode(raw);
       final CompoundTag tag = contents.getCompound(ITEM_TAG);
       return HoverEvent.ShowItem.of(
-        Key.of(contents.getString(ITEM_TYPE)),
+        Key.key(contents.getString(ITEM_TYPE)),
         contents.contains(ITEM_COUNT) ? contents.getByte(ITEM_COUNT) : 1,
         tag.isEmpty() ? null : BinaryTagHolder.encode(tag, SNBT_CODEC)
       );
@@ -77,7 +76,7 @@ final class NBTLegacyHoverEventSerializer implements LegacyHoverEventSerializer 
     try {
       final CompoundTag contents = SNBT_CODEC.decode(raw);
       return HoverEvent.ShowEntity.of(
-        Key.of(contents.getString(ENTITY_TYPE)),
+        Key.key(contents.getString(ENTITY_TYPE)),
         UUID.fromString(contents.getString(ENTITY_ID)),
         componentCodec.decode(contents.getString(ENTITY_NAME))
       );
@@ -99,7 +98,7 @@ final class NBTLegacyHoverEventSerializer implements LegacyHoverEventSerializer 
       }
     }
 
-    return TextComponent.of(SNBT_CODEC.encode(tag));
+    return Component.text(SNBT_CODEC.encode(tag));
   }
 
   @Override
@@ -110,6 +109,6 @@ final class NBTLegacyHoverEventSerializer implements LegacyHoverEventSerializer 
     if(input.name() != null) {
       tag.putString(ENTITY_NAME, componentCodec.encode(input.name()));
     }
-    return TextComponent.of(SNBT_CODEC.encode(tag));
+    return Component.text(SNBT_CODEC.encode(tag));
   }
 }
