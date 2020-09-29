@@ -33,7 +33,9 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import static java.util.Objects.requireNonNull;
 
 /**
- * Access the client's player as an {@link net.kyori.adventure.audience.Audience}
+ * Access the client's player as an {@link net.kyori.adventure.audience.Audience}.
+ *
+ * @since 4.0.0
  */
 public interface FabricClientAudienceProvider extends FabricAudiences {
 
@@ -41,6 +43,7 @@ public interface FabricClientAudienceProvider extends FabricAudiences {
    * Get the common instance, that will render using the global translation registry.
    *
    * @return the audience provider
+   * @since 4.0.0
    */
   static FabricClientAudienceProvider of() {
     return FabricClientAudienceProviderImpl.INSTANCE;
@@ -51,6 +54,7 @@ public interface FabricClientAudienceProvider extends FabricAudiences {
    *
    * @param renderer Renderer to use
    * @return new audience provider
+   * @since 4.0.0
    */
   static FabricClientAudienceProvider of(final ComponentRenderer<Locale> renderer) {
     return new FabricClientAudienceProviderImpl(requireNonNull(renderer, "renderer"));
@@ -62,6 +66,7 @@ public interface FabricClientAudienceProvider extends FabricAudiences {
    * <p>When not in-game, most operations will no-op</p>
    *
    * @return player audience
+   * @since 4.0.0
    */
   @NonNull Audience audience();
 }

@@ -32,15 +32,31 @@ import net.kyori.adventure.key.Key;
 import net.minecraft.resources.ResourceLocation;
 
 /**
- * An argument that will be decoded as a Key
+ * An argument that will be decoded as a Key.
+ *
+ * @since 4.0.0
  */
 public final class KeyArgumentType implements ArgumentType<Key> {
   private static final KeyArgumentType INSTANCE = new KeyArgumentType();
 
+  /**
+   * Get an argument type instance for {@link Key}s.
+   *
+   * @return key argument type
+   * @since 4.0.0
+   */
   public static KeyArgumentType key() {
     return INSTANCE;
   }
 
+  /**
+   * Get a {@link Key}-typed value from a parsed {@link CommandContext}
+   *
+   * @param ctx context to get the value from
+   * @param id id the argument was taken from
+   * @return provided argument
+   * @since 4.0.0
+   */
   public static Key key(final CommandContext<?> ctx, final String id) {
     return ctx.getArgument(id, Key.class);
   }

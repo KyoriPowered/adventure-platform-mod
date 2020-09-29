@@ -44,12 +44,14 @@ import static java.util.Objects.requireNonNull;
  *
  * <p>See {@link FabricServerAudienceProvider} for logical server-specific operations,
  * and {@link FabricClientAudienceProvider} for logical client-specific operations</p>
+ * @since 4.0.0
  */
 public interface FabricAudiences {
   /**
    * Return a {@link PlainComponentSerializer} instance that can resolve key bindings and translations using the game's data
    *
    * @return the plain serializer instance
+   * @since 4.0.0
    */
   PlainComponentSerializer plainSerializer();
 
@@ -59,6 +61,7 @@ public interface FabricAudiences {
    * @param input source component
    * @param modifier operator to transform the component
    * @return new component
+   * @since 4.0.0
    */
   static net.minecraft.network.chat.Component update(net.minecraft.network.chat.Component input, UnaryOperator<Component> modifier) {
     final Component modified;
@@ -79,6 +82,7 @@ public interface FabricAudiences {
    *
    * @param loc The Identifier to convert
    * @return The equivalent data as a Key
+   * @since 4.0.0
    */
   static @PolyNull Key toAdventure(@PolyNull ResourceLocation loc) {
     if(loc == null) {
@@ -92,6 +96,7 @@ public interface FabricAudiences {
    *
    * @param key The Key to convert
    * @return The equivalent data as an Identifier
+   * @since 4.0.0
    */
   static @PolyNull ResourceLocation toNative(@PolyNull Key key) {
     if(key == null) {
@@ -108,6 +113,7 @@ public interface FabricAudiences {
    * instances suitable for passing around the game.
    *
    * @return a serializer instance
+   * @since 4.0.0
    */
   static ComponentSerializer<Component, Component, net.minecraft.network.chat.Component> nonWrappingSerializer() {
     return NonWrappingComponentSerializer.INSTANCE;
@@ -117,6 +123,7 @@ public interface FabricAudiences {
    * Active locale-based renderer for operations on provided audiences.
    *
    * @return Shared renderer
+   * @since 4.0.0
    */
   ComponentRenderer<Locale> localeRenderer();
 
@@ -127,6 +134,7 @@ public interface FabricAudiences {
    *
    * @param adventure adventure input
    * @return native representation
+   * @since 4.0.0
    */
   net.minecraft.network.chat.Component toNative(final Component adventure);
 
@@ -135,6 +143,7 @@ public interface FabricAudiences {
    *
    * @param vanilla the native component
    * @return adventure component
+   * @since 4.0.0
    */
   Component toAdventure(final net.minecraft.network.chat.Component vanilla);
 }

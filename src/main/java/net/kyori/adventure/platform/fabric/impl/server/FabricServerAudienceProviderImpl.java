@@ -136,14 +136,14 @@ public final class FabricServerAudienceProviderImpl implements FabricServerAudie
     return internal.adventure$audience(this.audience(internal.adventure$source()), this);
   }
 
-  @Override public Audience audience(final @NonNull CommandSource output) {
-    if(output instanceof RenderableAudience) {
-      return ((RenderableAudience) output).renderUsing(this);
-    } else if(output instanceof Audience) {
+  @Override public Audience audience(final @NonNull CommandSource source) {
+    if(source instanceof RenderableAudience) {
+      return ((RenderableAudience) source).renderUsing(this);
+    } else if(source instanceof Audience) {
       // TODO: How to pass component renderer through
-      return (Audience) output;
+      return (Audience) source;
     } else {
-      return new CommandSourceAudience(output, this);
+      return new CommandSourceAudience(source, this);
     }
   }
 

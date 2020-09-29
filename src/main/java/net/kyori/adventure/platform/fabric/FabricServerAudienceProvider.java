@@ -39,12 +39,36 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.Locale;
 
+/**
+ * Provides {@link Audience} instances for a specific server instance.
+ *
+ * @since 4.0.0
+ */
 public interface FabricServerAudienceProvider extends AudienceProvider, FabricAudiences {
 
+  /**
+   * Get the shared audience provider for the server.
+   *
+   * <p>This provider will render messages using the global translation registry.</p>
+   *
+   * @param server server instance to work with
+   * @return common audience provider
+   * @since 4.0.0
+   */
   static @NonNull FabricServerAudienceProvider of(@NonNull MinecraftServer server) {
     return ((MinecraftServerBridge) server).adventure$globalProvider();
   }
 
+  /**
+   * Get a customized audience provider for the server.
+   *
+   * <p>This provider will render messages using the global translation registry.</p>
+   *
+   * @param server server to work in
+   * @param renderer renderer for messages.
+   * @return new audience provider
+   * @since 4.0.0
+   */
   static @NonNull FabricServerAudienceProvider of(@NonNull MinecraftServer server, @NonNull ComponentRenderer<Locale> renderer) {
     return new FabricServerAudienceProviderImpl(requireNonNull(server, "server"), requireNonNull(renderer, "renderer"));
   }
@@ -57,10 +81,28 @@ public interface FabricServerAudienceProvider extends AudienceProvider, FabricAu
    *
    * @param source source to send to.
    * @return the audience
+   * @since 4.0.0
    */
   AdventureCommandSourceStack audience(@NonNull CommandSourceStack source);
 
-  Audience audience(@NonNull CommandSource output);
+  /**
+   * Get an audience that will send to the provided {@link CommandSource}.
+   *
+   * <p>Depending on the specific source, the returned audience may only support
+   * a subset of abilities.</p>
+   *
+   * @param source source to send to
+   * @return an audience for the source
+   * @since 4.0.0
+   */
+  Audience audience(@NonNull CommandSource source);
 
+  /**
+   * Create an audience that will send to every listed player.
+   *
+   * @param players Players to send to.
+   * @return a new audience
+   * @since 4.0.0
+   */
   Audience audience(@NonNull Iterable<ServerPlayer> players);
 }

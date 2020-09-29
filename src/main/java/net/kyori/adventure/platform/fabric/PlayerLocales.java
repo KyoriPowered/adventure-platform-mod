@@ -32,9 +32,16 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+/**
+ * API for working with player locales.
+ *
+ * @since 4.0.0
+ */
 public interface PlayerLocales {
   /**
-   * Registration for {@link Changed}
+   * Registration for {@link Changed}.
+   *
+   * @since 4.0.0
    */
   Event<PlayerLocales.Changed> CHANGED_EVENT = EventFactory.createArrayBacked(PlayerLocales.Changed.class, listeners -> (player, locale) -> {
     for(final Changed event : listeners) {
@@ -46,6 +53,8 @@ public interface PlayerLocales {
    * An event called when a player locale update is received.
    *
    * <p>This event is only called if the player locale has actually changed from its previous value.</p>
+   *
+   * @since 4.0.0
    */
   interface Changed {
 
@@ -54,6 +63,7 @@ public interface PlayerLocales {
      *
      * @param player the player whose locale changed
      * @param newLocale the new locale
+     * @since 4.0.0
      */
     void onLocaleChanged(final ServerPlayer player, final @Nullable Locale newLocale);
   }
@@ -64,7 +74,8 @@ public interface PlayerLocales {
    * <p>Will return the system-wide default value if the player has no locale set.</p>
    *
    * @param player the source of the locale
-   * @return Player locale
+   * @return player locale
+   * @since 4.0.0
    */
   static Locale locale(final Player player) {
     return player instanceof LocaleHolderBridge ? ((LocaleHolderBridge) player).adventure$locale() : Locale.getDefault();
