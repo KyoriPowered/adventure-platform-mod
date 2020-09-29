@@ -22,30 +22,31 @@
  * SOFTWARE.
  */
 
-package net.kyori.adventure.platform.fabric.impl;
+package net.kyori.adventure.platform.fabric.impl.mixin.client;
 
-import net.kyori.adventure.platform.fabric.impl.accessor.ComponentSerializerAccess;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.ComponentSerializer;
-import net.minecraft.network.chat.MutableComponent;
+import java.util.Locale;
+import java.util.Objects;
+import net.kyori.adventure.platform.fabric.impl.LocaleHolderBridge;
+import net.minecraft.client.Options;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 
-public final class NonWrappingComponentSerializer implements ComponentSerializer<Component, Component, net.minecraft.network.chat.Component> {
-  public static final NonWrappingComponentSerializer INSTANCE = new NonWrappingComponentSerializer();
+@Mixin(Options.class)
+public class OptionsMixin implements LocaleHolderBridge {
+  @Shadow
+  public String languageCode;
 
-  private NonWrappingComponentSerializer() {
-  }
+  private String adventure$cachedLanguage;
+  private Locale adventure$cachedLocale;
 
   @Override
-  public Component deserialize(final net.minecraft.network.chat.Component input) {
-    if(input instanceof WrappedComponent) {
-      return ((WrappedComponent) input).wrapped();
+  public Locale adventure$locale() {
+    final String language = this.languageCode;
+    if(Objects.equals(this.adventure$cachedLanguage, language)) {
+      return this.adventure$cachedLocale;
+    } else {
+      this.adventure$cachedLanguage = language;
+      return this.adventure$cachedLocale = LocaleHolderBridge.toLocale(language);
     }
-
-    return ComponentSerializerAccess.getGSON().fromJson(net.minecraft.network.chat.Component.Serializer.toJsonTree(input), Component.class);
-  }
-
-  @Override
-  public MutableComponent serialize(final Component component) {
-    return net.minecraft.network.chat.Component.Serializer.fromJson(ComponentSerializerAccess.getGSON().toJsonTree(component));
   }
 }

@@ -31,9 +31,9 @@ import net.minecraft.server.level.ServerPlayer;
  * An interface for performing bulk adds and removes on a {@link net.minecraft.server.level.ServerBossEvent}
  */
 public interface ServerBossEventBridge {
-  void addAll(Collection<ServerPlayer> players);
+  void adventure$addAll(Collection<ServerPlayer> players);
 
-  void removeAll(Collection<ServerPlayer> players);
+  void adventure$removeAll(Collection<ServerPlayer> players);
 
-  void replaceSubscriber(ServerPlayer oldSub, ServerPlayer newSub);
+  void adventure$replaceSubscriber(ServerPlayer oldSub, ServerPlayer newSub);
 }

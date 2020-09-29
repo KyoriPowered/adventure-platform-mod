@@ -29,19 +29,24 @@ import net.kyori.adventure.text.Component;
 
 /**
  * An interface applied to {@link net.minecraft.commands.CommandSourceStack} to allow sending {@link Component Components}
+ *
+ * @since 4.0.0
  */
 public interface AdventureCommandSourceStack extends ForwardingAudience.Single {
   /**
-   * Send a result message to the command source
+   * Send a result message to the command source.
    *
    * @param text The text to send
    * @param sendToOps If this message should be sent to all ops listening
+   * @since 4.0.0
    */
   void sendSuccess(Component text, boolean sendToOps);
 
   /**
-   * Send an error message to the command source
+   * Send an error message to the command source.
+   *
    * @param text The error
+   * @since 4.0.0
    */
   void sendFailure(Component text);
 }

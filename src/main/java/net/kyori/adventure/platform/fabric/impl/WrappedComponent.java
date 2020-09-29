@@ -25,10 +25,16 @@
 package net.kyori.adventure.platform.fabric.impl;
 
 import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 import java.util.Optional;
 
-import net.kyori.adventure.platform.fabric.FabricAudienceProvider;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.kyori.adventure.platform.fabric.FabricAudiences;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.renderer.ComponentRenderer;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
@@ -38,20 +44,54 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 public final class WrappedComponent implements Component {
   private @MonotonicNonNull Component converted;
+  private @Nullable Locale deepConvertedLocalized = null;
   private final net.kyori.adventure.text.Component wrapped;
+  private final @Nullable ComponentRenderer<Locale> renderer;
+  private @Nullable Locale lastLocale;
+  private @Nullable WrappedComponent lastRendered;
 
-  public WrappedComponent(final net.kyori.adventure.text.Component wrapped) {
+  public WrappedComponent(final net.kyori.adventure.text.Component wrapped, final @Nullable ComponentRenderer<Locale> renderer) {
     this.wrapped = wrapped;
+    this.renderer = renderer;
+  }
+
+  /**
+   * Renderer to use to translate messages.
+   *
+   * @return the renderer, if any
+   */
+  public @Nullable ComponentRenderer<Locale> renderer() {
+    return this.renderer;
   }
 
   public net.kyori.adventure.text.Component wrapped() {
     return this.wrapped;
   }
 
+  public synchronized WrappedComponent rendered(final Locale locale) {
+    if(Objects.equals(locale, this.lastLocale)) {
+      return this.lastRendered;
+    }
+    this.lastLocale = locale;
+    return this.lastRendered = this.renderer == null ? this : new WrappedComponent(this.renderer.render(this.wrapped, locale), null);
+  }
+
   Component deepConverted() {
     Component converted = this.converted;
-    if(converted == null) {
-      converted = this.converted = FabricAudienceProvider.nonWrappingSerializer().serialize(this.wrapped);
+    if(converted == null || this.deepConvertedLocalized != null) {
+      converted = this.converted = FabricAudiences.nonWrappingSerializer().serialize(this.wrapped);
+      this.deepConvertedLocalized = null;
+    }
+    return converted;
+  }
+
+  @Environment(EnvType.CLIENT)
+  Component deepConvertedLocalized() {
+    Component converted = this.converted;
+    final Locale target = ((LocaleHolderBridge) Minecraft.getInstance().options).adventure$locale();
+    if(converted == null || this.deepConvertedLocalized != target) {
+      converted = this.converted = this.rendered(target).deepConverted();
+      this.deepConvertedLocalized = target;
     }
     return converted;
   }
@@ -67,7 +107,7 @@ public final class WrappedComponent implements Component {
 
   @Override
   public String getString() {
-    return FabricAudienceProvider.plainSerializer().serialize(this.wrapped);
+    return this.rendered(Locale.getDefault()).deepConverted().getString();
   }
 
   @Override
@@ -100,13 +140,15 @@ public final class WrappedComponent implements Component {
   }
 
   @Override
+  @Environment(EnvType.CLIENT)
   public FormattedCharSequence getVisualOrderText() {
-    return this.deepConverted().getVisualOrderText();
+    return this.deepConvertedLocalized().getVisualOrderText();
   }
 
   @Override
+  @Environment(EnvType.CLIENT)
   public <T> Optional<T> visit(final StyledContentConsumer<T> visitor, final Style style) {
-    return this.deepConverted().visit(visitor, style);
+    return this.deepConvertedLocalized().visit(visitor, style);
   }
 
   @Override

@@ -22,30 +22,35 @@
  * SOFTWARE.
  */
 
-package net.kyori.adventure.platform.fabric.impl;
+package net.kyori.adventure.platform.fabric.impl.server;
 
-import net.kyori.adventure.platform.fabric.impl.accessor.ComponentSerializerAccess;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.audience.MessageType;
+import net.kyori.adventure.platform.fabric.FabricAudiences;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.ComponentSerializer;
-import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.Util;
+import net.minecraft.commands.CommandSource;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
-public final class NonWrappingComponentSerializer implements ComponentSerializer<Component, Component, net.minecraft.network.chat.Component> {
-  public static final NonWrappingComponentSerializer INSTANCE = new NonWrappingComponentSerializer();
+/**
+ * Audience implementation that can wrap a {@link CommandSource}
+ */
+final class CommandSourceAudience implements Audience {
+  private final CommandSource output;
+  private final FabricAudiences serializer;
 
-  private NonWrappingComponentSerializer() {
+  CommandSourceAudience(final CommandSource output, final FabricAudiences serializer) {
+    this.output = output;
+    this.serializer = serializer;
   }
 
   @Override
-  public Component deserialize(final net.minecraft.network.chat.Component input) {
-    if(input instanceof WrappedComponent) {
-      return ((WrappedComponent) input).wrapped();
-    }
-
-    return ComponentSerializerAccess.getGSON().fromJson(net.minecraft.network.chat.Component.Serializer.toJsonTree(input), Component.class);
+  public void sendMessage(final Component text, final MessageType type) {
+    this.output.sendMessage(this.serializer.toNative(text), Util.NIL_UUID);
   }
 
   @Override
-  public MutableComponent serialize(final Component component) {
-    return net.minecraft.network.chat.Component.Serializer.fromJson(ComponentSerializerAccess.getGSON().toJsonTree(component));
+  public void sendActionBar(final @NonNull Component message) {
+    this.sendMessage(message);
   }
 }

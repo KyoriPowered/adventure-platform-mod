@@ -1,0 +1,146 @@
+/*
+ * This file is part of adventure, licensed under the MIT License.
+ *
+ * Copyright (c) 2020 KyoriPowered
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+package net.kyori.adventure.platform.fabric.impl.client;
+
+import java.time.Duration;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.audience.MessageType;
+import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.inventory.Book;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.platform.fabric.FabricAudiences;
+import net.kyori.adventure.platform.fabric.impl.GameEnums;
+import net.kyori.adventure.sound.Sound;
+import net.kyori.adventure.sound.SoundStop;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.title.Title;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.inventory.BookViewScreen;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.client.resources.sounds.SoundInstance;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.player.ChatVisiblity;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+
+public class ClientAudience implements Audience {
+  private final Minecraft client;
+  private final FabricClientAudienceProviderImpl controller;
+
+  public ClientAudience(final Minecraft client, final FabricClientAudienceProviderImpl renderer) {
+    this.client = client;
+    this.controller = renderer;
+  }
+
+  @Override
+  public void sendMessage(final @NonNull Component message, final @NonNull MessageType type) {
+    final ChatVisiblity visibility = this.client.options.chatVisibility;
+    if(type == MessageType.CHAT) {
+      // Add to chat queue (following delay and such)
+      if(visibility == ChatVisiblity.FULL) {
+        this.client.gui.getChat().enqueueMessage(this.controller.toNative(message));
+      }
+    } else {
+      // Add immediately as a system message
+      if(visibility == ChatVisiblity.FULL || visibility == ChatVisiblity.SYSTEM) {
+        this.client.gui.getChat().addMessage(this.controller.toNative(message));
+      }
+    }
+  }
+
+  @Override
+  public void sendActionBar(final @NonNull Component message) {
+    this.client.gui.setOverlayMessage(this.controller.toNative(message), false);
+  }
+
+  @Override
+  public void showTitle(final @NonNull Title title) {
+    final /* @Nullable */ net.minecraft.network.chat.Component titleText = title.title() == Component.empty() ? null : this.controller.toNative(title.title());
+    final /* @Nullable */ net.minecraft.network.chat.Component subtitleText = title.subtitle() == Component.empty() ? null : this.controller.toNative(title.subtitle());
+    final /* @Nullable */ Title.Times times = title.times();
+    this.client.gui.setTitles(titleText, subtitleText,
+      this.adventure$ticks(times == null ? null : times.fadeIn()),
+      this.adventure$ticks(times == null ? null : times.stay()),
+      this.adventure$ticks(times == null ? null : times.fadeOut()));
+  }
+
+  private int adventure$ticks(final @Nullable Duration duration) {
+    return duration == null || duration.getSeconds() == -1 ? -1 : (int) (duration.toMillis() / 50);
+  }
+
+  @Override
+  public void clearTitle() {
+    this.client.gui.setTitles(null, null, -1, -1, -1);
+  }
+
+  @Override
+  public void resetTitle() {
+    this.client.gui.resetTitleTimes();
+  }
+
+  @Override
+  public void showBossBar(final @NonNull BossBar bar) {
+    BossHealthOverlayBridge.listener(this.client.gui.getBossOverlay(), this.controller).add(bar);
+  }
+
+  @Override
+  public void hideBossBar(final @NonNull BossBar bar) {
+    BossHealthOverlayBridge.listener(this.client.gui.getBossOverlay(), this.controller).remove(bar);
+  }
+
+  @Override
+  public void playSound(final @NonNull Sound sound) {
+    final LocalPlayer player = this.client.player;
+    if(player != null) {
+      this.playSound(sound, player.getX(), player.getY(), player.getZ());
+    } else {
+      // not in-game
+      this.client.getSoundManager().play(new SimpleSoundInstance(FabricAudiences.toNative(sound.name()), GameEnums.SOUND_SOURCE.toMinecraft(sound.source()),
+        sound.volume(), sound.pitch(), false, 0, SoundInstance.Attenuation.NONE, 0, 0, 0, true));
+    }
+  }
+
+  @Override
+  public void playSound(final @NonNull Sound sound, final double x, final double y, final double z) {
+    this.client.getSoundManager().play(new SimpleSoundInstance(FabricAudiences.toNative(sound.name()), GameEnums.SOUND_SOURCE.toMinecraft(sound.source()),
+      sound.volume(), sound.pitch(), false, 0, SoundInstance.Attenuation.LINEAR, x, y, z, false));
+  }
+
+  @Override
+  public void stopSound(final @NonNull SoundStop stop) {
+    final /* @Nullable */ Key sound = stop.sound();
+    final /* @Nullable */ ResourceLocation soundIdent = sound == null ? null : FabricAudiences.toNative(sound);
+    final Sound./* @Nullable */ Source source = stop.source();
+    final /* @Nullable */ SoundSource category = source == null ? null : GameEnums.SOUND_SOURCE.toMinecraft(source);
+    this.client.getSoundManager().stop(soundIdent, category);
+  }
+
+  @Override
+  public void openBook(final @NonNull Book book) {
+    this.client.setScreen(new BookViewScreen(new AdventureBookAccess(book, this.controller.localeRenderer())));
+  }
+}

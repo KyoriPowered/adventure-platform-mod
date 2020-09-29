@@ -43,6 +43,7 @@ import net.minecraft.commands.arguments.ComponentArgument;
  *
  * <p>At the moment, using this argument type will require this mod
  * <strong>both server- and clientside</strong>.
+ * @since 4.0.0
  */
 public final class ComponentArgumentType implements ArgumentType<Component> {
 
@@ -56,6 +57,7 @@ public final class ComponentArgumentType implements ArgumentType<Component> {
    * Get the argument type for component arguments
    *
    * @return argument type instance
+   * @since 4.0.0
    */
   public static ComponentArgumentType component() {
     return INSTANCE;
@@ -67,6 +69,7 @@ public final class ComponentArgumentType implements ArgumentType<Component> {
    * @param ctx Context to get from
    * @param key argument key
    * @return parsed component
+   * @since 4.0.0
    */
   public static Component component(final CommandContext<?> ctx, final String key) {
     return ctx.getArgument(key, Component.class);

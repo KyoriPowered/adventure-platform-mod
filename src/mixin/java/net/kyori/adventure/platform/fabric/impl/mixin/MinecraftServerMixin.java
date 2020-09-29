@@ -24,9 +24,17 @@
 
 package net.kyori.adventure.platform.fabric.impl.mixin;
 
+import com.google.common.collect.MapMaker;
+import java.util.Map;
 import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.platform.fabric.FabricAudienceProvider;
-import net.kyori.adventure.text.Component;
+import net.kyori.adventure.audience.ForwardingAudience;
+import net.kyori.adventure.platform.fabric.FabricAudiences;
+import net.kyori.adventure.platform.fabric.FabricServerAudienceProvider;
+import net.kyori.adventure.platform.fabric.impl.server.FabricServerAudienceProviderImpl;
+import net.kyori.adventure.platform.fabric.impl.server.MinecraftServerBridge;
+import net.kyori.adventure.platform.fabric.impl.server.PlainAudience;
+import net.kyori.adventure.platform.fabric.impl.server.RenderableAudience;
+import net.kyori.adventure.text.renderer.TranslatableComponentRenderer;
 import net.minecraft.server.MinecraftServer;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -38,21 +46,25 @@ import org.spongepowered.asm.mixin.Shadow;
  * Implement ComponentCommandOutput for output to the server console
  */
 @Mixin(value = MinecraftServer.class)
-public abstract class MinecraftServerMixin implements Audience {
+public abstract class MinecraftServerMixin implements MinecraftServerBridge, RenderableAudience, ForwardingAudience.Single {
   @Shadow @Final private static Logger LOGGER;
 
-  /**
-   * Send a message to this receiver as a component
-   *
-   * @param text The text to send
-   */
+  private final FabricServerAudienceProviderImpl adventure$globalProvider = new FabricServerAudienceProviderImpl((MinecraftServer) (Object) this, TranslatableComponentRenderer.get());
+  private final Map<FabricAudiences, Audience> adventure$renderers = new MapMaker().weakKeys().makeMap();
+  private final Audience adventure$backing = this.renderUsing(this.adventure$globalProvider);
+
   @Override
-  public void sendMessage(final Component text) {
-    LOGGER.info(FabricAudienceProvider.plainSerializer().serialize(text)); // TODO: Eventually will we support formatted output?
+  public FabricServerAudienceProvider adventure$globalProvider() {
+    return this.adventure$globalProvider;
   }
 
   @Override
-  public void sendActionBar(final @NonNull Component message) {
-    this.sendMessage(message);
+  public @NonNull Audience audience() {
+    return this.adventure$backing;
+  }
+
+  @Override
+  public Audience renderUsing(final FabricServerAudienceProviderImpl controller) {
+    return this.adventure$renderers.computeIfAbsent(controller, ctrl -> new PlainAudience(ctrl, LOGGER::info));
   }
 }

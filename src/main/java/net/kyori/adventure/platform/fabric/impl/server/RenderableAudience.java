@@ -22,41 +22,10 @@
  * SOFTWARE.
  */
 
-package net.kyori.adventure.platform.fabric;
+package net.kyori.adventure.platform.fabric.impl.server;
 
 import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.text.Component;
-import net.minecraft.Util;
-import net.minecraft.commands.CommandSource;
-import org.checkerframework.checker.nullness.qual.NonNull;
 
-import static java.util.Objects.requireNonNull;
-
-/**
- * Audience implementation that can wrap a CommandOutput
- */
-public final class CommandSourceAudience implements Audience {
-  private final CommandSource output;
-
-  CommandSourceAudience(final CommandSource output) {
-    this.output = output;
-  }
-
-  public static Audience of(final CommandSource output) {
-    if(output instanceof Audience) {
-      return (Audience) output;
-    } else {
-      return new CommandSourceAudience(requireNonNull(output, "output"));
-    }
-  }
-
-  @Override
-  public void sendMessage(final Component text) {
-    this.output.sendMessage(FabricAudienceProvider.adapt(text), Util.NIL_UUID);
-  }
-
-  @Override
-  public void sendActionBar(final @NonNull Component message) {
-    this.sendMessage(message);
-  }
+public interface RenderableAudience extends Audience {
+  Audience renderUsing(final FabricServerAudienceProviderImpl controller);
 }

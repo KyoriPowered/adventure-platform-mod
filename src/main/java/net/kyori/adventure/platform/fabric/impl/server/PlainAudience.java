@@ -22,30 +22,31 @@
  * SOFTWARE.
  */
 
-package net.kyori.adventure.platform.fabric.impl;
+package net.kyori.adventure.platform.fabric.impl.server;
 
-import net.kyori.adventure.platform.fabric.impl.accessor.ComponentSerializerAccess;
+import java.util.function.Consumer;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.audience.MessageType;
+import net.kyori.adventure.platform.fabric.FabricAudiences;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.ComponentSerializer;
-import net.minecraft.network.chat.MutableComponent;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
-public final class NonWrappingComponentSerializer implements ComponentSerializer<Component, Component, net.minecraft.network.chat.Component> {
-  public static final NonWrappingComponentSerializer INSTANCE = new NonWrappingComponentSerializer();
+public class PlainAudience implements Audience {
+  private final FabricAudiences controller;
+  private final Consumer<String> plainOutput;
 
-  private NonWrappingComponentSerializer() {
+  public PlainAudience(final FabricAudiences controller, final Consumer<String> plainOutput) {
+    this.controller = controller;
+    this.plainOutput = plainOutput;
   }
 
   @Override
-  public Component deserialize(final net.minecraft.network.chat.Component input) {
-    if(input instanceof WrappedComponent) {
-      return ((WrappedComponent) input).wrapped();
-    }
-
-    return ComponentSerializerAccess.getGSON().fromJson(net.minecraft.network.chat.Component.Serializer.toJsonTree(input), Component.class);
+  public void sendMessage(final @NonNull Component message, final @NonNull MessageType type) {
+    this.plainOutput.accept(this.controller.plainSerializer().serialize(message));
   }
 
   @Override
-  public MutableComponent serialize(final Component component) {
-    return net.minecraft.network.chat.Component.Serializer.fromJson(ComponentSerializerAccess.getGSON().toJsonTree(component));
+  public void sendActionBar(final @NonNull Component message) {
+    this.sendMessage(message);
   }
 }

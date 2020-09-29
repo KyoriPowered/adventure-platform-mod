@@ -28,22 +28,22 @@ import java.util.Locale;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.platform.fabric.impl.client.FabricClientAudienceProviderImpl;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 import static java.util.Objects.requireNonNull;
 
 /**
- * Access the client's player as an {@link net.kyori.adventure.audience.Audience}
+ * Access the client's player as an {@link net.kyori.adventure.audience.Audience}.
+ *
+ * @since 4.0.0
  */
-public interface FabricClientAudienceProvider {
+public interface FabricClientAudienceProvider extends FabricAudiences {
 
   /**
    * Get the common instance, that will render using the global translation registry.
    *
    * @return the audience provider
+   * @since 4.0.0
    */
   static FabricClientAudienceProvider of() {
     return FabricClientAudienceProviderImpl.INSTANCE;
@@ -54,26 +54,19 @@ public interface FabricClientAudienceProvider {
    *
    * @param renderer Renderer to use
    * @return new audience provider
+   * @since 4.0.0
    */
   static FabricClientAudienceProvider of(final ComponentRenderer<Locale> renderer) {
     return new FabricClientAudienceProviderImpl(requireNonNull(renderer, "renderer"));
   }
 
   /**
-   * Get an audience for the active player, if any is present.
+   * Get an audience for the client's player.
+   *
+   * <p>When not in-game, most operations will no-op</p>
    *
    * @return player audience
+   * @since 4.0.0
    */
-  default @Nullable Audience audience() {
-    final LocalPlayer player = Minecraft.getInstance().player;
-    return player == null ? null : this.audience(player);
-  }
-
-  /**
-   * Get an audience for the provided client's player.
-   *
-   * @param player player to send to
-   * @return player as an audience
-   */
-  Audience audience(final @NonNull LocalPlayer player);
+  @NonNull Audience audience();
 }

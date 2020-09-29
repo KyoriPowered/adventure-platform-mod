@@ -78,7 +78,7 @@ public abstract class ServerBossEventMixin extends BossEvent implements ServerBo
   }
 
   @Override
-  public void addAll(final Collection<ServerPlayer> players) {
+  public void adventure$addAll(final Collection<ServerPlayer> players) {
     final ClientboundBossEventPacket pkt = new ClientboundBossEventPacket(ClientboundBossEventPacket.Operation.ADD, this);
     for(final ServerPlayer player : players) {
       if(this.players.add(player) && this.isVisible()) {
@@ -88,7 +88,7 @@ public abstract class ServerBossEventMixin extends BossEvent implements ServerBo
   }
 
   @Override
-  public void removeAll(final Collection<ServerPlayer> players) {
+  public void adventure$removeAll(final Collection<ServerPlayer> players) {
     final ClientboundBossEventPacket pkt = new ClientboundBossEventPacket(ClientboundBossEventPacket.Operation.REMOVE, this);
     for(final ServerPlayer player : players) {
       if(this.players.remove(player) && this.isVisible()) {
@@ -98,7 +98,7 @@ public abstract class ServerBossEventMixin extends BossEvent implements ServerBo
   }
 
   @Override
-  public void replaceSubscriber(final ServerPlayer oldSub, final ServerPlayer newSub) {
+  public void adventure$replaceSubscriber(final ServerPlayer oldSub, final ServerPlayer newSub) {
     if(this.players.remove(oldSub)) {
       this.players.add(newSub);
     }

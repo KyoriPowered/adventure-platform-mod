@@ -22,30 +22,11 @@
  * SOFTWARE.
  */
 
-package net.kyori.adventure.platform.fabric.impl;
+package net.kyori.adventure.platform.fabric.impl.server;
 
-import net.kyori.adventure.platform.fabric.impl.accessor.ComponentSerializerAccess;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.ComponentSerializer;
-import net.minecraft.network.chat.MutableComponent;
+import net.kyori.adventure.platform.fabric.FabricServerAudienceProvider;
 
-public final class NonWrappingComponentSerializer implements ComponentSerializer<Component, Component, net.minecraft.network.chat.Component> {
-  public static final NonWrappingComponentSerializer INSTANCE = new NonWrappingComponentSerializer();
+public interface MinecraftServerBridge {
 
-  private NonWrappingComponentSerializer() {
-  }
-
-  @Override
-  public Component deserialize(final net.minecraft.network.chat.Component input) {
-    if(input instanceof WrappedComponent) {
-      return ((WrappedComponent) input).wrapped();
-    }
-
-    return ComponentSerializerAccess.getGSON().fromJson(net.minecraft.network.chat.Component.Serializer.toJsonTree(input), Component.class);
-  }
-
-  @Override
-  public MutableComponent serialize(final Component component) {
-    return net.minecraft.network.chat.Component.Serializer.fromJson(ComponentSerializerAccess.getGSON().toJsonTree(component));
-  }
+  FabricServerAudienceProvider adventure$globalProvider();
 }

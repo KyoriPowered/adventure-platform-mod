@@ -28,8 +28,10 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.platform.fabric.FabricAudiences;
 import net.kyori.adventure.platform.fabric.impl.AbstractBossBarListener;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundBossEventPacket;
 import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerPlayer;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -37,14 +39,16 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import static java.util.Objects.requireNonNull;
 
 public class ServerBossBarListener extends AbstractBossBarListener<ServerBossEvent> {
-  public static final ServerBossBarListener INSTANCE = new ServerBossBarListener();
+  public ServerBossBarListener(final FabricAudiences controller) {
+    super(controller);
+  }
 
   public void subscribe(final ServerPlayer player, final BossBar bar) {
     minecraftCreating(requireNonNull(bar, "bar")).addPlayer(requireNonNull(player, "player"));
   }
 
   public void subscribeAll(final Collection<ServerPlayer> players, final BossBar bar) {
-    ((ServerBossEventBridge) minecraftCreating(requireNonNull(bar, "bar"))).addAll(players);
+    ((ServerBossEventBridge) minecraftCreating(requireNonNull(bar, "bar"))).adventure$addAll(players);
   }
 
   public void unsubscribe(final ServerPlayer player, final BossBar bar) {
@@ -61,7 +65,7 @@ public class ServerBossBarListener extends AbstractBossBarListener<ServerBossEve
 
   public void unsubscribeAll(final Collection<ServerPlayer> players, final BossBar bar) {
     this.bars.computeIfPresent(bar, (key, old) -> {
-      ((ServerBossEventBridge) old).removeAll(players);
+      ((ServerBossEventBridge) old).adventure$removeAll(players);
       if(old.getPlayers().isEmpty()) {
         key.removeListener(this);
         return null;
@@ -82,7 +86,19 @@ public class ServerBossBarListener extends AbstractBossBarListener<ServerBossEve
    */
   public void replacePlayer(final ServerPlayer old, final ServerPlayer newPlayer) {
     for(final ServerBossEvent bar : this.bars.values()) {
-      ((ServerBossEventBridge) bar).replaceSubscriber(old, newPlayer);
+      ((ServerBossEventBridge) bar).adventure$replaceSubscriber(old, newPlayer);
+    }
+  }
+
+  /**
+   * Refresh titles when a player's locale has changed
+   * @param player player to refresh titles fro
+   */
+  public void refreshTitles(final ServerPlayer player) {
+    for(final ServerBossEvent bar : this.bars.values()) {
+      if(bar.getPlayers().contains(player)) {
+        player.connection.send(new ClientboundBossEventPacket(ClientboundBossEventPacket.Operation.UPDATE_NAME, bar));
+      }
     }
   }
 

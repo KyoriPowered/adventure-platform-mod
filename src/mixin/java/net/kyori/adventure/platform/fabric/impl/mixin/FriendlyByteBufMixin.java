@@ -22,30 +22,32 @@
  * SOFTWARE.
  */
 
-package net.kyori.adventure.platform.fabric.impl;
+package net.kyori.adventure.platform.fabric.impl.mixin;
 
-import net.kyori.adventure.platform.fabric.impl.accessor.ComponentSerializerAccess;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.ComponentSerializer;
-import net.minecraft.network.chat.MutableComponent;
+import java.util.Locale;
+import net.kyori.adventure.platform.fabric.impl.server.FriendlyByteBufBridge;
+import net.kyori.adventure.platform.fabric.impl.WrappedComponent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
-public final class NonWrappingComponentSerializer implements ComponentSerializer<Component, Component, net.minecraft.network.chat.Component> {
-  public static final NonWrappingComponentSerializer INSTANCE = new NonWrappingComponentSerializer();
+@Mixin(FriendlyByteBuf.class)
+public class FriendlyByteBufMixin implements FriendlyByteBufBridge {
+  private @Nullable Locale adventure$locale;
 
-  private NonWrappingComponentSerializer() {
-  }
-
-  @Override
-  public Component deserialize(final net.minecraft.network.chat.Component input) {
-    if(input instanceof WrappedComponent) {
-      return ((WrappedComponent) input).wrapped();
+  @ModifyVariable(method = "writeComponent", at = @At("HEAD"), argsOnly = true)
+  private Component localizeComponent(final Component input) {
+    if(this.adventure$locale != null && input instanceof WrappedComponent) {
+      return ((WrappedComponent) input).rendered(this.adventure$locale);
     }
-
-    return ComponentSerializerAccess.getGSON().fromJson(net.minecraft.network.chat.Component.Serializer.toJsonTree(input), Component.class);
+    return input;
   }
 
   @Override
-  public MutableComponent serialize(final Component component) {
-    return net.minecraft.network.chat.Component.Serializer.fromJson(ComponentSerializerAccess.getGSON().toJsonTree(component));
+  public void adventure$locale(final @Nullable Locale locale) {
+    this.adventure$locale = locale;
   }
 }
