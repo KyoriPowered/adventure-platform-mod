@@ -38,7 +38,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 public class ClientBossBarListener extends AbstractBossBarListener<LerpingBossEvent> {
   private final Map<UUID, LerpingBossEvent> hudBars;
 
-  public ClientBossBarListener(final FabricClientAudienceProviderImpl controller, final Map<UUID, LerpingBossEvent> hudBars) {
+  public ClientBossBarListener(final FabricClientAudiencesImpl controller, final Map<UUID, LerpingBossEvent> hudBars) {
     super(controller);
     this.hudBars = hudBars;
   }

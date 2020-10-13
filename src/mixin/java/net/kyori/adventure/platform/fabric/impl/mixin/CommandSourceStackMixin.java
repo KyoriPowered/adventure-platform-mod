@@ -27,8 +27,8 @@ package net.kyori.adventure.platform.fabric.impl.mixin;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.platform.fabric.AdventureCommandSourceStack;
 import net.kyori.adventure.platform.fabric.impl.AdventureCommandSourceStackInternal;
-import net.kyori.adventure.platform.fabric.FabricServerAudienceProvider;
-import net.kyori.adventure.platform.fabric.impl.server.FabricServerAudienceProviderImpl;
+import net.kyori.adventure.platform.fabric.FabricServerAudiences;
+import net.kyori.adventure.platform.fabric.impl.server.FabricServerAudiencesImpl;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minecraft.commands.CommandSource;
@@ -54,7 +54,7 @@ public abstract class CommandSourceStackMixin implements AdventureCommandSourceS
   private MinecraftServer server;
   private boolean assigned = false;
   private @MonotonicNonNull Audience out;
-  private @MonotonicNonNull FabricServerAudienceProvider controller;
+  private @MonotonicNonNull FabricServerAudiences controller;
 
   @Override
   public void sendSuccess(final Component text, final boolean sendToOps) {
@@ -80,14 +80,14 @@ public abstract class CommandSourceStackMixin implements AdventureCommandSourceS
       if(this.server == null) {
         throw new IllegalStateException("Cannot use adventure operations without an available server!");
       }
-      this.controller = FabricServerAudienceProvider.of(this.server);
+      this.controller = FabricServerAudiences.of(this.server);
       this.out = this.controller.audience(this.source);
     }
     return this.out;
   }
 
   @Override
-  public AdventureCommandSourceStack adventure$audience(final Audience wrapped, final FabricServerAudienceProviderImpl controller) {
+  public AdventureCommandSourceStack adventure$audience(final Audience wrapped, final FabricServerAudiencesImpl controller) {
     if(this.assigned) {
       throw new IllegalStateException("This command source has been attached to a specific renderer already!");
       // TODO: return a new instance

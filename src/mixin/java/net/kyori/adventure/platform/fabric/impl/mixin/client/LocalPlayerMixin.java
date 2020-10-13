@@ -28,7 +28,7 @@ import com.mojang.authlib.GameProfile;
 import java.util.Locale;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
-import net.kyori.adventure.platform.fabric.FabricClientAudienceProvider;
+import net.kyori.adventure.platform.fabric.FabricClientAudiences;
 import net.kyori.adventure.platform.fabric.impl.LocaleHolderBridge;
 import net.kyori.adventure.sound.Sound;
 import net.minecraft.client.Minecraft;
@@ -50,7 +50,7 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayer implements F
     super(level, profile);
   }
 
-  private final Audience adventure$default = FabricClientAudienceProvider.of().audience();
+  private final Audience adventure$default = FabricClientAudiences.of().audience();
 
   @Override
   public @NonNull Audience audience() {

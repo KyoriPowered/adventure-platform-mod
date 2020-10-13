@@ -39,7 +39,7 @@ import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.fabric.AdventureCommandSourceStack;
 import net.kyori.adventure.platform.fabric.impl.AdventureCommandSourceStackInternal;
 import net.kyori.adventure.platform.fabric.FabricAudiences;
-import net.kyori.adventure.platform.fabric.FabricServerAudienceProvider;
+import net.kyori.adventure.platform.fabric.FabricServerAudiences;
 import net.kyori.adventure.platform.fabric.impl.AdventureCommon;
 import net.kyori.adventure.platform.fabric.impl.WrappedComponent;
 import net.kyori.adventure.platform.fabric.impl.accessor.ComponentSerializerAccess;
@@ -62,17 +62,17 @@ import static java.util.Objects.requireNonNull;
 /**
  * The entry point for accessing Adventure.
  */
-public final class FabricServerAudienceProviderImpl implements FabricServerAudienceProvider {
-  private static final Set<FabricServerAudienceProviderImpl> INSTANCES = Collections.newSetFromMap(new WeakHashMap<>());
+public final class FabricServerAudiencesImpl implements FabricServerAudiences {
+  private static final Set<FabricServerAudiencesImpl> INSTANCES = Collections.newSetFromMap(new WeakHashMap<>());
 
   /**
    * Perform an action on every audience provider instance
    *
    * @param actor a consumer that will be called for every provider
    */
-  public static void forEachInstance(final Consumer<FabricServerAudienceProviderImpl> actor) {
+  public static void forEachInstance(final Consumer<FabricServerAudiencesImpl> actor) {
     synchronized(INSTANCES) {
-      for(final FabricServerAudienceProviderImpl instance : INSTANCES) {
+      for(final FabricServerAudiencesImpl instance : INSTANCES) {
         actor.accept(instance);
       }
     }
@@ -83,7 +83,7 @@ public final class FabricServerAudienceProviderImpl implements FabricServerAudie
   final ServerBossBarListener bossBars;
   private final PlainComponentSerializer plainSerializer;
 
-  public FabricServerAudienceProviderImpl(final MinecraftServer server, final ComponentRenderer<Locale> renderer) {
+  public FabricServerAudiencesImpl(final MinecraftServer server, final ComponentRenderer<Locale> renderer) {
     this.server = server;
     this.renderer = renderer;
     this.bossBars = new ServerBossBarListener(this);

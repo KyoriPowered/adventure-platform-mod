@@ -24,9 +24,9 @@
 
 package net.kyori.adventure.platform.fabric.impl.server;
 
-import net.kyori.adventure.platform.fabric.FabricServerAudienceProvider;
+import net.kyori.adventure.platform.fabric.FabricServerAudiences;
 
 public interface MinecraftServerBridge {
 
-  FabricServerAudienceProvider adventure$globalProvider();
+  FabricServerAudiences adventure$globalProvider();
 }

@@ -29,8 +29,8 @@ import java.util.Map;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.platform.fabric.FabricAudiences;
-import net.kyori.adventure.platform.fabric.FabricServerAudienceProvider;
-import net.kyori.adventure.platform.fabric.impl.server.FabricServerAudienceProviderImpl;
+import net.kyori.adventure.platform.fabric.FabricServerAudiences;
+import net.kyori.adventure.platform.fabric.impl.server.FabricServerAudiencesImpl;
 import net.kyori.adventure.platform.fabric.impl.server.MinecraftServerBridge;
 import net.kyori.adventure.platform.fabric.impl.server.PlainAudience;
 import net.kyori.adventure.platform.fabric.impl.server.RenderableAudience;
@@ -49,12 +49,12 @@ import org.spongepowered.asm.mixin.Shadow;
 public abstract class MinecraftServerMixin implements MinecraftServerBridge, RenderableAudience, ForwardingAudience.Single {
   @Shadow @Final private static Logger LOGGER;
 
-  private final FabricServerAudienceProviderImpl adventure$globalProvider = new FabricServerAudienceProviderImpl((MinecraftServer) (Object) this, GlobalTranslator.renderer());
+  private final FabricServerAudiencesImpl adventure$globalProvider = new FabricServerAudiencesImpl((MinecraftServer) (Object) this, GlobalTranslator.renderer());
   private final Map<FabricAudiences, Audience> adventure$renderers = new MapMaker().weakKeys().makeMap();
   private final Audience adventure$backing = this.renderUsing(this.adventure$globalProvider);
 
   @Override
-  public FabricServerAudienceProvider adventure$globalProvider() {
+  public FabricServerAudiences adventure$globalProvider() {
     return this.adventure$globalProvider;
   }
 
@@ -64,7 +64,7 @@ public abstract class MinecraftServerMixin implements MinecraftServerBridge, Ren
   }
 
   @Override
-  public Audience renderUsing(final FabricServerAudienceProviderImpl controller) {
+  public Audience renderUsing(final FabricServerAudiencesImpl controller) {
     return this.adventure$renderers.computeIfAbsent(controller, ctrl -> new PlainAudience(ctrl, LOGGER::info));
   }
 }

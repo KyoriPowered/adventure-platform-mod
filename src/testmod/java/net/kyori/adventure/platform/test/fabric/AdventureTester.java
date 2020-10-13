@@ -35,7 +35,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.kyori.adventure.platform.fabric.FabricServerAudienceProvider;
+import net.kyori.adventure.platform.fabric.FabricServerAudiences;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -99,9 +99,9 @@ public class AdventureTester implements ModInitializer {
 
   private final Map<UUID, BossBar> greetingBars = new HashMap<>();
   private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-  private @Nullable FabricServerAudienceProvider platform;
+  private @Nullable FabricServerAudiences platform;
 
-  public FabricServerAudienceProvider adventure() {
+  public FabricServerAudiences adventure() {
     return requireNonNull(this.platform, "Tried to access Fabric platform without a running server");
   }
 
@@ -115,7 +115,7 @@ public class AdventureTester implements ModInitializer {
     GlobalTranslator.get().addSource(testmodRegistry);
 
     // Set up platform
-    ServerLifecycleEvents.SERVER_STARTING.register(server -> this.platform = FabricServerAudienceProvider.of(server));
+    ServerLifecycleEvents.SERVER_STARTING.register(server -> this.platform = FabricServerAudiences.of(server));
     ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
       this.platform = null;
       this.greetingBars.clear();

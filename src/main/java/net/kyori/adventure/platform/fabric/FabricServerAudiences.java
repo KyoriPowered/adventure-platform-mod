@@ -28,7 +28,7 @@ import static java.util.Objects.requireNonNull;
 
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.platform.AudienceProvider;
-import net.kyori.adventure.platform.fabric.impl.server.FabricServerAudienceProviderImpl;
+import net.kyori.adventure.platform.fabric.impl.server.FabricServerAudiencesImpl;
 import net.kyori.adventure.platform.fabric.impl.server.MinecraftServerBridge;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
 import net.minecraft.commands.CommandSource;
@@ -44,7 +44,7 @@ import java.util.Locale;
  *
  * @since 4.0.0
  */
-public interface FabricServerAudienceProvider extends AudienceProvider, FabricAudiences {
+public interface FabricServerAudiences extends AudienceProvider, FabricAudiences {
 
   /**
    * Get the shared audience provider for the server.
@@ -55,7 +55,7 @@ public interface FabricServerAudienceProvider extends AudienceProvider, FabricAu
    * @return common audience provider
    * @since 4.0.0
    */
-  static @NonNull FabricServerAudienceProvider of(@NonNull MinecraftServer server) {
+  static @NonNull FabricServerAudiences of(@NonNull MinecraftServer server) {
     return ((MinecraftServerBridge) server).adventure$globalProvider();
   }
 
@@ -69,8 +69,8 @@ public interface FabricServerAudienceProvider extends AudienceProvider, FabricAu
    * @return new audience provider
    * @since 4.0.0
    */
-  static @NonNull FabricServerAudienceProvider of(@NonNull MinecraftServer server, @NonNull ComponentRenderer<Locale> renderer) {
-    return new FabricServerAudienceProviderImpl(requireNonNull(server, "server"), requireNonNull(renderer, "renderer"));
+  static @NonNull FabricServerAudiences of(@NonNull MinecraftServer server, @NonNull ComponentRenderer<Locale> renderer) {
+    return new FabricServerAudiencesImpl(requireNonNull(server, "server"), requireNonNull(renderer, "renderer"));
   }
 
   /**

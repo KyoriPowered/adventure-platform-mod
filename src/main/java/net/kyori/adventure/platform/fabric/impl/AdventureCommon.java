@@ -34,7 +34,7 @@ import net.kyori.adventure.platform.fabric.ComponentArgumentType;
 import net.kyori.adventure.platform.fabric.KeyArgumentType;
 import net.kyori.adventure.platform.fabric.PlayerLocales;
 import net.kyori.adventure.platform.fabric.impl.accessor.ConnectionAccess;
-import net.kyori.adventure.platform.fabric.impl.server.FabricServerAudienceProviderImpl;
+import net.kyori.adventure.platform.fabric.impl.server.FabricServerAudiencesImpl;
 import net.kyori.adventure.platform.fabric.impl.server.FriendlyByteBufBridge;
 import net.kyori.adventure.text.KeybindComponent;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
@@ -92,7 +92,7 @@ public class AdventureCommon implements ModInitializer {
     PlayerLocales.CHANGED_EVENT.register((player, locale) -> {
       final Channel channel = ((ConnectionAccess) player.connection.getConnection()).getChannel();
       channel.attr(FriendlyByteBufBridge.CHANNEL_LOCALE).set(locale);
-      FabricServerAudienceProviderImpl.forEachInstance(instance -> {
+      FabricServerAudiencesImpl.forEachInstance(instance -> {
         instance.bossBars().refreshTitles(player);
       });
     });

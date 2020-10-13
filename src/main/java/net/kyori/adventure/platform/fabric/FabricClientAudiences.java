@@ -26,7 +26,7 @@ package net.kyori.adventure.platform.fabric;
 
 import java.util.Locale;
 import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.platform.fabric.impl.client.FabricClientAudienceProviderImpl;
+import net.kyori.adventure.platform.fabric.impl.client.FabricClientAudiencesImpl;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -37,7 +37,7 @@ import static java.util.Objects.requireNonNull;
  *
  * @since 4.0.0
  */
-public interface FabricClientAudienceProvider extends FabricAudiences {
+public interface FabricClientAudiences extends FabricAudiences {
 
   /**
    * Get the common instance, that will render using the global translation registry.
@@ -45,8 +45,8 @@ public interface FabricClientAudienceProvider extends FabricAudiences {
    * @return the audience provider
    * @since 4.0.0
    */
-  static FabricClientAudienceProvider of() {
-    return FabricClientAudienceProviderImpl.INSTANCE;
+  static FabricClientAudiences of() {
+    return FabricClientAudiencesImpl.INSTANCE;
   }
 
   /**
@@ -56,8 +56,8 @@ public interface FabricClientAudienceProvider extends FabricAudiences {
    * @return new audience provider
    * @since 4.0.0
    */
-  static FabricClientAudienceProvider of(final ComponentRenderer<Locale> renderer) {
-    return new FabricClientAudienceProviderImpl(requireNonNull(renderer, "renderer"));
+  static FabricClientAudiences of(final ComponentRenderer<Locale> renderer) {
+    return new FabricClientAudiencesImpl(requireNonNull(renderer, "renderer"));
   }
 
   /**

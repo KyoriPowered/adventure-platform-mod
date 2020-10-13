@@ -34,9 +34,9 @@ import net.minecraft.client.gui.components.BossHealthOverlay;
  * Accessor for our listener stored in the client HUD.
  */
 public interface BossHealthOverlayBridge {
-  ClientBossBarListener adventure$listener(final @NonNull FabricClientAudienceProviderImpl controller);
+  ClientBossBarListener adventure$listener(final @NonNull FabricClientAudiencesImpl controller);
 
-  static ClientBossBarListener listener(final @NonNull BossHealthOverlay hud, final @NonNull FabricClientAudienceProviderImpl controller) {
+  static ClientBossBarListener listener(final @NonNull BossHealthOverlay hud, final @NonNull FabricClientAudiencesImpl controller) {
     return ((BossHealthOverlayBridge) requireNonNull(hud, "hud")).adventure$listener(controller);
   }
 }

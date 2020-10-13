@@ -59,9 +59,9 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public final class ServerPlayerAudience implements Audience {
   private final ServerPlayer player;
-  private final FabricServerAudienceProviderImpl controller;
+  private final FabricServerAudiencesImpl controller;
 
-  public ServerPlayerAudience(final ServerPlayer player, final FabricServerAudienceProviderImpl controller) {
+  public ServerPlayerAudience(final ServerPlayer player, final FabricServerAudiencesImpl controller) {
     this.player = player;
     this.controller = controller;
   }
@@ -94,7 +94,7 @@ public final class ServerPlayerAudience implements Audience {
 
   @Override
   public void showBossBar(final @NonNull BossBar bar) {
-    FabricServerAudienceProviderImpl.forEachInstance(controller -> {
+    FabricServerAudiencesImpl.forEachInstance(controller -> {
       if(controller != this.controller) {
         controller.bossBars.unsubscribe(this.player, bar);
       }
@@ -104,7 +104,7 @@ public final class ServerPlayerAudience implements Audience {
 
   @Override
   public void hideBossBar(final @NonNull BossBar bar) {
-    FabricServerAudienceProviderImpl.forEachInstance(controller -> controller.bossBars.unsubscribe(this.player, bar));
+    FabricServerAudiencesImpl.forEachInstance(controller -> controller.bossBars.unsubscribe(this.player, bar));
   }
 
   @Override

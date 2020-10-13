@@ -26,7 +26,7 @@ package net.kyori.adventure.platform.fabric.impl;
 
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.platform.fabric.AdventureCommandSourceStack;
-import net.kyori.adventure.platform.fabric.impl.server.FabricServerAudienceProviderImpl;
+import net.kyori.adventure.platform.fabric.impl.server.FabricServerAudiencesImpl;
 import net.minecraft.commands.CommandSource;
 
 public interface AdventureCommandSourceStackInternal extends AdventureCommandSourceStack {
@@ -37,7 +37,7 @@ public interface AdventureCommandSourceStackInternal extends AdventureCommandSou
    * @param controller controller to render with
    * @return the wrapped audience
    */
-  AdventureCommandSourceStack adventure$audience(final Audience wrapped, final FabricServerAudienceProviderImpl controller);
+  AdventureCommandSourceStack adventure$audience(final Audience wrapped, final FabricServerAudiencesImpl controller);
 
   /**
    * The backing source for the command.

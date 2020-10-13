@@ -29,7 +29,7 @@ import java.util.Map;
 import java.util.UUID;
 import net.kyori.adventure.platform.fabric.impl.client.BossHealthOverlayBridge;
 import net.kyori.adventure.platform.fabric.impl.client.ClientBossBarListener;
-import net.kyori.adventure.platform.fabric.impl.client.FabricClientAudienceProviderImpl;
+import net.kyori.adventure.platform.fabric.impl.client.FabricClientAudiencesImpl;
 import net.minecraft.client.gui.components.BossHealthOverlay;
 import net.minecraft.client.gui.components.LerpingBossEvent;
 import org.spongepowered.asm.mixin.Final;
@@ -44,10 +44,10 @@ public class BossHealthOverlayMixin implements BossHealthOverlayBridge {
 
   @Shadow @Final private Map<UUID, LerpingBossEvent> events;
 
-  private Map<FabricClientAudienceProviderImpl, ClientBossBarListener> adventure$listener = new MapMaker().weakKeys().makeMap();
+  private Map<FabricClientAudiencesImpl, ClientBossBarListener> adventure$listener = new MapMaker().weakKeys().makeMap();
 
   @Override
-  public ClientBossBarListener adventure$listener(final FabricClientAudienceProviderImpl controller) {
+  public ClientBossBarListener adventure$listener(final FabricClientAudiencesImpl controller) {
     return this.adventure$listener.computeIfAbsent(controller, ctrl -> new ClientBossBarListener(ctrl, this.events));
   }
 

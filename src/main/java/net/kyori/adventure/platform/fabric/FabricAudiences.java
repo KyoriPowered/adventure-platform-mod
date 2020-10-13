@@ -42,8 +42,8 @@ import static java.util.Objects.requireNonNull;
 /**
  * Common operations in both the client and server environments.
  *
- * <p>See {@link FabricServerAudienceProvider} for logical server-specific operations,
- * and {@link FabricClientAudienceProvider} for logical client-specific operations</p>
+ * <p>See {@link FabricServerAudiences} for logical server-specific operations,
+ * and {@link FabricClientAudiences} for logical client-specific operations</p>
  * @since 4.0.0
  */
 public interface FabricAudiences {

@@ -27,5 +27,5 @@ package net.kyori.adventure.platform.fabric.impl.server;
 import net.kyori.adventure.audience.Audience;
 
 public interface RenderableAudience extends Audience {
-  Audience renderUsing(final FabricServerAudienceProviderImpl controller);
+  Audience renderUsing(final FabricServerAudiencesImpl controller);
 }

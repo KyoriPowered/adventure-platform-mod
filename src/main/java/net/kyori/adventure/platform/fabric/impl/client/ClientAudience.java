@@ -49,9 +49,9 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 public class ClientAudience implements Audience {
   private final Minecraft client;
-  private final FabricClientAudienceProviderImpl controller;
+  private final FabricClientAudiencesImpl controller;
 
-  public ClientAudience(final Minecraft client, final FabricClientAudienceProviderImpl renderer) {
+  public ClientAudience(final Minecraft client, final FabricClientAudiencesImpl renderer) {
     this.client = client;
     this.controller = renderer;
   }

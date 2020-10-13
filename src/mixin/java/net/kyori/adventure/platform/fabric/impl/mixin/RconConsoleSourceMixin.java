@@ -29,8 +29,8 @@ import java.util.Map;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.platform.fabric.FabricAudiences;
-import net.kyori.adventure.platform.fabric.FabricServerAudienceProvider;
-import net.kyori.adventure.platform.fabric.impl.server.FabricServerAudienceProviderImpl;
+import net.kyori.adventure.platform.fabric.FabricServerAudiences;
+import net.kyori.adventure.platform.fabric.impl.server.FabricServerAudiencesImpl;
 import net.kyori.adventure.platform.fabric.impl.server.PlainAudience;
 import net.kyori.adventure.platform.fabric.impl.server.RenderableAudience;
 import net.minecraft.server.MinecraftServer;
@@ -49,12 +49,12 @@ public abstract class RconConsoleSourceMixin implements RenderableAudience, Forw
   private final Map<FabricAudiences, Audience> adventure$renderers = new MapMaker().weakKeys().makeMap();
 
   @Override
-  public Audience renderUsing(final FabricServerAudienceProviderImpl controller) {
+  public Audience renderUsing(final FabricServerAudiencesImpl controller) {
     return this.adventure$renderers.computeIfAbsent(controller, ctrl -> new PlainAudience(ctrl, this.buffer::append));
   }
 
   @Override
   public @NonNull Audience audience() {
-    return FabricServerAudienceProvider.of(this.server).audience((RconConsoleSource) (Object) this);
+    return FabricServerAudiences.of(this.server).audience((RconConsoleSource) (Object) this);
   }
 }
