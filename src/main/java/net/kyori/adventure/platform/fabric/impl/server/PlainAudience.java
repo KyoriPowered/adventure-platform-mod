@@ -27,6 +27,7 @@ package net.kyori.adventure.platform.fabric.impl.server;
 import java.util.function.Consumer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.MessageType;
+import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.platform.fabric.FabricAudiences;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -41,12 +42,12 @@ public class PlainAudience implements Audience {
   }
 
   @Override
-  public void sendMessage(final @NonNull Component message, final @NonNull MessageType type) {
+  public void sendMessage(final Identity source, final @NonNull Component message, final @NonNull MessageType type) {
     this.plainOutput.accept(this.controller.plainSerializer().serialize(message));
   }
 
   @Override
   public void sendActionBar(final @NonNull Component message) {
-    this.sendMessage(message);
+    this.sendMessage(Identity.nil(), message);
   }
 }

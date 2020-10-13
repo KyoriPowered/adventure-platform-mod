@@ -22,32 +22,22 @@
  * SOFTWARE.
  */
 
-package net.kyori.adventure.platform.fabric;
+package net.kyori.adventure.platform.fabric.impl.mixin;
 
-import net.kyori.adventure.audience.ForwardingAudience;
-import net.kyori.adventure.identity.Identified;
-import net.kyori.adventure.text.Component;
+import com.mojang.authlib.GameProfile;
+import java.util.UUID;
+import net.kyori.adventure.identity.Identity;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 
-/**
- * An interface applied to {@link net.minecraft.commands.CommandSourceStack} to allow sending {@link Component Components}.
- *
- * @since 4.0.0
- */
-public interface AdventureCommandSourceStack extends ForwardingAudience.Single, Identified {
-  /**
-   * Send a result message to the command source.
-   *
-   * @param text The text to send
-   * @param sendToOps If this message should be sent to all ops listening
-   * @since 4.0.0
-   */
-  void sendSuccess(Component text, boolean sendToOps);
+@Mixin(value = GameProfile.class, remap = false)
+public abstract class GameProfileMixin implements Identity {
+  @Shadow
+  public abstract UUID shadow$getId();
 
-  /**
-   * Send an error message to the command source.
-   *
-   * @param text The error
-   * @since 4.0.0
-   */
-  void sendFailure(Component text);
+  @Override
+  public @NonNull UUID uuid() {
+    return this.shadow$getId();
+  }
 }

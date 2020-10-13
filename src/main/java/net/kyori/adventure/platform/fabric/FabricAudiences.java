@@ -24,8 +24,11 @@
 
 package net.kyori.adventure.platform.fabric;
 
+import com.mojang.authlib.GameProfile;
 import java.util.Locale;
 import java.util.function.UnaryOperator;
+import net.kyori.adventure.identity.Identified;
+import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.fabric.impl.AdventureCommon;
 import net.kyori.adventure.platform.fabric.impl.NonWrappingComponentSerializer;
@@ -37,6 +40,7 @@ import net.kyori.adventure.text.serializer.ComponentSerializer;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.PolyNull;
 
@@ -51,13 +55,6 @@ import static java.util.Objects.requireNonNull;
  * @since 4.0.0
  */
 public interface FabricAudiences {
-  /**
-   * Return a {@link PlainComponentSerializer} instance that can resolve key bindings and translations using the game's data.
-   *
-   * @return the plain serializer instance
-   * @since 4.0.0
-   */
-  PlainComponentSerializer plainSerializer();
 
   /**
    * Given an existing native component, convert it into an Adventure component for working with.
@@ -134,6 +131,37 @@ public interface FabricAudiences {
   static @NonNull GsonComponentSerializer gsonSerializer() {
     return AdventureCommon.GSON;
   }
+
+  /**
+   * Get a {@link Player} identified by their profile's {@link java.util.UUID}.
+   *
+   * @param player the player to identify
+   * @return an identified representation of the player
+   * @since 4.0.0
+   *
+   */
+  static Identified identified(final Player player) {
+    return (Identified) player;
+  }
+
+  /**
+   * Get an {@link Identity} representation of a {@link GameProfile}.
+   *
+   * @param profile the profile to represent
+   * @return an identity of the game profile
+   * @since 4.0.0
+   */
+  static Identity identity(final GameProfile profile) {
+    return (Identity) profile;
+  }
+
+  /**
+   * Return a {@link PlainComponentSerializer} instance that can resolve key bindings and translations using the game's data.
+   *
+   * @return the plain serializer instance
+   * @since 4.0.0
+   */
+  PlainComponentSerializer plainSerializer();
 
   /**
    * Active locale-based renderer for operations on provided audiences.

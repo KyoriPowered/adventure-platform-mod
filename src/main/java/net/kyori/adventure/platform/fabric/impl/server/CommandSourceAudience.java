@@ -26,9 +26,9 @@ package net.kyori.adventure.platform.fabric.impl.server;
 
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.MessageType;
+import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.platform.fabric.FabricAudiences;
 import net.kyori.adventure.text.Component;
-import net.minecraft.Util;
 import net.minecraft.commands.CommandSource;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -45,12 +45,12 @@ final class CommandSourceAudience implements Audience {
   }
 
   @Override
-  public void sendMessage(final Component text, final MessageType type) {
-    this.output.sendMessage(this.serializer.toNative(text), Util.NIL_UUID);
+  public void sendMessage(final Identity source, final Component text, final MessageType type) {
+    this.output.sendMessage(this.serializer.toNative(text), source.uuid());
   }
 
   @Override
   public void sendActionBar(final @NonNull Component message) {
-    this.sendMessage(message);
+    this.sendMessage(Identity.nil(), message);
   }
 }

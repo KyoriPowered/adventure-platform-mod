@@ -28,6 +28,7 @@ import java.time.Duration;
 import java.util.Locale;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.fabric.FabricAudiences;
@@ -37,7 +38,6 @@ import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.SoundStop;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
-import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
@@ -71,7 +71,7 @@ public final class ServerPlayerAudience implements Audience {
   }
 
   @Override
-  public void sendMessage(final Component text, final net.kyori.adventure.audience.MessageType type) {
+  public void sendMessage(final Identity source, final Component text, final net.kyori.adventure.audience.MessageType type) {
     final ChatType mcType;
     final boolean shouldSend;
     if(type == net.kyori.adventure.audience.MessageType.CHAT) {
@@ -83,7 +83,7 @@ public final class ServerPlayerAudience implements Audience {
     }
 
     if(shouldSend) {
-      this.sendPacket(new ClientboundChatPacket(this.controller.toNative(text), mcType, Util.NIL_UUID));
+      this.sendPacket(new ClientboundChatPacket(this.controller.toNative(text), mcType, source.uuid()));
     }
   }
 

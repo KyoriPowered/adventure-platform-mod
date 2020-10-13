@@ -25,6 +25,8 @@
 package net.kyori.adventure.platform.fabric.impl.mixin;
 
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.identity.Identified;
+import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.platform.fabric.AdventureCommandSourceStack;
 import net.kyori.adventure.platform.fabric.impl.AdventureCommandSourceStackInternal;
 import net.kyori.adventure.platform.fabric.FabricServerAudiences;
@@ -35,6 +37,7 @@ import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.MinecraftServer;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -58,7 +61,7 @@ public abstract class CommandSourceStackMixin implements AdventureCommandSourceS
   @Override
   public void sendSuccess(final Component text, final boolean sendToOps) {
     if(this.source.acceptsSuccess() && !this.silent) {
-      this.sendMessage(text);
+      this.sendMessage(Identity.nil(), text);
     }
 
     if(sendToOps && this.source.shouldInformAdmins() && !this.silent) {
@@ -69,7 +72,7 @@ public abstract class CommandSourceStackMixin implements AdventureCommandSourceS
   @Override
   public void sendFailure(final Component text) {
     if(this.source.acceptsFailure()) {
-      this.sendMessage(text.color(NamedTextColor.RED));
+      this.sendMessage(Identity.nil(), text.color(NamedTextColor.RED));
     }
   }
 
@@ -83,6 +86,15 @@ public abstract class CommandSourceStackMixin implements AdventureCommandSourceS
       this.out = this.controller.audience(this.source);
     }
     return this.out;
+  }
+
+  @Override
+  public @NonNull Identity identity() {
+    if(this.source instanceof Identified) {
+      return ((Identified) this.source).identity();
+    } else {
+      return Identity.nil();
+    }
   }
 
   @Override
