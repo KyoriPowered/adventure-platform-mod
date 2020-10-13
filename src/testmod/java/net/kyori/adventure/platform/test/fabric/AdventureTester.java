@@ -25,14 +25,15 @@
 package net.kyori.adventure.platform.test.fabric;
 
 import com.google.common.base.Strings;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.kyori.adventure.platform.fabric.FabricServerAudienceProvider;
 
@@ -58,6 +59,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.translation.GlobalTranslator;
 import net.kyori.adventure.translation.TranslationRegistry;
 import net.minecraft.commands.synchronization.SuggestionProviders;
 import net.minecraft.server.level.ServerPlayer;
@@ -106,9 +108,12 @@ public class AdventureTester implements ModInitializer {
   @Override
   public void onInitialize() {
     // Register localizations
-    Stream.of(Locale.ENGLISH, Locale.GERMAN).forEach(lang -> {
-      TranslationRegistry.get().registerAll(lang, "net.kyori.adventure.platform.test.fabric.messages", false);
-    });
+    final TranslationRegistry testmodRegistry = TranslationRegistry.create(key("adventure", "testmod_localizations"));
+    for(final Locale lang : Arrays.asList(Locale.ENGLISH, Locale.GERMAN)) {
+      testmodRegistry.registerAll(lang, ResourceBundle.getBundle("net.kyori.adventure.platform.test.fabric.messages", lang), false);
+    }
+    GlobalTranslator.get().addSource(testmodRegistry);
+
     // Set up platform
     ServerLifecycleEvents.SERVER_STARTING.register(server -> this.platform = FabricServerAudienceProvider.of(server));
     ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
@@ -137,7 +142,7 @@ public class AdventureTester implements ModInitializer {
           });
           this.beginCountdown(text("Faster Countdown"), getInteger(ctx, ARG_SECONDS) / 2, audience, BossBar.Color.PURPLE, complete -> {
             complete.sendActionBar(text().content("Faster Countdown complete! ").color(COLOR_RESPONSE)
-              .append(text('\uE042', Style.builder().font(FONT_MEOW).build()))); // private use kitten in font
+              .append(text('\uE042', Style.style().font(FONT_MEOW).build()))); // private use kitten in font
           });
           return 1;
         })))

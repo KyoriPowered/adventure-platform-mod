@@ -37,9 +37,9 @@ import net.kyori.adventure.platform.fabric.impl.accessor.ConnectionAccess;
 import net.kyori.adventure.platform.fabric.impl.server.FabricServerAudienceProviderImpl;
 import net.kyori.adventure.platform.fabric.impl.server.FriendlyByteBufBridge;
 import net.kyori.adventure.text.KeybindComponent;
-import net.kyori.adventure.text.renderer.TranslatableComponentRenderer;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
+import net.kyori.adventure.translation.GlobalTranslator;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.commands.arguments.ComponentArgument;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
@@ -61,7 +61,7 @@ public class AdventureCommon implements ModInitializer {
     } else {
       keybindNamer = KeybindComponent::keybind;
     }
-    PLAIN = new PlainComponentSerializer(keybindNamer, trans -> new WrappedComponent(trans, TranslatableComponentRenderer.get()).getContents());
+    PLAIN = new PlainComponentSerializer(keybindNamer, trans -> new WrappedComponent(trans, GlobalTranslator.renderer()).getContents());
   }
 
   static ResourceLocation res(final @NonNull String value) {

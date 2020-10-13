@@ -190,7 +190,6 @@ public final class FabricServerAudienceProviderImpl implements FabricServerAudie
     }
   }
 
-  @Override
   public @NonNull GsonComponentSerializer gsonSerializer() {
     return AdventureCommon.GSON;
   }

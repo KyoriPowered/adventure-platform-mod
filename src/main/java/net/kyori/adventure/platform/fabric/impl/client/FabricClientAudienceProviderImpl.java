@@ -30,8 +30,8 @@ import net.kyori.adventure.platform.fabric.FabricAudiences;
 import net.kyori.adventure.platform.fabric.FabricClientAudienceProvider;
 import net.kyori.adventure.platform.fabric.impl.WrappedComponent;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
-import net.kyori.adventure.text.renderer.TranslatableComponentRenderer;
 import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
+import net.kyori.adventure.translation.GlobalTranslator;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
@@ -39,7 +39,7 @@ import net.minecraft.network.chat.Component;
 import static java.util.Objects.requireNonNull;
 
 public class FabricClientAudienceProviderImpl implements FabricClientAudienceProvider {
-  public static final FabricClientAudienceProvider INSTANCE = new FabricClientAudienceProviderImpl(TranslatableComponentRenderer.get());
+  public static final FabricClientAudienceProvider INSTANCE = new FabricClientAudienceProviderImpl(GlobalTranslator.renderer());
   private final PlainComponentSerializer plainSerializer;
   private final ComponentRenderer<Locale> renderer;
   private final ClientAudience audience;

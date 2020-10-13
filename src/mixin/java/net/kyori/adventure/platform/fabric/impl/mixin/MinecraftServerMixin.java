@@ -34,7 +34,7 @@ import net.kyori.adventure.platform.fabric.impl.server.FabricServerAudienceProvi
 import net.kyori.adventure.platform.fabric.impl.server.MinecraftServerBridge;
 import net.kyori.adventure.platform.fabric.impl.server.PlainAudience;
 import net.kyori.adventure.platform.fabric.impl.server.RenderableAudience;
-import net.kyori.adventure.text.renderer.TranslatableComponentRenderer;
+import net.kyori.adventure.translation.GlobalTranslator;
 import net.minecraft.server.MinecraftServer;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -49,7 +49,7 @@ import org.spongepowered.asm.mixin.Shadow;
 public abstract class MinecraftServerMixin implements MinecraftServerBridge, RenderableAudience, ForwardingAudience.Single {
   @Shadow @Final private static Logger LOGGER;
 
-  private final FabricServerAudienceProviderImpl adventure$globalProvider = new FabricServerAudienceProviderImpl((MinecraftServer) (Object) this, TranslatableComponentRenderer.get());
+  private final FabricServerAudienceProviderImpl adventure$globalProvider = new FabricServerAudienceProviderImpl((MinecraftServer) (Object) this, GlobalTranslator.renderer());
   private final Map<FabricAudiences, Audience> adventure$renderers = new MapMaker().weakKeys().makeMap();
   private final Audience adventure$backing = this.renderUsing(this.adventure$globalProvider);
 
