@@ -27,14 +27,17 @@ package net.kyori.adventure.platform.fabric;
 import java.util.Locale;
 import java.util.function.UnaryOperator;
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.platform.fabric.impl.AdventureCommon;
 import net.kyori.adventure.platform.fabric.impl.NonWrappingComponentSerializer;
 import net.kyori.adventure.platform.fabric.impl.WrappedComponent;
 import net.kyori.adventure.platform.fabric.impl.accessor.ComponentSerializerAccess;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
 import net.kyori.adventure.text.serializer.ComponentSerializer;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
 import net.minecraft.resources.ResourceLocation;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.PolyNull;
 
 import static java.util.Objects.requireNonNull;
@@ -117,6 +120,17 @@ public interface FabricAudiences {
    */
   static ComponentSerializer<Component, Component, net.minecraft.network.chat.Component> nonWrappingSerializer() {
     return NonWrappingComponentSerializer.INSTANCE;
+  }
+
+  /**
+   * Get the appropriate Gson component serializer for the running game version.
+   *
+   * <p>This can be used to convert components to their JSON representation.</p>
+   *
+   * @return the appropriate serializer
+   */
+  static @NonNull GsonComponentSerializer gsonSerializer() {
+    return AdventureCommon.GSON;
   }
 
   /**

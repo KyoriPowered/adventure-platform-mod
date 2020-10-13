@@ -153,7 +153,7 @@ public final class ServerPlayerAudience implements Audience {
 
   private String adventure$serialize(final @NonNull Component component) {
     final Locale locale = ((ConnectionAccess) this.player.connection).getChannel().attr(FriendlyByteBufBridge.CHANNEL_LOCALE).get();
-    return this.controller.gsonSerializer().serialize(this.controller.localeRenderer().render(component, locale == null ? Locale.getDefault() : locale));
+    return FabricAudiences.gsonSerializer().serialize(this.controller.localeRenderer().render(component, locale == null ? Locale.getDefault() : locale));
   }
 
   @Override
