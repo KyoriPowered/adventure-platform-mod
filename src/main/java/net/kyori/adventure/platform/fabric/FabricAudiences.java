@@ -47,11 +47,12 @@ import static java.util.Objects.requireNonNull;
  *
  * <p>See {@link FabricServerAudiences} for logical server-specific operations,
  * and {@link FabricClientAudiences} for logical client-specific operations</p>
+ *
  * @since 4.0.0
  */
 public interface FabricAudiences {
   /**
-   * Return a {@link PlainComponentSerializer} instance that can resolve key bindings and translations using the game's data
+   * Return a {@link PlainComponentSerializer} instance that can resolve key bindings and translations using the game's data.
    *
    * @return the plain serializer instance
    * @since 4.0.0
@@ -81,7 +82,7 @@ public interface FabricAudiences {
   }
 
   /**
-   * Convert a MC {@link ResourceLocation} instance to a text Key
+   * Convert a MC {@link ResourceLocation} instance to a text Key.
    *
    * @param loc The Identifier to convert
    * @return The equivalent data as a Key
@@ -95,7 +96,7 @@ public interface FabricAudiences {
   }
 
   /**
-   * Convert a Kyori {@link Key} instance to a MC ResourceLocation
+   * Convert a Kyori {@link Key} instance to a MC ResourceLocation.
    *
    * @param key The Key to convert
    * @return The equivalent data as an Identifier
@@ -111,9 +112,9 @@ public interface FabricAudiences {
   /**
    * Return a TextSerializer instance that will do deep conversions between
    * Adventure {@link Component Components} and Minecraft {@link net.minecraft.network.chat.Component Components}.
-   * <p>
-   * This serializer will never wrap text, and can provide {@link net.minecraft.network.chat.MutableComponent}
-   * instances suitable for passing around the game.
+   *
+   * <p>This serializer will never wrap text, and can provide {@link net.minecraft.network.chat.MutableComponent}
+   * instances suitable for passing around the game.</p>
    *
    * @return a serializer instance
    * @since 4.0.0
@@ -128,6 +129,7 @@ public interface FabricAudiences {
    * <p>This can be used to convert components to their JSON representation.</p>
    *
    * @return the appropriate serializer
+   * @since 4.0.0
    */
   static @NonNull GsonComponentSerializer gsonSerializer() {
     return AdventureCommon.GSON;
@@ -153,7 +155,7 @@ public interface FabricAudiences {
   net.minecraft.network.chat.Component toNative(final Component adventure);
 
   /**
-   * Get an adventure {@link Component} from a native {@link net.minecraft.network.chat.Component}
+   * Get an adventure {@link Component} from a native {@link net.minecraft.network.chat.Component}.
    *
    * @param vanilla the native component
    * @return adventure component

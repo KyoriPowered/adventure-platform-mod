@@ -79,7 +79,7 @@ public class ServerBossBarListener extends AbstractBossBarListener<ServerBossEve
    * Replace a player entity without sending any packets.
    *
    * <p>This should be triggered when the entity representing a player changes
-   * (such as during a respawn)
+   * (such as during a respawn)</p>
    *
    * @param old old player
    * @param newPlayer new one
@@ -91,7 +91,8 @@ public class ServerBossBarListener extends AbstractBossBarListener<ServerBossEve
   }
 
   /**
-   * Refresh titles when a player's locale has changed
+   * Refresh titles when a player's locale has changed.
+   *
    * @param player player to refresh titles fro
    */
   public void refreshTitles(final ServerPlayer player) {

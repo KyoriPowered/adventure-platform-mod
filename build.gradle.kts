@@ -21,21 +21,22 @@ group = "net.kyori"
 version = "4.0.0-SNAPSHOT"
 
 repositories {
-  mavenLocal()
   jcenter()
   mavenCentral()
   sonatypeOss()
 }
 
 dependencies {
-  modApi(include("net.kyori:examination-api:1.0.0-SNAPSHOT")!!)
-  modApi(include("net.kyori:examination-string:1.0.0-SNAPSHOT")!!)
   modApi(include(adventure("api", versionAdventure))!!)
   modApi(include(adventure("text-feature-pagination", versionAdventure))!!)
   modApi(include(adventure("text-serializer-plain", versionAdventure))!!)
   modApi(include(adventure("platform-api", versionAdventure)) {
     exclude("com.google.code.gson")
   })
+
+  // Transitive deps
+  include("net.kyori:examination-api:1.0.0")
+  include("net.kyori:examination-string:1.0.0")
 
   modImplementation(include(adventure("text-serializer-gson", versionAdventure)) {
       exclude("com.google.code.gson")
@@ -49,14 +50,14 @@ dependencies {
   // Testmod TODO figure out own scope
   modImplementation("net.fabricmc.fabric-api:fabric-api:$versionFabricApi")
 
-  checkstyle("ca.stellardrift:stylecheck:0.1-SNAPSHOT")
+  checkstyle("ca.stellardrift:stylecheck:0.1")
 }
 
 checkstyle {
   val checkstyleDir = project.projectDir.resolve(".checkstyle")
-  toolVersion = "8.34"
+  toolVersion = "8.36.2"
   configDirectory.set(checkstyleDir)
-  configProperties = mapOf("basedir" to checkstyleDir)
+  configProperties = mapOf("configDirectory" to checkstyleDir)
 }
 
 tasks.withType<ProcessResources>().configureEach {

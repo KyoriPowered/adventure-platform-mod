@@ -3,8 +3,11 @@
   "-//Checkstyle//DTD SuppressionFilter Configuration 1.2//EN"
   "http://checkstyle.org/dtds/suppressions_1_2.dtd">
 <suppressions>
-  <!-- add any necessary suppressions here -->
-  <suppress files="src[\\/]test[\\/]java[\\/].*" checks="RequireExplicitVisibilityModifier"/>
+  <!-- Accessor -->
   <suppress files=".*[\\/]accessor[\\/].*Access\.java" checks="MethodName"/>
   <suppress files=".*[\\/]accessor[\\/].*Access\.java" checks="EmptyLineSeparator"/>
+
+  <!-- No JD required in impl or testmod -->
+  <suppress files="net[\\/]kyori[\\/]adventure[\\/]platform[\\/]fabric[\\/]impl[\\/].*" checks="FilteringWriteTag|(?:MissingJavadoc.*)"/>
+  <suppress files="net[\\/]kyori[\\/]adventure[\\/]platform[\\/]test[\\/]fabric[\\/].*" checks="FilteringWriteTag|(?:MissingJavadoc.*)"/>
 </suppressions>

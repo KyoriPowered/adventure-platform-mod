@@ -38,13 +38,13 @@ import static java.util.Objects.requireNonNull;
 /**
  * Represents a mapping between an enum-like set of values controlled by Minecraft, and an enum-like set of values controlled by
  * Adventure.
- * <p>
- * Because these enums both refer to known constants, it is relatively easy to generate an automated
+ *
+ * <p>Because these enums both refer to known constants, it is relatively easy to generate an automated
  * mapping between the two of them. As the two enums represent the same set of values, it is
  * required that any element that appears in one is present in the other, so mappings will never
- * return null.
+ * return null.</p>
  *
- * @param <Mc>  The Minecraft type
+ * @param <Mc> The Minecraft type
  * @param <Adv> The Adventure type
  */
 public class MappedRegistry<Mc, Adv> {
@@ -81,11 +81,12 @@ public class MappedRegistry<Mc, Adv> {
 
   /**
    * Validates that all members of an enum are present in the given map Throws {@link
-   * IllegalStateException} if there is a missing value
+   * IllegalStateException} if there is a missing value.
    *
-   * @param toCheck   The map to check
+   * @param toCheck The map to check
    * @param values The values to verify are keys of the provided map
-   * @param <T>       The type of enum
+   * @param <T> The type of enum
+   * @throws IllegalStateException if a value is missing
    */
   private static <T> void checkCoverage(final Map<T, ?> toCheck, final Iterable<T> values) throws IllegalStateException {
     for(final T value : values) {

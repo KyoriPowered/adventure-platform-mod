@@ -23,7 +23,7 @@
  */
 
 /**
- * Internal implementation of the adventure platform
+ * Internal implementation of the adventure platform.
  *
  * <p>Direct access to classes in this package is
  * unsupported, and changes may occur at any time.</p>

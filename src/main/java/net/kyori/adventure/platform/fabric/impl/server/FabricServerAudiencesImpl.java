@@ -64,7 +64,7 @@ public final class FabricServerAudiencesImpl implements FabricServerAudiences {
   private static final Set<FabricServerAudiencesImpl> INSTANCES = Collections.newSetFromMap(new WeakHashMap<>());
 
   /**
-   * Perform an action on every audience provider instance
+   * Perform an action on every audience provider instance.
    *
    * @param actor a consumer that will be called for every provider
    */

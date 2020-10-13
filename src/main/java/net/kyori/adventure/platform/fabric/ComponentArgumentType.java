@@ -42,7 +42,9 @@ import net.minecraft.commands.arguments.ComponentArgument;
  * An argument that takes JSON-format text.
  *
  * <p>At the moment, using this argument type will require this mod
- * <strong>both server- and clientside</strong>.
+ * <strong>both server- and clientside</strong>, unless the
+ * <a href="https://gitlab.com/stellardrift/colonel">Colonel</a> mod is present on the server.</p>
+ *
  * @since 4.0.0
  */
 public final class ComponentArgumentType implements ArgumentType<Component> {
@@ -54,7 +56,7 @@ public final class ComponentArgumentType implements ArgumentType<Component> {
   );
 
   /**
-   * Get the argument type for component arguments
+   * Get the argument type for component arguments.
    *
    * @return argument type instance
    * @since 4.0.0
@@ -64,7 +66,7 @@ public final class ComponentArgumentType implements ArgumentType<Component> {
   }
 
   /**
-   * Get the component from the provided context
+   * Get the component from the provided context.
    *
    * @param ctx Context to get from
    * @param key argument key

@@ -40,8 +40,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 /**
- * The methods in this class should match the implementations of their Text-using counterparts in {@link CommandSourceStack}
- *
+ * The methods in this class should match the implementations of their Text-using counterparts in {@link CommandSourceStack}.
  */
 @Mixin(CommandSourceStack.class)
 public abstract class CommandSourceStackMixin implements AdventureCommandSourceStackInternal {

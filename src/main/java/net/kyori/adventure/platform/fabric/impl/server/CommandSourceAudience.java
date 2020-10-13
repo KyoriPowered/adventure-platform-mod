@@ -33,7 +33,7 @@ import net.minecraft.commands.CommandSource;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
- * Audience implementation that can wrap a {@link CommandSource}
+ * Audience implementation that can wrap a {@link CommandSource}.
  */
 final class CommandSourceAudience implements Audience {
   private final CommandSource output;

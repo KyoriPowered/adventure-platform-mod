@@ -28,7 +28,7 @@ import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.text.Component;
 
 /**
- * An interface applied to {@link net.minecraft.commands.CommandSourceStack} to allow sending {@link Component Components}
+ * An interface applied to {@link net.minecraft.commands.CommandSourceStack} to allow sending {@link Component Components}.
  *
  * @since 4.0.0
  */

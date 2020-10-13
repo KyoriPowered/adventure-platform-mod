@@ -31,7 +31,7 @@ import net.minecraft.commands.CommandSource;
 
 public interface AdventureCommandSourceStackInternal extends AdventureCommandSourceStack {
   /**
-   * Set the audience to be delegated to
+   * Set the audience to be delegated to.
    *
    * @param wrapped wrapped audience
    * @param controller controller to render with

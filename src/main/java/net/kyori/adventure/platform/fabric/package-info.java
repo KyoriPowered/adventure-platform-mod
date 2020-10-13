@@ -22,6 +22,15 @@
  * SOFTWARE.
  */
 
+/**
+ * Implementation of <a href="https://docs.adventure.kyori.net">Adventure</a>
+ * on Minecraft using the Fabric mod loader.
+ *
+ * <p>There are both server- and clientside entry points for Adventure.</p>
+ *
+ * @see net.kyori.adventure.platform.fabric.FabricServerAudiences
+ * @see net.kyori.adventure.platform.fabric.FabricClientAudiences
+ */
 @DefaultQualifier(NonNull.class)
 package net.kyori.adventure.platform.fabric;
 

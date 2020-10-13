@@ -43,7 +43,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 /**
- * Implement ComponentCommandOutput for output to the server console
+ * Implement ComponentCommandOutput for output to the server console.
  */
 @Mixin(value = MinecraftServer.class)
 public abstract class MinecraftServerMixin implements MinecraftServerBridge, RenderableAudience, ForwardingAudience.Single {

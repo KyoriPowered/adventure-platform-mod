@@ -76,8 +76,8 @@ public interface FabricServerAudiences extends AudienceProvider, FabricAudiences
   /**
    * Get an audience to send to a {@link CommandSourceStack}.
    *
-   * This will delegate to the native implementation by the command source, or
-   * otherwise use a wrapping implementation.
+   * <p>This will delegate to the native implementation by the command source, or
+   * otherwise use a wrapping implementation.</p>
    *
    * @param source source to send to.
    * @return the audience

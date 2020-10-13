@@ -243,7 +243,7 @@ public class AdventureTester implements ModInitializer {
   }
 
   /**
-   * Begin a countdown shown on a boss bar, completing with the specified action
+   * Begin a countdown shown on a boss bar, completing with the specified action.
    *
    * @param title Boss bar title
    * @param timeSeconds seconds boss bar will last

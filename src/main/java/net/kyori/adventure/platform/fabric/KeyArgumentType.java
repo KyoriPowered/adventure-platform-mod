@@ -50,7 +50,7 @@ public final class KeyArgumentType implements ArgumentType<Key> {
   }
 
   /**
-   * Get a {@link Key}-typed value from a parsed {@link CommandContext}
+   * Get a {@link Key}-typed value from a parsed {@link CommandContext}.
    *
    * @param ctx context to get the value from
    * @param id id the argument was taken from
