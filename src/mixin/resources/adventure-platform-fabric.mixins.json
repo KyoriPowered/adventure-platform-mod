@@ -6,9 +6,11 @@
     "CommandSourceStackMixin",
     "ComponentSerializerMixin",
     "FriendlyByteBufMixin",
+    "GameProfileMixin",
     "MinecraftServerMixin",
     "PacketEncoderMixin",
     "PlayerListMixin",
+    "PlayerMixin",
     "RconConsoleSourceMixin",
     "ServerBossEventMixin",
     "ServerPlayerMixin"

@@ -22,32 +22,22 @@
  * SOFTWARE.
  */
 
-package net.kyori.adventure.platform.fabric;
+package net.kyori.adventure.platform.fabric.impl;
 
-import net.kyori.adventure.audience.ForwardingAudience;
-import net.kyori.adventure.identity.Identified;
-import net.kyori.adventure.text.Component;
+import java.net.URL;
+import net.fabricmc.loader.api.entrypoint.PreLaunchEntrypoint;
+import net.fabricmc.loader.launch.common.FabricLauncherBase;
 
-/**
- * An interface applied to {@link net.minecraft.commands.CommandSourceStack} to allow sending {@link Component Components}.
- *
- * @since 4.0.0
- */
-public interface AdventureCommandSourceStack extends ForwardingAudience.Single, Identified {
-  /**
-   * Send a result message to the command source.
-   *
-   * @param text The text to send
-   * @param sendToOps If this message should be sent to all ops listening
-   * @since 4.0.0
-   */
-  void sendSuccess(Component text, boolean sendToOps);
-
-  /**
-   * Send an error message to the command source.
-   *
-   * @param text The error
-   * @since 4.0.0
-   */
-  void sendFailure(Component text);
+public class AdventurePrelaunch implements PreLaunchEntrypoint {
+  @Override
+  public void onPreLaunch() {
+    // TODO: Actually fix loader
+    final URL target;
+    try {
+      target = Class.forName("com.mojang.authlib.UserAuthentication").getProtectionDomain().getCodeSource().getLocation();
+      FabricLauncherBase.getLauncher().propose(target);
+    } catch(final ClassNotFoundException e) {
+      throw new RuntimeException("please fix fabric loader to enable transforming libraries normally", e);
+    }
+  }
 }

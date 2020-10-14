@@ -35,6 +35,8 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.kyori.adventure.identity.Identity;
+import net.kyori.adventure.platform.fabric.AdventureCommandSourceStack;
 import net.kyori.adventure.platform.fabric.FabricServerAudiences;
 
 import java.util.Collection;
@@ -125,14 +127,14 @@ public class AdventureTester implements ModInitializer {
       dispatcher.register(literal("adventure")
         .then(literal("about").executes(ctx -> {
           final Audience audience = this.adventure().audience(ctx.getSource());
-          audience.sendMessage(translatable("adventure.test.welcome", COLOR_RESPONSE, this.adventure().toAdventure(ctx.getSource().getDisplayName())));
-          audience.sendMessage(translatable("adventure.test.description", color(0xc022cc)));
+          audience.sendMessage(Identity.nil(), translatable("adventure.test.welcome", COLOR_RESPONSE, this.adventure().toAdventure(ctx.getSource().getDisplayName())));
+          audience.sendMessage(Identity.nil(), translatable("adventure.test.description", color(0xc022cc)));
           return 1;
         }))
         .then(literal("echo").then(argument(ARG_TEXT, component()).executes(ctx -> {
-          final Audience audience = this.adventure().audience(ctx.getSource());
+          final AdventureCommandSourceStack source = this.adventure().audience(ctx.getSource());
           final Component result = component(ctx, ARG_TEXT);
-          audience.sendMessage(result);
+          source.sendMessage(source, result);
           return 1;
         })))
         .then(literal("countdown").then(argument(ARG_SECONDS, integer()).executes(ctx -> { // multiple boss bars!
@@ -148,12 +150,12 @@ public class AdventureTester implements ModInitializer {
         })))
       .then(literal("tellall").then(argument(ARG_TARGETS, players()).then(argument(ARG_TEXT, component()).executes(ctx -> {
         final Collection<ServerPlayer> targets = getPlayers(ctx, ARG_TARGETS);
-        final Audience source = this.adventure().audience(ctx.getSource());
+        final AdventureCommandSourceStack source = this.adventure().audience(ctx.getSource());
         final Component message = component(ctx, ARG_TEXT);
         final Audience destination = this.adventure().audience(targets);
 
-        destination.sendMessage(message);
-        source.sendMessage(text(b -> {
+        destination.sendMessage(source, message);
+        source.sendMessage(Identity.nil(), text(b -> {
           b.content("You have sent \"");
           b.append(message).append(text("\" to ")).append(this.listPlayers(targets));
           b.color(COLOR_RESPONSE);
@@ -163,7 +165,7 @@ public class AdventureTester implements ModInitializer {
       .then(literal("sound").then(argument(ARG_SOUND, key()).suggests(SuggestionProviders.AVAILABLE_SOUNDS).executes(ctx -> {
         final Audience viewer = this.adventure().audience(ctx.getSource());
         final Key sound = KeyArgumentType.key(ctx, ARG_SOUND);
-        viewer.sendMessage(text(b -> b.content("Playing sound ").append(represent(sound)).color(COLOR_RESPONSE)));
+        viewer.sendMessage(Identity.nil(), text(b -> b.content("Playing sound ").append(represent(sound)).color(COLOR_RESPONSE)));
         viewer.playSound(sound(sound, Sound.Source.MASTER, 1f, 1f));
         return 1;
       })))
@@ -180,7 +182,7 @@ public class AdventureTester implements ModInitializer {
       .then(literal("rgb").executes(ctx -> {
         final Audience viewer = this.adventure().audience(ctx.getSource());
         for(final TextColor color : LINE_COLOURS) {
-          viewer.sendMessage(LINE.color(color));
+          viewer.sendMessage(Identity.nil(), LINE.color(color));
         }
         return 1;
       }))

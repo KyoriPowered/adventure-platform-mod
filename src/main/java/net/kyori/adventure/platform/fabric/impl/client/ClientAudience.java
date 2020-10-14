@@ -28,6 +28,7 @@ import java.time.Duration;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.fabric.FabricAudiences;
@@ -57,7 +58,9 @@ public class ClientAudience implements Audience {
   }
 
   @Override
-  public void sendMessage(final @NonNull Component message, final @NonNull MessageType type) {
+  public void sendMessage(final Identity source, final @NonNull Component message, final @NonNull MessageType type) {
+    if(this.client.isBlocked(source.uuid())) return;
+
     final ChatVisiblity visibility = this.client.options.chatVisibility;
     if(type == MessageType.CHAT) {
       // Add to chat queue (following delay and such)

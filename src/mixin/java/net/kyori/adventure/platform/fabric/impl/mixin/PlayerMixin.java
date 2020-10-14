@@ -22,32 +22,23 @@
  * SOFTWARE.
  */
 
-package net.kyori.adventure.platform.fabric;
+package net.kyori.adventure.platform.fabric.impl.mixin;
 
-import net.kyori.adventure.audience.ForwardingAudience;
+import com.mojang.authlib.GameProfile;
 import net.kyori.adventure.identity.Identified;
-import net.kyori.adventure.text.Component;
+import net.kyori.adventure.identity.Identity;
+import net.minecraft.world.entity.player.Player;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 
-/**
- * An interface applied to {@link net.minecraft.commands.CommandSourceStack} to allow sending {@link Component Components}.
- *
- * @since 4.0.0
- */
-public interface AdventureCommandSourceStack extends ForwardingAudience.Single, Identified {
-  /**
-   * Send a result message to the command source.
-   *
-   * @param text The text to send
-   * @param sendToOps If this message should be sent to all ops listening
-   * @since 4.0.0
-   */
-  void sendSuccess(Component text, boolean sendToOps);
+@Mixin(Player.class)
+public class PlayerMixin implements Identified {
+  @Shadow @Final private GameProfile gameProfile;
 
-  /**
-   * Send an error message to the command source.
-   *
-   * @param text The error
-   * @since 4.0.0
-   */
-  void sendFailure(Component text);
+  @Override
+  public @NonNull Identity identity() {
+    return (Identity) this.gameProfile;
+  }
 }

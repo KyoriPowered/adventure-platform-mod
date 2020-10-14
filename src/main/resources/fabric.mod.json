@@ -3,24 +3,21 @@
   "id": "${project.rootProject.name.toLowerCase()}",
   "version": "${project.version}",
   "name": "${project.rootProject.name}",
-
-  "authors": [
-    "kashike","zml", "Luck", "Electroid"
-  ],
+  "authors": ["kashike","zml", "Luck", "Electroid"],
   "contact": {
     "homepage": "https://github.com/KyoriPowered/adventure-platform-fabric",
     "issues": "https://github.com/KyoriPowered/adventure-platform-fabric/issues",
     "sources": "https://github.com/KyoriPowered/adventure-platform-fabric"
   },
-
   "license": "MIT",
 
   "entrypoints": {
-    "main": [
-      {
-        "value":"net.kyori.adventure.platform.fabric.impl.AdventureCommon"
-      }
-    ]
+    "main": [{
+        "value" : "net.kyori.adventure.platform.fabric.impl.AdventureCommon"
+    }],
+    "preLaunch": [{
+      "value": "net.kyori.adventure.platform.fabric.impl.AdventurePrelaunch"
+    }]
   },
   "mixins": [
     "adventure-platform-fabric.accessor.mixins.json",
@@ -34,7 +31,6 @@
     "fabricloader": ">=0.4.0",
     "fabric-api-base": "*"
   },
-
   "recommends": {
     "colonel": ">=0.1"
   }
