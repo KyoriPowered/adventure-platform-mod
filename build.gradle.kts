@@ -13,7 +13,8 @@ plugins {
 
 val versionMinecraft: String by project
 val versionAdventure: String by project
-val versionMappings: String by project
+val versionAdventurePlatform: String by project
+val versionAdventurePagination: String by project
 val versionLoader: String by project
 val versionFabricApi: String by project
 
@@ -28,19 +29,20 @@ repositories {
 
 dependencies {
   modApi(include(adventure("api", versionAdventure))!!)
-  modApi(include(adventure("text-feature-pagination", versionAdventure))!!)
   modApi(include(adventure("text-serializer-plain", versionAdventure))!!)
-  modApi(include(adventure("platform-api", versionAdventure)) {
+  modApi(include(adventure("text-feature-pagination", versionAdventurePagination))!!)
+  modApi(include(adventure("platform-api", versionAdventurePlatform)) {
     exclude("com.google.code.gson")
   })
+  modImplementation(include(adventure("text-serializer-gson", versionAdventure)) {
+    exclude("com.google.code.gson")
+  })
+  modApi(fabricApi.module("fabric-api-base", versionFabricApi))
 
   // Transitive deps
   include("net.kyori:examination-api:1.0.0")
   include("net.kyori:examination-string:1.0.0")
 
-  modImplementation(include(adventure("text-serializer-gson", versionAdventure)) {
-      exclude("com.google.code.gson")
-  })
   modImplementation("ca.stellardrift:colonel:0.1")
 
   minecraft("com.mojang:minecraft:$versionMinecraft")
