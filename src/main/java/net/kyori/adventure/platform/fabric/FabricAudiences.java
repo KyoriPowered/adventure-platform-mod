@@ -86,7 +86,7 @@ public interface FabricAudiences {
    * @return The equivalent data as a Key
    * @since 4.0.0
    */
-  static @PolyNull Key toAdventure(@PolyNull ResourceLocation loc) {
+  static @PolyNull Key toAdventure(final @PolyNull ResourceLocation loc) {
     if(loc == null) {
       return null;
     }
@@ -100,7 +100,7 @@ public interface FabricAudiences {
    * @return The equivalent data as an Identifier
    * @since 4.0.0
    */
-  static @PolyNull ResourceLocation toNative(@PolyNull Key key) {
+  static @PolyNull ResourceLocation toNative(final @PolyNull Key key) {
     if(key == null) {
       return null;
     }

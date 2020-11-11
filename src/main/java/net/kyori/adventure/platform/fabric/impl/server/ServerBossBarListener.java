@@ -43,11 +43,11 @@ public class ServerBossBarListener extends AbstractBossBarListener<ServerBossEve
   }
 
   public void subscribe(final ServerPlayer player, final BossBar bar) {
-    minecraftCreating(requireNonNull(bar, "bar")).addPlayer(requireNonNull(player, "player"));
+    this.minecraftCreating(requireNonNull(bar, "bar")).addPlayer(requireNonNull(player, "player"));
   }
 
   public void subscribeAll(final Collection<ServerPlayer> players, final BossBar bar) {
-    ((ServerBossEventBridge) minecraftCreating(requireNonNull(bar, "bar"))).adventure$addAll(players);
+    ((ServerBossEventBridge) this.minecraftCreating(requireNonNull(bar, "bar"))).adventure$addAll(players);
   }
 
   public void unsubscribe(final ServerPlayer player, final BossBar bar) {
@@ -97,7 +97,7 @@ public class ServerBossBarListener extends AbstractBossBarListener<ServerBossEve
   public void refreshTitles(final ServerPlayer player) {
     for(final ServerBossEvent bar : this.bars.values()) {
       if(bar.getPlayers().contains(player)) {
-        player.connection.send(new ClientboundBossEventPacket(ClientboundBossEventPacket.Operation.UPDATE_NAME, bar));
+        player.connection.send(ClientboundBossEventPacket.createUpdateNamePacket(bar));
       }
     }
   }
@@ -127,7 +127,7 @@ public class ServerBossBarListener extends AbstractBossBarListener<ServerBossEve
     final float progress
   ) {
     final ServerBossEvent event = new ServerBossEvent(title, color, style);
-    event.setPercent(progress);
+    event.setProgress(progress);
     return event;
   }
 }

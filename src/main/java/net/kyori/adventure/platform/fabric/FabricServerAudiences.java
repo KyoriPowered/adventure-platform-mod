@@ -54,7 +54,7 @@ public interface FabricServerAudiences extends AudienceProvider, FabricAudiences
    * @return common audience provider
    * @since 4.0.0
    */
-  static @NonNull FabricServerAudiences of(@NonNull MinecraftServer server) {
+  static @NonNull FabricServerAudiences of(final @NonNull MinecraftServer server) {
     return ((MinecraftServerBridge) server).adventure$globalProvider();
   }
 
@@ -68,7 +68,7 @@ public interface FabricServerAudiences extends AudienceProvider, FabricAudiences
    * @return new audience provider
    * @since 4.0.0
    */
-  static @NonNull FabricServerAudiences of(@NonNull MinecraftServer server, @NonNull ComponentRenderer<Locale> renderer) {
+  static @NonNull FabricServerAudiences of(final @NonNull MinecraftServer server, final @NonNull ComponentRenderer<Locale> renderer) {
     return new FabricServerAudiencesImpl(requireNonNull(server, "server"), requireNonNull(renderer, "renderer"));
   }
 

@@ -23,12 +23,15 @@
  */
 package net.kyori.adventure.platform.fabric.impl;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.bossbar.BossBar.Overlay;
-import net.kyori.adventure.platform.fabric.impl.accessor.SoundSourceAccess;
 import net.kyori.adventure.sound.Sound;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.BossEvent;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public final class GameEnums {
   public static final MappedRegistry<BossEvent.BossBarColor, BossBar.Color> BOSS_BAR_COLOR
@@ -40,8 +43,17 @@ public final class GameEnums {
     Overlay.class, Overlay.NAMES);
 
   public static final MappedRegistry<SoundSource, Sound.Source> SOUND_SOURCE
-    = MappedRegistry.named(SoundSource.class, key -> SoundSourceAccess.getNameMap().get(key),
+    = MappedRegistry.named(SoundSource.class, soundSourceProvider(),
     Sound.Source.class, Sound.Source.NAMES);
+
+  private static Function<String, @Nullable SoundSource> soundSourceProvider() {
+    final Map<String, SoundSource> sources = new HashMap<>();
+    for(final SoundSource source : SoundSource.values()) {
+      sources.put(source.getName(), source);
+    }
+
+    return sources::get;
+  }
 
   private GameEnums() {
   }

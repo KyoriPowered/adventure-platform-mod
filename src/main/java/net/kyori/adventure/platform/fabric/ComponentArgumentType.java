@@ -24,7 +24,6 @@
 package net.kyori.adventure.platform.fabric;
 
 import net.kyori.adventure.platform.fabric.impl.accessor.ComponentSerializerAccess;
-import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonParseException;
 import com.google.gson.stream.JsonReader;
 import com.mojang.brigadier.StringReader;
@@ -49,7 +48,7 @@ import net.minecraft.commands.arguments.ComponentArgument;
 public final class ComponentArgumentType implements ArgumentType<Component> {
 
   private static final ComponentArgumentType INSTANCE = new ComponentArgumentType();
-  private static final Set<String> EXAMPLES = ImmutableSet.of(
+  private static final Set<String> EXAMPLES = Set.of(
     "\"Hello world!\"",
     "[\"Message\", {\"text\": \"example\", \"color\": \"#aabbcc\"}]"
   );

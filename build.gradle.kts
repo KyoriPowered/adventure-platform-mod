@@ -3,6 +3,7 @@ import ca.stellardrift.build.common.adventure
 import net.kyori.indra.repository.sonatypeSnapshots
 
 plugins {
+  id("fabric-loom") version "0.8-SNAPSHOT"
   id("ca.stellardrift.opinionated.fabric") version "5.0.0"
   id("net.kyori.indra.publishing.sonatype") version "2.0.4"
 }
@@ -15,11 +16,15 @@ val versionLoader: String by project
 val versionFabricApi: String by project
 
 group = "net.kyori"
-version = "4.0.0-SNAPSHOT"
+version = "4.1.0-SNAPSHOT"
 
 repositories {
   mavenCentral()
   sonatypeSnapshots()
+}
+
+indra {
+  javaVersions().target(16)
 }
 
 dependencies {
@@ -40,7 +45,7 @@ dependencies {
   include("net.kyori:examination-string:1.1.0")
   modCompileOnly("org.checkerframework:checker-qual:3.13.0")
 
-  modImplementation("ca.stellardrift:colonel:0.2")
+  modCompileOnly("ca.stellardrift:colonel:0.2") // broken on 1.17, needs update
 
   minecraft("com.mojang:minecraft:$versionMinecraft")
   mappings(minecraft.officialMojangMappings())

@@ -42,10 +42,13 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientboundChatPacket;
+import net.minecraft.network.protocol.game.ClientboundClearTitlesPacket;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.network.protocol.game.ClientboundCustomSoundPacket;
-import net.minecraft.network.protocol.game.ClientboundSetTitlesPacket;
+import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
+import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket;
+import net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket;
+import net.minecraft.network.protocol.game.ClientboundSetTitlesAnimationPacket;
 import net.minecraft.network.protocol.game.ClientboundStopSoundPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
@@ -80,12 +83,12 @@ public final class ServerPlayerAudience implements Audience {
       mcType = ChatType.SYSTEM;
     }
 
-    this.sendPacket(new ClientboundChatPacket(this.controller.toNative(text), mcType, source.uuid()));
+    this.player.sendMessage(this.controller.toNative(text), mcType, source.uuid());
   }
 
   @Override
   public void sendActionBar(final @NonNull Component message) {
-    this.sendPacket(new ClientboundSetTitlesPacket(ClientboundSetTitlesPacket.Type.ACTIONBAR, this.controller.toNative(message)));
+    this.sendPacket(new ClientboundSetActionBarTextPacket(this.controller.toNative(message)));
   }
 
   @Override
@@ -141,10 +144,10 @@ public final class ServerPlayerAudience implements Audience {
     bookTag.put(BOOK_PAGES, pages);
     bookTag.putBoolean(BOOK_RESOLVED, true); // todo: any parseable texts?
 
-    final ItemStack previous = this.player.inventory.getSelected();
-    this.sendPacket(new ClientboundContainerSetSlotPacket(-2, this.player.inventory.selected, bookStack));
+    final ItemStack previous = this.player.getInventory().getSelected();
+    this.sendPacket(new ClientboundContainerSetSlotPacket(-2, this.player.getInventory().selected, bookStack));
     this.player.openItemGui(bookStack, InteractionHand.MAIN_HAND);
-    this.sendPacket(new ClientboundContainerSetSlotPacket(-2, this.player.inventory.selected, previous));
+    this.sendPacket(new ClientboundContainerSetSlotPacket(-2, this.player.getInventory().selected, previous));
   }
 
   private String adventure$serialize(final @NonNull Component component) {
@@ -155,7 +158,7 @@ public final class ServerPlayerAudience implements Audience {
   @Override
   public void showTitle(final @NonNull Title title) {
     if(title.subtitle() != Component.empty()) {
-      this.sendPacket(new ClientboundSetTitlesPacket(ClientboundSetTitlesPacket.Type.SUBTITLE, this.controller.toNative(title.subtitle())));
+      this.sendPacket(new ClientboundSetSubtitleTextPacket(this.controller.toNative(title.subtitle())));
     }
 
     final Title.@Nullable Times times = title.times();
@@ -164,12 +167,12 @@ public final class ServerPlayerAudience implements Audience {
       final int fadeOut = ticks(times.fadeOut());
       final int dwell = ticks(times.stay());
       if(fadeIn != -1 || fadeOut != -1 || dwell != -1) {
-        this.sendPacket(new ClientboundSetTitlesPacket(fadeIn, dwell, fadeOut));
+        this.sendPacket(new ClientboundSetTitlesAnimationPacket(fadeIn, dwell, fadeOut));
       }
     }
 
     if(title.title() != Component.empty()) {
-      this.sendPacket(new ClientboundSetTitlesPacket(ClientboundSetTitlesPacket.Type.TITLE, this.controller.toNative(title.title())));
+      this.sendPacket(new ClientboundSetTitleTextPacket(this.controller.toNative(title.title())));
     }
   }
 
@@ -179,12 +182,12 @@ public final class ServerPlayerAudience implements Audience {
 
   @Override
   public void clearTitle() {
-    this.sendPacket(new ClientboundSetTitlesPacket(ClientboundSetTitlesPacket.Type.CLEAR, null));
+    this.sendPacket(new ClientboundClearTitlesPacket(false));
   }
 
   @Override
   public void resetTitle() {
-    this.sendPacket(new ClientboundSetTitlesPacket(ClientboundSetTitlesPacket.Type.RESET, null));
+    this.sendPacket(new ClientboundClearTitlesPacket(true));
   }
 
   @Override

@@ -23,7 +23,6 @@
  */
 package net.kyori.adventure.platform.test.fabric.widget;
 
-import com.google.common.collect.ImmutableList;
 import java.util.List;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.bossbar.BossBar;
@@ -43,7 +42,7 @@ public final class AdventureTestButtons {
 
   public static List<AbstractWidget> testItems() {
     final BossBar testBar = BossBar.bossBar(text("Your current world is called: ").append(text(Minecraft.getInstance().level.dimension().location().toString(), NamedTextColor.AQUA)), 1f, BossBar.Color.BLUE, BossBar.Overlay.PROGRESS);
-    return ImmutableList.of(
+    return List.of(
       button(text("I am a test!"), b -> {
         clientAudience().sendMessage(text("I'm from the client!", NamedTextColor.DARK_PURPLE));
       }),

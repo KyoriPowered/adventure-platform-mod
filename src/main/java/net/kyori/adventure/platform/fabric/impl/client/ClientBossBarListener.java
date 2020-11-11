@@ -27,10 +27,8 @@ import java.util.Map;
 import java.util.UUID;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.platform.fabric.impl.AbstractBossBarListener;
-import net.kyori.adventure.platform.fabric.impl.accessor.ClientboundBossEventPacketAccess;
 import net.minecraft.client.gui.components.LerpingBossEvent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.game.ClientboundBossEventPacket;
 import net.minecraft.world.BossEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -47,14 +45,7 @@ public class ClientBossBarListener extends AbstractBossBarListener<LerpingBossEv
                                     final BossEvent.@NonNull BossBarColor color,
                                     final BossEvent.@NonNull BossBarOverlay style,
                                     final float progress) {
-    final ClientboundBossEventPacket pkt = new ClientboundBossEventPacket();
-    final ClientboundBossEventPacketAccess access = (ClientboundBossEventPacketAccess) pkt;
-    access.setId(UUID.randomUUID());
-    access.setName(title);
-    access.setColor(color);
-    access.setOverlay(style);
-    access.setPct(progress);
-    return new LerpingBossEvent(pkt); // the only constructor uses a packet, so we use that
+    return new LerpingBossEvent(UUID.randomUUID(), title, progress, color, style, false, false, false);
   }
 
   public void add(final BossBar bar) {

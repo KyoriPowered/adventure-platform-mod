@@ -4,12 +4,8 @@
   "refmap": "adventure-platform-fabric-accessor-refmap.json",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "ClientboundBossEventPacketAccess",
-    "ClientboundTabListPacketAccess",
     "ComponentSerializerAccess",
-    "ConnectionAccess",
-    "ServerboundClientInformationPacketAccess",
-    "SoundSourceAccess"
+    "ConnectionAccess"
   ],
   "injectors": {
     "defaultRequire": 1

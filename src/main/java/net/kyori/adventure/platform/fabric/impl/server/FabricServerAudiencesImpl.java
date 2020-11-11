@@ -120,20 +120,19 @@ public final class FabricServerAudiencesImpl implements FabricServerAudiences {
   }
 
   @Override public AdventureCommandSourceStack audience(final @NonNull CommandSourceStack source) {
-    if(!(source instanceof AdventureCommandSourceStackInternal)) {
+    if(!(source instanceof AdventureCommandSourceStackInternal internal)) {
       throw new IllegalArgumentException("The AdventureCommandSource mixin failed!");
     }
 
-    final AdventureCommandSourceStackInternal internal = (AdventureCommandSourceStackInternal) source;
     return internal.adventure$audience(this.audience(internal.adventure$source()), this);
   }
 
   @Override public Audience audience(final @NonNull CommandSource source) {
-    if(source instanceof RenderableAudience) {
-      return ((RenderableAudience) source).renderUsing(this);
-    } else if(source instanceof Audience) {
+    if(source instanceof RenderableAudience renderable) {
+      return renderable.renderUsing(this);
+    } else if(source instanceof Audience audience) {
       // TODO: How to pass component renderer through
-      return (Audience) source;
+      return audience;
     } else {
       return new CommandSourceAudience(source, this);
     }
@@ -182,8 +181,8 @@ public final class FabricServerAudiencesImpl implements FabricServerAudiences {
 
   @Override
   public Component toAdventure(final net.minecraft.network.chat.Component vanilla) {
-    if(vanilla instanceof WrappedComponent) {
-      return ((WrappedComponent) vanilla).wrapped();
+    if(vanilla instanceof WrappedComponent wrapped) {
+      return wrapped.wrapped();
     } else {
       return ComponentSerializerAccess.getGSON().fromJson(net.minecraft.network.chat.Component.Serializer.toJsonTree(vanilla), Component.class);
     }

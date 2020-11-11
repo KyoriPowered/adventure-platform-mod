@@ -38,14 +38,12 @@ public interface LocaleHolderBridge {
     if(mcLocale == null) return null;
 
     final String[] parts = mcLocale.split("_", 3);
-    switch(parts.length) {
-      case 1: return parts[0].isEmpty() ? null : new Locale(parts[0]);
-      case 2: return new Locale(parts[0], parts[1]);
-      case 3: return new Locale(parts[0], parts[1], parts[2]);
-      case 0:
-      default:
-        return null;
-    }
+    return switch(parts.length) {
+      case 1 -> parts[0].isEmpty() ? null : new Locale(parts[0]);
+      case 2 -> new Locale(parts[0], parts[1]);
+      case 3 -> new Locale(parts[0], parts[1], parts[2]);
+      default -> null;
+    };
   }
 
   Locale adventure$locale();

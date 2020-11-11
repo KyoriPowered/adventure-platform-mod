@@ -51,7 +51,7 @@ public abstract class AbstractBossBarListener<T extends BossEvent> implements Bo
   @Override
   public void bossBarProgressChanged(final @NonNull BossBar bar, final float oldPercent, final float newPercent) {
     if(oldPercent != newPercent) {
-      this.minecraft(bar).setPercent(newPercent);
+      this.minecraft(bar).setProgress(newPercent);
     }
   }
 

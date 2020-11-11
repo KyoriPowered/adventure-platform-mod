@@ -84,10 +84,13 @@ public class ClientAudience implements Audience {
     final net.minecraft.network.chat.@Nullable Component titleText = title.title() == Component.empty() ? null : this.controller.toNative(title.title());
     final net.minecraft.network.chat.@Nullable Component subtitleText = title.subtitle() == Component.empty() ? null : this.controller.toNative(title.subtitle());
     final Title.@Nullable Times times = title.times();
-    this.client.gui.setTitles(titleText, subtitleText,
+    this.client.gui.setTitle(titleText);;
+    this.client.gui.setSubtitle(subtitleText);
+    this.client.gui.setTimes(
       this.adventure$ticks(times == null ? null : times.fadeIn()),
       this.adventure$ticks(times == null ? null : times.stay()),
-      this.adventure$ticks(times == null ? null : times.fadeOut()));
+      this.adventure$ticks(times == null ? null : times.fadeOut())
+    );
   }
 
   private int adventure$ticks(final @Nullable Duration duration) {
@@ -96,12 +99,14 @@ public class ClientAudience implements Audience {
 
   @Override
   public void clearTitle() {
-    this.client.gui.setTitles(null, null, -1, -1, -1);
+    this.client.gui.setTitle(null);
+    this.client.gui.setSubtitle(null);
   }
 
   @Override
   public void resetTitle() {
     this.client.gui.resetTitleTimes();
+    this.clearTitle();
   }
 
   @Override
@@ -116,7 +121,7 @@ public class ClientAudience implements Audience {
 
   @Override
   public void playSound(final @NonNull Sound sound) {
-    final LocalPlayer player = this.client.player;
+    final @Nullable LocalPlayer player = this.client.player;
     if(player != null) {
       this.playSound(sound, player.getX(), player.getY(), player.getZ());
     } else {
