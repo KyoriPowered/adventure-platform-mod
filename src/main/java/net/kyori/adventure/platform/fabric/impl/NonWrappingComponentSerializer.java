@@ -21,7 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 package net.kyori.adventure.platform.fabric.impl;
 
 import net.kyori.adventure.platform.fabric.impl.accessor.ComponentSerializerAccess;

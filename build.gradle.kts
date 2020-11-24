@@ -1,14 +1,10 @@
 
 import ca.stellardrift.build.common.adventure
-import ca.stellardrift.build.common.isRelease
-import ca.stellardrift.build.common.sonatypeOss
+import net.kyori.indra.sonatypeSnapshots
 
 plugins {
-  id("fabric-loom") version "0.5-SNAPSHOT"
-  id("com.github.fudge.forgedflowerloom") version "2.0.0"
-  id("ca.stellardrift.opinionated.publish") version "3.1"
-  id("ca.stellardrift.opinionated.fabric") version "3.1"
-  checkstyle
+  id("ca.stellardrift.opinionated.fabric") version "4.1"
+  id("net.kyori.indra.publishing.sonatype") version "1.2.1"
 }
 
 val versionMinecraft: String by project
@@ -24,7 +20,7 @@ version = "4.0.0-SNAPSHOT"
 repositories {
   jcenter()
   mavenCentral()
-  sonatypeOss()
+  sonatypeSnapshots()
 }
 
 dependencies {
@@ -55,33 +51,14 @@ dependencies {
   checkstyle("ca.stellardrift:stylecheck:0.1")
 }
 
-checkstyle {
-  val checkstyleDir = project.projectDir.resolve(".checkstyle")
-  toolVersion = "8.36.2"
-  configDirectory.set(checkstyleDir)
-  configProperties = mapOf("configDirectory" to checkstyleDir)
-}
-
-tasks.withType<ProcessResources>().configureEach {
-  filesMatching("fabric.mod.json") {
-    expand("project" to project)
+indra {
+  github("KyoriPowered", "adventure-platform-fabric") {
+    ci = true
   }
-}
+  mitLicense()
 
-tasks.withType<Javadoc>().configureEach {
-  (options as? CoreJavadocOptions)?.apply {
-    addBooleanOption("Xdoclint:-missing", true)
-  }
-}
-
-opinionated {
-  github("KyoriPowered", "adventure-platform-fabric")
-  mit()
-  useJUnit5()
-  publication?.apply {
+  configurePublications {
     pom {
-      url.set("https://github.com/KyoriPowered/adventure-platform-fabric")
-
       developers {
         developer {
           id.set("kashike")
@@ -106,10 +83,5 @@ opinionated {
         }
       }
     }
-  }
-  if (isRelease()) {
-    publishTo("ossrh", "https://oss.sonatype.org/service/local/staging/deploy/maven2/")
-  } else {
-    publishTo("ossrh", "https://oss.sonatype.org/content/repositories/snapshots/")
   }
 }

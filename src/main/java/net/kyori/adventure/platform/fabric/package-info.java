@@ -21,7 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 /**
  * Implementation of <a href="https://docs.adventure.kyori.net">Adventure</a>
  * on Minecraft using the Fabric mod loader.
