@@ -48,7 +48,7 @@ public abstract class AbstractBossBarListener<T extends BossEvent> implements Bo
   }
 
   @Override
-  public void bossBarPercentChanged(final @NonNull BossBar bar, final float oldPercent, final float newPercent) {
+  public void bossBarProgressChanged(final @NonNull BossBar bar, final float oldPercent, final float newPercent) {
     if(oldPercent != newPercent) {
       this.minecraft(bar).setPercent(newPercent);
     }
@@ -97,7 +97,7 @@ public abstract class AbstractBossBarListener<T extends BossEvent> implements Bo
         GameEnums.BOSS_BAR_COLOR.toMinecraft(key.color()),
         GameEnums.BOSS_BAR_OVERLAY.toMinecraft(key.overlay()));
 
-      ret.setPercent(key.percent());
+      ret.setPercent(key.progress());
       updateFlags(ret, key.flags());
       key.addListener(this);
       return ret;

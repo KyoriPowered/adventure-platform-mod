@@ -274,9 +274,9 @@ public class AdventureTester implements ModInitializer {
         return;
       }
 
-      final float newFraction = bar.percent() - (dt / (float) timeMs);
+      final float newFraction = bar.progress() - (dt / (float) timeMs);
       assert newFraction > 0;
-      bar.percent(newFraction);
+      bar.progress(newFraction);
     }, 1, 10, TimeUnit.MILLISECONDS)); // no delay, 10ms tick rate
     targets.showBossBar(bar);
   }
