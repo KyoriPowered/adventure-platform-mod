@@ -31,6 +31,7 @@ import net.kyori.adventure.platform.fabric.FabricAudiences;
 import net.kyori.adventure.text.Component;
 import net.minecraft.world.BossEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public abstract class AbstractBossBarListener<T extends BossEvent> implements BossBar.Listener {
   private final FabricAudiences controller;
@@ -80,7 +81,7 @@ public abstract class AbstractBossBarListener<T extends BossEvent> implements Bo
   }
 
   private T minecraft(final @NonNull BossBar bar) {
-    final /* @Nullable */ T mc = this.bars.get(bar);
+    final @Nullable T mc = this.bars.get(bar);
     if(mc == null) {
       throw new IllegalArgumentException("Unknown boss bar instance " + bar);
     }

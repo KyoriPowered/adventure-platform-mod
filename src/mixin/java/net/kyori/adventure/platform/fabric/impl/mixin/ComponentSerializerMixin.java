@@ -32,6 +32,7 @@ import java.lang.reflect.Type;
 import net.kyori.adventure.platform.fabric.impl.AdventureCommon;
 import net.kyori.adventure.platform.fabric.impl.WrappedComponent;
 import net.minecraft.network.chat.Component;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -46,7 +47,7 @@ public abstract class ComponentSerializerMixin {
   @Inject(method = "serialize", at = @At("HEAD"), cancellable = true)
   public void writeComponentText(final Component text, final Type type, final JsonSerializationContext ctx, final CallbackInfoReturnable<JsonElement> cir) {
     if(text instanceof WrappedComponent) {
-      final /* @Nullable */ Component converted = ((WrappedComponent) text).deepConvertedIfPresent();
+      final @Nullable Component converted = ((WrappedComponent) text).deepConvertedIfPresent();
       if(converted != null) {
         cir.setReturnValue(this.serialize(text, type, ctx));
       } else {

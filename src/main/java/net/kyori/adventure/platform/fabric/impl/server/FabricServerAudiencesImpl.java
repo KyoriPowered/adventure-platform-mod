@@ -53,6 +53,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import static java.util.Objects.requireNonNull;
 
@@ -111,7 +112,7 @@ public final class FabricServerAudiencesImpl implements FabricServerAudiences {
 
   @Override
   public @NonNull Audience player(final @NonNull UUID playerId) {
-    final /* @Nullable */ ServerPlayer player = this.server.getPlayerList().getPlayer(playerId);
+    final @Nullable ServerPlayer player = this.server.getPlayerList().getPlayer(playerId);
     return player != null ? this.audience(player) : Audience.empty();
   }
 
@@ -150,7 +151,7 @@ public final class FabricServerAudiencesImpl implements FabricServerAudiences {
 
   @Override
   public @NonNull Audience world(final @NonNull Key worldId) {
-    final /* @Nullable */ ServerLevel level = this.server.getLevel(ResourceKey.create(Registry.DIMENSION_REGISTRY,
+    final @Nullable ServerLevel level = this.server.getLevel(ResourceKey.create(Registry.DIMENSION_REGISTRY,
       FabricAudiences.toNative(requireNonNull(worldId, "worldId"))));
     if(level != null) {
       return this.audience(level.players());

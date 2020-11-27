@@ -63,11 +63,11 @@ public class MappedRegistry<Mc, Adv> {
     this.adventureToMc = adventureMap;
 
     for(final Adv advElement : adventureValues.get()) {
-      final /* @Nullable */ String mcName = advToName.apply(advElement);
+      final @Nullable String mcName = advToName.apply(advElement);
       if(mcName == null) {
         throw new ExceptionInInitializerError("Unable to get name for enum-like element " + advElement);
       }
-      final /* @Nullable */ Mc mcElement = mcByName.apply(mcName);
+      final @Nullable Mc mcElement = mcByName.apply(mcName);
       if(mcElement == null) {
         throw new ExceptionInInitializerError("Unknown MC element for Adventure " + mcName);
       }

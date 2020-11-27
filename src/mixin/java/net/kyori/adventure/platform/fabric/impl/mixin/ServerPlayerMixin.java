@@ -46,6 +46,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -93,7 +94,7 @@ public abstract class ServerPlayerMixin extends Player implements ForwardingAudi
   @Inject(method = "updateOptions", at = @At("HEAD"))
   private void handleLocaleUpdate(final ServerboundClientInformationPacket information, final CallbackInfo ci) {
     final String language = ((ServerboundClientInformationPacketAccess) information).getLanguage();
-    final /* @Nullable */ Locale locale = LocaleHolderBridge.toLocale(language);
+    final @Nullable Locale locale = LocaleHolderBridge.toLocale(language);
     if(!Objects.equals(this.adventure$locale, locale)) {
       this.adventure$locale = locale;
       PlayerLocales.CHANGED_EVENT.invoker().onLocaleChanged((ServerPlayer) (Object) this, locale);

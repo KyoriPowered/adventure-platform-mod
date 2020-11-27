@@ -41,6 +41,7 @@ import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.checker.nullness.qual.PolyNull;
 
 import static java.util.Objects.requireNonNull;
@@ -65,7 +66,7 @@ public interface FabricAudiences {
    */
   static net.minecraft.network.chat.Component update(net.minecraft.network.chat.Component input, UnaryOperator<Component> modifier) {
     final Component modified;
-    final /* @Nullable */ ComponentRenderer<Locale> renderer;
+    final @Nullable ComponentRenderer<Locale> renderer;
     if(input instanceof WrappedComponent) {
       modified = requireNonNull(modifier).apply(((WrappedComponent) input).wrapped());
       renderer = ((WrappedComponent) input).renderer();

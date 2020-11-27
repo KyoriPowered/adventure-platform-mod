@@ -81,9 +81,9 @@ public class ClientAudience implements Audience {
 
   @Override
   public void showTitle(final @NonNull Title title) {
-    final /* @Nullable */ net.minecraft.network.chat.Component titleText = title.title() == Component.empty() ? null : this.controller.toNative(title.title());
-    final /* @Nullable */ net.minecraft.network.chat.Component subtitleText = title.subtitle() == Component.empty() ? null : this.controller.toNative(title.subtitle());
-    final /* @Nullable */ Title.Times times = title.times();
+    final net.minecraft.network.chat.@Nullable Component titleText = title.title() == Component.empty() ? null : this.controller.toNative(title.title());
+    final net.minecraft.network.chat.@Nullable Component subtitleText = title.subtitle() == Component.empty() ? null : this.controller.toNative(title.subtitle());
+    final Title.@Nullable Times times = title.times();
     this.client.gui.setTitles(titleText, subtitleText,
       this.adventure$ticks(times == null ? null : times.fadeIn()),
       this.adventure$ticks(times == null ? null : times.stay()),
@@ -134,10 +134,10 @@ public class ClientAudience implements Audience {
 
   @Override
   public void stopSound(final @NonNull SoundStop stop) {
-    final /* @Nullable */ Key sound = stop.sound();
-    final /* @Nullable */ ResourceLocation soundIdent = sound == null ? null : FabricAudiences.toNative(sound);
-    final Sound./* @Nullable */ Source source = stop.source();
-    final /* @Nullable */ SoundSource category = source == null ? null : GameEnums.SOUND_SOURCE.toMinecraft(source);
+    final @Nullable Key sound = stop.sound();
+    final @Nullable ResourceLocation soundIdent = sound == null ? null : FabricAudiences.toNative(sound);
+    final Sound.@Nullable Source source = stop.source();
+    final @Nullable SoundSource category = source == null ? null : GameEnums.SOUND_SOURCE.toMinecraft(source);
     this.client.getSoundManager().stop(soundIdent, category);
   }
 

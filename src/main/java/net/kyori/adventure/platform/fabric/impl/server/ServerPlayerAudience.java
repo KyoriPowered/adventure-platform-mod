@@ -55,6 +55,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.Vec3;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public final class ServerPlayerAudience implements Audience {
   private final ServerPlayer player;
@@ -120,9 +121,9 @@ public final class ServerPlayerAudience implements Audience {
 
   @Override
   public void stopSound(final @NonNull SoundStop stop) {
-    final /* @Nullable */ Key sound = stop.sound();
-    final Sound./* @Nullable */ Source src = stop.source();
-    final /* @Nullable */ SoundSource cat = src == null ? null : GameEnums.SOUND_SOURCE.toMinecraft(src);
+    final @Nullable Key sound = stop.sound();
+    final Sound.@Nullable Source src = stop.source();
+    final @Nullable SoundSource cat = src == null ? null : GameEnums.SOUND_SOURCE.toMinecraft(src);
     this.sendPacket(new ClientboundStopSoundPacket(sound == null ? null : FabricAudiences.toNative(sound), cat));
   }
 
@@ -161,7 +162,7 @@ public final class ServerPlayerAudience implements Audience {
       this.sendPacket(new ClientboundSetTitlesPacket(ClientboundSetTitlesPacket.Type.SUBTITLE, this.controller.toNative(title.subtitle())));
     }
 
-    final /* @Nullable */ Title.Times times = title.times();
+    final Title.@Nullable Times times = title.times();
     if(times != null) {
       final int fadeIn = ticks(times.fadeIn());
       final int fadeOut = ticks(times.fadeOut());
