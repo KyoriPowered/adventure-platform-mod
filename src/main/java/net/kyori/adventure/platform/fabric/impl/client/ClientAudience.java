@@ -145,4 +145,20 @@ public class ClientAudience implements Audience {
   public void openBook(final @NonNull Book book) {
     this.client.setScreen(new BookViewScreen(new AdventureBookAccess(book, this.controller.localeRenderer())));
   }
+
+  @Override
+  public void sendPlayerListHeader(final @NonNull Component header) {
+    this.client.gui.getTabList().setHeader(header == Component.empty() ? null : this.controller.toNative(header));
+  }
+
+  @Override
+  public void sendPlayerListFooter(final @NonNull Component footer) {
+    this.client.gui.getTabList().setHeader(footer == Component.empty() ? null : this.controller.toNative(footer));
+  }
+
+  @Override
+  public void sendPlayerListHeaderAndFooter(final @NonNull Component header, final @NonNull Component footer) {
+    this.sendPlayerListHeader(header);
+    this.sendPlayerListFooter(footer);
+  }
 }

@@ -201,6 +201,12 @@ public class AdventureTester implements ModInitializer {
           this.adventure().audience(ctx.getSource()).hideBossBar(existing);
         }
         return 1;
+      }))
+      .then(literal("tablist").executes(ctx -> {
+        final Audience target = this.adventure().audience(ctx.getSource());
+        target.sendPlayerListHeader(Component.text("Adventure", COLOR_NAMESPACE));
+        target.sendPlayerListFooter(Component.text("test platform!", COLOR_PATH));
+        return 1;
       })));
     });
   }

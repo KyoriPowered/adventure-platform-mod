@@ -57,6 +57,8 @@ import net.minecraft.world.phys.Vec3;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+import static java.util.Objects.requireNonNull;
+
 public final class ServerPlayerAudience implements Audience {
   private final ServerPlayer player;
   private final FabricServerAudiencesImpl controller;
@@ -191,4 +193,23 @@ public final class ServerPlayerAudience implements Audience {
     this.sendPacket(new ClientboundSetTitlesPacket(ClientboundSetTitlesPacket.Type.RESET, null));
   }
 
+  @Override
+  public void sendPlayerListHeader(final @NonNull Component header) {
+    requireNonNull(header, "header");
+    ((ServerPlayerBridge) this.player).bridge$updateTabList(this.controller.toNative(header), null);
+  }
+
+  @Override
+  public void sendPlayerListFooter(final @NonNull Component footer) {
+    requireNonNull(footer, "footer");
+    ((ServerPlayerBridge) this.player).bridge$updateTabList(null, this.controller.toNative(footer));
+
+  }
+
+  @Override
+  public void sendPlayerListHeaderAndFooter(final @NonNull Component header, final @NonNull Component footer) {
+    ((ServerPlayerBridge) this.player).bridge$updateTabList(
+      this.controller.toNative(requireNonNull(header, "header")),
+      this.controller.toNative(requireNonNull(footer, "footer")));
+  }
 }

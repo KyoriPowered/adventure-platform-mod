@@ -33,11 +33,16 @@ import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.platform.fabric.FabricServerAudiences;
 import net.kyori.adventure.platform.fabric.impl.LocaleHolderBridge;
 import net.kyori.adventure.platform.fabric.PlayerLocales;
+import net.kyori.adventure.platform.fabric.impl.accessor.ClientboundTabListPacketAccess;
 import net.kyori.adventure.platform.fabric.impl.accessor.ServerboundClientInformationPacketAccess;
 import net.kyori.adventure.platform.fabric.impl.server.FabricServerAudiencesImpl;
 import net.kyori.adventure.platform.fabric.impl.server.RenderableAudience;
 import net.kyori.adventure.platform.fabric.impl.server.ServerPlayerAudience;
+import net.kyori.adventure.platform.fabric.impl.server.ServerPlayerBridge;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.protocol.game.ClientboundTabListPacket;
 import net.minecraft.network.protocol.game.ServerboundClientInformationPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -55,15 +60,15 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerPlayer.class)
-public abstract class ServerPlayerMixin extends Player implements ForwardingAudience.Single, LocaleHolderBridge, RenderableAudience {
-  @Shadow @Final
-  public MinecraftServer server;
+public abstract class ServerPlayerMixin extends Player implements ForwardingAudience.Single, LocaleHolderBridge, RenderableAudience, ServerPlayerBridge {
+  @Shadow @Final public MinecraftServer server;
+  @Shadow public ServerGamePacketListenerImpl connection;
 
-  @Shadow
-  public ServerGamePacketListenerImpl connection;
   private @MonotonicNonNull Audience adventure$backing;
   private Locale adventure$locale;
   private final Map<FabricServerAudiencesImpl, Audience> adventure$renderers = new MapMaker().weakKeys().makeMap();
+  private Component adventure$tabListHeader = TextComponent.EMPTY;
+  private Component adventure$tabListFooter = TextComponent.EMPTY;
 
   public ServerPlayerMixin(final Level level, final BlockPos blockPos, final float f, final GameProfile gameProfile) {
     super(level, blockPos, f, gameProfile);
@@ -88,6 +93,24 @@ public abstract class ServerPlayerMixin extends Player implements ForwardingAudi
   public Locale adventure$locale() {
     return this.adventure$locale;
   }
+
+  // Tab list
+
+  @Override
+  public void bridge$updateTabList(final @Nullable Component header, final @Nullable Component footer) {
+    if(header != null) {
+      this.adventure$tabListHeader = header;
+    }
+    if(footer != null) {
+      this.adventure$tabListFooter = footer;
+    }
+    final ClientboundTabListPacket packet = new ClientboundTabListPacket();
+    ((ClientboundTabListPacketAccess) packet).setHeader(this.adventure$tabListHeader);
+    ((ClientboundTabListPacketAccess) packet).setFooter(this.adventure$tabListFooter);
+
+    this.connection.send(packet);
+  }
+
 
   // Locale tracking
 

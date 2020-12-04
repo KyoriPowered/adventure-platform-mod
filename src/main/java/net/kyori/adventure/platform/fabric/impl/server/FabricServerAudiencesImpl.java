@@ -48,6 +48,7 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.Registry;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -176,6 +177,8 @@ public final class FabricServerAudiencesImpl implements FabricServerAudiences {
 
   @Override
   public net.minecraft.network.chat.Component toNative(final Component adventure) {
+    if(adventure == Component.empty()) return TextComponent.EMPTY;
+
     return new WrappedComponent(requireNonNull(adventure, "adventure"), this.renderer);
   }
 
