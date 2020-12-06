@@ -90,15 +90,16 @@ public abstract class AbstractBossBarListener<T extends BossEvent> implements Bo
 
   protected abstract T newBar(final net.minecraft.network.chat.@NonNull Component title,
           final BossEvent.@NonNull BossBarColor color,
-          final BossEvent.@NonNull BossBarOverlay style);
+          final BossEvent.@NonNull BossBarOverlay style,
+                              final float progress);
 
   protected T minecraftCreating(final @NonNull BossBar bar) {
     return this.bars.computeIfAbsent(bar, key -> {
       final T ret = this.newBar(this.controller.toNative(key.name()),
         GameEnums.BOSS_BAR_COLOR.toMinecraft(key.color()),
-        GameEnums.BOSS_BAR_OVERLAY.toMinecraft(key.overlay()));
+        GameEnums.BOSS_BAR_OVERLAY.toMinecraft(key.overlay()),
+        key.progress());
 
-      ret.setPercent(key.progress());
       updateFlags(ret, key.flags());
       key.addListener(this);
       return ret;

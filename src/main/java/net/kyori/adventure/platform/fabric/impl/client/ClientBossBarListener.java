@@ -43,13 +43,17 @@ public class ClientBossBarListener extends AbstractBossBarListener<LerpingBossEv
   }
 
   @Override
-  protected LerpingBossEvent newBar(final @NonNull Component title, final BossEvent.@NonNull BossBarColor color, final BossEvent.@NonNull BossBarOverlay style) {
+  protected LerpingBossEvent newBar(final @NonNull Component title,
+                                    final BossEvent.@NonNull BossBarColor color,
+                                    final BossEvent.@NonNull BossBarOverlay style,
+                                    final float progress) {
     final ClientboundBossEventPacket pkt = new ClientboundBossEventPacket();
     final ClientboundBossEventPacketAccess access = (ClientboundBossEventPacketAccess) pkt;
     access.setId(UUID.randomUUID());
     access.setName(title);
     access.setColor(color);
     access.setOverlay(style);
+    access.setPct(progress);
     return new LerpingBossEvent(pkt); // the only constructor uses a packet, so we use that
   }
 

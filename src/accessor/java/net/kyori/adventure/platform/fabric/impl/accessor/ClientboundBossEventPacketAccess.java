@@ -36,4 +36,5 @@ public interface ClientboundBossEventPacketAccess {
   @Accessor void setName(final Component name);
   @Accessor void setColor(final BossEvent.BossBarColor color);
   @Accessor void setOverlay(final BossEvent.BossBarOverlay overlay);
+  @Accessor void setPct(final float percent);
 }

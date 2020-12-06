@@ -120,7 +120,14 @@ public class ServerBossBarListener extends AbstractBossBarListener<ServerBossEve
   }
 
   @Override
-  protected ServerBossEvent newBar(final @NonNull Component title, final net.minecraft.world.BossEvent.@NonNull BossBarColor color, final net.minecraft.world.BossEvent.@NonNull BossBarOverlay style) {
-    return new ServerBossEvent(title, color, style);
+  protected ServerBossEvent newBar(
+    final @NonNull Component title,
+    final net.minecraft.world.BossEvent.@NonNull BossBarColor color,
+    final net.minecraft.world.BossEvent.@NonNull BossBarOverlay style,
+    final float progress
+  ) {
+    final ServerBossEvent event = new ServerBossEvent(title, color, style);
+    event.setPercent(progress);
+    return event;
   }
 }
