@@ -64,6 +64,8 @@ import net.kyori.adventure.translation.GlobalTranslator;
 import net.kyori.adventure.translation.TranslationRegistry;
 import net.minecraft.commands.synchronization.SuggestionProviders;
 import net.minecraft.server.level.ServerPlayer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -101,6 +103,7 @@ public class AdventureTester implements ModInitializer {
   private final Map<UUID, BossBar> greetingBars = new HashMap<>();
   private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
   private @Nullable FabricServerAudiences platform;
+  public static final Logger LOGGER = LogManager.getLogger();
 
   public FabricServerAudiences adventure() {
     return requireNonNull(this.platform, "Tried to access Fabric platform without a running server");

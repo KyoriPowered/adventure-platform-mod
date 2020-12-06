@@ -1,0 +1,11 @@
+{
+  "required": true,
+  "package": "net.kyori.adventure.platform.test.fabric.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "client": [
+    "client.ChatScreenMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

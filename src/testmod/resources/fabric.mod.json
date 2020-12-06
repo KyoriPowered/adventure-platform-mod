@@ -22,8 +22,9 @@
       }
     ]
   },
-  "custom": {
-  },
+  "mixins": [
+    "adventure-platform-fabric-testmod.mixins.json"
+  ],
 
   "depends": {
     "fabricloader": ">=0.4.0",
