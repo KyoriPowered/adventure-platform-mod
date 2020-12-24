@@ -50,7 +50,6 @@ import net.minecraft.network.protocol.game.ClientboundStopSoundPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.player.ChatVisiblity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.Vec3;
@@ -75,18 +74,13 @@ public final class ServerPlayerAudience implements Audience {
   @Override
   public void sendMessage(final Identity source, final Component text, final net.kyori.adventure.audience.MessageType type) {
     final ChatType mcType;
-    final boolean shouldSend;
     if(type == net.kyori.adventure.audience.MessageType.CHAT) {
       mcType = ChatType.CHAT;
-      shouldSend = this.player.getChatVisibility() == ChatVisiblity.FULL;
     } else {
       mcType = ChatType.SYSTEM;
-      shouldSend = this.player.getChatVisibility() == ChatVisiblity.FULL || this.player.getChatVisibility() == ChatVisiblity.SYSTEM;
     }
 
-    if(shouldSend) {
-      this.sendPacket(new ClientboundChatPacket(this.controller.toNative(text), mcType, source.uuid()));
-    }
+    this.sendPacket(new ClientboundChatPacket(this.controller.toNative(text), mcType, source.uuid()));
   }
 
   @Override
