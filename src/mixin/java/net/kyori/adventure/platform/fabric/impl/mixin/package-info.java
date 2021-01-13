@@ -22,15 +22,10 @@
  * SOFTWARE.
  */
 /**
- * Internal implementation of the adventure platform.
- *
- * <p>Direct access to classes in this package is
- * unsupported, and changes may occur at any time.</p>
+ * Mixin accessors for internal use only.
  */
 @ApiStatus.Internal
-@DefaultQualifier(NonNull.class)
-package net.kyori.adventure.platform.fabric.impl;
+package net.kyori.adventure.platform.fabric.impl.mixin;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
 import org.jetbrains.annotations.ApiStatus;
+
