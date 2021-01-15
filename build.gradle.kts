@@ -46,7 +46,8 @@ dependencies {
   modImplementation("net.fabricmc:fabric-loader:$versionLoader")
 
   // Testmod TODO figure out own scope
-  modImplementation("net.fabricmc.fabric-api:fabric-api:$versionFabricApi")
+  modCompileOnly("net.fabricmc.fabric-api:fabric-api:$versionFabricApi")
+  modRuntime("net.fabricmc.fabric-api:fabric-api:$versionFabricApi")
 
   checkstyle("ca.stellardrift:stylecheck:0.1")
 }
