@@ -24,6 +24,7 @@ repositories {
 }
 
 dependencies {
+  modApi(include(adventure("key", versionAdventure))!!)
   modApi(include(adventure("api", versionAdventure))!!)
   modApi(include(adventure("text-serializer-plain", versionAdventure))!!)
   modApi(include(adventure("text-feature-pagination", versionAdventurePagination))!!)
