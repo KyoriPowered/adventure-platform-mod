@@ -18,7 +18,6 @@ group = "net.kyori"
 version = "4.0.0-SNAPSHOT"
 
 repositories {
-  jcenter()
   mavenCentral()
   sonatypeSnapshots()
 }
@@ -47,8 +46,8 @@ dependencies {
   modImplementation("net.fabricmc:fabric-loader:$versionLoader")
 
   // Testmod TODO figure out own scope
-  modCompileOnly("net.fabricmc.fabric-api:fabric-api:$versionFabricApi")
-  modRuntime("net.fabricmc.fabric-api:fabric-api:$versionFabricApi")
+  modImplementation("net.fabricmc.fabric-api:fabric-api:$versionFabricApi")
+  // modRuntime("net.fabricmc.fabric-api:fabric-api:$versionFabricApi")
 
   checkstyle("ca.stellardrift:stylecheck:0.1")
 }
