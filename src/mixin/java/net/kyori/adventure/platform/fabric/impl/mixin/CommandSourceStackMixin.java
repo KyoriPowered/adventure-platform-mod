@@ -23,6 +23,7 @@
  */
 package net.kyori.adventure.platform.fabric.impl.mixin;
 
+import java.util.Objects;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.identity.Identified;
 import net.kyori.adventure.identity.Identity;
@@ -98,7 +99,7 @@ public abstract class CommandSourceStackMixin implements AdventureCommandSourceS
 
   @Override
   public AdventureCommandSourceStack adventure$audience(final Audience wrapped, final FabricServerAudiencesImpl controller) {
-    if(this.assigned) {
+    if(this.assigned && !Objects.equals(controller, this.controller)) {
       throw new IllegalStateException("This command source has been attached to a specific renderer already!");
       // TODO: return a new instance
     }

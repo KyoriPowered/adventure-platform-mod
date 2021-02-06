@@ -137,6 +137,7 @@ public class AdventureTester implements ModInitializer {
           final AdventureCommandSourceStack source = this.adventure().audience(ctx.getSource());
           final Component result = component(ctx, ARG_TEXT);
           source.sendMessage(source, result);
+          this.adventure().audience(ctx.getSource()).sendMessage(text("And a second time!", NamedTextColor.DARK_PURPLE));
           return 1;
         })))
         .then(literal("countdown").then(argument(ARG_SECONDS, integer()).executes(ctx -> { // multiple boss bars!
