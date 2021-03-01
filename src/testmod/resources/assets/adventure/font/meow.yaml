@@ -1,0 +1,5 @@
+providers:
+  - type: "bitmap"
+    file: "adventure:font/meow.png"
+    ascent: 7
+    chars: [ "\uE040\uE041\uE042" ]

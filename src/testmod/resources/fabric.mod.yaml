@@ -1,0 +1,22 @@
+schemaVersion: 1
+id: "${project.rootProject.name.toLowerCase()}-testmod"
+version: "${project.version}"
+name: "${project.rootProject.name} Tester"
+
+authors: ["zml"]
+contact:
+  homepage: "https://github.com/KyoriPowered/adventure-platform-fabric"
+  issues: "https://github.com/KyoriPowered/adventure-platform-fabric/issues"
+  sources: "https://github.com/KyoriPowered/adventure-platform-fabric"
+license: "MIT"
+
+entrypoints:
+  main:
+  - "net.kyori.adventure.platform.test.fabric.AdventureTester"
+mixins:
+- "adventure-platform-fabric-testmod.mixins.json"
+
+depends:
+  fabricloader: ">=0.4.0"
+  adventure-platform-fabric: "*"
+  fabric: "*"

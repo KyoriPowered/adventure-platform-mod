@@ -1,0 +1,5 @@
+providers:
+  - type: "ttf"
+    oversample: 3.0
+    size: 12
+    file: "adventure:iosevka-regular.ttf"
