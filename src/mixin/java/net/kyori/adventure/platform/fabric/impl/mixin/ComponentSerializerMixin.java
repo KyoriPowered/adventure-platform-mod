@@ -45,7 +45,7 @@ public abstract class ComponentSerializerMixin {
   @Shadow public abstract JsonElement serialize(final Component text, final Type type, final JsonSerializationContext jsonSerializationContext);
 
   @Inject(method = "serialize", at = @At("HEAD"), cancellable = true)
-  public void writeComponentText(final Component text, final Type type, final JsonSerializationContext ctx, final CallbackInfoReturnable<JsonElement> cir) {
+  public void adventure$writeComponentText(final Component text, final Type type, final JsonSerializationContext ctx, final CallbackInfoReturnable<JsonElement> cir) {
     if(text instanceof WrappedComponent) {
       final @Nullable Component converted = ((WrappedComponent) text).deepConvertedIfPresent();
       if(converted != null) {
@@ -59,7 +59,7 @@ public abstract class ComponentSerializerMixin {
   // inject into the anonymous function to build a gson instance
   @Inject(method = "*()Lcom/google/gson/Gson;", at = @At(value = "INVOKE_ASSIGN", target = "com/google/gson/GsonBuilder.disableHtmlEscaping()Lcom/google/gson/GsonBuilder;", remap = false),
     locals = LocalCapture.CAPTURE_FAILEXCEPTION, remap = false)
-  private static void injectAdventureGson(final CallbackInfoReturnable<Gson> cir, final GsonBuilder gson) {
+  private static void adventure$injectGson(final CallbackInfoReturnable<Gson> cir, final GsonBuilder gson) {
     AdventureCommon.GSON.populator().apply(gson);
   }
 }

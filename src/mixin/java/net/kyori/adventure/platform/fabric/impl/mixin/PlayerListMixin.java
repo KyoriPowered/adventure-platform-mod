@@ -52,7 +52,7 @@ public class PlayerListMixin {
   @Shadow @Final @Mutable private Map<UUID, ServerPlayer> playersByUUID;
 
   @Inject(method = "<init>", at = @At("RETURN"), require = 0)
-  private void replacePlayerLists(final MinecraftServer server, final RegistryAccess.RegistryHolder tracker, final PlayerDataStorage handler, final int i,
+  private void adventure$replacePlayerLists(final MinecraftServer server, final RegistryAccess.RegistryHolder tracker, final PlayerDataStorage handler, final int i,
           final CallbackInfo ci) {
     this.players = new CopyOnWriteArrayList<>();
     this.playersByUUID = new ConcurrentHashMap<>();

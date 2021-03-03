@@ -58,7 +58,7 @@ public abstract class ServerBossEventMixin extends BossEvent implements ServerBo
 
   // If a player has respawned, we still want to be able to remove the player using old references to their entity
   @Redirect(method = "removePlayer", at = @At(value = "INVOKE", target = "Ljava/util/Set;remove(Ljava/lang/Object;)Z"))
-  private boolean removeByUuid(final Set<?> instance, final Object player) {
+  private boolean adventure$removeByUuid(final Set<?> instance, final Object player) {
     if(instance.remove(player)) {
       return true;
     }
@@ -106,7 +106,7 @@ public abstract class ServerBossEventMixin extends BossEvent implements ServerBo
   // Optimization -- don't send a packet for tiny changes
 
   @Inject(method = "setPercent", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/BossEvent;setPercent(F)V"), cancellable = true, require = 0)
-  private void onlySetPercentIfBigEnough(final float newPercent, final CallbackInfo ci) {
+  private void adventure$onlySetPercentIfBigEnough(final float newPercent, final CallbackInfo ci) {
     if(Math.abs(newPercent - this.adventure$lastSentPercent) < MINIMUM_PERCENT_CHANGE) {
       this.percent = newPercent;
       ci.cancel();

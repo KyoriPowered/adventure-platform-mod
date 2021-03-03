@@ -51,7 +51,7 @@ public class BossHealthOverlayMixin implements BossHealthOverlayBridge {
   }
 
   @Inject(method = "reset", at = @At("HEAD"))
-  private void resetListener(final CallbackInfo ci) {
+  private void adventure$resetListener(final CallbackInfo ci) {
     if(this.adventure$listener != null) {
       this.adventure$listener.clear();
     }

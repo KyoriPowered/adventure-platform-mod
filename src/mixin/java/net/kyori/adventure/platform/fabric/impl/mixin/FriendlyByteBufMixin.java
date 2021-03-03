@@ -38,7 +38,7 @@ public class FriendlyByteBufMixin implements FriendlyByteBufBridge {
   private @Nullable Locale adventure$locale;
 
   @ModifyVariable(method = "writeComponent", at = @At("HEAD"), argsOnly = true)
-  private Component localizeComponent(final Component input) {
+  private Component adventure$localizeComponent(final Component input) {
     if(this.adventure$locale != null && input instanceof WrappedComponent) {
       return ((WrappedComponent) input).rendered(this.adventure$locale);
     }

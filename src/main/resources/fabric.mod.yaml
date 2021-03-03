@@ -18,10 +18,10 @@ mixins:
   - "adventure-platform-fabric.accessor.mixins.json"
   - "adventure-platform-fabric.mixins.json"
 custom:
-  "modmenu:api": true
+  modmenu:api: true
 
 depends:
-  "fabricloader": ">=0.4.0"
-  "fabric-api-base": "*"
+  fabricloader: ">=0.4.0"
+  fabric-api-base: "*"
 suggests:
-  "colonel": ">=0.1"
+  colonel: ">=0.1"
