@@ -20,7 +20,6 @@ version = "4.0.0-SNAPSHOT"
 repositories {
   mavenCentral()
   sonatypeSnapshots()
-  jcenter() // Colonel, temporarily
 }
 
 dependencies {
@@ -37,10 +36,11 @@ dependencies {
   modApi(fabricApi.module("fabric-api-base", versionFabricApi))
 
   // Transitive deps
-  include("net.kyori:examination-api:1.0.0")
-  include("net.kyori:examination-string:1.0.0")
+  include("net.kyori:examination-api:1.1.0")
+  include("net.kyori:examination-string:1.1.0")
+  modCompileOnly("org.checkerframework:checker-qual:3.10.0")
 
-  modImplementation("ca.stellardrift:colonel:0.1")
+  modImplementation("ca.stellardrift:colonel:0.2")
 
   minecraft("com.mojang:minecraft:$versionMinecraft")
   mappings(minecraft.officialMojangMappings())
