@@ -31,20 +31,19 @@ import java.util.UUID;
 
 import java.util.WeakHashMap;
 import java.util.function.Consumer;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.loader.api.FabricLoader;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.fabric.AdventureCommandSourceStack;
 import net.kyori.adventure.platform.fabric.impl.AdventureCommandSourceStackInternal;
 import net.kyori.adventure.platform.fabric.FabricAudiences;
 import net.kyori.adventure.platform.fabric.FabricServerAudiences;
+import net.kyori.adventure.platform.fabric.impl.AdventureCommon;
 import net.kyori.adventure.platform.fabric.impl.WrappedComponent;
 import net.kyori.adventure.platform.fabric.impl.accessor.ComponentSerializerAccess;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.flattener.ComponentFlattener;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
 import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
-import net.minecraft.client.KeyMapping;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.Registry;
@@ -80,17 +79,11 @@ public final class FabricServerAudiencesImpl implements FabricServerAudiences {
   private final MinecraftServer server;
   private final ComponentRenderer<Locale> renderer;
   final ServerBossBarListener bossBars;
-  private final PlainComponentSerializer plainSerializer;
 
   public FabricServerAudiencesImpl(final MinecraftServer server, final ComponentRenderer<Locale> renderer) {
     this.server = server;
     this.renderer = renderer;
     this.bossBars = new ServerBossBarListener(this);
-    if(FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
-      this.plainSerializer = new PlainComponentSerializer(comp -> KeyMapping.createNameSupplier(comp.keybind()).get().getString(), comp -> this.plainSerializer().serialize(this.renderer.render(comp, Locale.getDefault())));
-    } else {
-      this.plainSerializer = new PlainComponentSerializer(null, comp -> this.plainSerializer().serialize(this.renderer.render(comp, Locale.getDefault())));
-    }
     synchronized(INSTANCES) {
       INSTANCES.add(this);
     }
@@ -166,8 +159,13 @@ public final class FabricServerAudiencesImpl implements FabricServerAudiences {
   }
 
   @Override
+  public ComponentFlattener flattener() {
+    return AdventureCommon.FLATTENER;
+  }
+
+  @Override
   public PlainComponentSerializer plainSerializer() {
-    return this.plainSerializer;
+    return AdventureCommon.PLAIN;
   }
 
   @Override

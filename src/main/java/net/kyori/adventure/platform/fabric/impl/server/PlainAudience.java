@@ -23,6 +23,7 @@
  */
 package net.kyori.adventure.platform.fabric.impl.server;
 
+import java.util.Locale;
 import java.util.function.Consumer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.MessageType;
@@ -42,7 +43,7 @@ public class PlainAudience implements Audience {
 
   @Override
   public void sendMessage(final Identity source, final @NonNull Component message, final @NonNull MessageType type) {
-    this.plainOutput.accept(this.controller.plainSerializer().serialize(message));
+    this.plainOutput.accept(this.controller.plainSerializer().serialize(this.controller.localeRenderer().render(message, Locale.getDefault())));
   }
 
   @Override

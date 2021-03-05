@@ -106,7 +106,7 @@ public final class WrappedComponent implements Component {
 
   @Override
   public String getString() {
-    return this.rendered(Locale.getDefault()).deepConverted().getString();
+    return AdventureCommon.PLAIN.serialize(this.rendered(Locale.getDefault()).wrapped);
   }
 
   @Override
