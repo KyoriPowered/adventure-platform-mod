@@ -67,12 +67,8 @@ public class AdventureCommon implements ModInitializer {
       flattenerBuilder.type(KeybindComponent.class, keybind -> KeyMapping.createNameSupplier(keybind.keybind()).get().getContents());
     }
 
-    flattenerBuilder.nestedType(TranslatableComponent.class, (translatable, consumer) -> {
-      final @Nullable String translated = Language.getInstance().has(translatable.key()) ? Language.getInstance().getOrDefault(translatable.key()) : null;
-      if(translated == null) {
-        consumer.accept(Component.text(translatable.key()));
-        return;
-      }
+    flattenerBuilder.complexType(TranslatableComponent.class, (translatable, consumer) -> {
+      final @NonNull String translated = Language.getInstance().getOrDefault(translatable.key());
 
       final Matcher matcher = LOCALIZATION_PATTERN.matcher(translated);
       final List<Component> args = translatable.args();
