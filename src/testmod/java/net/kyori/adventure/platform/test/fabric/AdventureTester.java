@@ -24,6 +24,7 @@
 package net.kyori.adventure.platform.test.fabric;
 
 import com.google.common.base.Strings;
+import com.mojang.brigadier.Command;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -36,6 +37,7 @@ import java.util.stream.IntStream;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.platform.fabric.AdventureCommandSourceStack;
+import net.kyori.adventure.platform.fabric.ComponentArgumentType;
 import net.kyori.adventure.platform.fabric.FabricServerAudiences;
 
 import java.util.Collection;
@@ -63,6 +65,7 @@ import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.translation.GlobalTranslator;
 import net.kyori.adventure.translation.TranslationRegistry;
 import net.minecraft.commands.synchronization.SuggestionProviders;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -187,7 +190,7 @@ public class AdventureTester implements ModInitializer {
         for(final TextColor color : LINE_COLOURS) {
           viewer.sendMessage(Identity.nil(), LINE.color(color));
         }
-        return 1;
+        return Command.SINGLE_SUCCESS;
       }))
       .then(literal("baron").executes(ctx -> {
         final ServerPlayer player = ctx.getSource().getPlayerOrException();
@@ -197,21 +200,26 @@ public class AdventureTester implements ModInitializer {
         });
 
         this.adventure().audience(ctx.getSource()).showBossBar(greeting);
-        return 1;
+        return Command.SINGLE_SUCCESS;
       }))
       .then(literal("baroff").executes(ctx -> {
         final BossBar existing = this.greetingBars.remove(ctx.getSource().getPlayerOrException().getUUID());
         if(existing != null) {
           this.adventure().audience(ctx.getSource()).hideBossBar(existing);
         }
-        return 1;
+        return Command.SINGLE_SUCCESS;
       }))
       .then(literal("tablist").executes(ctx -> {
         final Audience target = this.adventure().audience(ctx.getSource());
         target.sendPlayerListHeader(Component.text("Adventure", COLOR_NAMESPACE));
         target.sendPlayerListFooter(Component.text("test platform!", COLOR_PATH));
-        return 1;
-      })));
+        return Command.SINGLE_SUCCESS;
+      }))
+      .then(literal("plain").then(argument(ARG_TEXT, ComponentArgumentType.component()).executes(ctx -> {
+        final Component text = ComponentArgumentType.component(ctx, ARG_TEXT);
+        ctx.getSource().sendSuccess(new TextComponent(this.adventure().plainSerializer().serialize(text)), false);
+        return Command.SINGLE_SUCCESS;
+      }))));
     });
   }
 

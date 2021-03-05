@@ -34,6 +34,7 @@ import net.kyori.adventure.platform.fabric.impl.NonWrappingComponentSerializer;
 import net.kyori.adventure.platform.fabric.impl.WrappedComponent;
 import net.kyori.adventure.platform.fabric.impl.accessor.ComponentSerializerAccess;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.renderer.ComponentFlattener;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
 import net.kyori.adventure.text.serializer.ComponentSerializer;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
@@ -154,6 +155,14 @@ public interface FabricAudiences {
   static Identity identity(final GameProfile profile) {
     return (Identity) profile;
   }
+
+  /**
+   * Return a component flattener that can use game data to resolve extra information about components.
+   *
+   * @return the flattener
+   * @since 4.0.0
+   */
+  ComponentFlattener flattener();
 
   /**
    * Return a {@link PlainComponentSerializer} instance that can resolve key bindings and translations using the game's data.

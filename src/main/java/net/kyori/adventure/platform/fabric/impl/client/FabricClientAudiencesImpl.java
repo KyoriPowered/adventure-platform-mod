@@ -27,11 +27,12 @@ import java.util.Locale;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.platform.fabric.FabricAudiences;
 import net.kyori.adventure.platform.fabric.FabricClientAudiences;
+import net.kyori.adventure.platform.fabric.impl.AdventureCommon;
 import net.kyori.adventure.platform.fabric.impl.WrappedComponent;
+import net.kyori.adventure.text.renderer.ComponentFlattener;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
 import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
 import net.kyori.adventure.translation.GlobalTranslator;
-import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 
@@ -39,14 +40,12 @@ import static java.util.Objects.requireNonNull;
 
 public class FabricClientAudiencesImpl implements FabricClientAudiences {
   public static final FabricClientAudiences INSTANCE = new FabricClientAudiencesImpl(GlobalTranslator.renderer());
-  private final PlainComponentSerializer plainSerializer;
   private final ComponentRenderer<Locale> renderer;
   private final ClientAudience audience;
 
   public FabricClientAudiencesImpl(final ComponentRenderer<Locale> renderer) {
     this.renderer = renderer;
     this.audience = new ClientAudience(Minecraft.getInstance(), this);
-    this.plainSerializer = new PlainComponentSerializer(comp -> KeyMapping.createNameSupplier(comp.keybind()).get().getString(), comp -> this.plainSerializer().serialize(this.renderer.render(comp, Locale.getDefault())));
   }
 
   @Override
@@ -55,8 +54,13 @@ public class FabricClientAudiencesImpl implements FabricClientAudiences {
   }
 
   @Override
+  public ComponentFlattener flattener() {
+    return AdventureCommon.FLATTENER;
+  }
+
+  @Override
   public PlainComponentSerializer plainSerializer() {
-    return this.plainSerializer;
+    return AdventureCommon.PLAIN;
   }
 
   @Override
