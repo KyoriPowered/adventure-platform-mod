@@ -25,6 +25,7 @@ package net.kyori.adventure.platform.test.fabric;
 
 import com.google.common.base.Strings;
 import com.mojang.brigadier.Command;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -40,6 +41,11 @@ import net.kyori.adventure.platform.fabric.AdventureCommandSourceStack;
 import net.kyori.adventure.platform.fabric.ComponentArgumentType;
 import net.kyori.adventure.platform.fabric.FabricServerAudiences;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.Executors;
@@ -49,11 +55,15 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.client.command.v1.ClientCommandManager;
+import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
+import net.fabricmc.loader.api.FabricLoader;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.platform.fabric.FabricClientAudiences;
 import net.kyori.adventure.platform.fabric.KeyArgumentType;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
@@ -64,6 +74,7 @@ import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.translation.GlobalTranslator;
 import net.kyori.adventure.translation.TranslationRegistry;
+import net.minecraft.client.Minecraft;
 import net.minecraft.commands.synchronization.SuggestionProviders;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
@@ -82,6 +93,7 @@ import static net.kyori.adventure.sound.Sound.sound;
 import static net.kyori.adventure.text.Component.newline;
 import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.Component.translatable;
+import static net.kyori.adventure.text.event.ClickEvent.openFile;
 import static net.kyori.adventure.text.format.TextColor.color;
 import static net.minecraft.commands.Commands.argument;
 import static net.minecraft.commands.Commands.literal;
@@ -221,6 +233,29 @@ public class AdventureTester implements ModInitializer {
         return Command.SINGLE_SUCCESS;
       }))));
     });
+
+    ClientCommandManager.DISPATCHER.register(LiteralArgumentBuilder.<FabricClientCommandSource>literal("adventure_client")
+      .then(LiteralArgumentBuilder.<FabricClientCommandSource>literal("open_file").executes(ctx -> {
+        final Path path = FabricLoader.getInstance().getGameDir().resolve("adventure_test_file.txt").toAbsolutePath();
+        try {
+          Files.write(path, ("Hello there " + Minecraft.getInstance().getUser().getName() + "!").getBytes(StandardCharsets.UTF_8), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
+        } catch(final IOException ex) {
+          throw new RuntimeException("Uh oh! Couldn't write file!", ex);
+        }
+        final Component message = text()
+          .content("Click to open ")
+          .append(text(path.getFileName().toString(), color(0xFFA2C4)))
+          .append(text('!'))
+          .clickEvent(openFile(path.toString()))
+          .build();
+
+        final FabricClientAudiences clientAudiences = FabricClientAudiences.of();
+        final Audience audience = clientAudiences.audience();
+        audience.sendMessage(message);
+        //ctx.getSource().sendFeedback(clientAudiences.toNative(message)); // Works as well!
+
+        return Command.SINGLE_SUCCESS;
+      })));
   }
 
   private static final Component COLON = text(":", NamedTextColor.GRAY);

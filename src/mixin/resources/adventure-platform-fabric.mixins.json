@@ -14,7 +14,8 @@
     "PlayerMixin",
     "RconConsoleSourceMixin",
     "ServerBossEventMixin",
-    "ServerPlayerMixin"
+    "ServerPlayerMixin",
+    "StyleSerializerMixin"
   ],
   "client": [
     "client.BossHealthOverlayMixin",

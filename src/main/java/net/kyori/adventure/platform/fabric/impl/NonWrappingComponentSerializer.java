@@ -31,7 +31,13 @@ import net.minecraft.network.chat.MutableComponent;
 public final class NonWrappingComponentSerializer implements ComponentSerializer<Component, Component, net.minecraft.network.chat.Component> {
   public static final NonWrappingComponentSerializer INSTANCE = new NonWrappingComponentSerializer();
 
+  private final ThreadLocal<Boolean> bypassIsAllowedFromServer = ThreadLocal.withInitial(() -> false);
+
   private NonWrappingComponentSerializer() {
+  }
+
+  public boolean bypassIsAllowedFromServer() {
+    return this.bypassIsAllowedFromServer.get();
   }
 
   @Override
@@ -45,6 +51,13 @@ public final class NonWrappingComponentSerializer implements ComponentSerializer
 
   @Override
   public MutableComponent serialize(final Component component) {
-    return net.minecraft.network.chat.Component.Serializer.fromJson(ComponentSerializerAccess.getGSON().toJsonTree(component));
+    this.bypassIsAllowedFromServer.set(true);
+    final MutableComponent mutableComponent;
+    try {
+      mutableComponent = net.minecraft.network.chat.Component.Serializer.fromJson(ComponentSerializerAccess.getGSON().toJsonTree(component));
+    } finally {
+      this.bypassIsAllowedFromServer.set(false);
+    }
+    return mutableComponent;
   }
 }
