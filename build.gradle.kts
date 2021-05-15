@@ -1,10 +1,10 @@
 
 import ca.stellardrift.build.common.adventure
-import net.kyori.indra.sonatypeSnapshots
+import net.kyori.indra.repository.sonatypeSnapshots
 
 plugins {
-  id("ca.stellardrift.opinionated.fabric") version "4.2"
-  id("net.kyori.indra.publishing.sonatype") version "1.3.1"
+  id("ca.stellardrift.opinionated.fabric") version "5.0.0"
+  id("net.kyori.indra.publishing.sonatype") version "2.0.4"
 }
 
 val versionMinecraft: String by project
@@ -38,7 +38,7 @@ dependencies {
   // Transitive deps
   include("net.kyori:examination-api:1.1.0")
   include("net.kyori:examination-string:1.1.0")
-  modCompileOnly("org.checkerframework:checker-qual:3.10.0")
+  modCompileOnly("org.checkerframework:checker-qual:3.13.0")
 
   modImplementation("ca.stellardrift:colonel:0.2")
 
@@ -53,9 +53,17 @@ dependencies {
   checkstyle("ca.stellardrift:stylecheck:0.1")
 }
 
+tasks.sourcesJar {
+  duplicatesStrategy = DuplicatesStrategy.EXCLUDE // duplicate package-info.java coming in from somewhere?
+}
+
+tasks.runClient {
+  setClasspath(files(loom.unmappedModCollection, sourceSets.main.map { it.runtimeClasspath }))
+}
+
 indra {
   github("KyoriPowered", "adventure-platform-fabric") {
-    ci = true
+    ci(true)
   }
   mitLicense()
 
