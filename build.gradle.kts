@@ -4,7 +4,7 @@ import net.kyori.indra.repository.sonatypeSnapshots
 
 plugins {
   id("ca.stellardrift.opinionated.fabric") version "5.0.0"
-  id("net.kyori.indra.publishing.sonatype") version "2.0.4"
+  id("net.kyori.indra.publishing.sonatype") version "2.0.5"
 }
 
 val versionMinecraft: String by project

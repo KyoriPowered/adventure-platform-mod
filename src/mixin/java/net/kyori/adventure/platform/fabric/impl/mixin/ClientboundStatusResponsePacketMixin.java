@@ -33,7 +33,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(ClientboundStatusResponsePacket.class)
 public class ClientboundStatusResponsePacketMixin {
-  @Redirect(method = "<clinit>", at = @At(value = "INVOKE", target = "Lcom/google/gson/GsonBuilder;registerTypeAdapter(Ljava/lang/reflect/Type;Ljava/lang/Object;)Lcom/google/gson/GsonBuilder;", ordinal = 0))
+  @Redirect(method = "<clinit>", at = @At(value = "INVOKE", target = "Lcom/google/gson/GsonBuilder;registerTypeAdapter(Ljava/lang/reflect/Type;Ljava/lang/Object;)Lcom/google/gson/GsonBuilder;", ordinal = 0), remap = false)
   private static GsonBuilder adventure$injectSerializers(final GsonBuilder instance, final Type type, final Object adapter) {
     return AdventureCommon.GSON.populator().apply(instance.registerTypeAdapter(type, adapter));
   }

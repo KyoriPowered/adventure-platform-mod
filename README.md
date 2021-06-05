@@ -6,6 +6,15 @@ Integration between the [adventure](https://github.com/KyoriPowered/adventure) l
 
 See the [documentation](https://docs.adventure.kyori.net/platform/fabric.html) for usage and dependency information for this project and the main `adventure` library.
 
+### Versions
+
+`adventure-platform-fabric` tends to not work on more than one major version of Minecraft at a time. We test the following version combinations:
+
+Minecraft Version | `adventure-platform-fabric` version
+----------------- | ------------------------------------
+1.16.x            | `4.0.0-SNAPSHOT`
+1.17.x            | `4.1.0-SNAPSHOT`
+
 ### Contributing
 
 We appreciate contributions of any type. For any new features or typo-fix/style changes, please open an issue or come talk to us in our [Discord] first so we make sure you're going in the right direction for the project.
