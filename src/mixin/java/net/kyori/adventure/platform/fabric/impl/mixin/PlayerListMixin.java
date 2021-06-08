@@ -28,7 +28,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -47,13 +46,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  */
 @Mixin(PlayerList.class)
 public class PlayerListMixin {
-
+  // @formatter:off
   @Shadow @Final @Mutable private List<ServerPlayer> players;
   @Shadow @Final @Mutable private Map<UUID, ServerPlayer> playersByUUID;
+  // @formatter:on
 
   @Inject(method = "<init>", at = @At("RETURN"), require = 0)
   private void adventure$replacePlayerLists(final MinecraftServer server, final RegistryAccess.RegistryHolder tracker, final PlayerDataStorage handler, final int i,
-          final CallbackInfo ci) {
+                                            final CallbackInfo ci) {
     this.players = new CopyOnWriteArrayList<>();
     this.playersByUUID = new ConcurrentHashMap<>();
   }

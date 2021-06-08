@@ -41,10 +41,11 @@ import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(RconConsoleSource.class)
 public abstract class RconConsoleSourceMixin implements RenderableAudience, ForwardingAudience.Single {
+  // @formatter:off
   @Shadow @Final private StringBuffer buffer;
+  @Shadow @Final private MinecraftServer server;
+  // @formatter:off
 
-  @Shadow @Final
-  private MinecraftServer server;
   private final Map<FabricAudiences, Audience> adventure$renderers = new MapMaker().weakKeys().makeMap();
 
   @Override

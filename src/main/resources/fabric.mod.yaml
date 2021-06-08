@@ -2,7 +2,7 @@ schemaVersion: 1
 id: "${project.rootProject.name.toLowerCase()}"
 version: "${project.version}"
 name: "${project.rootProject.name}"
-authors: ["kashike","zml", "Luck", "Electroid"]
+authors: [ "kashike","zml", "Luck", "Electroid" ]
 contact:
   homepage: "https://github.com/KyoriPowered/adventure-platform-fabric"
   issues: "https://github.com/KyoriPowered/adventure-platform-fabric/issues"
@@ -11,9 +11,9 @@ license: "MIT"
 
 entrypoints:
   main:
-  - "net.kyori.adventure.platform.fabric.impl.AdventureCommon"
+    - "net.kyori.adventure.platform.fabric.impl.AdventureCommon"
   preLaunch:
-  - "net.kyori.adventure.platform.fabric.impl.AdventurePrelaunch"
+    - "net.kyori.adventure.platform.fabric.impl.AdventurePrelaunch"
 mixins:
   - "adventure-platform-fabric.accessor.mixins.json"
   - "adventure-platform-fabric.mixins.json"

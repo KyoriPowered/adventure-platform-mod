@@ -41,10 +41,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(BossHealthOverlay.class)
 public class BossHealthOverlayMixin implements BossHealthOverlayBridge {
-
+  // @formatter:off
   @Shadow @Final private Map<UUID, LerpingBossEvent> events;
+  // @formatter:on
 
-  private Map<FabricClientAudiencesImpl, ClientBossBarListener> adventure$listener = new MapMaker().weakKeys().makeMap();
+  private final Map<FabricClientAudiencesImpl, ClientBossBarListener> adventure$listener = new MapMaker().weakKeys().makeMap();
 
   @Override
   public @NotNull ClientBossBarListener adventure$listener(final @NotNull FabricClientAudiencesImpl controller) {
@@ -53,7 +54,7 @@ public class BossHealthOverlayMixin implements BossHealthOverlayBridge {
 
   @Inject(method = "reset", at = @At("HEAD"))
   private void adventure$resetListener(final CallbackInfo ci) {
-    if(this.adventure$listener != null) {
+    if (this.adventure$listener != null) {
       this.adventure$listener.clear();
     }
   }

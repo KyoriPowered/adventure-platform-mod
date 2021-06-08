@@ -46,7 +46,9 @@ import org.spongepowered.asm.mixin.Shadow;
  */
 @Mixin(value = MinecraftServer.class)
 public abstract class MinecraftServerMixin implements MinecraftServerBridge, RenderableAudience, ForwardingAudience.Single {
+  // @formatter:off
   @Shadow @Final private static Logger LOGGER;
+  // @formatter:on
 
   private final FabricServerAudiencesImpl adventure$globalProvider = new FabricServerAudiencesImpl((MinecraftServer) (Object) this, GlobalTranslator.renderer());
   private final Map<FabricAudiences, Audience> adventure$renderers = new MapMaker().weakKeys().makeMap();

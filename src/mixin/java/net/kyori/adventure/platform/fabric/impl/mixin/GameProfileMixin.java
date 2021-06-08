@@ -32,8 +32,9 @@ import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(value = GameProfile.class, remap = false)
 public abstract class GameProfileMixin implements Identity {
-  @Shadow
-  public abstract UUID shadow$getId();
+  // @formatter:off
+  @Shadow public abstract UUID shadow$getId();
+  // @formatter:on
 
   @Override
   public @NotNull UUID uuid() {

@@ -29,5 +29,6 @@ import org.jetbrains.annotations.Nullable;
 
 public interface FriendlyByteBufBridge {
   AttributeKey<Locale> CHANNEL_LOCALE = AttributeKey.newInstance("adventure:locale");
+
   void adventure$locale(final @Nullable Locale locale);
 }

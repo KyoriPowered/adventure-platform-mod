@@ -30,7 +30,8 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(ClientboundTabListPacket.class)
 public interface ClientboundTabListPacketAccess {
+  // @formatter:off
   @Accessor void setHeader(final Component header);
-
   @Accessor void setFooter(final Component footer);
+  // @formatter:on
 }

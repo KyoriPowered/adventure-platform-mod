@@ -67,14 +67,14 @@ public class AdventureCommon implements ModInitializer {
   static {
     final ComponentFlattener.Builder flattenerBuilder = ComponentFlattener.basic().toBuilder();
 
-    if(FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
+    if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
       flattenerBuilder.mapper(KeybindComponent.class, keybind -> KeyMapping.createNameSupplier(keybind.keybind()).get().getContents());
     }
 
     flattenerBuilder.complexMapper(TranslatableComponent.class, (translatable, consumer) -> {
       final String key = translatable.key();
-      for(final Translator registry : GlobalTranslator.get().sources()) {
-        if(registry instanceof TranslationRegistry && ((TranslationRegistry) registry).contains(key)) {
+      for (final Translator registry : GlobalTranslator.get().sources()) {
+        if (registry instanceof TranslationRegistry && ((TranslationRegistry) registry).contains(key)) {
           consumer.accept(GlobalTranslator.render(translatable, Locale.getDefault()));
           return;
         }
@@ -85,32 +85,32 @@ public class AdventureCommon implements ModInitializer {
       final List<Component> args = translatable.args();
       int argPosition = 0;
       int lastIdx = 0;
-      while(matcher.find()) {
+      while (matcher.find()) {
         // append prior
-        if(lastIdx < matcher.start()) consumer.accept(Component.text(translated.substring(lastIdx, matcher.start())));
+        if (lastIdx < matcher.start()) consumer.accept(Component.text(translated.substring(lastIdx, matcher.start())));
         lastIdx = matcher.end();
 
         final @Nullable String argIdx = matcher.group(1);
         // calculate argument position
-        if(argIdx != null) {
+        if (argIdx != null) {
           try {
             final int idx = Integer.parseInt(argIdx);
-            if(idx < args.size()) {
+            if (idx < args.size()) {
               consumer.accept(args.get(idx));
             }
-          } catch(final NumberFormatException ex) {
+          } catch (final NumberFormatException ex) {
             // ignore, drop the format placeholder
           }
         } else {
           final int idx = argPosition++;
-          if(idx < args.size()) {
+          if (idx < args.size()) {
             consumer.accept(args.get(idx));
           }
         }
       }
 
       // append tail
-      if(lastIdx < translated.length()) {
+      if (lastIdx < translated.length()) {
         consumer.accept(Component.text(translated.substring(lastIdx)));
       }
     });
@@ -126,7 +126,7 @@ public class AdventureCommon implements ModInitializer {
   @Override
   public void onInitialize() {
     // Register custom argument types
-    if(FabricLoader.getInstance().isModLoaded("colonel")) { // we can do server-only arg types
+    if (FabricLoader.getInstance().isModLoaded("colonel")) { // we can do server-only arg types
       ServerArgumentType.<ComponentArgumentType>builder(res("component"))
         .type(ComponentArgumentType.class)
         .serializer(new ComponentArgumentTypeSerializer())

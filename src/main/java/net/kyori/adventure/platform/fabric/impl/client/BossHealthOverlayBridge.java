@@ -23,10 +23,10 @@
  */
 package net.kyori.adventure.platform.fabric.impl.client;
 
-import static java.util.Objects.requireNonNull;
-
 import net.minecraft.client.gui.components.BossHealthOverlay;
 import org.jetbrains.annotations.NotNull;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * Accessor for our listener stored in the client HUD.

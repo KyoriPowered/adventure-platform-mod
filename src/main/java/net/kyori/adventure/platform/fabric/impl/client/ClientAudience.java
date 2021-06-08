@@ -58,17 +58,17 @@ public class ClientAudience implements Audience {
 
   @Override
   public void sendMessage(final Identity source, final @NotNull Component message, final @NotNull MessageType type) {
-    if(this.client.isBlocked(source.uuid())) return;
+    if (this.client.isBlocked(source.uuid())) return;
 
     final ChatVisiblity visibility = this.client.options.chatVisibility;
-    if(type == MessageType.CHAT) {
+    if (type == MessageType.CHAT) {
       // Add to chat queue (following delay and such)
-      if(visibility == ChatVisiblity.FULL) {
+      if (visibility == ChatVisiblity.FULL) {
         this.client.gui.getChat().enqueueMessage(this.controller.toNative(message));
       }
     } else {
       // Add immediately as a system message
-      if(visibility == ChatVisiblity.FULL || visibility == ChatVisiblity.SYSTEM) {
+      if (visibility == ChatVisiblity.FULL || visibility == ChatVisiblity.SYSTEM) {
         this.client.gui.getChat().addMessage(this.controller.toNative(message));
       }
     }
@@ -117,7 +117,7 @@ public class ClientAudience implements Audience {
   @Override
   public void playSound(final @NotNull Sound sound) {
     final LocalPlayer player = this.client.player;
-    if(player != null) {
+    if (player != null) {
       this.playSound(sound, player.getX(), player.getY(), player.getZ());
     } else {
       // not in-game

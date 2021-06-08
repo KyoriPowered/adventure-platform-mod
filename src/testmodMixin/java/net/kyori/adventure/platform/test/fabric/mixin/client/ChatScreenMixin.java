@@ -38,7 +38,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ChatScreen.class)
 public abstract class ChatScreenMixin extends Screen {
+  // @formatter:off
   @Shadow protected EditBox input;
+  // @formatter:on
 
   protected ChatScreenMixin(final Component label) {
     super(label);
@@ -54,11 +56,11 @@ public abstract class ChatScreenMixin extends Screen {
         + (int) Math.floor(24 * this.minecraft.gui.getChat().getScale())
         + Widgets.BETWEEN_GROUP_SPACING * 2); // paddings
 
-    for(final AbstractWidget widget : AdventureTestButtons.testItems()) {
+    for (final AbstractWidget widget : AdventureTestButtons.testItems()) {
       widget.x = x;
       widget.y = y - widget.getHeight(); // the y above takes us to the bottom of a widget, since we want to align those
 
-      if(widget.getHeight() > Widgets.BUTTON_SIZE) {
+      if (widget.getHeight() > Widgets.BUTTON_SIZE) {
         widget.y -= widget.getHeight() - Widgets.BUTTON_SIZE;
       }
 

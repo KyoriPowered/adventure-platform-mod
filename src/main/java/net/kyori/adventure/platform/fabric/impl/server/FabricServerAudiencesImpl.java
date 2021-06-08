@@ -28,15 +28,14 @@ import java.util.Collections;
 import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
-
 import java.util.WeakHashMap;
 import java.util.function.Consumer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.fabric.AdventureCommandSourceStack;
-import net.kyori.adventure.platform.fabric.impl.AdventureCommandSourceStackInternal;
 import net.kyori.adventure.platform.fabric.FabricAudiences;
 import net.kyori.adventure.platform.fabric.FabricServerAudiences;
+import net.kyori.adventure.platform.fabric.impl.AdventureCommandSourceStackInternal;
 import net.kyori.adventure.platform.fabric.impl.AdventureCommon;
 import net.kyori.adventure.platform.fabric.impl.WrappedComponent;
 import net.kyori.adventure.platform.fabric.impl.accessor.ComponentSerializerAccess;
@@ -69,8 +68,8 @@ public final class FabricServerAudiencesImpl implements FabricServerAudiences {
    * @param actor a consumer that will be called for every provider
    */
   public static void forEachInstance(final Consumer<FabricServerAudiencesImpl> actor) {
-    synchronized(INSTANCES) {
-      for(final FabricServerAudiencesImpl instance : INSTANCES) {
+    synchronized (INSTANCES) {
+      for (final FabricServerAudiencesImpl instance : INSTANCES) {
         actor.accept(instance);
       }
     }
@@ -84,7 +83,7 @@ public final class FabricServerAudiencesImpl implements FabricServerAudiences {
     this.server = server;
     this.renderer = renderer;
     this.bossBars = new ServerBossBarListener(this);
-    synchronized(INSTANCES) {
+    synchronized (INSTANCES) {
       INSTANCES.add(this);
     }
   }
@@ -119,8 +118,9 @@ public final class FabricServerAudiencesImpl implements FabricServerAudiences {
     return Audience.empty(); // TODO: permissions api
   }
 
-  @Override public @NotNull AdventureCommandSourceStack audience(final @NotNull CommandSourceStack source) {
-    if(!(source instanceof AdventureCommandSourceStackInternal)) {
+  @Override
+  public @NotNull AdventureCommandSourceStack audience(final @NotNull CommandSourceStack source) {
+    if (!(source instanceof AdventureCommandSourceStackInternal)) {
       throw new IllegalArgumentException("The AdventureCommandSource mixin failed!");
     }
 
@@ -128,10 +128,11 @@ public final class FabricServerAudiencesImpl implements FabricServerAudiences {
     return internal.adventure$audience(this.audience(internal.adventure$source()), this);
   }
 
-  @Override public @NotNull Audience audience(final @NotNull CommandSource source) {
-    if(source instanceof RenderableAudience) {
+  @Override
+  public @NotNull Audience audience(final @NotNull CommandSource source) {
+    if (source instanceof RenderableAudience) {
       return ((RenderableAudience) source).renderUsing(this);
-    } else if(source instanceof Audience) {
+    } else if (source instanceof Audience) {
       // TODO: How to pass component renderer through
       return (Audience) source;
     } else {
@@ -139,7 +140,8 @@ public final class FabricServerAudiencesImpl implements FabricServerAudiences {
     }
   }
 
-  @Override public @NotNull Audience audience(final @NotNull Iterable<ServerPlayer> players) {
+  @Override
+  public @NotNull Audience audience(final @NotNull Iterable<ServerPlayer> players) {
     return Audience.audience(this.audiences(players));
   }
 
@@ -147,7 +149,7 @@ public final class FabricServerAudiencesImpl implements FabricServerAudiences {
   public @NotNull Audience world(final @NotNull Key worldId) {
     final @Nullable ServerLevel level = this.server.getLevel(ResourceKey.create(Registry.DIMENSION_REGISTRY,
       FabricAudiences.toNative(requireNonNull(worldId, "worldId"))));
-    if(level != null) {
+    if (level != null) {
       return this.audience(level.players());
     }
     return Audience.empty();
@@ -175,14 +177,14 @@ public final class FabricServerAudiencesImpl implements FabricServerAudiences {
 
   @Override
   public net.minecraft.network.chat.Component toNative(final @NotNull Component adventure) {
-    if(adventure == Component.empty()) return TextComponent.EMPTY;
+    if (adventure == Component.empty()) return TextComponent.EMPTY;
 
     return new WrappedComponent(requireNonNull(adventure, "adventure"), this.renderer);
   }
 
   @Override
   public @NotNull Component toAdventure(final net.minecraft.network.chat.@NotNull Component vanilla) {
-    if(vanilla instanceof WrappedComponent) {
+    if (vanilla instanceof WrappedComponent) {
       return ((WrappedComponent) vanilla).wrapped();
     } else {
       return ComponentSerializerAccess.getGSON().fromJson(net.minecraft.network.chat.Component.Serializer.toJsonTree(vanilla), Component.class);

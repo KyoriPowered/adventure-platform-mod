@@ -31,8 +31,8 @@ import java.util.Objects;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.platform.fabric.FabricServerAudiences;
-import net.kyori.adventure.platform.fabric.impl.LocaleHolderBridge;
 import net.kyori.adventure.platform.fabric.PlayerLocales;
+import net.kyori.adventure.platform.fabric.impl.LocaleHolderBridge;
 import net.kyori.adventure.platform.fabric.impl.accessor.ClientboundTabListPacketAccess;
 import net.kyori.adventure.platform.fabric.impl.accessor.ServerboundClientInformationPacketAccess;
 import net.kyori.adventure.platform.fabric.impl.server.FabricServerAudiencesImpl;
@@ -60,8 +60,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerPlayer.class)
 public abstract class ServerPlayerMixin extends Player implements ForwardingAudience.Single, LocaleHolderBridge, RenderableAudience, ServerPlayerBridge {
+  // @formatter:off
   @Shadow @Final public MinecraftServer server;
   @Shadow public ServerGamePacketListenerImpl connection;
+  // @formatter:on
 
   private Audience adventure$backing;
   private Locale adventure$locale;
@@ -89,7 +91,7 @@ public abstract class ServerPlayerMixin extends Player implements ForwardingAudi
   }
 
   @Override
-  public Locale adventure$locale() {
+  public @NotNull Locale adventure$locale() {
     return this.adventure$locale;
   }
 
@@ -97,10 +99,10 @@ public abstract class ServerPlayerMixin extends Player implements ForwardingAudi
 
   @Override
   public void bridge$updateTabList(final @Nullable Component header, final @Nullable Component footer) {
-    if(header != null) {
+    if (header != null) {
       this.adventure$tabListHeader = header;
     }
-    if(footer != null) {
+    if (footer != null) {
       this.adventure$tabListFooter = footer;
     }
     final ClientboundTabListPacket packet = new ClientboundTabListPacket();
@@ -117,7 +119,7 @@ public abstract class ServerPlayerMixin extends Player implements ForwardingAudi
   private void adventure$handleLocaleUpdate(final ServerboundClientInformationPacket information, final CallbackInfo ci) {
     final String language = ((ServerboundClientInformationPacketAccess) information).getLanguage();
     final @Nullable Locale locale = LocaleHolderBridge.toLocale(language);
-    if(!Objects.equals(this.adventure$locale, locale)) {
+    if (!Objects.equals(this.adventure$locale, locale)) {
       this.adventure$locale = locale;
       PlayerLocales.CHANGED_EVENT.invoker().onLocaleChanged((ServerPlayer) (Object) this, locale);
     }

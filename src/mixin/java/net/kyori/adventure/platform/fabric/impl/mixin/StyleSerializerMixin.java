@@ -35,7 +35,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 abstract class StyleSerializerMixin {
   @Redirect(method = "getClickEvent", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/chat/ClickEvent$Action;isAllowedFromServer()Z"))
   private static boolean adventure$redirectIsAllowedFromServer(final ClickEvent.@NotNull Action action) {
-    if(NonWrappingComponentSerializer.INSTANCE.bypassIsAllowedFromServer()) {
+    if (NonWrappingComponentSerializer.INSTANCE.bypassIsAllowedFromServer()) {
       return true;
     }
     return action.isAllowedFromServer();

@@ -64,14 +64,14 @@ public class ClientBossBarListener extends AbstractBossBarListener<LerpingBossEv
 
   public void remove(final BossBar bar) {
     final LerpingBossEvent mc = this.bars.remove(bar);
-    if(mc != null) {
+    if (mc != null) {
       bar.removeListener(this);
       this.hudBars.remove(mc.getId());
     }
   }
 
   public void clear() {
-    for(final Map.Entry<BossBar, LerpingBossEvent> entry : this.bars.entrySet()) {
+    for (final Map.Entry<BossBar, LerpingBossEvent> entry : this.bars.entrySet()) {
       entry.getKey().removeListener(this);
       this.hudBars.remove(entry.getValue().getId());
     }

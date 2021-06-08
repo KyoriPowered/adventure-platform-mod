@@ -53,7 +53,7 @@ public class ServerBossBarListener extends AbstractBossBarListener<ServerBossEve
   public void unsubscribe(final ServerPlayer player, final BossBar bar) {
     this.bars.computeIfPresent(bar, (key, old) -> {
       old.removePlayer(player);
-      if(old.getPlayers().isEmpty()) {
+      if (old.getPlayers().isEmpty()) {
         key.removeListener(this);
         return null;
       } else {
@@ -65,7 +65,7 @@ public class ServerBossBarListener extends AbstractBossBarListener<ServerBossEve
   public void unsubscribeAll(final Collection<ServerPlayer> players, final BossBar bar) {
     this.bars.computeIfPresent(bar, (key, old) -> {
       ((ServerBossEventBridge) old).adventure$removeAll(players);
-      if(old.getPlayers().isEmpty()) {
+      if (old.getPlayers().isEmpty()) {
         key.removeListener(this);
         return null;
       } else {
@@ -84,7 +84,7 @@ public class ServerBossBarListener extends AbstractBossBarListener<ServerBossEve
    * @param newPlayer new one
    */
   public void replacePlayer(final ServerPlayer old, final ServerPlayer newPlayer) {
-    for(final ServerBossEvent bar : this.bars.values()) {
+    for (final ServerBossEvent bar : this.bars.values()) {
       ((ServerBossEventBridge) bar).adventure$replaceSubscriber(old, newPlayer);
     }
   }
@@ -95,8 +95,8 @@ public class ServerBossBarListener extends AbstractBossBarListener<ServerBossEve
    * @param player player to refresh titles fro
    */
   public void refreshTitles(final ServerPlayer player) {
-    for(final ServerBossEvent bar : this.bars.values()) {
-      if(bar.getPlayers().contains(player)) {
+    for (final ServerBossEvent bar : this.bars.values()) {
+      if (bar.getPlayers().contains(player)) {
         player.connection.send(new ClientboundBossEventPacket(ClientboundBossEventPacket.Operation.UPDATE_NAME, bar));
       }
     }
@@ -108,11 +108,11 @@ public class ServerBossBarListener extends AbstractBossBarListener<ServerBossEve
    * @param player The player to remove
    */
   public void unsubscribeFromAll(final ServerPlayer player) {
-    for(final Iterator<Map.Entry<BossBar, ServerBossEvent>> it = this.bars.entrySet().iterator(); it.hasNext();) {
+    for (final Iterator<Map.Entry<BossBar, ServerBossEvent>> it = this.bars.entrySet().iterator(); it.hasNext();) {
       final ServerBossEvent bar = it.next().getValue();
-      if(bar.getPlayers().contains(player)) {
+      if (bar.getPlayers().contains(player)) {
         bar.removePlayer(player);
-        if(bar.getPlayers().isEmpty()) {
+        if (bar.getPlayers().isEmpty()) {
           it.remove();
         }
       }

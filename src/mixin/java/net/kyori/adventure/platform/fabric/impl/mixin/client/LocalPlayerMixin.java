@@ -41,8 +41,9 @@ import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(LocalPlayer.class)
 public abstract class LocalPlayerMixin extends AbstractClientPlayer implements ForwardingAudience.Single, LocaleHolderBridge {
-
+  // @formatter:off
   @Shadow @Final protected Minecraft minecraft;
+  // @formatter:on
 
   // TODO: Do we want to enforce synchronization with the client thread?
   private LocalPlayerMixin(final ClientLevel level, final GameProfile profile) { // mixin will strip
@@ -62,7 +63,7 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayer implements F
   }
 
   @Override
-  public Locale adventure$locale() {
+  public @NotNull Locale adventure$locale() {
     return ((LocaleHolderBridge) this.minecraft.options).adventure$locale();
   }
 }

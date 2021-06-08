@@ -34,7 +34,9 @@ import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(Player.class)
 public class PlayerMixin implements Identified {
+  // @formatter:off
   @Shadow @Final private GameProfile gameProfile;
+  // @formatter:on
 
   @Override
   public @NotNull Identity identity() {

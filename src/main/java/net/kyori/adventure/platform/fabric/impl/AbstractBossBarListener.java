@@ -43,28 +43,28 @@ public abstract class AbstractBossBarListener<T extends BossEvent> implements Bo
 
   @Override
   public void bossBarNameChanged(final @NotNull BossBar bar, final @NotNull Component oldName, final @NotNull Component newName) {
-    if(!oldName.equals(newName)) {
+    if (!oldName.equals(newName)) {
       this.minecraft(bar).setName(this.controller.toNative(newName));
     }
   }
 
   @Override
   public void bossBarProgressChanged(final @NotNull BossBar bar, final float oldPercent, final float newPercent) {
-    if(oldPercent != newPercent) {
+    if (oldPercent != newPercent) {
       this.minecraft(bar).setPercent(newPercent);
     }
   }
 
   @Override
   public void bossBarColorChanged(final @NotNull BossBar bar, final BossBar.@NotNull Color oldColor, final BossBar.@NotNull Color newColor) {
-    if(oldColor != newColor) {
+    if (oldColor != newColor) {
       this.minecraft(bar).setColor(GameEnums.BOSS_BAR_COLOR.toMinecraft(newColor));
     }
   }
 
   @Override
   public void bossBarOverlayChanged(final @NotNull BossBar bar, final BossBar.@NotNull Overlay oldOverlay, final BossBar.@NotNull Overlay newOverlay) {
-    if(oldOverlay != newOverlay) {
+    if (oldOverlay != newOverlay) {
       this.minecraft(bar).setOverlay(GameEnums.BOSS_BAR_OVERLAY.toMinecraft(newOverlay));
     }
   }
@@ -82,15 +82,15 @@ public abstract class AbstractBossBarListener<T extends BossEvent> implements Bo
 
   private T minecraft(final @NotNull BossBar bar) {
     final @Nullable T mc = this.bars.get(bar);
-    if(mc == null) {
+    if (mc == null) {
       throw new IllegalArgumentException("Unknown boss bar instance " + bar);
     }
     return mc;
   }
 
   protected abstract T newBar(final net.minecraft.network.chat.@NotNull Component title,
-          final BossEvent.@NotNull BossBarColor color,
-          final BossEvent.@NotNull BossBarOverlay style,
+                              final BossEvent.@NotNull BossBarColor color,
+                              final BossEvent.@NotNull BossBarOverlay style,
                               final float progress);
 
   protected T minecraftCreating(final @NotNull BossBar bar) {

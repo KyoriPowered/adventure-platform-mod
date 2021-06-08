@@ -26,44 +26,43 @@ package net.kyori.adventure.platform.test.fabric;
 import com.google.common.base.Strings;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.UUID;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.kyori.adventure.identity.Identity;
-import net.kyori.adventure.platform.fabric.AdventureCommandSourceStack;
-import net.kyori.adventure.platform.fabric.ComponentArgumentType;
-import net.kyori.adventure.platform.fabric.FabricServerAudiences;
-
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.command.v1.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.platform.fabric.AdventureCommandSourceStack;
+import net.kyori.adventure.platform.fabric.ComponentArgumentType;
 import net.kyori.adventure.platform.fabric.FabricClientAudiences;
+import net.kyori.adventure.platform.fabric.FabricServerAudiences;
 import net.kyori.adventure.platform.fabric.KeyArgumentType;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
@@ -106,8 +105,8 @@ public class AdventureTester implements ModInitializer {
   private static final Key FONT_IOSEVKA = key("adventure", "iosevka");
 
   private static final List<TextColor> LINE_COLOURS = IntStream.of(0x9400D3, 0x4B0082, 0x0000FF, 0x00FF00, 0xFFFF00, 0xFF7F00, 0xFF0000,
-                                                                  0x55CDFC, 0xF7A8B8, 0xFFFFFF, 0xF7A8B8, 0x55CDFC)
-                                                                  .mapToObj(TextColor::color).collect(Collectors.toList());
+    0x55CDFC, 0xF7A8B8, 0xFFFFFF, 0xF7A8B8, 0x55CDFC)
+    .mapToObj(TextColor::color).collect(Collectors.toList());
   private static final Component LINE = text(Strings.repeat("█", 10));
 
   private static final String ARG_TEXT = "text";
@@ -128,7 +127,7 @@ public class AdventureTester implements ModInitializer {
   public void onInitialize() {
     // Register localizations
     final TranslationRegistry testmodRegistry = TranslationRegistry.create(key("adventure", "testmod_localizations"));
-    for(final Locale lang : Arrays.asList(Locale.ENGLISH, Locale.GERMAN)) {
+    for (final Locale lang : Arrays.asList(Locale.ENGLISH, Locale.GERMAN)) {
       testmodRegistry.registerAll(lang, ResourceBundle.getBundle("net.kyori.adventure.platform.test.fabric.messages", lang), false);
     }
     GlobalTranslator.get().addSource(testmodRegistry);
@@ -166,72 +165,72 @@ public class AdventureTester implements ModInitializer {
           });
           return 1;
         })))
-      .then(literal("tellall").then(argument(ARG_TARGETS, players()).then(argument(ARG_TEXT, component()).executes(ctx -> {
-        final Collection<ServerPlayer> targets = getPlayers(ctx, ARG_TARGETS);
-        final AdventureCommandSourceStack source = this.adventure().audience(ctx.getSource());
-        final Component message = component(ctx, ARG_TEXT);
-        final Audience destination = this.adventure().audience(targets);
+        .then(literal("tellall").then(argument(ARG_TARGETS, players()).then(argument(ARG_TEXT, component()).executes(ctx -> {
+          final Collection<ServerPlayer> targets = getPlayers(ctx, ARG_TARGETS);
+          final AdventureCommandSourceStack source = this.adventure().audience(ctx.getSource());
+          final Component message = component(ctx, ARG_TEXT);
+          final Audience destination = this.adventure().audience(targets);
 
-        destination.sendMessage(source, message);
-        source.sendMessage(Identity.nil(), text(b -> {
-          b.content("You have sent \"");
-          b.append(message).append(text("\" to ")).append(this.listPlayers(targets));
-          b.color(COLOR_RESPONSE);
-        }));
-        return 1;
-      }))))
-      .then(literal("sound").then(argument(ARG_SOUND, key()).suggests(SuggestionProviders.AVAILABLE_SOUNDS).executes(ctx -> {
-        final Audience viewer = this.adventure().audience(ctx.getSource());
-        final Key sound = KeyArgumentType.key(ctx, ARG_SOUND);
-        viewer.sendMessage(Identity.nil(), text(b -> b.content("Playing sound ").append(represent(sound)).color(COLOR_RESPONSE)));
-        viewer.playSound(sound(sound, Sound.Source.MASTER, 1f, 1f));
-        return 1;
-      })))
-      .then(literal("book").executes(ctx -> {
-        final Audience viewer = this.adventure().audience(ctx.getSource());
-        viewer.openBook(Book.builder()
-        .title(text("My book", NamedTextColor.RED))
-        .author(text("The adventure team", COLOR_RESPONSE))
-        .addPage(text("Welcome to our rules page"))
-        .addPage(text("Let's do a thing!"))
-        .build());
-        return 1;
-      }))
-      .then(literal("rgb").executes(ctx -> {
-        final Audience viewer = this.adventure().audience(ctx.getSource());
-        for(final TextColor color : LINE_COLOURS) {
-          viewer.sendMessage(Identity.nil(), LINE.color(color));
-        }
-        return Command.SINGLE_SUCCESS;
-      }))
-      .then(literal("baron").executes(ctx -> {
-        final ServerPlayer player = ctx.getSource().getPlayerOrException();
-        final BossBar greeting = this.greetingBars.computeIfAbsent(player.getUUID(), id -> {
-          return BossBar.bossBar(translatable("adventure.test.greeting", NamedTextColor.GOLD, this.adventure().toAdventure(player.getDisplayName())),
-          1, BossBar.Color.YELLOW, BossBar.Overlay.PROGRESS);
-        });
+          destination.sendMessage(source, message);
+          source.sendMessage(Identity.nil(), text(b -> {
+            b.content("You have sent \"");
+            b.append(message).append(text("\" to ")).append(this.listPlayers(targets));
+            b.color(COLOR_RESPONSE);
+          }));
+          return 1;
+        }))))
+        .then(literal("sound").then(argument(ARG_SOUND, key()).suggests(SuggestionProviders.AVAILABLE_SOUNDS).executes(ctx -> {
+          final Audience viewer = this.adventure().audience(ctx.getSource());
+          final Key sound = KeyArgumentType.key(ctx, ARG_SOUND);
+          viewer.sendMessage(Identity.nil(), text(b -> b.content("Playing sound ").append(represent(sound)).color(COLOR_RESPONSE)));
+          viewer.playSound(sound(sound, Sound.Source.MASTER, 1f, 1f));
+          return 1;
+        })))
+        .then(literal("book").executes(ctx -> {
+          final Audience viewer = this.adventure().audience(ctx.getSource());
+          viewer.openBook(Book.builder()
+            .title(text("My book", NamedTextColor.RED))
+            .author(text("The adventure team", COLOR_RESPONSE))
+            .addPage(text("Welcome to our rules page"))
+            .addPage(text("Let's do a thing!"))
+            .build());
+          return 1;
+        }))
+        .then(literal("rgb").executes(ctx -> {
+          final Audience viewer = this.adventure().audience(ctx.getSource());
+          for (final TextColor color : LINE_COLOURS) {
+            viewer.sendMessage(Identity.nil(), LINE.color(color));
+          }
+          return Command.SINGLE_SUCCESS;
+        }))
+        .then(literal("baron").executes(ctx -> {
+          final ServerPlayer player = ctx.getSource().getPlayerOrException();
+          final BossBar greeting = this.greetingBars.computeIfAbsent(player.getUUID(), id -> {
+            return BossBar.bossBar(translatable("adventure.test.greeting", NamedTextColor.GOLD, this.adventure().toAdventure(player.getDisplayName())),
+              1, BossBar.Color.YELLOW, BossBar.Overlay.PROGRESS);
+          });
 
-        this.adventure().audience(ctx.getSource()).showBossBar(greeting);
-        return Command.SINGLE_SUCCESS;
-      }))
-      .then(literal("baroff").executes(ctx -> {
-        final BossBar existing = this.greetingBars.remove(ctx.getSource().getPlayerOrException().getUUID());
-        if(existing != null) {
-          this.adventure().audience(ctx.getSource()).hideBossBar(existing);
-        }
-        return Command.SINGLE_SUCCESS;
-      }))
-      .then(literal("tablist").executes(ctx -> {
-        final Audience target = this.adventure().audience(ctx.getSource());
-        target.sendPlayerListHeader(Component.text("Adventure", COLOR_NAMESPACE));
-        target.sendPlayerListFooter(Component.text("test platform!", COLOR_PATH));
-        return Command.SINGLE_SUCCESS;
-      }))
-      .then(literal("plain").then(argument(ARG_TEXT, ComponentArgumentType.component()).executes(ctx -> {
-        final Component text = ComponentArgumentType.component(ctx, ARG_TEXT);
-        ctx.getSource().sendSuccess(new TextComponent(this.adventure().plainSerializer().serialize(text)), false);
-        return Command.SINGLE_SUCCESS;
-      }))));
+          this.adventure().audience(ctx.getSource()).showBossBar(greeting);
+          return Command.SINGLE_SUCCESS;
+        }))
+        .then(literal("baroff").executes(ctx -> {
+          final BossBar existing = this.greetingBars.remove(ctx.getSource().getPlayerOrException().getUUID());
+          if (existing != null) {
+            this.adventure().audience(ctx.getSource()).hideBossBar(existing);
+          }
+          return Command.SINGLE_SUCCESS;
+        }))
+        .then(literal("tablist").executes(ctx -> {
+          final Audience target = this.adventure().audience(ctx.getSource());
+          target.sendPlayerListHeader(Component.text("Adventure", COLOR_NAMESPACE));
+          target.sendPlayerListFooter(Component.text("test platform!", COLOR_PATH));
+          return Command.SINGLE_SUCCESS;
+        }))
+        .then(literal("plain").then(argument(ARG_TEXT, ComponentArgumentType.component()).executes(ctx -> {
+          final Component text = ComponentArgumentType.component(ctx, ARG_TEXT);
+          ctx.getSource().sendSuccess(new TextComponent(this.adventure().plainSerializer().serialize(text)), false);
+          return Command.SINGLE_SUCCESS;
+        }))));
     });
 
     ClientCommandManager.DISPATCHER.register(LiteralArgumentBuilder.<FabricClientCommandSource>literal("adventure_client")
@@ -239,7 +238,7 @@ public class AdventureTester implements ModInitializer {
         final Path path = FabricLoader.getInstance().getGameDir().resolve("adventure_test_file.txt").toAbsolutePath();
         try {
           Files.write(path, ("Hello there " + Minecraft.getInstance().getUser().getName() + "!").getBytes(StandardCharsets.UTF_8), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
-        } catch(final IOException ex) {
+        } catch (final IOException ex) {
           throw new RuntimeException("Uh oh! Couldn't write file!", ex);
         }
         final Component message = text()
@@ -265,7 +264,7 @@ public class AdventureTester implements ModInitializer {
 
   private static Component represent(final @NotNull Key ident) {
     final TextColor namespaceColor;
-    if(ident.namespace().equals("minecraft")) { // de-emphasize
+    if (ident.namespace().equals("minecraft")) { // de-emphasize
       namespaceColor = COLOR_NAMESPACE_VANILLA;
     } else {
       namespaceColor = COLOR_NAMESPACE;
@@ -283,8 +282,8 @@ public class AdventureTester implements ModInitializer {
   private Component listPlayers(final Collection<? extends ServerPlayer> players) {
     final HoverEvent<Component> hover = HoverEvent.showText(Component.text(b -> {
       boolean first = true;
-      for(final ServerPlayer player : players) {
-        if(!first) {
+      for (final ServerPlayer player : players) {
+        if (!first) {
           b.append(newline());
         }
         first = false;
@@ -308,7 +307,7 @@ public class AdventureTester implements ModInitializer {
     final BossBar bar = BossBar.bossBar(title.style(builder -> builder.colorIfAbsent(textColor(color)).font(FONT_IOSEVKA)), 1, color, BossBar.Overlay.PROGRESS, Collections.singleton(BossBar.Flag.PLAY_BOSS_MUSIC));
 
     final int timeMs = timeSeconds * 1000; // total time ms
-    final long[] times = new long[] {timeMs, System.currentTimeMillis()}; // remaining time in ms, last update time
+    final long[] times = new long[]{timeMs, System.currentTimeMillis()}; // remaining time in ms, last update time
     final AtomicReference<ScheduledFuture<?>> task = new AtomicReference<>();
 
     task.set(this.executor.scheduleAtFixedRate(() -> {
@@ -317,9 +316,9 @@ public class AdventureTester implements ModInitializer {
       times[0] -= dt;
       times[1] = now;
 
-      if(times[0] <= 0) { // we are complete
+      if (times[0] <= 0) { // we are complete
         final ScheduledFuture<?> future = task.getAndSet(null);
-        if(future != null) {
+        if (future != null) {
           future.cancel(false);
         }
         targets.hideBossBar(bar);
@@ -335,15 +334,23 @@ public class AdventureTester implements ModInitializer {
   }
 
   static TextColor textColor(final BossBar.Color barColor) {
-    switch(barColor) {
-      case PINK: return NamedTextColor.LIGHT_PURPLE;
-      case BLUE: return NamedTextColor.BLUE;
-      case RED: return NamedTextColor.RED;
-      case GREEN: return NamedTextColor.GREEN;
-      case YELLOW: return NamedTextColor.YELLOW;
-      case PURPLE: return NamedTextColor.DARK_PURPLE;
-      case WHITE: return NamedTextColor.WHITE;
-      default: throw new IllegalArgumentException("Unknown color " + barColor);
+    switch (barColor) {
+      case PINK:
+        return NamedTextColor.LIGHT_PURPLE;
+      case BLUE:
+        return NamedTextColor.BLUE;
+      case RED:
+        return NamedTextColor.RED;
+      case GREEN:
+        return NamedTextColor.GREEN;
+      case YELLOW:
+        return NamedTextColor.YELLOW;
+      case PURPLE:
+        return NamedTextColor.DARK_PURPLE;
+      case WHITE:
+        return NamedTextColor.WHITE;
+      default:
+        throw new IllegalArgumentException("Unknown color " + barColor);
     }
   }
 }

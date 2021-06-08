@@ -23,8 +23,7 @@
  */
 package net.kyori.adventure.platform.fabric;
 
-import static java.util.Objects.requireNonNull;
-
+import java.util.Locale;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.platform.AudienceProvider;
 import net.kyori.adventure.platform.fabric.impl.server.FabricServerAudiencesImpl;
@@ -36,7 +35,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Locale;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Provides {@link Audience} instances for a specific server instance.

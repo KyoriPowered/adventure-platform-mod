@@ -74,7 +74,7 @@ public final class ServerPlayerAudience implements Audience {
   @Override
   public void sendMessage(final Identity source, final Component text, final net.kyori.adventure.audience.MessageType type) {
     final ChatType mcType;
-    if(type == net.kyori.adventure.audience.MessageType.CHAT) {
+    if (type == net.kyori.adventure.audience.MessageType.CHAT) {
       mcType = ChatType.CHAT;
     } else {
       mcType = ChatType.SYSTEM;
@@ -91,7 +91,7 @@ public final class ServerPlayerAudience implements Audience {
   @Override
   public void showBossBar(final @NotNull BossBar bar) {
     FabricServerAudiencesImpl.forEachInstance(controller -> {
-      if(controller != this.controller) {
+      if (controller != this.controller) {
         controller.bossBars.unsubscribe(this.player, bar);
       }
     });
@@ -135,7 +135,7 @@ public final class ServerPlayerAudience implements Audience {
     bookTag.putString(BOOK_TITLE, this.adventure$serialize(book.title()));
     bookTag.putString(BOOK_AUTHOR, this.adventure$serialize(book.author()));
     final ListTag pages = new ListTag();
-    for(final Component page : book.pages()) {
+    for (final Component page : book.pages()) {
       pages.add(StringTag.valueOf(this.adventure$serialize(page)));
     }
     bookTag.put(BOOK_PAGES, pages);
@@ -154,21 +154,21 @@ public final class ServerPlayerAudience implements Audience {
 
   @Override
   public void showTitle(final @NotNull Title title) {
-    if(title.subtitle() != Component.empty()) {
+    if (title.subtitle() != Component.empty()) {
       this.sendPacket(new ClientboundSetTitlesPacket(ClientboundSetTitlesPacket.Type.SUBTITLE, this.controller.toNative(title.subtitle())));
     }
 
     final Title.@Nullable Times times = title.times();
-    if(times != null) {
+    if (times != null) {
       final int fadeIn = ticks(times.fadeIn());
       final int fadeOut = ticks(times.fadeOut());
       final int dwell = ticks(times.stay());
-      if(fadeIn != -1 || fadeOut != -1 || dwell != -1) {
+      if (fadeIn != -1 || fadeOut != -1 || dwell != -1) {
         this.sendPacket(new ClientboundSetTitlesPacket(fadeIn, dwell, fadeOut));
       }
     }
 
-    if(title.title() != Component.empty()) {
+    if (title.title() != Component.empty()) {
       this.sendPacket(new ClientboundSetTitlesPacket(ClientboundSetTitlesPacket.Type.TITLE, this.controller.toNative(title.title())));
     }
   }

@@ -48,7 +48,7 @@ public final class AdventureTestButtons {
         clientAudience().sendMessage(text("I'm from the client!", NamedTextColor.DARK_PURPLE));
       }),
       checkbox(text("boss bar?"), b -> {
-        if(b) {
+        if (b) {
           clientAudience().showBossBar(testBar);
         } else {
           clientAudience().hideBossBar(testBar);

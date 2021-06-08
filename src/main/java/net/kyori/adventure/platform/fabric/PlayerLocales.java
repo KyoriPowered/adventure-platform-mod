@@ -44,7 +44,7 @@ public interface PlayerLocales {
    * @since 4.0.0
    */
   @NotNull Event<PlayerLocales.Changed> CHANGED_EVENT = EventFactory.createArrayBacked(PlayerLocales.Changed.class, listeners -> (player, locale) -> {
-    for(final Changed event : listeners) {
+    for (final Changed event : listeners) {
       event.onLocaleChanged(player, locale);
     }
   });

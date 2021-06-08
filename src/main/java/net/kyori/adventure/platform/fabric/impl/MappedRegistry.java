@@ -62,13 +62,13 @@ public class MappedRegistry<Mc, Adv> {
     this.mcToAdventure = mcMap;
     this.adventureToMc = adventureMap;
 
-    for(final Adv advElement : adventureValues.get()) {
+    for (final Adv advElement : adventureValues.get()) {
       final @Nullable String mcName = advToName.apply(advElement);
-      if(mcName == null) {
+      if (mcName == null) {
         throw new ExceptionInInitializerError("Unable to get name for enum-like element " + advElement);
       }
       final @Nullable Mc mcElement = mcByName.apply(mcName);
-      if(mcElement == null) {
+      if (mcElement == null) {
         throw new ExceptionInInitializerError("Unknown MC element for Adventure " + mcName);
       }
       this.mcToAdventure.put(mcElement, advElement);
@@ -88,8 +88,8 @@ public class MappedRegistry<Mc, Adv> {
    * @throws IllegalStateException if a value is missing
    */
   private static <T> void checkCoverage(final Map<T, ?> toCheck, final Iterable<T> values) throws IllegalStateException {
-    for(final T value : values) {
-      if(!toCheck.containsKey(value)) {
+    for (final T value : values) {
+      if (!toCheck.containsKey(value)) {
         throw new IllegalStateException("Unmapped " + value.getClass().getSimpleName() + " element '" + value + '!');
       }
     }

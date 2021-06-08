@@ -76,7 +76,7 @@ public class FabricClientAudiencesImpl implements FabricClientAudiences {
 
   @Override
   public net.kyori.adventure.text.@NotNull Component toAdventure(final @NotNull Component vanilla) {
-    if(vanilla instanceof WrappedComponent) {
+    if (vanilla instanceof WrappedComponent) {
       return ((WrappedComponent) vanilla).wrapped();
     } else {
       return FabricAudiences.nonWrappingSerializer().deserialize(vanilla);

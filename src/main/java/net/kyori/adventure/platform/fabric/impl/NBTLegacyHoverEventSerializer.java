@@ -64,7 +64,7 @@ final class NBTLegacyHoverEventSerializer implements LegacyHoverEventSerializer 
         contents.contains(ITEM_COUNT) ? contents.getByte(ITEM_COUNT) : 1,
         tag.isEmpty() ? null : BinaryTagHolder.encode(tag, SNBT_CODEC)
       );
-    } catch(final CommandSyntaxException ex) {
+    } catch (final CommandSyntaxException ex) {
       throw new IOException(ex);
     }
   }
@@ -79,7 +79,7 @@ final class NBTLegacyHoverEventSerializer implements LegacyHoverEventSerializer 
         UUID.fromString(contents.getString(ENTITY_ID)),
         componentCodec.decode(contents.getString(ENTITY_NAME))
       );
-    } catch(final CommandSyntaxException ex) {
+    } catch (final CommandSyntaxException ex) {
       throw new IOException(ex);
     }
   }
@@ -89,10 +89,10 @@ final class NBTLegacyHoverEventSerializer implements LegacyHoverEventSerializer 
     final CompoundTag tag = new CompoundTag();
     tag.putString(ITEM_TYPE, input.item().asString());
     tag.putByte(ITEM_COUNT, (byte) input.count());
-    if(input.nbt() != null) {
+    if (input.nbt() != null) {
       try {
         tag.put(ITEM_TAG, input.nbt().get(SNBT_CODEC));
-      } catch(final CommandSyntaxException ex) {
+      } catch (final CommandSyntaxException ex) {
         throw new IOException(ex);
       }
     }
@@ -105,7 +105,7 @@ final class NBTLegacyHoverEventSerializer implements LegacyHoverEventSerializer 
     final CompoundTag tag = new CompoundTag();
     tag.putString(ENTITY_ID, input.id().toString());
     tag.putString(ENTITY_TYPE, input.type().asString());
-    if(input.name() != null) {
+    if (input.name() != null) {
       tag.putString(ENTITY_NAME, componentCodec.encode(input.name()));
     }
     return Component.text(SNBT_CODEC.encode(tag));

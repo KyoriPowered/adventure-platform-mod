@@ -30,8 +30,9 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(SoundSource.class)
 public interface SoundSourceAccess {
-  @Accessor("BY_NAME")
-  static Map<String, SoundSource> getNameMap() {
+  // @formatter:off
+  @Accessor("BY_NAME") static Map<String, SoundSource> getNameMap() {
     throw new AssertionError();
   }
+  // @formatter:on
 }

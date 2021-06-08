@@ -32,9 +32,11 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(ClientboundBossEventPacket.class)
 public interface ClientboundBossEventPacketAccess {
+  // @formatter:off
   @Accessor void setId(final UUID id);
   @Accessor void setName(final Component name);
   @Accessor void setColor(final BossEvent.BossBarColor color);
   @Accessor void setOverlay(final BossEvent.BossBarOverlay overlay);
   @Accessor void setPct(final float percent);
+  // @formatter:on
 }

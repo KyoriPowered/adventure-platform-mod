@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
-
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.kyori.adventure.platform.fabric.FabricAudiences;
@@ -67,7 +66,7 @@ public final class WrappedComponent implements Component {
   }
 
   public synchronized WrappedComponent rendered(final Locale locale) {
-    if(Objects.equals(locale, this.lastLocale)) {
+    if (Objects.equals(locale, this.lastLocale)) {
       return this.lastRendered;
     }
     this.lastLocale = locale;
@@ -76,7 +75,7 @@ public final class WrappedComponent implements Component {
 
   Component deepConverted() {
     Component converted = this.converted;
-    if(converted == null || this.deepConvertedLocalized != null) {
+    if (converted == null || this.deepConvertedLocalized != null) {
       converted = this.converted = FabricAudiences.nonWrappingSerializer().serialize(this.wrapped);
       this.deepConvertedLocalized = null;
     }
@@ -87,7 +86,7 @@ public final class WrappedComponent implements Component {
   Component deepConvertedLocalized() {
     Component converted = this.converted;
     final Locale target = ((LocaleHolderBridge) Minecraft.getInstance().options).adventure$locale();
-    if(converted == null || this.deepConvertedLocalized != target) {
+    if (converted == null || this.deepConvertedLocalized != target) {
       converted = this.converted = this.rendered(target).deepConverted();
       this.deepConvertedLocalized = target;
     }
@@ -115,7 +114,7 @@ public final class WrappedComponent implements Component {
 
   @Override
   public String getContents() {
-    if(this.wrapped instanceof TextComponent) {
+    if (this.wrapped instanceof TextComponent) {
       return ((TextComponent) this.wrapped).content();
     } else {
       return this.deepConverted().getContents();

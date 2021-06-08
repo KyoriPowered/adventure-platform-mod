@@ -68,7 +68,7 @@ public interface FabricAudiences {
   static net.minecraft.network.chat.@NotNull Component update(final net.minecraft.network.chat.@NotNull Component input, final UnaryOperator<Component> modifier) {
     final Component modified;
     final @Nullable ComponentRenderer<Locale> renderer;
-    if(input instanceof WrappedComponent) {
+    if (input instanceof WrappedComponent) {
       modified = requireNonNull(modifier).apply(((WrappedComponent) input).wrapped());
       renderer = ((WrappedComponent) input).renderer();
     } else {
@@ -88,7 +88,7 @@ public interface FabricAudiences {
    */
   @Contract("null -> null; !null -> !null")
   static Key toAdventure(final ResourceLocation loc) {
-    if(loc == null) {
+    if (loc == null) {
       return null;
     }
     return Key.key(loc.getNamespace(), loc.getPath());
@@ -103,7 +103,7 @@ public interface FabricAudiences {
    */
   @Contract("null -> null; !null -> !null")
   static ResourceLocation toNative(final Key key) {
-    if(key == null) {
+    if (key == null) {
       return null;
     }
     return new ResourceLocation(key.namespace(), key.value());

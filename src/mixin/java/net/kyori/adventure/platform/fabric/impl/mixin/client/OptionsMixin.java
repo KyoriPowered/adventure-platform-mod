@@ -32,8 +32,9 @@ import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(Options.class)
 public class OptionsMixin implements LocaleHolderBridge {
-  @Shadow
-  public String languageCode;
+  // @formatter:off
+  @Shadow public String languageCode;
+  // @formatter:on
 
   private String adventure$cachedLanguage;
   private Locale adventure$cachedLocale;
@@ -41,7 +42,7 @@ public class OptionsMixin implements LocaleHolderBridge {
   @Override
   public Locale adventure$locale() {
     final String language = this.languageCode;
-    if(Objects.equals(this.adventure$cachedLanguage, language)) {
+    if (Objects.equals(this.adventure$cachedLanguage, language)) {
       return this.adventure$cachedLocale;
     } else {
       this.adventure$cachedLanguage = language;

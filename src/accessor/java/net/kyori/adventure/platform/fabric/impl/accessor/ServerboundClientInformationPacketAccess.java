@@ -29,6 +29,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(ServerboundClientInformationPacket.class)
 public interface ServerboundClientInformationPacketAccess {
-  @Accessor
-  String getLanguage();
+  // @formatter:off
+  @Accessor String getLanguage();
+  // @formatter:on
 }
