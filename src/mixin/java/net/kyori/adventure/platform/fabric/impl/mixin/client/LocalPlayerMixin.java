@@ -29,6 +29,7 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.platform.fabric.FabricClientAudiences;
 import net.kyori.adventure.platform.fabric.impl.LocaleHolderBridge;
+import net.kyori.adventure.pointer.Pointers;
 import net.kyori.adventure.sound.Sound;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -55,6 +56,11 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayer implements F
   @Override
   public @NotNull Audience audience() {
     return this.adventure$default;
+  }
+
+  @Override
+  public @NotNull Pointers pointers() {
+    return this.audience().pointers();
   }
 
   @Override

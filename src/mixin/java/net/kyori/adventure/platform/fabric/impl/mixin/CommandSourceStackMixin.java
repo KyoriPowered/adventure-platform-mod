@@ -31,6 +31,7 @@ import net.kyori.adventure.platform.fabric.AdventureCommandSourceStack;
 import net.kyori.adventure.platform.fabric.FabricServerAudiences;
 import net.kyori.adventure.platform.fabric.impl.AdventureCommandSourceStackInternal;
 import net.kyori.adventure.platform.fabric.impl.server.FabricServerAudiencesImpl;
+import net.kyori.adventure.pointer.Pointers;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minecraft.commands.CommandSource;
@@ -95,6 +96,11 @@ public abstract class CommandSourceStackMixin implements AdventureCommandSourceS
     } else {
       return Identity.nil();
     }
+  }
+
+  @Override
+  public @NotNull Pointers pointers() {
+    return this.audience().pointers(); // todo: does this make sense to delegate directly?
   }
 
   @Override

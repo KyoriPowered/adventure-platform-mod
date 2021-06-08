@@ -24,7 +24,6 @@
 package net.kyori.adventure.platform.fabric.impl.mixin;
 
 import com.google.common.collect.MapMaker;
-import com.mojang.authlib.GameProfile;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -39,7 +38,7 @@ import net.kyori.adventure.platform.fabric.impl.server.FabricServerAudiencesImpl
 import net.kyori.adventure.platform.fabric.impl.server.RenderableAudience;
 import net.kyori.adventure.platform.fabric.impl.server.ServerPlayerAudience;
 import net.kyori.adventure.platform.fabric.impl.server.ServerPlayerBridge;
-import net.minecraft.core.BlockPos;
+import net.kyori.adventure.pointer.Pointers;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.protocol.game.ClientboundTabListPacket;
@@ -47,7 +46,8 @@ import net.minecraft.network.protocol.game.ServerboundClientInformationPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -59,7 +59,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerPlayer.class)
-public abstract class ServerPlayerMixin extends Player implements ForwardingAudience.Single, LocaleHolderBridge, RenderableAudience, ServerPlayerBridge {
+public abstract class ServerPlayerMixin extends PlayerMixin implements ForwardingAudience.Single, LocaleHolderBridge, RenderableAudience, ServerPlayerBridge {
   // @formatter:off
   @Shadow @Final public MinecraftServer server;
   @Shadow public ServerGamePacketListenerImpl connection;
@@ -71,8 +71,8 @@ public abstract class ServerPlayerMixin extends Player implements ForwardingAudi
   private Component adventure$tabListHeader = TextComponent.EMPTY;
   private Component adventure$tabListFooter = TextComponent.EMPTY;
 
-  public ServerPlayerMixin(final Level level, final BlockPos blockPos, final float f, final GameProfile gameProfile) {
-    super(level, blockPos, f, gameProfile);
+  protected ServerPlayerMixin(final EntityType<? extends LivingEntity> entityType, final Level level) {
+    super(entityType, level);
   }
 
   @Inject(method = "<init>", at = @At("TAIL"))
@@ -93,6 +93,11 @@ public abstract class ServerPlayerMixin extends Player implements ForwardingAudi
   @Override
   public @NotNull Locale adventure$locale() {
     return this.adventure$locale;
+  }
+
+  @Override
+  public @NotNull Pointers pointers() {
+    return this.audience().pointers();
   }
 
   // Tab list

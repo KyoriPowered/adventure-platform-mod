@@ -32,7 +32,9 @@ import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.fabric.FabricAudiences;
 import net.kyori.adventure.platform.fabric.impl.GameEnums;
+import net.kyori.adventure.platform.fabric.impl.PointerProviderBridge;
 import net.kyori.adventure.platform.fabric.impl.accessor.ConnectionAccess;
+import net.kyori.adventure.pointer.Pointers;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.SoundStop;
 import net.kyori.adventure.text.Component;
@@ -233,5 +235,10 @@ public final class ServerPlayerAudience implements Audience {
     ((ServerPlayerBridge) this.player).bridge$updateTabList(
       this.controller.toNative(requireNonNull(header, "header")),
       this.controller.toNative(requireNonNull(footer, "footer")));
+  }
+
+  @Override
+  public @NotNull Pointers pointers() {
+    return ((PointerProviderBridge) this.player).adventure$pointers();
   }
 }

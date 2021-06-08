@@ -32,7 +32,9 @@ import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.fabric.FabricAudiences;
 import net.kyori.adventure.platform.fabric.impl.GameEnums;
-import net.kyori.adventure.platform.fabric.impl.accessor.client.AbstractSoundInstanceAccessor;
+import net.kyori.adventure.platform.fabric.impl.PointerProviderBridge;
+import net.kyori.adventure.platform.fabric.impl.accessor.client.AbstractSoundInstanceAccess;
+import net.kyori.adventure.pointer.Pointers;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.SoundStop;
 import net.kyori.adventure.text.Component;
@@ -43,10 +45,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.resources.sounds.EntityBoundSoundInstance;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
-import net.minecraft.core.Registry;
-import net.minecraft.network.protocol.game.ClientboundSoundEntityPacket;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
@@ -147,7 +146,7 @@ public class ClientAudience implements Audience {
     // Initialize with a placeholder event
     final EntityBoundSoundInstance mcSound = new EntityBoundSoundInstance(SoundEvents.ITEM_PICKUP, GameEnums.SOUND_SOURCE.toMinecraft(sound.source()), sound.volume(), sound.pitch(), targetEntity);
     // Then apply the ResourceLocation of our real sound event
-    ((AbstractSoundInstanceAccessor) mcSound).setLocation(FabricAudiences.toNative(sound.name()));
+    ((AbstractSoundInstanceAccess) mcSound).setLocation(FabricAudiences.toNative(sound.name()));
 
     this.client.getSoundManager().play(mcSound);
   }
@@ -186,5 +185,15 @@ public class ClientAudience implements Audience {
   public void sendPlayerListHeaderAndFooter(final @NotNull Component header, final @NotNull Component footer) {
     this.sendPlayerListHeader(header);
     this.sendPlayerListFooter(footer);
+  }
+
+  @Override
+  public @NotNull Pointers pointers() {
+    final @Nullable LocalPlayer clientPlayer = this.client.player;
+    if (clientPlayer != null) {
+      return ((PointerProviderBridge) clientPlayer).adventure$pointers();
+    } else {
+      return Audience.super.pointers();
+    }
   }
 }
