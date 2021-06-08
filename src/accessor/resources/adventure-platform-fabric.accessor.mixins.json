@@ -10,6 +10,8 @@
     "ConnectionAccess",
     "ServerboundClientInformationPacketAccess",
     "SoundSourceAccess",
+  ],
+  "client": [
     "client.AbstractSoundInstanceAccess"
   ],
   "injectors": {
