@@ -23,11 +23,11 @@
  */
 package net.kyori.adventure.platform.fabric.impl.mixin;
 
-import net.kyori.adventure.platform.fabric.impl.server.ServerBossEventBridge;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.UUID;
+import net.kyori.adventure.platform.fabric.impl.server.ServerBossEventBridge;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundBossEventPacket;
 import net.minecraft.server.level.ServerBossEvent;
@@ -45,29 +45,32 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class ServerBossEventMixin extends BossEvent implements ServerBossEventBridge {
   private static final float MINIMUM_PERCENT_CHANGE = 5e-4f;
 
-  private float adventure$lastSentPercent;
+  // @formatter:off
   @Shadow @Final private Set<ServerPlayer> players;
+
+  @Shadow public abstract boolean shadow$isVisible();
+  // @formatter:on
+
+  private float adventure$lastSentPercent;
 
   public ServerBossEventMixin(final UUID uuid, final Component name, final BossBarColor color, final BossBarOverlay style) {
     super(uuid, name, color, style);
     this.adventure$lastSentPercent = this.progress;
   }
 
-  @Shadow public abstract boolean shadow$isVisible();
-
   // If a player has respawned, we still want to be able to remove the player using old references to their entity
   @Redirect(method = "removePlayer", at = @At(value = "INVOKE", target = "Ljava/util/Set;remove(Ljava/lang/Object;)Z"))
   private boolean adventure$removeByUuid(final Set<?> instance, final Object player) {
-    if(instance.remove(player)) {
+    if (instance.remove(player)) {
       return true;
     }
-    if(!(player instanceof ServerPlayer)) {
+    if (!(player instanceof ServerPlayer)) {
       return false;
     }
 
     final UUID testId = ((ServerPlayer) player).getUUID();
-    for(final Iterator<?> it = instance.iterator(); it.hasNext();) {
-      if(((ServerPlayer) it.next()).getUUID().equals(testId)) {
+    for (final Iterator<?> it = instance.iterator(); it.hasNext();) {
+      if (((ServerPlayer) it.next()).getUUID().equals(testId)) {
         it.remove();
         return true;
       }
@@ -78,8 +81,8 @@ public abstract class ServerBossEventMixin extends BossEvent implements ServerBo
   @Override
   public void adventure$addAll(final Collection<ServerPlayer> players) {
     final ClientboundBossEventPacket pkt = ClientboundBossEventPacket.createAddPacket(this);
-    for(final ServerPlayer player : players) {
-      if(this.players.add(player) && this.shadow$isVisible()) {
+    for (final ServerPlayer player : players) {
+      if (this.players.add(player) && this.shadow$isVisible()) {
         player.connection.send(pkt);
       }
     }
@@ -88,8 +91,8 @@ public abstract class ServerBossEventMixin extends BossEvent implements ServerBo
   @Override
   public void adventure$removeAll(final Collection<ServerPlayer> players) {
     final ClientboundBossEventPacket pkt = ClientboundBossEventPacket.createRemovePacket(this.getId());
-    for(final ServerPlayer player : players) {
-      if(this.players.remove(player) && this.shadow$isVisible()) {
+    for (final ServerPlayer player : players) {
+      if (this.players.remove(player) && this.shadow$isVisible()) {
         player.connection.send(pkt);
       }
     }
@@ -97,7 +100,7 @@ public abstract class ServerBossEventMixin extends BossEvent implements ServerBo
 
   @Override
   public void adventure$replaceSubscriber(final ServerPlayer oldSub, final ServerPlayer newSub) {
-    if(this.players.remove(oldSub)) {
+    if (this.players.remove(oldSub)) {
       this.players.add(newSub);
     }
   }
@@ -106,7 +109,7 @@ public abstract class ServerBossEventMixin extends BossEvent implements ServerBo
 
   @Inject(method = "setProgress", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/BossEvent;setProgress(F)V"), cancellable = true, require = 0)
   private void adventure$onlySetPercentIfBigEnough(final float newPercent, final CallbackInfo ci) {
-    if(Math.abs(newPercent - this.adventure$lastSentPercent) < MINIMUM_PERCENT_CHANGE) {
+    if (Math.abs(newPercent - this.adventure$lastSentPercent) < MINIMUM_PERCENT_CHANGE) {
       this.progress = newPercent;
       ci.cancel();
     } else {

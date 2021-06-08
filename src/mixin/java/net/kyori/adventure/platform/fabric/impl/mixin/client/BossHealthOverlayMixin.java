@@ -31,6 +31,7 @@ import net.kyori.adventure.platform.fabric.impl.client.ClientBossBarListener;
 import net.kyori.adventure.platform.fabric.impl.client.FabricClientAudiencesImpl;
 import net.minecraft.client.gui.components.BossHealthOverlay;
 import net.minecraft.client.gui.components.LerpingBossEvent;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -40,19 +41,20 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(BossHealthOverlay.class)
 public class BossHealthOverlayMixin implements BossHealthOverlayBridge {
-
+  // @formatter:off
   @Shadow @Final private Map<UUID, LerpingBossEvent> events;
+  // @formatter:on
 
-  private Map<FabricClientAudiencesImpl, ClientBossBarListener> adventure$listener = new MapMaker().weakKeys().makeMap();
+  private final Map<FabricClientAudiencesImpl, ClientBossBarListener> adventure$listener = new MapMaker().weakKeys().makeMap();
 
   @Override
-  public ClientBossBarListener adventure$listener(final FabricClientAudiencesImpl controller) {
+  public @NotNull ClientBossBarListener adventure$listener(final @NotNull FabricClientAudiencesImpl controller) {
     return this.adventure$listener.computeIfAbsent(controller, ctrl -> new ClientBossBarListener(ctrl, this.events));
   }
 
   @Inject(method = "reset", at = @At("HEAD"))
   private void adventure$resetListener(final CallbackInfo ci) {
-    if(this.adventure$listener != null) {
+    if (this.adventure$listener != null) {
       this.adventure$listener.clear();
     }
   }

@@ -32,6 +32,9 @@ import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.fabric.FabricAudiences;
 import net.kyori.adventure.platform.fabric.impl.GameEnums;
+import net.kyori.adventure.platform.fabric.impl.PointerProviderBridge;
+import net.kyori.adventure.platform.fabric.impl.accessor.client.AbstractSoundInstanceAccess;
+import net.kyori.adventure.pointer.Pointers;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.SoundStop;
 import net.kyori.adventure.text.Component;
@@ -39,13 +42,16 @@ import net.kyori.adventure.title.Title;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.BookViewScreen;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.resources.sounds.EntityBoundSoundInstance;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.ChatVisiblity;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class ClientAudience implements Audience {
   private final Minecraft client;
@@ -57,30 +63,30 @@ public class ClientAudience implements Audience {
   }
 
   @Override
-  public void sendMessage(final Identity source, final @NonNull Component message, final @NonNull MessageType type) {
-    if(this.client.isBlocked(source.uuid())) return;
+  public void sendMessage(final Identity source, final @NotNull Component message, final @NotNull MessageType type) {
+    if (this.client.isBlocked(source.uuid())) return;
 
     final ChatVisiblity visibility = this.client.options.chatVisibility;
-    if(type == MessageType.CHAT) {
+    if (type == MessageType.CHAT) {
       // Add to chat queue (following delay and such)
-      if(visibility == ChatVisiblity.FULL) {
+      if (visibility == ChatVisiblity.FULL) {
         this.client.gui.getChat().enqueueMessage(this.controller.toNative(message));
       }
     } else {
       // Add immediately as a system message
-      if(visibility == ChatVisiblity.FULL || visibility == ChatVisiblity.SYSTEM) {
+      if (visibility == ChatVisiblity.FULL || visibility == ChatVisiblity.SYSTEM) {
         this.client.gui.getChat().addMessage(this.controller.toNative(message));
       }
     }
   }
 
   @Override
-  public void sendActionBar(final @NonNull Component message) {
+  public void sendActionBar(final @NotNull Component message) {
     this.client.gui.setOverlayMessage(this.controller.toNative(message), false);
   }
 
   @Override
-  public void showTitle(final @NonNull Title title) {
+  public void showTitle(final @NotNull Title title) {
     final net.minecraft.network.chat.@Nullable Component titleText = title.title() == Component.empty() ? null : this.controller.toNative(title.title());
     final net.minecraft.network.chat.@Nullable Component subtitleText = title.subtitle() == Component.empty() ? null : this.controller.toNative(title.subtitle());
     final Title.@Nullable Times times = title.times();
@@ -110,19 +116,25 @@ public class ClientAudience implements Audience {
   }
 
   @Override
-  public void showBossBar(final @NonNull BossBar bar) {
+  public void showBossBar(final @NotNull BossBar bar) {
     BossHealthOverlayBridge.listener(this.client.gui.getBossOverlay(), this.controller).add(bar);
   }
 
   @Override
-  public void hideBossBar(final @NonNull BossBar bar) {
+  public void hideBossBar(final @NotNull BossBar bar) {
     BossHealthOverlayBridge.listener(this.client.gui.getBossOverlay(), this.controller).remove(bar);
   }
 
   @Override
+<<<<<<< HEAD
   public void playSound(final @NonNull Sound sound) {
     final @Nullable LocalPlayer player = this.client.player;
     if(player != null) {
+=======
+  public void playSound(final @NotNull Sound sound) {
+    final LocalPlayer player = this.client.player;
+    if (player != null) {
+>>>>>>> master
       this.playSound(sound, player.getX(), player.getY(), player.getZ());
     } else {
       // not in-game
@@ -132,13 +144,32 @@ public class ClientAudience implements Audience {
   }
 
   @Override
-  public void playSound(final @NonNull Sound sound, final double x, final double y, final double z) {
+  public void playSound(final @NotNull Sound sound, final Sound.@NotNull Emitter emitter) {
+    final Entity targetEntity;
+    if (emitter == Sound.Emitter.self()) {
+      targetEntity = this.client.player;
+    } else if (emitter instanceof Entity) {
+      targetEntity = (Entity) emitter;
+    } else {
+      throw new IllegalArgumentException("Provided emitter '" + emitter + "' was not Sound.Emitter.self() or an Entity");
+    }
+
+    // Initialize with a placeholder event
+    final EntityBoundSoundInstance mcSound = new EntityBoundSoundInstance(SoundEvents.ITEM_PICKUP, GameEnums.SOUND_SOURCE.toMinecraft(sound.source()), sound.volume(), sound.pitch(), targetEntity);
+    // Then apply the ResourceLocation of our real sound event
+    ((AbstractSoundInstanceAccess) mcSound).setLocation(FabricAudiences.toNative(sound.name()));
+
+    this.client.getSoundManager().play(mcSound);
+  }
+
+  @Override
+  public void playSound(final @NotNull Sound sound, final double x, final double y, final double z) {
     this.client.getSoundManager().play(new SimpleSoundInstance(FabricAudiences.toNative(sound.name()), GameEnums.SOUND_SOURCE.toMinecraft(sound.source()),
       sound.volume(), sound.pitch(), false, 0, SoundInstance.Attenuation.LINEAR, x, y, z, false));
   }
 
   @Override
-  public void stopSound(final @NonNull SoundStop stop) {
+  public void stopSound(final @NotNull SoundStop stop) {
     final @Nullable Key sound = stop.sound();
     final @Nullable ResourceLocation soundIdent = sound == null ? null : FabricAudiences.toNative(sound);
     final Sound.@Nullable Source source = stop.source();
@@ -147,23 +178,33 @@ public class ClientAudience implements Audience {
   }
 
   @Override
-  public void openBook(final @NonNull Book book) {
+  public void openBook(final @NotNull Book book) {
     this.client.setScreen(new BookViewScreen(new AdventureBookAccess(book, this.controller.localeRenderer())));
   }
 
   @Override
-  public void sendPlayerListHeader(final @NonNull Component header) {
+  public void sendPlayerListHeader(final @NotNull Component header) {
     this.client.gui.getTabList().setHeader(header == Component.empty() ? null : this.controller.toNative(header));
   }
 
   @Override
-  public void sendPlayerListFooter(final @NonNull Component footer) {
+  public void sendPlayerListFooter(final @NotNull Component footer) {
     this.client.gui.getTabList().setHeader(footer == Component.empty() ? null : this.controller.toNative(footer));
   }
 
   @Override
-  public void sendPlayerListHeaderAndFooter(final @NonNull Component header, final @NonNull Component footer) {
+  public void sendPlayerListHeaderAndFooter(final @NotNull Component header, final @NotNull Component footer) {
     this.sendPlayerListHeader(header);
     this.sendPlayerListFooter(footer);
+  }
+
+  @Override
+  public @NotNull Pointers pointers() {
+    final @Nullable LocalPlayer clientPlayer = this.client.player;
+    if (clientPlayer != null) {
+      return ((PointerProviderBridge) clientPlayer).adventure$pointers();
+    } else {
+      return Audience.super.pointers();
+    }
   }
 }

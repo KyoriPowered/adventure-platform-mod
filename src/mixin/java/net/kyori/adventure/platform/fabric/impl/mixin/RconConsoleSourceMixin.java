@@ -34,17 +34,18 @@ import net.kyori.adventure.platform.fabric.impl.server.PlainAudience;
 import net.kyori.adventure.platform.fabric.impl.server.RenderableAudience;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.rcon.RconConsoleSource;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(RconConsoleSource.class)
 public abstract class RconConsoleSourceMixin implements RenderableAudience, ForwardingAudience.Single {
+  // @formatter:off
   @Shadow @Final private StringBuffer buffer;
+  @Shadow @Final private MinecraftServer server;
+  // @formatter:off
 
-  @Shadow @Final
-  private MinecraftServer server;
   private final Map<FabricAudiences, Audience> adventure$renderers = new MapMaker().weakKeys().makeMap();
 
   @Override
@@ -53,7 +54,7 @@ public abstract class RconConsoleSourceMixin implements RenderableAudience, Forw
   }
 
   @Override
-  public @NonNull Audience audience() {
+  public @NotNull Audience audience() {
     return FabricServerAudiences.of(this.server).audience((RconConsoleSource) (Object) this);
   }
 }

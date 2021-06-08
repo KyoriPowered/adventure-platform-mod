@@ -30,7 +30,8 @@ import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.platform.fabric.FabricAudiences;
 import net.kyori.adventure.text.Component;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import org.jetbrains.annotations.NotNull;
 
 public class PlainAudience implements Audience {
   private final FabricAudiences controller;
@@ -42,12 +43,12 @@ public class PlainAudience implements Audience {
   }
 
   @Override
-  public void sendMessage(final Identity source, final @NonNull Component message, final @NonNull MessageType type) {
-    this.plainOutput.accept(this.controller.plainSerializer().serialize(this.controller.localeRenderer().render(message, Locale.getDefault())));
+  public void sendMessage(final @NotNull Identity source, final @NotNull Component message, final @NotNull MessageType type) {
+    this.plainOutput.accept(PlainTextComponentSerializer.plainText().serialize(this.controller.localeRenderer().render(message, Locale.getDefault())));
   }
 
   @Override
-  public void sendActionBar(final @NonNull Component message) {
+  public void sendActionBar(final @NotNull Component message) {
     this.sendMessage(Identity.nil(), message);
   }
 }

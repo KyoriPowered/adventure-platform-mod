@@ -29,7 +29,7 @@ import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.platform.fabric.FabricAudiences;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSource;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Audience implementation that can wrap a {@link CommandSource}.
@@ -49,7 +49,7 @@ final class CommandSourceAudience implements Audience {
   }
 
   @Override
-  public void sendActionBar(final @NonNull Component message) {
+  public void sendActionBar(final @NotNull Component message) {
     this.sendMessage(Identity.nil(), message);
   }
 }

@@ -26,17 +26,18 @@ package net.kyori.adventure.platform.fabric.impl.mixin;
 import com.mojang.authlib.GameProfile;
 import java.util.UUID;
 import net.kyori.adventure.identity.Identity;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(value = GameProfile.class, remap = false)
 public abstract class GameProfileMixin implements Identity {
-  @Shadow
-  public abstract UUID shadow$getId();
+  // @formatter:off
+  @Shadow public abstract UUID shadow$getId();
+  // @formatter:on
 
   @Override
-  public @NonNull UUID uuid() {
+  public @NotNull UUID uuid() {
     return this.shadow$getId();
   }
 }

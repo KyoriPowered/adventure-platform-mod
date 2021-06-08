@@ -6,6 +6,7 @@
     "ClientboundStatusResponsePacketMixin",
     "CommandSourceStackMixin",
     "ComponentSerializerMixin",
+    "EntityMixin",
     "FriendlyByteBufMixin",
     "GameProfileMixin",
     "MinecraftServerMixin",

@@ -28,6 +28,7 @@ indra {
 }
 
 dependencies {
+  annotationProcessor("ca.stellardrift:contract-validator:1.0.0")
   modApi(include(adventure("key", versionAdventure))!!)
   modApi(include(adventure("api", versionAdventure))!!)
   modApi(include(adventure("text-serializer-plain", versionAdventure))!!)
@@ -43,7 +44,7 @@ dependencies {
   // Transitive deps
   include("net.kyori:examination-api:1.1.0")
   include("net.kyori:examination-string:1.1.0")
-  modCompileOnly("org.checkerframework:checker-qual:3.13.0")
+  modCompileOnly("org.jetbrains:annotations:21.0.1")
 
   modCompileOnly("ca.stellardrift:colonel:0.2") // broken on 1.17, needs update
 

@@ -42,8 +42,6 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.KeybindComponent;
 import net.kyori.adventure.text.TranslatableComponent;
 import net.kyori.adventure.text.flattener.ComponentFlattener;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
-import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
 import net.kyori.adventure.translation.GlobalTranslator;
 import net.kyori.adventure.translation.TranslationRegistry;
 import net.kyori.adventure.translation.Translator;
@@ -54,79 +52,76 @@ import net.minecraft.commands.synchronization.ArgumentTypes;
 import net.minecraft.commands.synchronization.EmptyArgumentSerializer;
 import net.minecraft.locale.Language;
 import net.minecraft.resources.ResourceLocation;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class AdventureCommon implements ModInitializer {
 
   public static final ComponentFlattener FLATTENER;
-  public static final PlainComponentSerializer PLAIN;
-  public static final GsonComponentSerializer GSON = GsonComponentSerializer.builder().legacyHoverEventSerializer(NBTLegacyHoverEventSerializer.INSTANCE).build();
   private static final Pattern LOCALIZATION_PATTERN = Pattern.compile("%(?:(\\d+)\\$)?s");
 
   static {
     final ComponentFlattener.Builder flattenerBuilder = ComponentFlattener.basic().toBuilder();
 
-    if(FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
+    if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
       flattenerBuilder.mapper(KeybindComponent.class, keybind -> KeyMapping.createNameSupplier(keybind.keybind()).get().getContents());
     }
 
     flattenerBuilder.complexMapper(TranslatableComponent.class, (translatable, consumer) -> {
       final String key = translatable.key();
-      for(final Translator registry : GlobalTranslator.get().sources()) {
-        if(registry instanceof TranslationRegistry && ((TranslationRegistry) registry).contains(key)) {
+      for (final Translator registry : GlobalTranslator.get().sources()) {
+        if (registry instanceof TranslationRegistry && ((TranslationRegistry) registry).contains(key)) {
           consumer.accept(GlobalTranslator.render(translatable, Locale.getDefault()));
           return;
         }
       }
 
-      final @NonNull String translated = Language.getInstance().getOrDefault(key);
+      final @NotNull String translated = Language.getInstance().getOrDefault(key);
       final Matcher matcher = LOCALIZATION_PATTERN.matcher(translated);
       final List<Component> args = translatable.args();
       int argPosition = 0;
       int lastIdx = 0;
-      while(matcher.find()) {
+      while (matcher.find()) {
         // append prior
-        if(lastIdx < matcher.start()) consumer.accept(Component.text(translated.substring(lastIdx, matcher.start())));
+        if (lastIdx < matcher.start()) consumer.accept(Component.text(translated.substring(lastIdx, matcher.start())));
         lastIdx = matcher.end();
 
         final @Nullable String argIdx = matcher.group(1);
         // calculate argument position
-        if(argIdx != null) {
+        if (argIdx != null) {
           try {
             final int idx = Integer.parseInt(argIdx);
-            if(idx < args.size()) {
+            if (idx < args.size()) {
               consumer.accept(args.get(idx));
             }
-          } catch(final NumberFormatException ex) {
+          } catch (final NumberFormatException ex) {
             // ignore, drop the format placeholder
           }
         } else {
           final int idx = argPosition++;
-          if(idx < args.size()) {
+          if (idx < args.size()) {
             consumer.accept(args.get(idx));
           }
         }
       }
 
       // append tail
-      if(lastIdx < translated.length()) {
+      if (lastIdx < translated.length()) {
         consumer.accept(Component.text(translated.substring(lastIdx)));
       }
     });
 
     FLATTENER = flattenerBuilder.build();
-    PLAIN = PlainComponentSerializer.builder().flattener(FLATTENER).build();
   }
 
-  static ResourceLocation res(final @NonNull String value) {
+  static ResourceLocation res(final @NotNull String value) {
     return new ResourceLocation("adventure", value);
   }
 
   @Override
   public void onInitialize() {
     // Register custom argument types
-    if(FabricLoader.getInstance().isModLoaded("colonel")) { // we can do server-only arg types
+    if (FabricLoader.getInstance().isModLoaded("colonel")) { // we can do server-only arg types
       ServerArgumentType.<ComponentArgumentType>builder(res("component"))
         .type(ComponentArgumentType.class)
         .serializer(new ComponentArgumentTypeSerializer())

@@ -24,20 +24,19 @@
 package net.kyori.adventure.platform.fabric.impl.mixin;
 
 import com.google.common.collect.MapMaker;
-import com.mojang.authlib.GameProfile;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.platform.fabric.FabricServerAudiences;
-import net.kyori.adventure.platform.fabric.impl.LocaleHolderBridge;
 import net.kyori.adventure.platform.fabric.PlayerLocales;
+import net.kyori.adventure.platform.fabric.impl.LocaleHolderBridge;
 import net.kyori.adventure.platform.fabric.impl.server.FabricServerAudiencesImpl;
 import net.kyori.adventure.platform.fabric.impl.server.RenderableAudience;
 import net.kyori.adventure.platform.fabric.impl.server.ServerPlayerAudience;
 import net.kyori.adventure.platform.fabric.impl.server.ServerPlayerBridge;
-import net.minecraft.core.BlockPos;
+import net.kyori.adventure.pointer.Pointers;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.protocol.game.ClientboundTabListPacket;
@@ -45,11 +44,11 @@ import net.minecraft.network.protocol.game.ServerboundClientInformationPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
-import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -58,18 +57,20 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerPlayer.class)
-public abstract class ServerPlayerMixin extends Player implements ForwardingAudience.Single, LocaleHolderBridge, RenderableAudience, ServerPlayerBridge {
+public abstract class ServerPlayerMixin extends PlayerMixin implements ForwardingAudience.Single, LocaleHolderBridge, RenderableAudience, ServerPlayerBridge {
+  // @formatter:off
   @Shadow @Final public MinecraftServer server;
   @Shadow public ServerGamePacketListenerImpl connection;
+  // @formatter:on
 
-  private @MonotonicNonNull Audience adventure$backing;
+  private Audience adventure$backing;
   private Locale adventure$locale;
   private final Map<FabricServerAudiencesImpl, Audience> adventure$renderers = new MapMaker().weakKeys().makeMap();
   private Component adventure$tabListHeader = TextComponent.EMPTY;
   private Component adventure$tabListFooter = TextComponent.EMPTY;
 
-  public ServerPlayerMixin(final Level level, final BlockPos blockPos, final float f, final GameProfile gameProfile) {
-    super(level, blockPos, f, gameProfile);
+  protected ServerPlayerMixin(final EntityType<? extends LivingEntity> entityType, final Level level) {
+    super(entityType, level);
   }
 
   @Inject(method = "<init>", at = @At("TAIL"))
@@ -78,7 +79,7 @@ public abstract class ServerPlayerMixin extends Player implements ForwardingAudi
   }
 
   @Override
-  public @NonNull Audience audience() {
+  public @NotNull Audience audience() {
     return this.adventure$backing;
   }
 
@@ -88,18 +89,23 @@ public abstract class ServerPlayerMixin extends Player implements ForwardingAudi
   }
 
   @Override
-  public Locale adventure$locale() {
+  public @NotNull Locale adventure$locale() {
     return this.adventure$locale;
+  }
+
+  @Override
+  public @NotNull Pointers pointers() {
+    return this.audience().pointers();
   }
 
   // Tab list
 
   @Override
   public void bridge$updateTabList(final @Nullable Component header, final @Nullable Component footer) {
-    if(header != null) {
+    if (header != null) {
       this.adventure$tabListHeader = header;
     }
-    if(footer != null) {
+    if (footer != null) {
       this.adventure$tabListFooter = footer;
     }
     final ClientboundTabListPacket packet = new ClientboundTabListPacket(
@@ -117,7 +123,7 @@ public abstract class ServerPlayerMixin extends Player implements ForwardingAudi
   private void adventure$handleLocaleUpdate(final ServerboundClientInformationPacket information, final CallbackInfo ci) {
     final String language = information.getLanguage();
     final @Nullable Locale locale = LocaleHolderBridge.toLocale(language);
-    if(!Objects.equals(this.adventure$locale, locale)) {
+    if (!Objects.equals(this.adventure$locale, locale)) {
       this.adventure$locale = locale;
       PlayerLocales.CHANGED_EVENT.invoker().onLocaleChanged((ServerPlayer) (Object) this, locale);
     }

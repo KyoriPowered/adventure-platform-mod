@@ -26,6 +26,5 @@ package net.kyori.adventure.platform.fabric.impl.server;
 import net.kyori.adventure.platform.fabric.FabricServerAudiences;
 
 public interface MinecraftServerBridge {
-
   FabricServerAudiences adventure$globalProvider();
 }

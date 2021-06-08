@@ -28,11 +28,10 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSerializationContext;
 import java.lang.reflect.Type;
-
-import net.kyori.adventure.platform.fabric.impl.AdventureCommon;
 import net.kyori.adventure.platform.fabric.impl.WrappedComponent;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.minecraft.network.chat.Component;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -42,14 +41,16 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(net.minecraft.network.chat.Component.Serializer.class)
 public abstract class ComponentSerializerMixin {
-  @Shadow public abstract JsonElement serialize(final Component text, final Type type, final JsonSerializationContext jsonSerializationContext);
+  // @formatter:off
+  @Shadow public abstract JsonElement shadow$serialize(final Component text, final Type type, final JsonSerializationContext jsonSerializationContext);
+  // @formatter:on
 
   @Inject(method = "serialize", at = @At("HEAD"), cancellable = true)
   public void adventure$writeComponentText(final Component text, final Type type, final JsonSerializationContext ctx, final CallbackInfoReturnable<JsonElement> cir) {
-    if(text instanceof WrappedComponent) {
+    if (text instanceof WrappedComponent) {
       final @Nullable Component converted = ((WrappedComponent) text).deepConvertedIfPresent();
-      if(converted != null) {
-        cir.setReturnValue(this.serialize(text, type, ctx));
+      if (converted != null) {
+        cir.setReturnValue(this.shadow$serialize(text, type, ctx));
       } else {
         cir.setReturnValue(ctx.serialize(((WrappedComponent) text).wrapped(), net.kyori.adventure.text.Component.class));
       }
@@ -60,6 +61,6 @@ public abstract class ComponentSerializerMixin {
   @Inject(method = "*()Lcom/google/gson/Gson;", at = @At(value = "INVOKE_ASSIGN", target = "com/google/gson/GsonBuilder.disableHtmlEscaping()Lcom/google/gson/GsonBuilder;", remap = false),
     locals = LocalCapture.CAPTURE_FAILEXCEPTION, remap = false)
   private static void adventure$injectGson(final CallbackInfoReturnable<Gson> cir, final GsonBuilder gson) {
-    AdventureCommon.GSON.populator().apply(gson);
+    GsonComponentSerializer.gson().populator().apply(gson);
   }
 }

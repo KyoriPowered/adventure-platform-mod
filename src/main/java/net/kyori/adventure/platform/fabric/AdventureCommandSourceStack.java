@@ -26,6 +26,7 @@ package net.kyori.adventure.platform.fabric;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.identity.Identified;
 import net.kyori.adventure.text.Component;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * An interface applied to {@link net.minecraft.commands.CommandSourceStack} to allow sending {@link Component Components}.
@@ -40,7 +41,7 @@ public interface AdventureCommandSourceStack extends ForwardingAudience.Single, 
    * @param sendToOps If this message should be sent to all ops listening
    * @since 4.0.0
    */
-  void sendSuccess(Component text, boolean sendToOps);
+  void sendSuccess(final @NotNull Component text, final boolean sendToOps);
 
   /**
    * Send an error message to the command source.
@@ -48,5 +49,5 @@ public interface AdventureCommandSourceStack extends ForwardingAudience.Single, 
    * @param text The error
    * @since 4.0.0
    */
-  void sendFailure(Component text);
+  void sendFailure(final @NotNull Component text);
 }

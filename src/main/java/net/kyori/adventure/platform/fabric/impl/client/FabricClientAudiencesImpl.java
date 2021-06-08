@@ -35,6 +35,7 @@ import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
 import net.kyori.adventure.translation.GlobalTranslator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.NotNull;
 
 import static java.util.Objects.requireNonNull;
 
@@ -49,33 +50,34 @@ public class FabricClientAudiencesImpl implements FabricClientAudiences {
   }
 
   @Override
-  public Audience audience() {
+  public @NotNull Audience audience() {
     return this.audience;
   }
 
   @Override
-  public ComponentFlattener flattener() {
+  public @NotNull ComponentFlattener flattener() {
     return AdventureCommon.FLATTENER;
   }
 
   @Override
-  public PlainComponentSerializer plainSerializer() {
-    return AdventureCommon.PLAIN;
+  @Deprecated
+  public @NotNull PlainComponentSerializer plainSerializer() {
+    return PlainComponentSerializer.plain();
   }
 
   @Override
-  public ComponentRenderer<Locale> localeRenderer() {
+  public @NotNull ComponentRenderer<Locale> localeRenderer() {
     return this.renderer;
   }
 
   @Override
-  public Component toNative(final net.kyori.adventure.text.Component adventure) {
+  public Component toNative(final net.kyori.adventure.text.@NotNull Component adventure) {
     return new WrappedComponent(requireNonNull(adventure, "adventure"), this.renderer);
   }
 
   @Override
-  public net.kyori.adventure.text.Component toAdventure(final Component vanilla) {
-    if(vanilla instanceof WrappedComponent) {
+  public net.kyori.adventure.text.@NotNull Component toAdventure(final @NotNull Component vanilla) {
+    if (vanilla instanceof WrappedComponent) {
       return ((WrappedComponent) vanilla).wrapped();
     } else {
       return FabricAudiences.nonWrappingSerializer().deserialize(vanilla);

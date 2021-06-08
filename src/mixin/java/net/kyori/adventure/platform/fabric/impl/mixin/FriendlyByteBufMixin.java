@@ -24,11 +24,11 @@
 package net.kyori.adventure.platform.fabric.impl.mixin;
 
 import java.util.Locale;
-import net.kyori.adventure.platform.fabric.impl.server.FriendlyByteBufBridge;
 import net.kyori.adventure.platform.fabric.impl.WrappedComponent;
+import net.kyori.adventure.platform.fabric.impl.server.FriendlyByteBufBridge;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
@@ -39,7 +39,7 @@ public class FriendlyByteBufMixin implements FriendlyByteBufBridge {
 
   @ModifyVariable(method = "writeComponent", at = @At("HEAD"), argsOnly = true)
   private Component adventure$localizeComponent(final Component input) {
-    if(this.adventure$locale != null && input instanceof WrappedComponent) {
+    if (this.adventure$locale != null && input instanceof WrappedComponent) {
       return ((WrappedComponent) input).rendered(this.adventure$locale);
     }
     return input;

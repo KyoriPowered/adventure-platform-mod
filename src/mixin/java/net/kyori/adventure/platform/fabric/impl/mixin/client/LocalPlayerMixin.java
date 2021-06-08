@@ -29,20 +29,22 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.platform.fabric.FabricClientAudiences;
 import net.kyori.adventure.platform.fabric.impl.LocaleHolderBridge;
+import net.kyori.adventure.pointer.Pointers;
 import net.kyori.adventure.sound.Sound;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(LocalPlayer.class)
 public abstract class LocalPlayerMixin extends AbstractClientPlayer implements ForwardingAudience.Single, LocaleHolderBridge {
-
+  // @formatter:off
   @Shadow @Final protected Minecraft minecraft;
+  // @formatter:on
 
   // TODO: Do we want to enforce synchronization with the client thread?
   private LocalPlayerMixin(final ClientLevel level, final GameProfile profile) { // mixin will strip
@@ -52,17 +54,22 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayer implements F
   private final Audience adventure$default = FabricClientAudiences.of().audience();
 
   @Override
-  public @NonNull Audience audience() {
+  public @NotNull Audience audience() {
     return this.adventure$default;
   }
 
   @Override
-  public void playSound(final @NonNull Sound sound) {
+  public @NotNull Pointers pointers() {
+    return this.audience().pointers();
+  }
+
+  @Override
+  public void playSound(final @NotNull Sound sound) {
     this.audience().playSound(sound, this.getX(), this.getY(), this.getZ());
   }
 
   @Override
-  public Locale adventure$locale() {
+  public @NotNull Locale adventure$locale() {
     return ((LocaleHolderBridge) this.minecraft.options).adventure$locale();
   }
 }

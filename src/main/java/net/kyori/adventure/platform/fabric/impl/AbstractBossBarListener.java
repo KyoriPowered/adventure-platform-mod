@@ -30,8 +30,8 @@ import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.platform.fabric.FabricAudiences;
 import net.kyori.adventure.text.Component;
 import net.minecraft.world.BossEvent;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class AbstractBossBarListener<T extends BossEvent> implements BossBar.Listener {
   private final FabricAudiences controller;
@@ -42,58 +42,58 @@ public abstract class AbstractBossBarListener<T extends BossEvent> implements Bo
   }
 
   @Override
-  public void bossBarNameChanged(final @NonNull BossBar bar, final @NonNull Component oldName, final @NonNull Component newName) {
-    if(!oldName.equals(newName)) {
+  public void bossBarNameChanged(final @NotNull BossBar bar, final @NotNull Component oldName, final @NotNull Component newName) {
+    if (!oldName.equals(newName)) {
       this.minecraft(bar).setName(this.controller.toNative(newName));
     }
   }
 
   @Override
-  public void bossBarProgressChanged(final @NonNull BossBar bar, final float oldPercent, final float newPercent) {
-    if(oldPercent != newPercent) {
+  public void bossBarProgressChanged(final @NotNull BossBar bar, final float oldPercent, final float newPercent) {
+    if (oldPercent != newPercent) {
       this.minecraft(bar).setProgress(newPercent);
     }
   }
 
   @Override
-  public void bossBarColorChanged(final @NonNull BossBar bar, final BossBar.@NonNull Color oldColor, final BossBar.@NonNull Color newColor) {
-    if(oldColor != newColor) {
+  public void bossBarColorChanged(final @NotNull BossBar bar, final BossBar.@NotNull Color oldColor, final BossBar.@NotNull Color newColor) {
+    if (oldColor != newColor) {
       this.minecraft(bar).setColor(GameEnums.BOSS_BAR_COLOR.toMinecraft(newColor));
     }
   }
 
   @Override
-  public void bossBarOverlayChanged(final @NonNull BossBar bar, final BossBar.@NonNull Overlay oldOverlay, final BossBar.@NonNull Overlay newOverlay) {
-    if(oldOverlay != newOverlay) {
+  public void bossBarOverlayChanged(final @NotNull BossBar bar, final BossBar.@NotNull Overlay oldOverlay, final BossBar.@NotNull Overlay newOverlay) {
+    if (oldOverlay != newOverlay) {
       this.minecraft(bar).setOverlay(GameEnums.BOSS_BAR_OVERLAY.toMinecraft(newOverlay));
     }
   }
 
   @Override
-  public void bossBarFlagsChanged(final @NonNull BossBar bar, final @NonNull Set<BossBar.Flag> flagsRemoved, final @NonNull Set<BossBar.Flag> flagsAdded) {
+  public void bossBarFlagsChanged(final @NotNull BossBar bar, final @NotNull Set<BossBar.Flag> flagsRemoved, final @NotNull Set<BossBar.Flag> flagsAdded) {
     updateFlags(this.minecraft(bar), bar.flags());
   }
 
-  private static void updateFlags(final @NonNull BossEvent bar, final @NonNull Set<BossBar.Flag> flags) {
+  private static void updateFlags(final @NotNull BossEvent bar, final @NotNull Set<BossBar.Flag> flags) {
     bar.setCreateWorldFog(flags.contains(BossBar.Flag.CREATE_WORLD_FOG));
     bar.setDarkenScreen(flags.contains(BossBar.Flag.DARKEN_SCREEN));
     bar.setPlayBossMusic(flags.contains(BossBar.Flag.PLAY_BOSS_MUSIC));
   }
 
-  private T minecraft(final @NonNull BossBar bar) {
+  private T minecraft(final @NotNull BossBar bar) {
     final @Nullable T mc = this.bars.get(bar);
-    if(mc == null) {
+    if (mc == null) {
       throw new IllegalArgumentException("Unknown boss bar instance " + bar);
     }
     return mc;
   }
 
-  protected abstract T newBar(final net.minecraft.network.chat.@NonNull Component title,
-          final BossEvent.@NonNull BossBarColor color,
-          final BossEvent.@NonNull BossBarOverlay style,
+  protected abstract T newBar(final net.minecraft.network.chat.@NotNull Component title,
+                              final BossEvent.@NotNull BossBarColor color,
+                              final BossEvent.@NotNull BossBarOverlay style,
                               final float progress);
 
-  protected T minecraftCreating(final @NonNull BossBar bar) {
+  protected T minecraftCreating(final @NotNull BossBar bar) {
     return this.bars.computeIfAbsent(bar, key -> {
       final T ret = this.newBar(this.controller.toNative(key.name()),
         GameEnums.BOSS_BAR_COLOR.toMinecraft(key.color()),

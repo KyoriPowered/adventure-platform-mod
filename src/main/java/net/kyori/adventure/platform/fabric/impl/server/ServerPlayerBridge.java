@@ -24,7 +24,7 @@
 package net.kyori.adventure.platform.fabric.impl.server;
 
 import net.minecraft.network.chat.Component;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public interface ServerPlayerBridge {
   /**

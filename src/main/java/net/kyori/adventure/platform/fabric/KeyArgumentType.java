@@ -29,6 +29,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kyori.adventure.key.Key;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * An argument that will be decoded as a Key.
@@ -44,7 +45,7 @@ public final class KeyArgumentType implements ArgumentType<Key> {
    * @return key argument type
    * @since 4.0.0
    */
-  public static KeyArgumentType key() {
+  public static @NotNull KeyArgumentType key() {
     return INSTANCE;
   }
 
@@ -56,7 +57,7 @@ public final class KeyArgumentType implements ArgumentType<Key> {
    * @return provided argument
    * @since 4.0.0
    */
-  public static Key key(final CommandContext<?> ctx, final String id) {
+  public static @NotNull Key key(final @NotNull CommandContext<?> ctx, final @NotNull String id) {
     return ctx.getArgument(id, Key.class);
   }
 
@@ -64,7 +65,7 @@ public final class KeyArgumentType implements ArgumentType<Key> {
   }
 
   @Override
-  public Key parse(final StringReader reader) throws CommandSyntaxException {
+  public @NotNull Key parse(final @NotNull StringReader reader) throws CommandSyntaxException {
     // TODO: do this without creating a ResourceLocation instance
     return FabricAudiences.toAdventure(ResourceLocation.read(reader));
   }

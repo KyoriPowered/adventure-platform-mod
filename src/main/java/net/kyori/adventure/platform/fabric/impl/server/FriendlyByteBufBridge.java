@@ -25,9 +25,10 @@ package net.kyori.adventure.platform.fabric.impl.server;
 
 import io.netty.util.AttributeKey;
 import java.util.Locale;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public interface FriendlyByteBufBridge {
   AttributeKey<Locale> CHANNEL_LOCALE = AttributeKey.newInstance("adventure:locale");
+
   void adventure$locale(final @Nullable Locale locale);
 }

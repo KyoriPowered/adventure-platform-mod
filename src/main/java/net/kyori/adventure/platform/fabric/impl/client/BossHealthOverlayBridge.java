@@ -23,19 +23,18 @@
  */
 package net.kyori.adventure.platform.fabric.impl.client;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
+import net.minecraft.client.gui.components.BossHealthOverlay;
+import org.jetbrains.annotations.NotNull;
 
 import static java.util.Objects.requireNonNull;
-
-import net.minecraft.client.gui.components.BossHealthOverlay;
 
 /**
  * Accessor for our listener stored in the client HUD.
  */
 public interface BossHealthOverlayBridge {
-  ClientBossBarListener adventure$listener(final @NonNull FabricClientAudiencesImpl controller);
+  @NotNull ClientBossBarListener adventure$listener(final @NotNull FabricClientAudiencesImpl controller);
 
-  static ClientBossBarListener listener(final @NonNull BossHealthOverlay hud, final @NonNull FabricClientAudiencesImpl controller) {
+  static @NotNull ClientBossBarListener listener(final @NotNull BossHealthOverlay hud, final @NotNull FabricClientAudiencesImpl controller) {
     return ((BossHealthOverlayBridge) requireNonNull(hud, "hud")).adventure$listener(controller);
   }
 }

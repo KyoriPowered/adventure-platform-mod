@@ -42,7 +42,7 @@ public final class NonWrappingComponentSerializer implements ComponentSerializer
 
   @Override
   public Component deserialize(final net.minecraft.network.chat.Component input) {
-    if(input instanceof WrappedComponent) {
+    if (input instanceof WrappedComponent) {
       return ((WrappedComponent) input).wrapped();
     }
 

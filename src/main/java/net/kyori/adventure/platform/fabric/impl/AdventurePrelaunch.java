@@ -35,7 +35,7 @@ public class AdventurePrelaunch implements PreLaunchEntrypoint {
     try {
       target = Class.forName("com.mojang.authlib.UserAuthentication").getProtectionDomain().getCodeSource().getLocation();
       FabricLauncherBase.getLauncher().propose(target);
-    } catch(final ClassNotFoundException e) {
+    } catch (final ClassNotFoundException e) {
       throw new RuntimeException("please fix fabric loader to enable transforming libraries normally", e);
     }
   }

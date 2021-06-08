@@ -30,6 +30,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(Connection.class)
 public interface ConnectionAccess {
-  @Accessor
-  Channel getChannel();
+  // @formatter:off
+  @Accessor Channel getChannel();
+  // @formatter:on
 }

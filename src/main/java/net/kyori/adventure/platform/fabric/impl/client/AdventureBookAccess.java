@@ -29,7 +29,8 @@ import net.kyori.adventure.platform.fabric.impl.WrappedComponent;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
 import net.minecraft.client.gui.screens.inventory.BookViewScreen;
 import net.minecraft.network.chat.FormattedText;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import static java.util.Objects.requireNonNull;
 
@@ -44,7 +45,7 @@ public class AdventureBookAccess implements BookViewScreen.BookAccess {
   private final Book book;
   private final @Nullable ComponentRenderer<Locale> renderer;
 
-  public AdventureBookAccess(final Book book, final @Nullable ComponentRenderer<Locale> renderer) {
+  public AdventureBookAccess(final @NotNull Book book, final @Nullable ComponentRenderer<Locale> renderer) {
     this.book = requireNonNull(book, "book");
     this.renderer = renderer;
   }

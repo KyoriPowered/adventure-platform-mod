@@ -24,7 +24,8 @@
 package net.kyori.adventure.platform.fabric.impl;
 
 import java.util.Locale;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public interface LocaleHolderBridge {
   /**
@@ -35,10 +36,10 @@ public interface LocaleHolderBridge {
    * @return A Locale object matching the provided locale string
    */
   static @Nullable Locale toLocale(final @Nullable String mcLocale) {
-    if(mcLocale == null) return null;
+    if (mcLocale == null) return null;
 
     final String[] parts = mcLocale.split("_", 3);
-    return switch(parts.length) {
+    return switch (parts.length) {
       case 1 -> parts[0].isEmpty() ? null : new Locale(parts[0]);
       case 2 -> new Locale(parts[0], parts[1]);
       case 3 -> new Locale(parts[0], parts[1], parts[2]);
@@ -46,5 +47,5 @@ public interface LocaleHolderBridge {
     };
   }
 
-  Locale adventure$locale();
+  @NotNull Locale adventure$locale();
 }

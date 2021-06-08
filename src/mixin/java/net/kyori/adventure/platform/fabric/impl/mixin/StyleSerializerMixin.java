@@ -26,7 +26,7 @@ package net.kyori.adventure.platform.fabric.impl.mixin;
 import net.kyori.adventure.platform.fabric.impl.NonWrappingComponentSerializer;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Style;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -34,8 +34,8 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(Style.Serializer.class)
 abstract class StyleSerializerMixin {
   @Redirect(method = "getClickEvent", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/chat/ClickEvent$Action;isAllowedFromServer()Z"))
-  private static boolean adventure$redirectIsAllowedFromServer(final ClickEvent.@NonNull Action action) {
-    if(NonWrappingComponentSerializer.INSTANCE.bypassIsAllowedFromServer()) {
+  private static boolean adventure$redirectIsAllowedFromServer(final ClickEvent.@NotNull Action action) {
+    if (NonWrappingComponentSerializer.INSTANCE.bypassIsAllowedFromServer()) {
       return true;
     }
     return action.isAllowedFromServer();

@@ -27,7 +27,7 @@ import java.util.Locale;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.platform.fabric.impl.client.FabricClientAudiencesImpl;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 import static java.util.Objects.requireNonNull;
 
@@ -44,7 +44,7 @@ public interface FabricClientAudiences extends FabricAudiences {
    * @return the audience provider
    * @since 4.0.0
    */
-  static FabricClientAudiences of() {
+  static @NotNull FabricClientAudiences of() {
     return FabricClientAudiencesImpl.INSTANCE;
   }
 
@@ -55,7 +55,7 @@ public interface FabricClientAudiences extends FabricAudiences {
    * @return new audience provider
    * @since 4.0.0
    */
-  static FabricClientAudiences of(final ComponentRenderer<Locale> renderer) {
+  static @NotNull FabricClientAudiences of(final @NotNull ComponentRenderer<Locale> renderer) {
     return new FabricClientAudiencesImpl(requireNonNull(renderer, "renderer"));
   }
 
@@ -67,5 +67,5 @@ public interface FabricClientAudiences extends FabricAudiences {
    * @return player audience
    * @since 4.0.0
    */
-  @NonNull Audience audience();
+  @NotNull Audience audience();
 }

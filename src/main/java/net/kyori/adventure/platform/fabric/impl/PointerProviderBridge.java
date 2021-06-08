@@ -21,13 +21,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-/**
- * Implementation of <a href="https://docs.adventure.kyori.net">Adventure</a>
- * on Minecraft using the Fabric mod loader.
- *
- * <p>There are both server- and clientside entry points for Adventure.</p>
- *
- * @see net.kyori.adventure.platform.fabric.FabricServerAudiences
- * @see net.kyori.adventure.platform.fabric.FabricClientAudiences
- */
-package net.kyori.adventure.platform.fabric;
+package net.kyori.adventure.platform.fabric.impl;
+
+import net.kyori.adventure.pointer.Pointers;
+import org.jetbrains.annotations.NotNull;
+
+public interface PointerProviderBridge {
+
+  /**
+   * Get a shared instance of pointers.
+   *
+   * @return the pointers
+   */
+  @NotNull Pointers adventure$pointers();
+}

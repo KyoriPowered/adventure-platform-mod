@@ -23,8 +23,7 @@
  */
 package net.kyori.adventure.platform.fabric;
 
-import static java.util.Objects.requireNonNull;
-
+import java.util.Locale;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.platform.AudienceProvider;
 import net.kyori.adventure.platform.fabric.impl.server.FabricServerAudiencesImpl;
@@ -34,9 +33,9 @@ import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.Locale;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Provides {@link Audience} instances for a specific server instance.
@@ -54,7 +53,7 @@ public interface FabricServerAudiences extends AudienceProvider, FabricAudiences
    * @return common audience provider
    * @since 4.0.0
    */
-  static @NonNull FabricServerAudiences of(final @NonNull MinecraftServer server) {
+  static @NotNull FabricServerAudiences of(final @NotNull MinecraftServer server) {
     return ((MinecraftServerBridge) server).adventure$globalProvider();
   }
 
@@ -68,7 +67,7 @@ public interface FabricServerAudiences extends AudienceProvider, FabricAudiences
    * @return new audience provider
    * @since 4.0.0
    */
-  static @NonNull FabricServerAudiences of(final @NonNull MinecraftServer server, final @NonNull ComponentRenderer<Locale> renderer) {
+  static @NotNull FabricServerAudiences of(final @NotNull MinecraftServer server, final @NotNull ComponentRenderer<Locale> renderer) {
     return new FabricServerAudiencesImpl(requireNonNull(server, "server"), requireNonNull(renderer, "renderer"));
   }
 
@@ -82,7 +81,7 @@ public interface FabricServerAudiences extends AudienceProvider, FabricAudiences
    * @return the audience
    * @since 4.0.0
    */
-  AdventureCommandSourceStack audience(@NonNull CommandSourceStack source);
+  @NotNull AdventureCommandSourceStack audience(@NotNull CommandSourceStack source);
 
   /**
    * Get an audience that will send to the provided {@link CommandSource}.
@@ -94,7 +93,7 @@ public interface FabricServerAudiences extends AudienceProvider, FabricAudiences
    * @return an audience for the source
    * @since 4.0.0
    */
-  Audience audience(@NonNull CommandSource source);
+  @NotNull Audience audience(@NotNull CommandSource source);
 
   /**
    * Create an audience that will send to every listed player.
@@ -103,5 +102,5 @@ public interface FabricServerAudiences extends AudienceProvider, FabricAudiences
    * @return a new audience
    * @since 4.0.0
    */
-  Audience audience(@NonNull Iterable<ServerPlayer> players);
+  @NotNull Audience audience(@NotNull Iterable<ServerPlayer> players);
 }

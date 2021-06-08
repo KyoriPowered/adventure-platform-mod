@@ -21,13 +21,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-/**
- * Implementation of <a href="https://docs.adventure.kyori.net">Adventure</a>
- * on Minecraft using the Fabric mod loader.
- *
- * <p>There are both server- and clientside entry points for Adventure.</p>
- *
- * @see net.kyori.adventure.platform.fabric.FabricServerAudiences
- * @see net.kyori.adventure.platform.fabric.FabricClientAudiences
- */
-package net.kyori.adventure.platform.fabric;
+package net.kyori.adventure.platform.fabric.impl.mixin;
+
+import net.kyori.adventure.sound.Sound;
+import net.minecraft.world.entity.Entity;
+import org.spongepowered.asm.mixin.Mixin;
+
+@Mixin(Entity.class)
+public class EntityMixin implements Sound.Emitter {
+}
