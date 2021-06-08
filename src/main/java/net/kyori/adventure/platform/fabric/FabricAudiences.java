@@ -41,9 +41,9 @@ import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.checker.nullness.qual.PolyNull;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import static java.util.Objects.requireNonNull;
 
@@ -65,7 +65,7 @@ public interface FabricAudiences {
    * @return new component
    * @since 4.0.0
    */
-  static net.minecraft.network.chat.Component update(net.minecraft.network.chat.Component input, UnaryOperator<Component> modifier) {
+  static net.minecraft.network.chat.@NotNull Component update(final net.minecraft.network.chat.@NotNull Component input, final UnaryOperator<Component> modifier) {
     final Component modified;
     final @Nullable ComponentRenderer<Locale> renderer;
     if(input instanceof WrappedComponent) {
@@ -86,7 +86,8 @@ public interface FabricAudiences {
    * @return The equivalent data as a Key
    * @since 4.0.0
    */
-  static @PolyNull Key toAdventure(@PolyNull ResourceLocation loc) {
+  @Contract("null -> null; !null -> !null")
+  static Key toAdventure(final ResourceLocation loc) {
     if(loc == null) {
       return null;
     }
@@ -100,7 +101,8 @@ public interface FabricAudiences {
    * @return The equivalent data as an Identifier
    * @since 4.0.0
    */
-  static @PolyNull ResourceLocation toNative(@PolyNull Key key) {
+  @Contract("null -> null; !null -> !null")
+  static ResourceLocation toNative(final Key key) {
     if(key == null) {
       return null;
     }
@@ -117,7 +119,7 @@ public interface FabricAudiences {
    * @return a serializer instance
    * @since 4.0.0
    */
-  static ComponentSerializer<Component, Component, net.minecraft.network.chat.Component> nonWrappingSerializer() {
+  static @NotNull ComponentSerializer<Component, Component, net.minecraft.network.chat.Component> nonWrappingSerializer() {
     return NonWrappingComponentSerializer.INSTANCE;
   }
 
@@ -129,7 +131,7 @@ public interface FabricAudiences {
    * @return the appropriate serializer
    * @since 4.0.0
    */
-  static @NonNull GsonComponentSerializer gsonSerializer() {
+  static @NotNull GsonComponentSerializer gsonSerializer() {
     return AdventureCommon.GSON;
   }
 
@@ -141,7 +143,7 @@ public interface FabricAudiences {
    * @since 4.0.0
    *
    */
-  static Identified identified(final Player player) {
+  static @NotNull Identified identified(final @NotNull Player player) {
     return (Identified) player;
   }
 
@@ -152,7 +154,7 @@ public interface FabricAudiences {
    * @return an identity of the game profile
    * @since 4.0.0
    */
-  static Identity identity(final GameProfile profile) {
+  static @NotNull Identity identity(final @NotNull GameProfile profile) {
     return (Identity) profile;
   }
 
@@ -162,7 +164,7 @@ public interface FabricAudiences {
    * @return the flattener
    * @since 4.0.0
    */
-  ComponentFlattener flattener();
+  @NotNull ComponentFlattener flattener();
 
   /**
    * Return a {@link PlainComponentSerializer} instance that can resolve key bindings and translations using the game's data.
@@ -170,7 +172,7 @@ public interface FabricAudiences {
    * @return the plain serializer instance
    * @since 4.0.0
    */
-  PlainComponentSerializer plainSerializer();
+  @NotNull PlainComponentSerializer plainSerializer();
 
   /**
    * Active locale-based renderer for operations on provided audiences.
@@ -178,7 +180,7 @@ public interface FabricAudiences {
    * @return Shared renderer
    * @since 4.0.0
    */
-  ComponentRenderer<Locale> localeRenderer();
+  @NotNull ComponentRenderer<Locale> localeRenderer();
 
   /**
    * Get a native {@link net.minecraft.network.chat.Component} from an adventure {@link Component}.
@@ -189,7 +191,7 @@ public interface FabricAudiences {
    * @return native representation
    * @since 4.0.0
    */
-  net.minecraft.network.chat.Component toNative(final Component adventure);
+  net.minecraft.network.chat.@NotNull Component toNative(final @NotNull Component adventure);
 
   /**
    * Get an adventure {@link Component} from a native {@link net.minecraft.network.chat.Component}.
@@ -198,5 +200,5 @@ public interface FabricAudiences {
    * @return adventure component
    * @since 4.0.0
    */
-  Component toAdventure(final net.minecraft.network.chat.Component vanilla);
+  @NotNull Component toAdventure(final net.minecraft.network.chat.@NotNull Component vanilla);
 }

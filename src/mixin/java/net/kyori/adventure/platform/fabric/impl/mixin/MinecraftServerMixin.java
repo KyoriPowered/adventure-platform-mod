@@ -36,7 +36,7 @@ import net.kyori.adventure.platform.fabric.impl.server.RenderableAudience;
 import net.kyori.adventure.translation.GlobalTranslator;
 import net.minecraft.server.MinecraftServer;
 import org.apache.logging.log4j.Logger;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -58,7 +58,7 @@ public abstract class MinecraftServerMixin implements MinecraftServerBridge, Ren
   }
 
   @Override
-  public @NonNull Audience audience() {
+  public @NotNull Audience audience() {
     return this.adventure$backing;
   }
 

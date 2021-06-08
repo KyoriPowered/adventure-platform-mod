@@ -52,8 +52,8 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import static java.util.Objects.requireNonNull;
 
@@ -90,22 +90,22 @@ public final class FabricServerAudiencesImpl implements FabricServerAudiences {
   }
 
   @Override
-  public @NonNull Audience all() {
+  public @NotNull Audience all() {
     return Audience.audience(this.console(), this.players());
   }
 
   @Override
-  public @NonNull Audience console() {
+  public @NotNull Audience console() {
     return this.audience(this.server);
   }
 
   @Override
-  public @NonNull Audience players() {
+  public @NotNull Audience players() {
     return Audience.audience(this.audiences(this.server.getPlayerList().getPlayers()));
   }
 
   @Override
-  public @NonNull Audience player(final @NonNull UUID playerId) {
+  public @NotNull Audience player(final @NotNull UUID playerId) {
     final @Nullable ServerPlayer player = this.server.getPlayerList().getPlayer(playerId);
     return player != null ? this.audience(player) : Audience.empty();
   }
@@ -115,11 +115,11 @@ public final class FabricServerAudiencesImpl implements FabricServerAudiences {
   }
 
   @Override
-  public @NonNull Audience permission(final @NonNull String permission) {
+  public @NotNull Audience permission(final @NotNull String permission) {
     return Audience.empty(); // TODO: permissions api
   }
 
-  @Override public AdventureCommandSourceStack audience(final @NonNull CommandSourceStack source) {
+  @Override public @NotNull AdventureCommandSourceStack audience(final @NotNull CommandSourceStack source) {
     if(!(source instanceof AdventureCommandSourceStackInternal)) {
       throw new IllegalArgumentException("The AdventureCommandSource mixin failed!");
     }
@@ -128,7 +128,7 @@ public final class FabricServerAudiencesImpl implements FabricServerAudiences {
     return internal.adventure$audience(this.audience(internal.adventure$source()), this);
   }
 
-  @Override public Audience audience(final @NonNull CommandSource source) {
+  @Override public @NotNull Audience audience(final @NotNull CommandSource source) {
     if(source instanceof RenderableAudience) {
       return ((RenderableAudience) source).renderUsing(this);
     } else if(source instanceof Audience) {
@@ -139,12 +139,12 @@ public final class FabricServerAudiencesImpl implements FabricServerAudiences {
     }
   }
 
-  @Override public Audience audience(final @NonNull Iterable<ServerPlayer> players) {
+  @Override public @NotNull Audience audience(final @NotNull Iterable<ServerPlayer> players) {
     return Audience.audience(this.audiences(players));
   }
 
   @Override
-  public @NonNull Audience world(final @NonNull Key worldId) {
+  public @NotNull Audience world(final @NotNull Key worldId) {
     final @Nullable ServerLevel level = this.server.getLevel(ResourceKey.create(Registry.DIMENSION_REGISTRY,
       FabricAudiences.toNative(requireNonNull(worldId, "worldId"))));
     if(level != null) {
@@ -154,34 +154,34 @@ public final class FabricServerAudiencesImpl implements FabricServerAudiences {
   }
 
   @Override
-  public @NonNull Audience server(final @NonNull String serverName) {
+  public @NotNull Audience server(final @NotNull String serverName) {
     return Audience.empty();
   }
 
   @Override
-  public ComponentFlattener flattener() {
+  public @NotNull ComponentFlattener flattener() {
     return AdventureCommon.FLATTENER;
   }
 
   @Override
-  public PlainComponentSerializer plainSerializer() {
+  public @NotNull PlainComponentSerializer plainSerializer() {
     return AdventureCommon.PLAIN;
   }
 
   @Override
-  public @NonNull ComponentRenderer<Locale> localeRenderer() {
+  public @NotNull ComponentRenderer<Locale> localeRenderer() {
     return this.renderer;
   }
 
   @Override
-  public net.minecraft.network.chat.Component toNative(final Component adventure) {
+  public net.minecraft.network.chat.Component toNative(final @NotNull Component adventure) {
     if(adventure == Component.empty()) return TextComponent.EMPTY;
 
     return new WrappedComponent(requireNonNull(adventure, "adventure"), this.renderer);
   }
 
   @Override
-  public Component toAdventure(final net.minecraft.network.chat.Component vanilla) {
+  public @NotNull Component toAdventure(final net.minecraft.network.chat.@NotNull Component vanilla) {
     if(vanilla instanceof WrappedComponent) {
       return ((WrappedComponent) vanilla).wrapped();
     } else {

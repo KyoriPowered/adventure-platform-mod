@@ -49,9 +49,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -64,7 +63,7 @@ public abstract class ServerPlayerMixin extends Player implements ForwardingAudi
   @Shadow @Final public MinecraftServer server;
   @Shadow public ServerGamePacketListenerImpl connection;
 
-  private @MonotonicNonNull Audience adventure$backing;
+  private Audience adventure$backing;
   private Locale adventure$locale;
   private final Map<FabricServerAudiencesImpl, Audience> adventure$renderers = new MapMaker().weakKeys().makeMap();
   private Component adventure$tabListHeader = TextComponent.EMPTY;
@@ -80,7 +79,7 @@ public abstract class ServerPlayerMixin extends Player implements ForwardingAudi
   }
 
   @Override
-  public @NonNull Audience audience() {
+  public @NotNull Audience audience() {
     return this.adventure$backing;
   }
 

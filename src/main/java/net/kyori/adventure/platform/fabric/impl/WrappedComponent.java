@@ -38,11 +38,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.util.FormattedCharSequence;
-import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public final class WrappedComponent implements Component {
-  private @MonotonicNonNull Component converted;
+  private Component converted;
   private @Nullable Locale deepConvertedLocalized = null;
   private final net.kyori.adventure.text.Component wrapped;
   private final @Nullable ComponentRenderer<Locale> renderer;

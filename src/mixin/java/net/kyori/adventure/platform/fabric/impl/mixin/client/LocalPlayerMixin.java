@@ -34,7 +34,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -52,12 +52,12 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayer implements F
   private final Audience adventure$default = FabricClientAudiences.of().audience();
 
   @Override
-  public @NonNull Audience audience() {
+  public @NotNull Audience audience() {
     return this.adventure$default;
   }
 
   @Override
-  public void playSound(final @NonNull Sound sound) {
+  public void playSound(final @NotNull Sound sound) {
     this.audience().playSound(sound, this.getX(), this.getY(), this.getZ());
   }
 

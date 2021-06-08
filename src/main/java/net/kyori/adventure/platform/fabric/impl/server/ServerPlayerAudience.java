@@ -53,8 +53,8 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.Vec3;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import static java.util.Objects.requireNonNull;
 
@@ -84,12 +84,12 @@ public final class ServerPlayerAudience implements Audience {
   }
 
   @Override
-  public void sendActionBar(final @NonNull Component message) {
+  public void sendActionBar(final @NotNull Component message) {
     this.sendPacket(new ClientboundSetTitlesPacket(ClientboundSetTitlesPacket.Type.ACTIONBAR, this.controller.toNative(message)));
   }
 
   @Override
-  public void showBossBar(final @NonNull BossBar bar) {
+  public void showBossBar(final @NotNull BossBar bar) {
     FabricServerAudiencesImpl.forEachInstance(controller -> {
       if(controller != this.controller) {
         controller.bossBars.unsubscribe(this.player, bar);
@@ -99,24 +99,24 @@ public final class ServerPlayerAudience implements Audience {
   }
 
   @Override
-  public void hideBossBar(final @NonNull BossBar bar) {
+  public void hideBossBar(final @NotNull BossBar bar) {
     FabricServerAudiencesImpl.forEachInstance(controller -> controller.bossBars.unsubscribe(this.player, bar));
   }
 
   @Override
-  public void playSound(final @NonNull Sound sound) {
+  public void playSound(final @NotNull Sound sound) {
     this.sendPacket(new ClientboundCustomSoundPacket(FabricAudiences.toNative(sound.name()),
       GameEnums.SOUND_SOURCE.toMinecraft(sound.source()), this.player.position(), sound.volume(), sound.pitch()));
   }
 
   @Override
-  public void playSound(final @NonNull Sound sound, final double x, final double y, final double z) {
+  public void playSound(final @NotNull Sound sound, final double x, final double y, final double z) {
     this.sendPacket(new ClientboundCustomSoundPacket(FabricAudiences.toNative(sound.name()),
       GameEnums.SOUND_SOURCE.toMinecraft(sound.source()), new Vec3(x, y, z), sound.volume(), sound.pitch()));
   }
 
   @Override
-  public void stopSound(final @NonNull SoundStop stop) {
+  public void stopSound(final @NotNull SoundStop stop) {
     final @Nullable Key sound = stop.sound();
     final Sound.@Nullable Source src = stop.source();
     final @Nullable SoundSource cat = src == null ? null : GameEnums.SOUND_SOURCE.toMinecraft(src);
@@ -129,7 +129,7 @@ public final class ServerPlayerAudience implements Audience {
   static final String BOOK_RESOLVED = "resolved";
 
   @Override
-  public void openBook(final @NonNull Book book) {
+  public void openBook(final @NotNull Book book) {
     final ItemStack bookStack = new ItemStack(Items.WRITTEN_BOOK, 1);
     final CompoundTag bookTag = bookStack.getOrCreateTag();
     bookTag.putString(BOOK_TITLE, this.adventure$serialize(book.title()));
@@ -147,13 +147,13 @@ public final class ServerPlayerAudience implements Audience {
     this.sendPacket(new ClientboundContainerSetSlotPacket(-2, this.player.inventory.selected, previous));
   }
 
-  private String adventure$serialize(final @NonNull Component component) {
+  private String adventure$serialize(final @NotNull Component component) {
     final Locale locale = ((ConnectionAccess) this.player.connection.getConnection()).getChannel().attr(FriendlyByteBufBridge.CHANNEL_LOCALE).get();
     return FabricAudiences.gsonSerializer().serialize(this.controller.localeRenderer().render(component, locale == null ? Locale.getDefault() : locale));
   }
 
   @Override
-  public void showTitle(final @NonNull Title title) {
+  public void showTitle(final @NotNull Title title) {
     if(title.subtitle() != Component.empty()) {
       this.sendPacket(new ClientboundSetTitlesPacket(ClientboundSetTitlesPacket.Type.SUBTITLE, this.controller.toNative(title.subtitle())));
     }
@@ -173,7 +173,7 @@ public final class ServerPlayerAudience implements Audience {
     }
   }
 
-  static int ticks(final @NonNull Duration duration) {
+  static int ticks(final @NotNull Duration duration) {
     return duration.getSeconds() == -1 ? -1 : (int) (duration.toMillis() / 50);
   }
 
@@ -188,20 +188,20 @@ public final class ServerPlayerAudience implements Audience {
   }
 
   @Override
-  public void sendPlayerListHeader(final @NonNull Component header) {
+  public void sendPlayerListHeader(final @NotNull Component header) {
     requireNonNull(header, "header");
     ((ServerPlayerBridge) this.player).bridge$updateTabList(this.controller.toNative(header), null);
   }
 
   @Override
-  public void sendPlayerListFooter(final @NonNull Component footer) {
+  public void sendPlayerListFooter(final @NotNull Component footer) {
     requireNonNull(footer, "footer");
     ((ServerPlayerBridge) this.player).bridge$updateTabList(null, this.controller.toNative(footer));
 
   }
 
   @Override
-  public void sendPlayerListHeaderAndFooter(final @NonNull Component header, final @NonNull Component footer) {
+  public void sendPlayerListHeaderAndFooter(final @NotNull Component header, final @NotNull Component footer) {
     ((ServerPlayerBridge) this.player).bridge$updateTabList(
       this.controller.toNative(requireNonNull(header, "header")),
       this.controller.toNative(requireNonNull(footer, "footer")));

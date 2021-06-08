@@ -27,7 +27,7 @@ import com.mojang.authlib.GameProfile;
 import net.kyori.adventure.identity.Identified;
 import net.kyori.adventure.identity.Identity;
 import net.minecraft.world.entity.player.Player;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -37,7 +37,7 @@ public class PlayerMixin implements Identified {
   @Shadow @Final private GameProfile gameProfile;
 
   @Override
-  public @NonNull Identity identity() {
+  public @NotNull Identity identity() {
     return (Identity) this.gameProfile;
   }
 }

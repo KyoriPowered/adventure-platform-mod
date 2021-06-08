@@ -34,7 +34,7 @@ import net.kyori.adventure.platform.fabric.impl.server.PlainAudience;
 import net.kyori.adventure.platform.fabric.impl.server.RenderableAudience;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.rcon.RconConsoleSource;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -53,7 +53,7 @@ public abstract class RconConsoleSourceMixin implements RenderableAudience, Forw
   }
 
   @Override
-  public @NonNull Audience audience() {
+  public @NotNull Audience audience() {
     return FabricServerAudiences.of(this.server).audience((RconConsoleSource) (Object) this);
   }
 }

@@ -29,7 +29,8 @@ import net.fabricmc.fabric.api.event.EventFactory;
 import net.kyori.adventure.platform.fabric.impl.LocaleHolderBridge;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * API for working with player locales.
@@ -42,7 +43,7 @@ public interface PlayerLocales {
    *
    * @since 4.0.0
    */
-  Event<PlayerLocales.Changed> CHANGED_EVENT = EventFactory.createArrayBacked(PlayerLocales.Changed.class, listeners -> (player, locale) -> {
+  @NotNull Event<PlayerLocales.Changed> CHANGED_EVENT = EventFactory.createArrayBacked(PlayerLocales.Changed.class, listeners -> (player, locale) -> {
     for(final Changed event : listeners) {
       event.onLocaleChanged(player, locale);
     }
@@ -64,7 +65,7 @@ public interface PlayerLocales {
      * @param newLocale the new locale
      * @since 4.0.0
      */
-    void onLocaleChanged(final ServerPlayer player, final @Nullable Locale newLocale);
+    void onLocaleChanged(final @NotNull ServerPlayer player, final @Nullable Locale newLocale);
   }
 
   /**
@@ -76,7 +77,7 @@ public interface PlayerLocales {
    * @return player locale
    * @since 4.0.0
    */
-  static Locale locale(final Player player) {
+  static @NotNull Locale locale(final @NotNull Player player) {
     return player instanceof LocaleHolderBridge ? ((LocaleHolderBridge) player).adventure$locale() : Locale.getDefault();
   }
 }

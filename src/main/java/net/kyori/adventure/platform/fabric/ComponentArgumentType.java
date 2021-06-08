@@ -36,6 +36,7 @@ import java.util.Collection;
 import java.util.Set;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.arguments.ComponentArgument;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * An argument that takes JSON-format text.
@@ -60,7 +61,7 @@ public final class ComponentArgumentType implements ArgumentType<Component> {
    * @return argument type instance
    * @since 4.0.0
    */
-  public static ComponentArgumentType component() {
+  public static @NotNull ComponentArgumentType component() {
     return INSTANCE;
   }
 
@@ -72,7 +73,7 @@ public final class ComponentArgumentType implements ArgumentType<Component> {
    * @return parsed component
    * @since 4.0.0
    */
-  public static Component component(final CommandContext<?> ctx, final String key) {
+  public static @NotNull Component component(final @NotNull CommandContext<?> ctx, final @NotNull String key) {
     return ctx.getArgument(key, Component.class);
   }
 
@@ -80,7 +81,7 @@ public final class ComponentArgumentType implements ArgumentType<Component> {
   }
 
   @Override
-  public Component parse(final StringReader reader) throws CommandSyntaxException {
+  public @NotNull Component parse(final @NotNull StringReader reader) throws CommandSyntaxException {
     try(final JsonReader json = new JsonReader(new java.io.StringReader(reader.getRemaining()))) {
       final Component ret = ComponentSerializerAccess.getGSON().fromJson(json, Component.class);
       reader.setCursor(reader.getCursor() + ComponentSerializerAccess.getPos(json));
@@ -92,7 +93,7 @@ public final class ComponentArgumentType implements ArgumentType<Component> {
   }
 
   @Override
-  public Collection<String> getExamples() {
+  public @NotNull Collection<String> getExamples() {
     return EXAMPLES;
   }
 

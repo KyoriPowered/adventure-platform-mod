@@ -80,8 +80,8 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.getInteger;
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
@@ -101,6 +101,7 @@ import static net.minecraft.commands.arguments.EntityArgument.getPlayers;
 import static net.minecraft.commands.arguments.EntityArgument.players;
 
 public class AdventureTester implements ModInitializer {
+  public static final Logger LOGGER = LogManager.getLogger();
   private static final Key FONT_MEOW = key("adventure", "meow");
   private static final Key FONT_IOSEVKA = key("adventure", "iosevka");
 
@@ -118,7 +119,6 @@ public class AdventureTester implements ModInitializer {
   private final Map<UUID, BossBar> greetingBars = new HashMap<>();
   private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
   private @Nullable FabricServerAudiences platform;
-  public static final Logger LOGGER = LogManager.getLogger();
 
   public FabricServerAudiences adventure() {
     return requireNonNull(this.platform, "Tried to access Fabric platform without a running server");
@@ -263,7 +263,7 @@ public class AdventureTester implements ModInitializer {
   private static final TextColor COLOR_NAMESPACE = color(0x0D6679);
   private static final TextColor COLOR_NAMESPACE_VANILLA = color(0x4A656B);
 
-  private static Component represent(final @NonNull Key ident) {
+  private static Component represent(final @NotNull Key ident) {
     final TextColor namespaceColor;
     if(ident.namespace().equals("minecraft")) { // de-emphasize
       namespaceColor = COLOR_NAMESPACE_VANILLA;

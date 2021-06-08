@@ -28,9 +28,6 @@
  * unsupported, and changes may occur at any time.</p>
  */
 @ApiStatus.Internal
-@DefaultQualifier(NonNull.class)
 package net.kyori.adventure.platform.fabric.impl;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
 import org.jetbrains.annotations.ApiStatus;

@@ -24,7 +24,8 @@
 package net.kyori.adventure.platform.fabric.impl;
 
 import java.util.Locale;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public interface LocaleHolderBridge {
   /**
@@ -48,5 +49,5 @@ public interface LocaleHolderBridge {
     }
   }
 
-  Locale adventure$locale();
+  @NotNull Locale adventure$locale();
 }

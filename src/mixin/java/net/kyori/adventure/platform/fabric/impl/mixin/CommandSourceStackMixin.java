@@ -36,8 +36,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.MinecraftServer;
-import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -55,11 +54,11 @@ public abstract class CommandSourceStackMixin implements AdventureCommandSourceS
   @Shadow @Final
   private MinecraftServer server;
   private boolean assigned = false;
-  private @MonotonicNonNull Audience out;
-  private @MonotonicNonNull FabricServerAudiences controller;
+  private Audience out;
+  private FabricServerAudiences controller;
 
   @Override
-  public void sendSuccess(final Component text, final boolean sendToOps) {
+  public void sendSuccess(final @NotNull Component text, final boolean sendToOps) {
     if(this.source.acceptsSuccess() && !this.silent) {
       this.sendMessage(Identity.nil(), text);
     }
@@ -70,14 +69,14 @@ public abstract class CommandSourceStackMixin implements AdventureCommandSourceS
   }
 
   @Override
-  public void sendFailure(final Component text) {
+  public void sendFailure(final @NotNull Component text) {
     if(this.source.acceptsFailure()) {
       this.sendMessage(Identity.nil(), text.color(NamedTextColor.RED));
     }
   }
 
   @Override
-  public Audience audience() {
+  public @NotNull Audience audience() {
     if(this.out == null) {
       if(this.server == null) {
         throw new IllegalStateException("Cannot use adventure operations without an available server!");
@@ -89,7 +88,7 @@ public abstract class CommandSourceStackMixin implements AdventureCommandSourceS
   }
 
   @Override
-  public @NonNull Identity identity() {
+  public @NotNull Identity identity() {
     if(this.source instanceof Identified) {
       return ((Identified) this.source).identity();
     } else {

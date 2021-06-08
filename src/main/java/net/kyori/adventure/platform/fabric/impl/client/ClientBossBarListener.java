@@ -32,7 +32,7 @@ import net.minecraft.client.gui.components.LerpingBossEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundBossEventPacket;
 import net.minecraft.world.BossEvent;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 public class ClientBossBarListener extends AbstractBossBarListener<LerpingBossEvent> {
   private final Map<UUID, LerpingBossEvent> hudBars;
@@ -43,9 +43,9 @@ public class ClientBossBarListener extends AbstractBossBarListener<LerpingBossEv
   }
 
   @Override
-  protected LerpingBossEvent newBar(final @NonNull Component title,
-                                    final BossEvent.@NonNull BossBarColor color,
-                                    final BossEvent.@NonNull BossBarOverlay style,
+  protected LerpingBossEvent newBar(final @NotNull Component title,
+                                    final BossEvent.@NotNull BossBarColor color,
+                                    final BossEvent.@NotNull BossBarOverlay style,
                                     final float progress) {
     final ClientboundBossEventPacket pkt = new ClientboundBossEventPacket();
     final ClientboundBossEventPacketAccess access = (ClientboundBossEventPacketAccess) pkt;

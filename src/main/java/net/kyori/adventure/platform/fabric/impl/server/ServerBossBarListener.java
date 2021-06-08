@@ -33,7 +33,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundBossEventPacket;
 import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerPlayer;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 import static java.util.Objects.requireNonNull;
 
@@ -43,11 +43,11 @@ public class ServerBossBarListener extends AbstractBossBarListener<ServerBossEve
   }
 
   public void subscribe(final ServerPlayer player, final BossBar bar) {
-    minecraftCreating(requireNonNull(bar, "bar")).addPlayer(requireNonNull(player, "player"));
+    this.minecraftCreating(requireNonNull(bar, "bar")).addPlayer(requireNonNull(player, "player"));
   }
 
   public void subscribeAll(final Collection<ServerPlayer> players, final BossBar bar) {
-    ((ServerBossEventBridge) minecraftCreating(requireNonNull(bar, "bar"))).adventure$addAll(players);
+    ((ServerBossEventBridge) this.minecraftCreating(requireNonNull(bar, "bar"))).adventure$addAll(players);
   }
 
   public void unsubscribe(final ServerPlayer player, final BossBar bar) {
@@ -121,9 +121,9 @@ public class ServerBossBarListener extends AbstractBossBarListener<ServerBossEve
 
   @Override
   protected ServerBossEvent newBar(
-    final @NonNull Component title,
-    final net.minecraft.world.BossEvent.@NonNull BossBarColor color,
-    final net.minecraft.world.BossEvent.@NonNull BossBarOverlay style,
+    final @NotNull Component title,
+    final net.minecraft.world.BossEvent.@NotNull BossBarColor color,
+    final net.minecraft.world.BossEvent.@NotNull BossBarOverlay style,
     final float progress
   ) {
     final ServerBossEvent event = new ServerBossEvent(title, color, style);

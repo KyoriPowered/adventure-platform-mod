@@ -30,8 +30,4 @@
  * @see net.kyori.adventure.platform.fabric.FabricServerAudiences
  * @see net.kyori.adventure.platform.fabric.FabricClientAudiences
  */
-@DefaultQualifier(NonNull.class)
 package net.kyori.adventure.platform.fabric;
-
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;

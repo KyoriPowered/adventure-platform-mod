@@ -54,8 +54,8 @@ import net.minecraft.commands.synchronization.ArgumentTypes;
 import net.minecraft.commands.synchronization.EmptyArgumentSerializer;
 import net.minecraft.locale.Language;
 import net.minecraft.resources.ResourceLocation;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class AdventureCommon implements ModInitializer {
 
@@ -80,7 +80,7 @@ public class AdventureCommon implements ModInitializer {
         }
       }
 
-      final @NonNull String translated = Language.getInstance().getOrDefault(key);
+      final @NotNull String translated = Language.getInstance().getOrDefault(key);
       final Matcher matcher = LOCALIZATION_PATTERN.matcher(translated);
       final List<Component> args = translatable.args();
       int argPosition = 0;
@@ -119,7 +119,7 @@ public class AdventureCommon implements ModInitializer {
     PLAIN = PlainComponentSerializer.builder().flattener(FLATTENER).build();
   }
 
-  static ResourceLocation res(final @NonNull String value) {
+  static ResourceLocation res(final @NotNull String value) {
     return new ResourceLocation("adventure", value);
   }
 
