@@ -42,8 +42,6 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.KeybindComponent;
 import net.kyori.adventure.text.TranslatableComponent;
 import net.kyori.adventure.text.flattener.ComponentFlattener;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
-import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
 import net.kyori.adventure.translation.GlobalTranslator;
 import net.kyori.adventure.translation.TranslationRegistry;
 import net.kyori.adventure.translation.Translator;
@@ -60,8 +58,6 @@ import org.jetbrains.annotations.Nullable;
 public class AdventureCommon implements ModInitializer {
 
   public static final ComponentFlattener FLATTENER;
-  public static final PlainComponentSerializer PLAIN;
-  public static final GsonComponentSerializer GSON = GsonComponentSerializer.builder().legacyHoverEventSerializer(NBTLegacyHoverEventSerializer.INSTANCE).build();
   private static final Pattern LOCALIZATION_PATTERN = Pattern.compile("%(?:(\\d+)\\$)?s");
 
   static {
@@ -116,7 +112,6 @@ public class AdventureCommon implements ModInitializer {
     });
 
     FLATTENER = flattenerBuilder.build();
-    PLAIN = PlainComponentSerializer.builder().flattener(FLATTENER).build();
   }
 
   static ResourceLocation res(final @NotNull String value) {

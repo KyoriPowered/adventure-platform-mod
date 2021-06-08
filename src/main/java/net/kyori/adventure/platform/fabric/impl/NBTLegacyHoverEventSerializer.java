@@ -31,14 +31,14 @@ import net.kyori.adventure.nbt.api.BinaryTagHolder;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.serializer.gson.LegacyHoverEventSerializer;
-import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.kyori.adventure.util.Codec;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.TagParser;
 import org.jetbrains.annotations.NotNull;
 
-final class NBTLegacyHoverEventSerializer implements LegacyHoverEventSerializer {
+public final class NBTLegacyHoverEventSerializer implements LegacyHoverEventSerializer {
   public static final NBTLegacyHoverEventSerializer INSTANCE = new NBTLegacyHoverEventSerializer();
   private static final Codec<CompoundTag, String, CommandSyntaxException, RuntimeException> SNBT_CODEC = Codec.of(TagParser::parseTag, Tag::toString);
 
@@ -55,7 +55,7 @@ final class NBTLegacyHoverEventSerializer implements LegacyHoverEventSerializer 
 
   @Override
   public HoverEvent.@NotNull ShowItem deserializeShowItem(final @NotNull Component input) throws IOException {
-    final String raw = PlainComponentSerializer.plain().serialize(input);
+    final String raw = PlainTextComponentSerializer.plainText().serialize(input);
     try {
       final CompoundTag contents = SNBT_CODEC.decode(raw);
       final CompoundTag tag = contents.getCompound(ITEM_TAG);
@@ -71,7 +71,7 @@ final class NBTLegacyHoverEventSerializer implements LegacyHoverEventSerializer 
 
   @Override
   public HoverEvent.@NotNull ShowEntity deserializeShowEntity(final @NotNull Component input, final Codec.Decoder<Component, String, ? extends RuntimeException> componentCodec) throws IOException {
-    final String raw = PlainComponentSerializer.plain().serialize(input);
+    final String raw = PlainTextComponentSerializer.plainText().serialize(input);
     try {
       final CompoundTag contents = SNBT_CODEC.decode(raw);
       return HoverEvent.ShowEntity.of(

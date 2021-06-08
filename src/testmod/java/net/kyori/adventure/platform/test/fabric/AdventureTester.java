@@ -71,6 +71,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.kyori.adventure.translation.GlobalTranslator;
 import net.kyori.adventure.translation.TranslationRegistry;
 import net.minecraft.client.Minecraft;
@@ -228,7 +229,7 @@ public class AdventureTester implements ModInitializer {
         }))
         .then(literal("plain").then(argument(ARG_TEXT, ComponentArgumentType.component()).executes(ctx -> {
           final Component text = ComponentArgumentType.component(ctx, ARG_TEXT);
-          ctx.getSource().sendSuccess(new TextComponent(this.adventure().plainSerializer().serialize(text)), false);
+          ctx.getSource().sendSuccess(new TextComponent(PlainTextComponentSerializer.plainText().serialize(text)), false);
           return Command.SINGLE_SUCCESS;
         }))));
     });

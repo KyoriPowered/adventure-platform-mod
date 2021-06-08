@@ -38,6 +38,7 @@ import net.kyori.adventure.pointer.Pointers;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.SoundStop;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.title.Title;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
@@ -179,7 +180,7 @@ public final class ServerPlayerAudience implements Audience {
 
   private String adventure$serialize(final @NotNull Component component) {
     final Locale locale = ((ConnectionAccess) this.player.connection.getConnection()).getChannel().attr(FriendlyByteBufBridge.CHANNEL_LOCALE).get();
-    return FabricAudiences.gsonSerializer().serialize(this.controller.localeRenderer().render(component, locale == null ? Locale.getDefault() : locale));
+    return GsonComponentSerializer.gson().serialize(this.controller.localeRenderer().render(component, locale == null ? Locale.getDefault() : locale));
   }
 
   @Override

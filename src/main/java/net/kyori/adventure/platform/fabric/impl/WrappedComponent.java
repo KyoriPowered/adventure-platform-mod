@@ -32,6 +32,7 @@ import net.fabricmc.api.Environment;
 import net.kyori.adventure.platform.fabric.FabricAudiences;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -104,7 +105,7 @@ public final class WrappedComponent implements Component {
 
   @Override
   public String getString() {
-    return AdventureCommon.PLAIN.serialize(this.rendered(Locale.getDefault()).wrapped);
+    return PlainTextComponentSerializer.plainText().serialize(this.rendered(Locale.getDefault()).wrapped);
   }
 
   @Override

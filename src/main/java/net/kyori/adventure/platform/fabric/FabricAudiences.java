@@ -29,7 +29,6 @@ import java.util.function.UnaryOperator;
 import net.kyori.adventure.identity.Identified;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.key.Key;
-import net.kyori.adventure.platform.fabric.impl.AdventureCommon;
 import net.kyori.adventure.platform.fabric.impl.NonWrappingComponentSerializer;
 import net.kyori.adventure.platform.fabric.impl.WrappedComponent;
 import net.kyori.adventure.platform.fabric.impl.accessor.ComponentSerializerAccess;
@@ -40,6 +39,7 @@ import net.kyori.adventure.text.renderer.ComponentRenderer;
 import net.kyori.adventure.text.serializer.ComponentSerializer;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -143,9 +143,11 @@ public interface FabricAudiences {
    *
    * @return the appropriate serializer
    * @since 4.0.0
+   * @deprecated for removal, use {@link GsonComponentSerializer#gson()} instead.
    */
+  @Deprecated
   static @NotNull GsonComponentSerializer gsonSerializer() {
-    return AdventureCommon.GSON;
+    return GsonComponentSerializer.gson();
   }
 
   /**
@@ -184,7 +186,9 @@ public interface FabricAudiences {
    *
    * @return the plain serializer instance
    * @since 4.0.0
+   * @deprecated for removal since 4.0.0, use {@link PlainTextComponentSerializer#plainText()} instead
    */
+  @Deprecated
   @NotNull PlainComponentSerializer plainSerializer();
 
   /**

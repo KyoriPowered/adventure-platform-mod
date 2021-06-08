@@ -166,8 +166,9 @@ public final class FabricServerAudiencesImpl implements FabricServerAudiences {
   }
 
   @Override
+  @Deprecated
   public @NotNull PlainComponentSerializer plainSerializer() {
-    return AdventureCommon.PLAIN;
+    return PlainComponentSerializer.plain();
   }
 
   @Override
