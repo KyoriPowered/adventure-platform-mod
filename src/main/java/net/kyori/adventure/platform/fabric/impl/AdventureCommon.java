@@ -90,7 +90,7 @@ public class AdventureCommon implements ModInitializer {
         // calculate argument position
         if (argIdx != null) {
           try {
-            final int idx = Integer.parseInt(argIdx);
+            final int idx = Integer.parseInt(argIdx) - 1;
             if (idx < args.size()) {
               consumer.accept(args.get(idx));
             }
