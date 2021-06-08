@@ -1,7 +1,7 @@
 {
   "required": true,
   "package": "net.kyori.adventure.platform.fabric.impl.mixin",
-  "compatibilityLevel": "JAVA_8",
+  "compatibilityLevel": "JAVA_16",
   "mixins": [
     "ClientboundStatusResponsePacketMixin",
     "CommandSourceStackMixin",

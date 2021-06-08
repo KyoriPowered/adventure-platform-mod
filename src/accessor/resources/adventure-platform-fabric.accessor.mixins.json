@@ -2,10 +2,12 @@
   "required": true,
   "package": "net.kyori.adventure.platform.fabric.impl.accessor",
   "refmap": "adventure-platform-fabric-accessor-refmap.json",
-  "compatibilityLevel": "JAVA_8",
+  "compatibilityLevel": "JAVA_16",
   "mixins": [
     "ComponentSerializerAccess",
-    "ConnectionAccess",
+    "ConnectionAccess"
+  ],
+  "client": [
     "client.AbstractSoundInstanceAccess"
   ],
   "injectors": {

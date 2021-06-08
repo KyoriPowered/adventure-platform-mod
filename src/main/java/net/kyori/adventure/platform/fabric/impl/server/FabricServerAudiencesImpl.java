@@ -129,9 +129,9 @@ public final class FabricServerAudiencesImpl implements FabricServerAudiences {
 
   @Override
   public @NotNull Audience audience(final @NotNull CommandSource source) {
-    if(source instanceof RenderableAudience renderable) {
+    if (source instanceof RenderableAudience renderable) {
       return renderable.renderUsing(this);
-    } else if(source instanceof Audience audience) {
+    } else if (source instanceof Audience audience) {
       // TODO: How to pass component renderer through
       return audience;
     } else {

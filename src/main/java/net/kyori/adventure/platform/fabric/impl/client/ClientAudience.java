@@ -126,15 +126,9 @@ public class ClientAudience implements Audience {
   }
 
   @Override
-<<<<<<< HEAD
-  public void playSound(final @NonNull Sound sound) {
-    final @Nullable LocalPlayer player = this.client.player;
-    if(player != null) {
-=======
   public void playSound(final @NotNull Sound sound) {
-    final LocalPlayer player = this.client.player;
+    final @Nullable LocalPlayer player = this.client.player;
     if (player != null) {
->>>>>>> master
       this.playSound(sound, player.getX(), player.getY(), player.getZ());
     } else {
       // not in-game
