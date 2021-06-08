@@ -37,6 +37,7 @@ import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.SoundStop;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
@@ -46,10 +47,13 @@ import net.minecraft.network.protocol.game.ClientboundChatPacket;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.network.protocol.game.ClientboundCustomSoundPacket;
 import net.minecraft.network.protocol.game.ClientboundSetTitlesPacket;
+import net.minecraft.network.protocol.game.ClientboundSoundEntityPacket;
 import net.minecraft.network.protocol.game.ClientboundStopSoundPacket;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.Vec3;
@@ -113,6 +117,30 @@ public final class ServerPlayerAudience implements Audience {
   public void playSound(final @NotNull Sound sound, final double x, final double y, final double z) {
     this.sendPacket(new ClientboundCustomSoundPacket(FabricAudiences.toNative(sound.name()),
       GameEnums.SOUND_SOURCE.toMinecraft(sound.source()), new Vec3(x, y, z), sound.volume(), sound.pitch()));
+  }
+
+  @Override
+  public void playSound(final @NotNull Sound sound, final Sound.@NotNull Emitter emitter) {
+    final Entity targetEntity;
+    if (emitter == Sound.Emitter.self()) {
+      targetEntity = this.player;
+    } else if (emitter instanceof Entity) {
+      targetEntity = (Entity) emitter;
+    } else {
+      throw new IllegalArgumentException("Provided emitter '" + emitter + "' was not Sound.Emitter.self() or an Entity");
+    }
+
+    if (!this.player.level.equals(targetEntity.level)) {
+      // don't send unless entities are in the same dimension
+      return;
+    }
+
+    final SoundEvent event = Registry.SOUND_EVENT.getOptional(FabricAudiences.toNative(sound.name())).orElse(null);
+    if (event == null) {
+      return;
+    }
+
+    this.sendPacket(new ClientboundSoundEntityPacket(event, GameEnums.SOUND_SOURCE.toMinecraft(sound.source()), targetEntity, sound.volume(), sound.pitch()));
   }
 
   @Override

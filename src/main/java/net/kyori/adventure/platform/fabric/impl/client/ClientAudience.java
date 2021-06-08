@@ -32,6 +32,7 @@ import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.fabric.FabricAudiences;
 import net.kyori.adventure.platform.fabric.impl.GameEnums;
+import net.kyori.adventure.platform.fabric.impl.accessor.client.AbstractSoundInstanceAccessor;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.SoundStop;
 import net.kyori.adventure.text.Component;
@@ -39,10 +40,16 @@ import net.kyori.adventure.title.Title;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.BookViewScreen;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.resources.sounds.EntityBoundSoundInstance;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
+import net.minecraft.core.Registry;
+import net.minecraft.network.protocol.game.ClientboundSoundEntityPacket;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.ChatVisiblity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -124,6 +131,25 @@ public class ClientAudience implements Audience {
       this.client.getSoundManager().play(new SimpleSoundInstance(FabricAudiences.toNative(sound.name()), GameEnums.SOUND_SOURCE.toMinecraft(sound.source()),
         sound.volume(), sound.pitch(), false, 0, SoundInstance.Attenuation.NONE, 0, 0, 0, true));
     }
+  }
+
+  @Override
+  public void playSound(final @NotNull Sound sound, final Sound.@NotNull Emitter emitter) {
+    final Entity targetEntity;
+    if (emitter == Sound.Emitter.self()) {
+      targetEntity = this.client.player;
+    } else if (emitter instanceof Entity) {
+      targetEntity = (Entity) emitter;
+    } else {
+      throw new IllegalArgumentException("Provided emitter '" + emitter + "' was not Sound.Emitter.self() or an Entity");
+    }
+
+    // Initialize with a placeholder event
+    final EntityBoundSoundInstance mcSound = new EntityBoundSoundInstance(SoundEvents.ITEM_PICKUP, GameEnums.SOUND_SOURCE.toMinecraft(sound.source()), sound.volume(), sound.pitch(), targetEntity);
+    // Then apply the ResourceLocation of our real sound event
+    ((AbstractSoundInstanceAccessor) mcSound).setLocation(FabricAudiences.toNative(sound.name()));
+
+    this.client.getSoundManager().play(mcSound);
   }
 
   @Override

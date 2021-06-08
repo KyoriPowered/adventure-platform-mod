@@ -33,6 +33,7 @@ import net.kyori.adventure.platform.fabric.impl.AdventureCommon;
 import net.kyori.adventure.platform.fabric.impl.NonWrappingComponentSerializer;
 import net.kyori.adventure.platform.fabric.impl.WrappedComponent;
 import net.kyori.adventure.platform.fabric.impl.accessor.ComponentSerializerAccess;
+import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.flattener.ComponentFlattener;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
@@ -40,6 +41,7 @@ import net.kyori.adventure.text.serializer.ComponentSerializer;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -107,6 +109,17 @@ public interface FabricAudiences {
       return null;
     }
     return new ResourceLocation(key.namespace(), key.value());
+  }
+
+  /**
+   * Get an {@link Entity}'s representation as an {@link net.kyori.adventure.sound.Sound.Emitter} of sounds.
+   *
+   * @param entity the entity to convert
+   * @return the entity as a sound emitter
+   * @since 4.0.0
+   */
+  static Sound.@NotNull Emitter asEmitter(final @NotNull Entity entity) {
+    return (Sound.Emitter) entity;
   }
 
   /**

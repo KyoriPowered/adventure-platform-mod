@@ -9,7 +9,8 @@
     "ComponentSerializerAccess",
     "ConnectionAccess",
     "ServerboundClientInformationPacketAccess",
-    "SoundSourceAccess"
+    "SoundSourceAccess",
+    "client.AbstractSoundInstanceAccessor"
   ],
   "injectors": {
     "defaultRequire": 1
