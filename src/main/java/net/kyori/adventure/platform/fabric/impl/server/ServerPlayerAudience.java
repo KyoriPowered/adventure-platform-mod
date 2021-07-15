@@ -63,6 +63,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.WrittenBookItem;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -158,28 +159,38 @@ public final class ServerPlayerAudience implements Audience {
     this.sendPacket(new ClientboundStopSoundPacket(sound == null ? null : FabricAudiences.toNative(sound), cat));
   }
 
-  static final String BOOK_TITLE = "title";
-  static final String BOOK_AUTHOR = "author";
-  static final String BOOK_PAGES = "pages";
-  static final String BOOK_RESOLVED = "resolved";
-
   @Override
   public void openBook(final @NotNull Book book) {
     final ItemStack bookStack = new ItemStack(Items.WRITTEN_BOOK, 1);
     final CompoundTag bookTag = bookStack.getOrCreateTag();
-    bookTag.putString(BOOK_TITLE, this.adventure$plain(book.title()));
-    bookTag.putString(BOOK_AUTHOR, this.adventure$plain(book.author()));
+    bookTag.putString(WrittenBookItem.TAG_TITLE, validateField(this.adventure$plain(book.title()), WrittenBookItem.TITLE_MAX_LENGTH, WrittenBookItem.TAG_TITLE));
+    bookTag.putString(WrittenBookItem.TAG_AUTHOR, this.adventure$plain(book.author()));
     final ListTag pages = new ListTag();
-    for (final Component page : book.pages()) {
-      pages.add(StringTag.valueOf(this.adventure$serialize(page)));
+    if (book.pages().size() > WrittenBookItem.MAX_PAGES) {
+      throw new IllegalArgumentException("Book provided had " + book.pages().size() + " pages, but is only allowed a maximum of " + WrittenBookItem.MAX_PAGES);
     }
-    bookTag.put(BOOK_PAGES, pages);
-    bookTag.putBoolean(BOOK_RESOLVED, true); // todo: any parseable texts?
+    for (final Component page : book.pages()) {
+      pages.add(StringTag.valueOf(validateField(this.adventure$serialize(page), WrittenBookItem.PAGE_LENGTH, "page")));
+    }
+    bookTag.put(WrittenBookItem.TAG_PAGES, pages);
+    bookTag.putBoolean(WrittenBookItem.TAG_RESOLVED, true); // todo: any parseable texts?
 
     final ItemStack previous = this.player.getInventory().getSelected();
     this.sendPacket(new ClientboundContainerSetSlotPacket(-2, this.player.getInventory().selected, bookStack));
     this.player.openItemGui(bookStack, InteractionHand.MAIN_HAND);
     this.sendPacket(new ClientboundContainerSetSlotPacket(-2, this.player.getInventory().selected, previous));
+  }
+
+  private static String validateField(final String content, final int length, final String name) {
+    if (content == null) {
+      return content;
+    }
+
+    final int actual = content.length();
+    if (actual > length) {
+      throw new IllegalArgumentException("Field '" + name + "' has a maximum length of " + length + " but was passed '" + content + "', which was " + actual + " characters long.");
+    }
+    return content;
   }
 
   private String adventure$plain(final @NotNull Component component) {
