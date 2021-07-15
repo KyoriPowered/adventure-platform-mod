@@ -176,9 +176,9 @@ public final class ServerPlayerAudience implements Audience {
     bookTag.putBoolean(WrittenBookItem.TAG_RESOLVED, true); // todo: any parseable texts?
 
     final ItemStack previous = this.player.getInventory().getSelected();
-    this.sendPacket(new ClientboundContainerSetSlotPacket(-2, this.player.getInventory().selected, bookStack));
+    this.sendPacket(new ClientboundContainerSetSlotPacket(-2, this.player.containerMenu.getStateId(), this.player.getInventory().selected, bookStack));
     this.player.openItemGui(bookStack, InteractionHand.MAIN_HAND);
-    this.sendPacket(new ClientboundContainerSetSlotPacket(-2, this.player.getInventory().selected, previous));
+    this.sendPacket(new ClientboundContainerSetSlotPacket(-2, this.player.containerMenu.getStateId(), this.player.getInventory().selected, previous));
   }
 
   private static String validateField(final String content, final int length, final String name) {
