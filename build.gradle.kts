@@ -63,9 +63,9 @@ tasks.sourcesJar {
   duplicatesStrategy = DuplicatesStrategy.EXCLUDE // duplicate package-info.java coming in from somewhere?
 }
 
-/* tasks.runClient {
+tasks.runClient {
   setClasspath(files(loom.unmappedModCollection, sourceSets.main.map { it.runtimeClasspath }))
-} */
+}
 
 indra {
   github("KyoriPowered", "adventure-platform-fabric") {
