@@ -39,6 +39,7 @@ import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.SoundStop;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.kyori.adventure.title.Title;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
@@ -163,8 +164,8 @@ public final class ServerPlayerAudience implements Audience {
   public void openBook(final @NotNull Book book) {
     final ItemStack bookStack = new ItemStack(Items.WRITTEN_BOOK, 1);
     final CompoundTag bookTag = bookStack.getOrCreateTag();
-    bookTag.putString(BOOK_TITLE, this.adventure$serialize(book.title()));
-    bookTag.putString(BOOK_AUTHOR, this.adventure$serialize(book.author()));
+    bookTag.putString(BOOK_TITLE, this.adventure$plain(book.title()));
+    bookTag.putString(BOOK_AUTHOR, this.adventure$plain(book.author()));
     final ListTag pages = new ListTag();
     for (final Component page : book.pages()) {
       pages.add(StringTag.valueOf(this.adventure$serialize(page)));
@@ -176,6 +177,11 @@ public final class ServerPlayerAudience implements Audience {
     this.sendPacket(new ClientboundContainerSetSlotPacket(-2, this.player.inventory.selected, bookStack));
     this.player.openItemGui(bookStack, InteractionHand.MAIN_HAND);
     this.sendPacket(new ClientboundContainerSetSlotPacket(-2, this.player.inventory.selected, previous));
+  }
+
+  private String adventure$plain(final @NotNull Component component) {
+    final Locale locale = ((ConnectionAccess) this.player.connection.getConnection()).getChannel().attr(FriendlyByteBufBridge.CHANNEL_LOCALE).get();
+    return PlainTextComponentSerializer.plainText().serialize(this.controller.localeRenderer().render(component, locale == null ? Locale.getDefault() : locale));
   }
 
   private String adventure$serialize(final @NotNull Component component) {
