@@ -5,7 +5,7 @@ import net.kyori.indra.repository.sonatypeSnapshots
 plugins {
   id("fabric-loom") version "0.8-SNAPSHOT"
   id("ca.stellardrift.opinionated.fabric") version "5.0.0"
-  id("net.kyori.indra.publishing.sonatype") version "2.0.5"
+  id("net.kyori.indra.publishing.sonatype") version "2.0.6"
 }
 
 val versionMinecraft: String by project
