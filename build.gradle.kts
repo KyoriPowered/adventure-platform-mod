@@ -28,7 +28,7 @@ indra {
 }
 
 dependencies {
-  annotationProcessor("ca.stellardrift:contract-validator:1.0.0")
+  annotationProcessor("ca.stellardrift:contract-validator:1.0.1")
   modApi(include(adventure("key", versionAdventure))!!)
   modApi(include(adventure("api", versionAdventure))!!)
   modApi(include(adventure("text-serializer-plain", versionAdventure))!!)
@@ -42,11 +42,11 @@ dependencies {
   modApi(fabricApi.module("fabric-api-base", versionFabricApi))
 
   // Transitive deps
-  include("net.kyori:examination-api:1.1.0")
-  include("net.kyori:examination-string:1.1.0")
-  modCompileOnly("org.jetbrains:annotations:21.0.1")
+  include("net.kyori:examination-api:1.3.0")
+  include("net.kyori:examination-string:1.3.0")
+  modCompileOnly("org.jetbrains:annotations:22.0.0")
 
-  modCompileOnly("ca.stellardrift:colonel:0.2") // broken on 1.17, needs update
+  modImplementation("ca.stellardrift:colonel:0.2.1")
 
   minecraft("com.mojang:minecraft:$versionMinecraft")
   mappings(minecraft.officialMojangMappings())

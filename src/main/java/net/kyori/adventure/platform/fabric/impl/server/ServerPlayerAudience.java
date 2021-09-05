@@ -25,6 +25,7 @@ package net.kyori.adventure.platform.fabric.impl.server;
 
 import java.time.Duration;
 import java.util.Locale;
+import java.util.Objects;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.identity.Identity;
@@ -41,6 +42,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.kyori.adventure.title.Title;
+import net.kyori.adventure.title.TitlePart;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -221,6 +223,26 @@ public final class ServerPlayerAudience implements Audience {
 
     if (title.title() != Component.empty()) {
       this.sendPacket(new ClientboundSetTitleTextPacket(this.controller.toNative(title.title())));
+    }
+  }
+
+  @Override
+  public <T> void sendTitlePart(final @NotNull TitlePart<T> part, @NotNull final T value) {
+    Objects.requireNonNull(value, "value");
+    if (part == TitlePart.TITLE) {
+      this.sendPacket(new ClientboundSetTitleTextPacket(this.controller.toNative((Component) value)));
+    } else if (part == TitlePart.SUBTITLE) {
+      this.sendPacket(new ClientboundSetSubtitleTextPacket(this.controller.toNative((Component) value)));
+    } else if (part == TitlePart.TIMES) {
+      final Title.Times times = (Title.Times) value;
+      final int fadeIn = ticks(times.fadeIn());
+      final int fadeOut = ticks(times.fadeOut());
+      final int dwell = ticks(times.stay());
+      if (fadeIn != -1 || fadeOut != -1 || dwell != -1) {
+        this.sendPacket(new ClientboundSetTitlesAnimationPacket(fadeIn, dwell, fadeOut));
+      }
+    } else {
+      throw new IllegalArgumentException("Unknown TitlePart '" + part + "'");
     }
   }
 

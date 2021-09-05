@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Objects;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
+import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.platform.fabric.FabricServerAudiences;
 import net.kyori.adventure.platform.fabric.PlayerLocales;
 import net.kyori.adventure.platform.fabric.impl.LocaleHolderBridge;
@@ -94,8 +95,8 @@ public abstract class ServerPlayerMixin extends PlayerMixin implements Forwardin
   }
 
   @Override
-  public @NotNull Pointers pointers() {
-    return this.audience().pointers();
+  protected void adventure$populateExtraPointers(final Pointers.Builder builder) {
+    builder.withDynamic(Identity.LOCALE, this::adventure$locale);
   }
 
   // Tab list

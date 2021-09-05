@@ -24,6 +24,7 @@
 package net.kyori.adventure.platform.fabric.impl.client;
 
 import java.time.Duration;
+import java.util.Objects;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.bossbar.BossBar;
@@ -39,6 +40,7 @@ import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.SoundStop;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
+import net.kyori.adventure.title.TitlePart;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.BookViewScreen;
 import net.minecraft.client.player.LocalPlayer;
@@ -97,6 +99,25 @@ public class ClientAudience implements Audience {
       this.adventure$ticks(times == null ? null : times.stay()),
       this.adventure$ticks(times == null ? null : times.fadeOut())
     );
+  }
+
+  @Override
+  public <T> void sendTitlePart(final @NotNull TitlePart<T> part, @NotNull final T value) {
+    Objects.requireNonNull(value, "value");
+    if (part == TitlePart.TITLE) {
+      this.client.gui.setTitle(this.controller.toNative((Component) value));
+    } else if (part == TitlePart.SUBTITLE) {
+      this.client.gui.setSubtitle(this.controller.toNative((Component) value));
+    } else if (part == TitlePart.TIMES) {
+      final Title.Times times = (Title.Times) value;
+      this.client.gui.setTimes(
+        this.adventure$ticks(times.fadeIn()),
+        this.adventure$ticks(times.stay()),
+        this.adventure$ticks(times.fadeOut())
+      );
+    } else {
+      throw new IllegalArgumentException("Unknown TitlePart '" + part + "'");
+    }
   }
 
   private int adventure$ticks(final @Nullable Duration duration) {

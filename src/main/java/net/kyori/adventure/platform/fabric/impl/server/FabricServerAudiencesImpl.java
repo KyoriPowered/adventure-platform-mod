@@ -176,7 +176,7 @@ public final class FabricServerAudiencesImpl implements FabricServerAudiences {
   }
 
   @Override
-  public net.minecraft.network.chat.Component toNative(final @NotNull Component adventure) {
+  public net.minecraft.network.chat.@NotNull Component toNative(final @NotNull Component adventure) {
     if (adventure == Component.empty()) return TextComponent.EMPTY;
 
     return new WrappedComponent(requireNonNull(adventure, "adventure"), this.renderer);

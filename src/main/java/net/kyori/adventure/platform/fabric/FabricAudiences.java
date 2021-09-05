@@ -186,7 +186,7 @@ public interface FabricAudiences {
    *
    * @return the plain serializer instance
    * @since 4.0.0
-   * @deprecated for removal since 4.0.0, use {@link PlainTextComponentSerializer#plainText()} instead
+   * @deprecated for removal since 4.0.0, use {@link PlainTextComponentSerializer#plainText()} instead. Will be removed in 1.18 snapshots.
    */
   @Deprecated
   @NotNull PlainComponentSerializer plainSerializer();

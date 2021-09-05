@@ -71,7 +71,7 @@ public class FabricClientAudiencesImpl implements FabricClientAudiences {
   }
 
   @Override
-  public Component toNative(final net.kyori.adventure.text.@NotNull Component adventure) {
+  public @NotNull Component toNative(final net.kyori.adventure.text.@NotNull Component adventure) {
     return new WrappedComponent(requireNonNull(adventure, "adventure"), this.renderer);
   }
 
