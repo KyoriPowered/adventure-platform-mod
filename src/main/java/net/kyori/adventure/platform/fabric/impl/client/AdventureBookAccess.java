@@ -23,9 +23,9 @@
  */
 package net.kyori.adventure.platform.fabric.impl.client;
 
-import java.util.Locale;
 import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.platform.fabric.impl.WrappedComponent;
+import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
 import net.minecraft.client.gui.screens.inventory.BookViewScreen;
 import net.minecraft.network.chat.FormattedText;
@@ -43,9 +43,9 @@ import static java.util.Objects.requireNonNull;
  */
 public class AdventureBookAccess implements BookViewScreen.BookAccess {
   private final Book book;
-  private final @Nullable ComponentRenderer<Locale> renderer;
+  private final @Nullable ComponentRenderer<Pointered> renderer;
 
-  public AdventureBookAccess(final @NotNull Book book, final @Nullable ComponentRenderer<Locale> renderer) {
+  public AdventureBookAccess(final @NotNull Book book, final @Nullable ComponentRenderer<Pointered> renderer) {
     this.book = requireNonNull(book, "book");
     this.renderer = renderer;
   }

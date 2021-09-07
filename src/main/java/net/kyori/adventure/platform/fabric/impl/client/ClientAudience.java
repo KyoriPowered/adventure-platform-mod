@@ -191,7 +191,7 @@ public class ClientAudience implements Audience {
 
   @Override
   public void openBook(final @NotNull Book book) {
-    this.client.setScreen(new BookViewScreen(new AdventureBookAccess(book, this.controller.localeRenderer())));
+    this.client.setScreen(new BookViewScreen(new AdventureBookAccess(book, this.controller.renderer())));
   }
 
   @Override

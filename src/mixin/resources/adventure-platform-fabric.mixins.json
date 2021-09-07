@@ -15,6 +15,7 @@
     "PlayerMixin",
     "RconConsoleSourceMixin",
     "ServerBossEventMixin",
+    "ServerGamePacketListenerImplMixin",
     "ServerPlayerMixin",
     "StyleSerializerMixin"
   ],

@@ -31,6 +31,7 @@ import java.util.UUID;
 import java.util.WeakHashMap;
 import java.util.function.Consumer;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.fabric.AdventureCommandSourceStack;
 import net.kyori.adventure.platform.fabric.FabricAudiences;
@@ -39,10 +40,12 @@ import net.kyori.adventure.platform.fabric.impl.AdventureCommandSourceStackInter
 import net.kyori.adventure.platform.fabric.impl.AdventureCommon;
 import net.kyori.adventure.platform.fabric.impl.WrappedComponent;
 import net.kyori.adventure.platform.fabric.impl.accessor.ComponentSerializerAccess;
+import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.flattener.ComponentFlattener;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
 import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
+import net.kyori.adventure.translation.GlobalTranslator;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.Registry;
@@ -76,10 +79,10 @@ public final class FabricServerAudiencesImpl implements FabricServerAudiences {
   }
 
   private final MinecraftServer server;
-  private final ComponentRenderer<Locale> renderer;
+  private final ComponentRenderer<Pointered> renderer;
   final ServerBossBarListener bossBars;
 
-  public FabricServerAudiencesImpl(final MinecraftServer server, final ComponentRenderer<Locale> renderer) {
+  public FabricServerAudiencesImpl(final MinecraftServer server, final ComponentRenderer<Pointered> renderer) {
     this.server = server;
     this.renderer = renderer;
     this.bossBars = new ServerBossBarListener(this);
@@ -172,7 +175,7 @@ public final class FabricServerAudiencesImpl implements FabricServerAudiences {
   }
 
   @Override
-  public @NotNull ComponentRenderer<Locale> localeRenderer() {
+  public @NotNull ComponentRenderer<Pointered> renderer() {
     return this.renderer;
   }
 
@@ -198,5 +201,25 @@ public final class FabricServerAudiencesImpl implements FabricServerAudiences {
 
   @Override
   public void close() {
+  }
+
+  public static final class Builder implements FabricServerAudiences.Builder {
+    private final MinecraftServer server;
+    private ComponentRenderer<Pointered> renderer = GlobalTranslator.renderer().mapContext(ptr -> ptr.getOrDefault(Identity.LOCALE, Locale.US));
+
+    public Builder(final MinecraftServer server) {
+      this.server = server;
+    }
+
+    @Override
+    public @NotNull FabricServerAudiences.Builder componentRenderer(final @NotNull ComponentRenderer<Pointered> componentRenderer) {
+      this.renderer = requireNonNull(componentRenderer, "componentRenderer");
+      return this;
+    }
+
+    @Override
+    public @NotNull FabricServerAudiences build() {
+      return new FabricServerAudiencesImpl(this.server, this.renderer);
+    }
   }
 }

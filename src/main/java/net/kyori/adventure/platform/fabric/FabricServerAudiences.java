@@ -25,6 +25,7 @@ package net.kyori.adventure.platform.fabric;
 
 import java.util.Locale;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.platform.AudienceProvider;
 import net.kyori.adventure.platform.fabric.impl.server.FabricServerAudiencesImpl;
 import net.kyori.adventure.platform.fabric.impl.server.MinecraftServerBridge;
@@ -43,7 +44,6 @@ import static java.util.Objects.requireNonNull;
  * @since 4.0.0
  */
 public interface FabricServerAudiences extends AudienceProvider, FabricAudiences {
-
   /**
    * Get the shared audience provider for the server.
    *
@@ -58,6 +58,17 @@ public interface FabricServerAudiences extends AudienceProvider, FabricAudiences
   }
 
   /**
+   * Create an audience provider for this server with customized settings.
+   *
+   * @param server the server
+   * @return audience provider builder
+   * @since 4.0.0
+   */
+  static FabricServerAudiences.@NotNull Builder builder(final @NotNull MinecraftServer server) {
+    return new FabricServerAudiencesImpl.Builder(requireNonNull(server, "server"));
+  }
+
+  /**
    * Get a customized audience provider for the server.
    *
    * <p>This provider will render messages using the global translation registry.</p>
@@ -66,9 +77,13 @@ public interface FabricServerAudiences extends AudienceProvider, FabricAudiences
    * @param renderer renderer for messages.
    * @return new audience provider
    * @since 4.0.0
+   * @deprecated for removal, use {@link #builder(MinecraftServer)} instead
    */
+  @Deprecated
   static @NotNull FabricServerAudiences of(final @NotNull MinecraftServer server, final @NotNull ComponentRenderer<Locale> renderer) {
-    return new FabricServerAudiencesImpl(requireNonNull(server, "server"), requireNonNull(renderer, "renderer"));
+    return FabricServerAudiences.builder(server)
+      .componentRenderer(renderer.mapContext(ptr -> ptr.getOrDefault(Identity.LOCALE, Locale.US)))
+      .build();
   }
 
   /**
@@ -103,4 +118,12 @@ public interface FabricServerAudiences extends AudienceProvider, FabricAudiences
    * @since 4.0.0
    */
   @NotNull Audience audience(@NotNull Iterable<ServerPlayer> players);
+
+  /**
+   * Builder for {@link FabricServerAudiences} with custom attributes.
+   *
+   * @since 4.0.0
+   */
+  interface Builder extends AudienceProvider.Builder<FabricServerAudiences, FabricServerAudiences.Builder> {
+  }
 }

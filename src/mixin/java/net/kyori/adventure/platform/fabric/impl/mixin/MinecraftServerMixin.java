@@ -27,13 +27,17 @@ import com.google.common.collect.MapMaker;
 import java.util.Map;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
+import net.kyori.adventure.identity.Identity;
+import net.kyori.adventure.permission.PermissionChecker;
 import net.kyori.adventure.platform.fabric.FabricAudiences;
 import net.kyori.adventure.platform.fabric.FabricServerAudiences;
+import net.kyori.adventure.platform.fabric.impl.AdventureCommon;
 import net.kyori.adventure.platform.fabric.impl.server.FabricServerAudiencesImpl;
 import net.kyori.adventure.platform.fabric.impl.server.MinecraftServerBridge;
 import net.kyori.adventure.platform.fabric.impl.server.PlainAudience;
 import net.kyori.adventure.platform.fabric.impl.server.RenderableAudience;
-import net.kyori.adventure.translation.GlobalTranslator;
+import net.kyori.adventure.pointer.Pointers;
+import net.kyori.adventure.util.TriState;
 import net.minecraft.server.MinecraftServer;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -50,9 +54,10 @@ public abstract class MinecraftServerMixin implements MinecraftServerBridge, Ren
   @Shadow @Final private static Logger LOGGER;
   // @formatter:on
 
-  private final FabricServerAudiencesImpl adventure$globalProvider = new FabricServerAudiencesImpl((MinecraftServer) (Object) this, GlobalTranslator.renderer());
+  private final FabricServerAudiencesImpl adventure$globalProvider = new FabricServerAudiencesImpl((MinecraftServer) (Object) this, AdventureCommon.pointerTranslator());
   private final Map<FabricAudiences, Audience> adventure$renderers = new MapMaker().weakKeys().makeMap();
   private final Audience adventure$backing = this.renderUsing(this.adventure$globalProvider);
+  private volatile Pointers adventure$pointers;
 
   @Override
   public FabricServerAudiences adventure$globalProvider() {
@@ -66,6 +71,26 @@ public abstract class MinecraftServerMixin implements MinecraftServerBridge, Ren
 
   @Override
   public Audience renderUsing(final FabricServerAudiencesImpl controller) {
-    return this.adventure$renderers.computeIfAbsent(controller, ctrl -> new PlainAudience(ctrl, LOGGER::info));
+    return this.adventure$renderers.computeIfAbsent(controller, ctrl -> new PlainAudience(ctrl, this, LOGGER::info));
+  }
+
+  @Override
+  public @NotNull Pointers pointers() {
+    if (this.adventure$pointers == null) {
+      synchronized (this) {
+        if (this.adventure$pointers == null) {
+          return this.adventure$pointers = Pointers.builder()
+            .withStatic(Identity.NAME, "Server")
+            .withStatic(PermissionChecker.POINTER, perm -> TriState.TRUE)
+            .build();
+        }
+      }
+    }
+    return this.adventure$pointers;
+  }
+
+  @Override
+  public void refresh() {
+    // nothing to refresh
   }
 }

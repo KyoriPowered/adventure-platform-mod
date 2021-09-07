@@ -25,11 +25,11 @@ package net.kyori.adventure.platform.fabric;
 
 import java.util.Locale;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.platform.fabric.impl.client.FabricClientAudiencesImpl;
+import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
 import org.jetbrains.annotations.NotNull;
-
-import static java.util.Objects.requireNonNull;
 
 /**
  * Access the client's player as an {@link net.kyori.adventure.audience.Audience}.
@@ -49,14 +49,28 @@ public interface FabricClientAudiences extends FabricAudiences {
   }
 
   /**
+   * Create a builder for an audience provider that might use custom locales.
+   *
+   * @return the builder
+   * @since 4.0.0
+   */
+  static @NotNull FabricClientAudiences.Builder builder() {
+    return new FabricClientAudiencesImpl.Builder();
+  }
+
+  /**
    * Get an audience provider that will render using the provided renderer.
    *
    * @param renderer Renderer to use
    * @return new audience provider
    * @since 4.0.0
+   * @deprecated for removal, use {@link #builder()} instead
    */
+  @Deprecated
   static @NotNull FabricClientAudiences of(final @NotNull ComponentRenderer<Locale> renderer) {
-    return new FabricClientAudiencesImpl(requireNonNull(renderer, "renderer"));
+    return FabricClientAudiences.builder()
+      .componentRenderer(renderer.mapContext(ptr -> ptr.getOrDefault(Identity.LOCALE, Locale.US)))
+      .build();
   }
 
   /**
@@ -68,4 +82,29 @@ public interface FabricClientAudiences extends FabricAudiences {
    * @since 4.0.0
    */
   @NotNull Audience audience();
+
+  /**
+   * Build a {@link FabricClientAudiences} instance.
+   *
+   * @since 4.0.0
+   */
+  interface Builder {
+    /**
+     * Sets the component renderer for the provider.
+     *
+     * @param componentRenderer a component renderer
+     * @return this builder
+     * @since 4.0.0
+     */
+    @NotNull Builder componentRenderer(final @NotNull ComponentRenderer<Pointered> componentRenderer);
+
+    /**
+     * Builds the provider.
+     *
+     * @return the built provider
+     * @since 4.0.0
+     */
+    @NotNull
+    FabricClientAudiences build();
+  }
 }

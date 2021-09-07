@@ -27,4 +27,11 @@ import net.kyori.adventure.audience.Audience;
 
 public interface RenderableAudience extends Audience {
   Audience renderUsing(final FabricServerAudiencesImpl controller);
+
+  /**
+   * Refresh this audience, to update any actively displayed rendered content.
+   *
+   * @since 4.0.0
+   */
+  void refresh();
 }

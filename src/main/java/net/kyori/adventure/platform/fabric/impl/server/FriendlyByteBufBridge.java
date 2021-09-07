@@ -24,11 +24,11 @@
 package net.kyori.adventure.platform.fabric.impl.server;
 
 import io.netty.util.AttributeKey;
-import java.util.Locale;
+import net.kyori.adventure.pointer.Pointered;
 import org.jetbrains.annotations.Nullable;
 
 public interface FriendlyByteBufBridge {
-  AttributeKey<Locale> CHANNEL_LOCALE = AttributeKey.newInstance("adventure:locale");
+  AttributeKey<Pointered> CHANNEL_RENDER_DATA = AttributeKey.newInstance("adventure:render_data");
 
-  void adventure$locale(final @Nullable Locale locale);
+  void adventure$data(final @Nullable Pointered data);
 }

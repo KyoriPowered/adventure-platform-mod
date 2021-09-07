@@ -24,7 +24,6 @@
 package net.kyori.adventure.platform.fabric;
 
 import com.mojang.authlib.GameProfile;
-import java.util.Locale;
 import java.util.function.UnaryOperator;
 import net.kyori.adventure.identity.Identified;
 import net.kyori.adventure.identity.Identity;
@@ -32,6 +31,7 @@ import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.fabric.impl.NonWrappingComponentSerializer;
 import net.kyori.adventure.platform.fabric.impl.WrappedComponent;
 import net.kyori.adventure.platform.fabric.impl.accessor.ComponentSerializerAccess;
+import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.flattener.ComponentFlattener;
@@ -69,7 +69,7 @@ public interface FabricAudiences {
    */
   static net.minecraft.network.chat.@NotNull Component update(final net.minecraft.network.chat.@NotNull Component input, final UnaryOperator<Component> modifier) {
     final Component modified;
-    final @Nullable ComponentRenderer<Locale> renderer;
+    final @Nullable ComponentRenderer<Pointered> renderer;
     if (input instanceof WrappedComponent) {
       modified = requireNonNull(modifier).apply(((WrappedComponent) input).wrapped());
       renderer = ((WrappedComponent) input).renderer();
@@ -192,12 +192,12 @@ public interface FabricAudiences {
   @NotNull PlainComponentSerializer plainSerializer();
 
   /**
-   * Active locale-based renderer for operations on provided audiences.
+   * Active renderer to render components.
    *
    * @return Shared renderer
    * @since 4.0.0
    */
-  @NotNull ComponentRenderer<Locale> localeRenderer();
+  @NotNull ComponentRenderer<Pointered> renderer();
 
   /**
    * Get a native {@link net.minecraft.network.chat.Component} from an adventure {@link Component}.

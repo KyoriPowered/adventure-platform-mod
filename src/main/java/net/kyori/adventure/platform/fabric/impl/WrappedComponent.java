@@ -23,13 +23,15 @@
  */
 package net.kyori.adventure.platform.fabric.impl;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.kyori.adventure.platform.fabric.FabricAudiences;
+import net.kyori.adventure.pointer.Pointered;
+import net.kyori.adventure.pointer.Pointers;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
@@ -42,13 +44,13 @@ import org.jetbrains.annotations.Nullable;
 
 public final class WrappedComponent implements Component {
   private Component converted;
-  private @Nullable Locale deepConvertedLocalized = null;
+  private @Nullable Pointered deepConvertedLocalized = null;
   private final net.kyori.adventure.text.Component wrapped;
-  private final @Nullable ComponentRenderer<Locale> renderer;
-  private @Nullable Locale lastLocale;
+  private final @Nullable ComponentRenderer<Pointered> renderer;
+  private @Nullable WeakReference<Pointered> lastData;
   private @Nullable WrappedComponent lastRendered;
 
-  public WrappedComponent(final net.kyori.adventure.text.Component wrapped, final @Nullable ComponentRenderer<Locale> renderer) {
+  public WrappedComponent(final net.kyori.adventure.text.Component wrapped, final @Nullable ComponentRenderer<Pointered> renderer) {
     this.wrapped = wrapped;
     this.renderer = renderer;
   }
@@ -58,7 +60,7 @@ public final class WrappedComponent implements Component {
    *
    * @return the renderer, if any
    */
-  public @Nullable ComponentRenderer<Locale> renderer() {
+  public @Nullable ComponentRenderer<Pointered> renderer() {
     return this.renderer;
   }
 
@@ -66,12 +68,12 @@ public final class WrappedComponent implements Component {
     return this.wrapped;
   }
 
-  public synchronized WrappedComponent rendered(final Locale locale) {
-    if (Objects.equals(locale, this.lastLocale)) {
+  public synchronized WrappedComponent rendered(final Pointered data) {
+    if (this.lastData != null && Objects.equals(data, this.lastData.get())) {
       return this.lastRendered;
     }
-    this.lastLocale = locale;
-    return this.lastRendered = this.renderer == null ? this : new WrappedComponent(this.renderer.render(this.wrapped, locale), null);
+    this.lastData = new WeakReference<>(data);
+    return this.lastRendered = this.renderer == null ? this : new WrappedComponent(this.renderer.render(this.wrapped, data), null);
   }
 
   Component deepConverted() {
@@ -86,7 +88,7 @@ public final class WrappedComponent implements Component {
   @Environment(EnvType.CLIENT)
   Component deepConvertedLocalized() {
     Component converted = this.converted;
-    final Locale target = ((LocaleHolderBridge) Minecraft.getInstance().options).adventure$locale();
+    final Pointered target = (Pointered) Minecraft.getInstance().player;
     if (converted == null || this.deepConvertedLocalized != target) {
       converted = this.converted = this.rendered(target).deepConverted();
       this.deepConvertedLocalized = target;
@@ -105,7 +107,7 @@ public final class WrappedComponent implements Component {
 
   @Override
   public String getString() {
-    return PlainTextComponentSerializer.plainText().serialize(this.rendered(Locale.getDefault()).wrapped);
+    return PlainTextComponentSerializer.plainText().serialize(this.rendered(AdventureCommon.pointered(Pointers::empty)).wrapped);
   }
 
   @Override

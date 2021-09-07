@@ -40,6 +40,6 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 public class PacketEncoderMixin {
   @Inject(method = "encode", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/FriendlyByteBuf;writeVarInt(I)Lnet/minecraft/network/FriendlyByteBuf;"), locals = LocalCapture.CAPTURE_FAILHARD)
   private void adventure$applyLocaleToBuffer(final ChannelHandlerContext ctx, final Packet<?> pkt, final ByteBuf orig, final CallbackInfo ci, final ConnectionProtocol unused$proto, final Integer unused$id, final FriendlyByteBuf buffer) {
-    ((FriendlyByteBufBridge) buffer).adventure$locale(ctx.channel().attr(FriendlyByteBufBridge.CHANNEL_LOCALE).get());
+    ((FriendlyByteBufBridge) buffer).adventure$data(ctx.channel().attr(FriendlyByteBufBridge.CHANNEL_RENDER_DATA).get());
   }
 }
