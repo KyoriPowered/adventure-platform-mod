@@ -25,8 +25,8 @@ package net.kyori.adventure.platform.fabric;
 
 import java.util.Locale;
 import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.platform.AudienceProvider;
+import net.kyori.adventure.platform.fabric.impl.AdventureCommon;
 import net.kyori.adventure.platform.fabric.impl.server.FabricServerAudiencesImpl;
 import net.kyori.adventure.platform.fabric.impl.server.MinecraftServerBridge;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
@@ -82,7 +82,7 @@ public interface FabricServerAudiences extends AudienceProvider, FabricAudiences
   @Deprecated
   static @NotNull FabricServerAudiences of(final @NotNull MinecraftServer server, final @NotNull ComponentRenderer<Locale> renderer) {
     return FabricServerAudiences.builder(server)
-      .componentRenderer(renderer.mapContext(ptr -> ptr.getOrDefault(Identity.LOCALE, Locale.US)))
+      .componentRenderer(AdventureCommon.localePartition(), renderer)
       .build();
   }
 

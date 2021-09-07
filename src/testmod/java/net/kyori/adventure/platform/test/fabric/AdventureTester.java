@@ -48,6 +48,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import net.fabricmc.api.EnvType;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.command.v1.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
@@ -234,6 +235,12 @@ public class AdventureTester implements ModInitializer {
         }))));
     });
 
+    if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
+      this.onClient();
+    }
+  }
+
+  private void onClient() {
     ClientCommandManager.DISPATCHER.register(LiteralArgumentBuilder.<FabricClientCommandSource>literal("adventure_client")
       .then(LiteralArgumentBuilder.<FabricClientCommandSource>literal("open_file").executes(ctx -> {
         final Path path = FabricLoader.getInstance().getGameDir().resolve("adventure_test_file.txt").toAbsolutePath();

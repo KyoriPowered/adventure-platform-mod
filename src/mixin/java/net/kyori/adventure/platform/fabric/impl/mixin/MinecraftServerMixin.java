@@ -54,7 +54,7 @@ public abstract class MinecraftServerMixin implements MinecraftServerBridge, Ren
   @Shadow @Final private static Logger LOGGER;
   // @formatter:on
 
-  private final FabricServerAudiencesImpl adventure$globalProvider = new FabricServerAudiencesImpl((MinecraftServer) (Object) this, AdventureCommon.pointerTranslator());
+  private final FabricServerAudiencesImpl adventure$globalProvider = new FabricServerAudiencesImpl.Builder((MinecraftServer) (Object) this).build();
   private final Map<FabricAudiences, Audience> adventure$renderers = new MapMaker().weakKeys().makeMap();
   private final Audience adventure$backing = this.renderUsing(this.adventure$globalProvider);
   private volatile Pointers adventure$pointers;

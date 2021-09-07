@@ -24,6 +24,7 @@
 package net.kyori.adventure.platform.fabric;
 
 import com.mojang.authlib.GameProfile;
+import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import net.kyori.adventure.identity.Identified;
 import net.kyori.adventure.identity.Identity;
@@ -69,16 +70,19 @@ public interface FabricAudiences {
    */
   static net.minecraft.network.chat.@NotNull Component update(final net.minecraft.network.chat.@NotNull Component input, final UnaryOperator<Component> modifier) {
     final Component modified;
+    final @Nullable Function<Pointered, ?> partition;
     final @Nullable ComponentRenderer<Pointered> renderer;
     if (input instanceof WrappedComponent) {
       modified = requireNonNull(modifier).apply(((WrappedComponent) input).wrapped());
+      partition = ((WrappedComponent) input).partition();
       renderer = ((WrappedComponent) input).renderer();
     } else {
       final Component original = ComponentSerializerAccess.getGSON().fromJson(net.minecraft.network.chat.Component.Serializer.toJsonTree(input), Component.class);
       modified = modifier.apply(original);
+      partition = null;
       renderer = null;
     }
-    return new WrappedComponent(modified, renderer);
+    return new WrappedComponent(modified, partition, renderer);
   }
 
   /**

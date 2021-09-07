@@ -26,6 +26,7 @@ package net.kyori.adventure.platform.fabric.impl;
 import ca.stellardrift.colonel.api.ServerArgumentType;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import net.fabricmc.api.EnvType;
@@ -42,7 +43,6 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.KeybindComponent;
 import net.kyori.adventure.text.TranslatableComponent;
 import net.kyori.adventure.text.flattener.ComponentFlattener;
-import net.kyori.adventure.text.renderer.ComponentRenderer;
 import net.kyori.adventure.translation.GlobalTranslator;
 import net.kyori.adventure.translation.TranslationRegistry;
 import net.kyori.adventure.translation.Translator;
@@ -147,8 +147,8 @@ public class AdventureCommon implements ModInitializer {
     });
   }
 
-  public static ComponentRenderer<Pointered> pointerTranslator() {
-    return GlobalTranslator.renderer().mapContext(ptr -> ptr.getOrDefault(Identity.LOCALE, Locale.US));
+  public static Function<Pointered, Locale> localePartition() {
+    return ptr -> ptr.getOrDefault(Identity.LOCALE, Locale.US);
   }
 
   public static Pointered pointered(final FPointered pointers) {

@@ -23,6 +23,7 @@
  */
 package net.kyori.adventure.platform.fabric.impl.client;
 
+import java.util.function.Function;
 import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.platform.fabric.impl.WrappedComponent;
 import net.kyori.adventure.pointer.Pointered;
@@ -43,10 +44,12 @@ import static java.util.Objects.requireNonNull;
  */
 public class AdventureBookAccess implements BookViewScreen.BookAccess {
   private final Book book;
+  private final @Nullable Function<Pointered, ?> partition;
   private final @Nullable ComponentRenderer<Pointered> renderer;
 
-  public AdventureBookAccess(final @NotNull Book book, final @Nullable ComponentRenderer<Pointered> renderer) {
+  public AdventureBookAccess(final @NotNull Book book, final @Nullable Function<Pointered, ?> partition, final @Nullable ComponentRenderer<Pointered> renderer) {
     this.book = requireNonNull(book, "book");
+    this.partition = partition;
     this.renderer = renderer;
   }
 
@@ -57,6 +60,6 @@ public class AdventureBookAccess implements BookViewScreen.BookAccess {
 
   @Override
   public FormattedText getPageRaw(final int index) {
-    return new WrappedComponent(this.book.pages().get(index), this.renderer);
+    return new WrappedComponent(this.book.pages().get(index), this.partition, this.renderer);
   }
 }

@@ -23,10 +23,10 @@
  */
 package net.kyori.adventure.platform.fabric.impl;
 
-import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.kyori.adventure.platform.fabric.FabricAudiences;
@@ -44,14 +44,16 @@ import org.jetbrains.annotations.Nullable;
 
 public final class WrappedComponent implements Component {
   private Component converted;
-  private @Nullable Pointered deepConvertedLocalized = null;
+  private @Nullable Object deepConvertedLocalized = null;
   private final net.kyori.adventure.text.Component wrapped;
+  private final @Nullable Function<Pointered, ?> partition;
   private final @Nullable ComponentRenderer<Pointered> renderer;
-  private @Nullable WeakReference<Pointered> lastData;
+  private @Nullable Object lastData;
   private @Nullable WrappedComponent lastRendered;
 
-  public WrappedComponent(final net.kyori.adventure.text.Component wrapped, final @Nullable ComponentRenderer<Pointered> renderer) {
+  public WrappedComponent(final net.kyori.adventure.text.Component wrapped, final @Nullable Function<Pointered, ?> partition, final @Nullable ComponentRenderer<Pointered> renderer) {
     this.wrapped = wrapped;
+    this.partition = partition;
     this.renderer = renderer;
   }
 
@@ -64,16 +66,26 @@ public final class WrappedComponent implements Component {
     return this.renderer;
   }
 
+  /**
+   * Partition to use to generate cache keys.
+   *
+   * @return the partition, if any
+   */
+  public @Nullable Function<Pointered, ?> partition() {
+    return this.partition;
+  }
+
   public net.kyori.adventure.text.Component wrapped() {
     return this.wrapped;
   }
 
-  public synchronized WrappedComponent rendered(final Pointered data) {
-    if (this.lastData != null && Objects.equals(data, this.lastData.get())) {
+  public synchronized WrappedComponent rendered(final Pointered ptr) {
+    final Object data = this.partition == null ? null : this.partition.apply(ptr);
+    if (this.lastData != null && Objects.equals(data, this.lastData)) {
       return this.lastRendered;
     }
-    this.lastData = new WeakReference<>(data);
-    return this.lastRendered = this.renderer == null ? this : new WrappedComponent(this.renderer.render(this.wrapped, data), null);
+    this.lastData = data;
+    return this.lastRendered = this.renderer == null ? this : new WrappedComponent(this.renderer.render(this.wrapped, ptr), null, null);
   }
 
   Component deepConverted() {
@@ -89,9 +101,10 @@ public final class WrappedComponent implements Component {
   Component deepConvertedLocalized() {
     Component converted = this.converted;
     final Pointered target = (Pointered) Minecraft.getInstance().player;
-    if (converted == null || this.deepConvertedLocalized != target) {
+    final Object data = this.partition == null ? null : this.partition.apply(target);
+    if (converted == null || this.deepConvertedLocalized != data) {
       converted = this.converted = this.rendered(target).deepConverted();
-      this.deepConvertedLocalized = target;
+      this.deepConvertedLocalized = data;
     }
     return converted;
   }
