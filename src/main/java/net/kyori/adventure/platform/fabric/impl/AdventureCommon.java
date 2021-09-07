@@ -24,20 +24,21 @@
 package net.kyori.adventure.platform.fabric.impl;
 
 import ca.stellardrift.colonel.api.ServerArgumentType;
-import io.netty.channel.Channel;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
+import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.platform.fabric.ComponentArgumentType;
 import net.kyori.adventure.platform.fabric.KeyArgumentType;
 import net.kyori.adventure.platform.fabric.PlayerLocales;
-import net.kyori.adventure.platform.fabric.impl.accessor.ConnectionAccess;
 import net.kyori.adventure.platform.fabric.impl.server.FabricServerAudiencesImpl;
-import net.kyori.adventure.platform.fabric.impl.server.FriendlyByteBufBridge;
+import net.kyori.adventure.pointer.Pointered;
+import net.kyori.adventure.pointer.Pointers;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.KeybindComponent;
 import net.kyori.adventure.text.TranslatableComponent;
@@ -140,11 +141,23 @@ public class AdventureCommon implements ModInitializer {
     }
 
     PlayerLocales.CHANGED_EVENT.register((player, locale) -> {
-      final Channel channel = ((ConnectionAccess) player.connection.getConnection()).getChannel();
-      channel.attr(FriendlyByteBufBridge.CHANNEL_LOCALE).set(locale);
       FabricServerAudiencesImpl.forEachInstance(instance -> {
         instance.bossBars().refreshTitles(player);
       });
     });
+  }
+
+  public static Function<Pointered, Locale> localePartition() {
+    return ptr -> ptr.getOrDefault(Identity.LOCALE, Locale.US);
+  }
+
+  public static Pointered pointered(final FPointered pointers) {
+    return pointers;
+  }
+
+  @FunctionalInterface
+  interface FPointered extends Pointered {
+    @Override
+    @NotNull Pointers pointers();
   }
 }

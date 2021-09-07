@@ -11,7 +11,6 @@ plugins {
 val versionMinecraft: String by project
 val versionAdventure: String by project
 val versionAdventurePlatform: String by project
-val versionAdventurePagination: String by project
 val versionLoader: String by project
 val versionFabricApi: String by project
 
@@ -32,7 +31,6 @@ dependencies {
   modApi(include(adventure("key", versionAdventure))!!)
   modApi(include(adventure("api", versionAdventure))!!)
   modApi(include(adventure("text-serializer-plain", versionAdventure))!!)
-  modApi(include(adventure("text-feature-pagination", versionAdventurePagination))!!)
   modApi(include(adventure("platform-api", versionAdventurePlatform)) {
     exclude("com.google.code.gson")
   })
@@ -63,7 +61,7 @@ tasks.sourcesJar {
   duplicatesStrategy = DuplicatesStrategy.EXCLUDE // duplicate package-info.java coming in from somewhere?
 }
 
-tasks.runClient {
+tasks.withType(net.fabricmc.loom.task.RunGameTask::class) {
   setClasspath(files(loom.unmappedModCollection, sourceSets.main.map { it.runtimeClasspath }))
 }
 

@@ -23,12 +23,13 @@
  */
 package net.kyori.adventure.platform.fabric.impl.client;
 
-import java.util.Locale;
+import java.util.function.Function;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.platform.fabric.FabricAudiences;
 import net.kyori.adventure.platform.fabric.FabricClientAudiences;
 import net.kyori.adventure.platform.fabric.impl.AdventureCommon;
 import net.kyori.adventure.platform.fabric.impl.WrappedComponent;
+import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.text.flattener.ComponentFlattener;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
 import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
@@ -40,11 +41,13 @@ import org.jetbrains.annotations.NotNull;
 import static java.util.Objects.requireNonNull;
 
 public class FabricClientAudiencesImpl implements FabricClientAudiences {
-  public static final FabricClientAudiences INSTANCE = new FabricClientAudiencesImpl(GlobalTranslator.renderer());
-  private final ComponentRenderer<Locale> renderer;
+  public static final FabricClientAudiences INSTANCE = new Builder().build();
+  private final Function<Pointered, ?> partition;
+  private final ComponentRenderer<Pointered> renderer;
   private final ClientAudience audience;
 
-  public FabricClientAudiencesImpl(final ComponentRenderer<Locale> renderer) {
+  public FabricClientAudiencesImpl(final Function<Pointered, ?> partition, final ComponentRenderer<Pointered> renderer) {
+    this.partition = partition;
     this.renderer = renderer;
     this.audience = new ClientAudience(Minecraft.getInstance(), this);
   }
@@ -66,13 +69,13 @@ public class FabricClientAudiencesImpl implements FabricClientAudiences {
   }
 
   @Override
-  public @NotNull ComponentRenderer<Locale> localeRenderer() {
+  public @NotNull ComponentRenderer<Pointered> renderer() {
     return this.renderer;
   }
 
   @Override
   public @NotNull Component toNative(final net.kyori.adventure.text.@NotNull Component adventure) {
-    return new WrappedComponent(requireNonNull(adventure, "adventure"), this.renderer);
+    return new WrappedComponent(requireNonNull(adventure, "adventure"), this.partition, this.renderer);
   }
 
   @Override
@@ -81,6 +84,36 @@ public class FabricClientAudiencesImpl implements FabricClientAudiences {
       return ((WrappedComponent) vanilla).wrapped();
     } else {
       return FabricAudiences.nonWrappingSerializer().deserialize(vanilla);
+    }
+  }
+
+  public Function<Pointered, ?> partition() {
+    return this.partition;
+  }
+
+  public static final class Builder implements FabricClientAudiences.Builder {
+    private Function<Pointered, ?> partition;
+    private ComponentRenderer<Pointered> renderer;
+
+    public Builder() {
+      this.componentRenderer(AdventureCommon.localePartition(), GlobalTranslator.renderer());
+    }
+
+    @Override
+    public FabricClientAudiences.@NotNull Builder componentRenderer(final @NotNull ComponentRenderer<Pointered> componentRenderer) {
+      this.renderer = requireNonNull(componentRenderer, "componentRenderer");
+      return this;
+    }
+
+    @Override
+    public FabricClientAudiences.@NotNull Builder partition(final @NotNull Function<Pointered, ?> partitionFunction) {
+      this.partition = requireNonNull(partitionFunction, "partitionFunction");
+      return this;
+    }
+
+    @Override
+    public @NotNull FabricClientAudiences build() {
+      return new FabricClientAudiencesImpl(this.partition, this.renderer);
     }
   }
 }

@@ -33,7 +33,9 @@ import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.platform.fabric.FabricServerAudiences;
 import net.kyori.adventure.platform.fabric.PlayerLocales;
 import net.kyori.adventure.platform.fabric.impl.LocaleHolderBridge;
+import net.kyori.adventure.platform.fabric.impl.accessor.ConnectionAccess;
 import net.kyori.adventure.platform.fabric.impl.server.FabricServerAudiencesImpl;
+import net.kyori.adventure.platform.fabric.impl.server.FriendlyByteBufBridge;
 import net.kyori.adventure.platform.fabric.impl.server.RenderableAudience;
 import net.kyori.adventure.platform.fabric.impl.server.ServerPlayerAudience;
 import net.kyori.adventure.platform.fabric.impl.server.ServerPlayerBridge;
@@ -75,7 +77,7 @@ public abstract class ServerPlayerMixin extends PlayerMixin implements Forwardin
   }
 
   @Inject(method = "<init>", at = @At("TAIL"))
-  private void applyBacking(final CallbackInfo ci) {
+  private void adventure$init(final CallbackInfo ci) {
     this.adventure$backing = FabricServerAudiences.of(this.server).audience(this);
   }
 
@@ -130,11 +132,12 @@ public abstract class ServerPlayerMixin extends PlayerMixin implements Forwardin
     }
   }
 
-  // Player tracking for boss bars
+  // Player tracking for boss bars and rendering
 
   @Inject(method = "restoreFrom", at = @At("RETURN"))
-  private void adventure$copyBossBars(final ServerPlayer old, final boolean alive, final CallbackInfo ci) {
+  private void copyData(final ServerPlayer old, final boolean alive, final CallbackInfo ci) {
     FabricServerAudiencesImpl.forEachInstance(controller -> controller.bossBars().replacePlayer(old, (ServerPlayer) (Object) this));
+    ((ConnectionAccess) this.connection.connection).getChannel().attr(FriendlyByteBufBridge.CHANNEL_RENDER_DATA).set(this);
   }
 
   @Inject(method = "disconnect", at = @At("RETURN"))

@@ -23,32 +23,34 @@
  */
 package net.kyori.adventure.platform.fabric.impl.mixin.client;
 
-import com.mojang.authlib.GameProfile;
 import java.util.Locale;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
+import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.platform.fabric.FabricClientAudiences;
 import net.kyori.adventure.platform.fabric.impl.LocaleHolderBridge;
+import net.kyori.adventure.platform.fabric.impl.mixin.PlayerMixin;
 import net.kyori.adventure.pointer.Pointers;
 import net.kyori.adventure.sound.Sound;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(LocalPlayer.class)
-public abstract class LocalPlayerMixin extends AbstractClientPlayer implements ForwardingAudience.Single, LocaleHolderBridge {
+public abstract class LocalPlayerMixin extends PlayerMixin implements ForwardingAudience.Single, LocaleHolderBridge {
   // @formatter:off
   @Shadow @Final protected Minecraft minecraft;
   // @formatter:on
 
   // TODO: Do we want to enforce synchronization with the client thread?
-  private LocalPlayerMixin(final ClientLevel level, final GameProfile profile) { // mixin will strip
-    super(level, profile);
+  private LocalPlayerMixin(final EntityType<? extends LivingEntity> type, final Level level) { // mixin will strip
+    super(type, level);
   }
 
   private final Audience adventure$default = FabricClientAudiences.of().audience();
@@ -71,5 +73,10 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayer implements F
   @Override
   public @NotNull Locale adventure$locale() {
     return ((LocaleHolderBridge) this.minecraft.options).adventure$locale();
+  }
+
+  @Override
+  protected void adventure$populateExtraPointers(final Pointers.Builder builder) {
+    builder.withDynamic(Identity.LOCALE, this::adventure$locale);
   }
 }

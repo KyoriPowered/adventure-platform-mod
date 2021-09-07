@@ -25,11 +25,11 @@ package net.kyori.adventure.platform.fabric.impl.server;
 
 import com.google.common.collect.Iterables;
 import java.util.Collections;
-import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
 import java.util.WeakHashMap;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.fabric.AdventureCommandSourceStack;
@@ -39,10 +39,12 @@ import net.kyori.adventure.platform.fabric.impl.AdventureCommandSourceStackInter
 import net.kyori.adventure.platform.fabric.impl.AdventureCommon;
 import net.kyori.adventure.platform.fabric.impl.WrappedComponent;
 import net.kyori.adventure.platform.fabric.impl.accessor.ComponentSerializerAccess;
+import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.flattener.ComponentFlattener;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
 import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
+import net.kyori.adventure.translation.GlobalTranslator;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.Registry;
@@ -76,11 +78,13 @@ public final class FabricServerAudiencesImpl implements FabricServerAudiences {
   }
 
   private final MinecraftServer server;
-  private final ComponentRenderer<Locale> renderer;
+  private final Function<Pointered, ?> partition;
+  private final ComponentRenderer<Pointered> renderer;
   final ServerBossBarListener bossBars;
 
-  public FabricServerAudiencesImpl(final MinecraftServer server, final ComponentRenderer<Locale> renderer) {
+  public FabricServerAudiencesImpl(final MinecraftServer server, final Function<Pointered, ?> partition, final ComponentRenderer<Pointered> renderer) {
     this.server = server;
+    this.partition = partition;
     this.renderer = renderer;
     this.bossBars = new ServerBossBarListener(this);
     synchronized (INSTANCES) {
@@ -171,7 +175,7 @@ public final class FabricServerAudiencesImpl implements FabricServerAudiences {
   }
 
   @Override
-  public @NotNull ComponentRenderer<Locale> localeRenderer() {
+  public @NotNull ComponentRenderer<Pointered> renderer() {
     return this.renderer;
   }
 
@@ -179,7 +183,7 @@ public final class FabricServerAudiencesImpl implements FabricServerAudiences {
   public net.minecraft.network.chat.@NotNull Component toNative(final @NotNull Component adventure) {
     if (adventure == Component.empty()) return TextComponent.EMPTY;
 
-    return new WrappedComponent(requireNonNull(adventure, "adventure"), this.renderer);
+    return new WrappedComponent(requireNonNull(adventure, "adventure"), this.partition, this.renderer);
   }
 
   @Override
@@ -197,5 +201,33 @@ public final class FabricServerAudiencesImpl implements FabricServerAudiences {
 
   @Override
   public void close() {
+  }
+
+  public static final class Builder implements FabricServerAudiences.Builder {
+    private final MinecraftServer server;
+    private Function<Pointered, ?> partition;
+    private ComponentRenderer<Pointered> renderer;
+
+    public Builder(final MinecraftServer server) {
+      this.server = server;
+      this.componentRenderer(AdventureCommon.localePartition(), GlobalTranslator.renderer());
+    }
+
+    @Override
+    public @NotNull FabricServerAudiences.Builder componentRenderer(final @NotNull ComponentRenderer<Pointered> componentRenderer) {
+      this.renderer = requireNonNull(componentRenderer, "componentRenderer");
+      return this;
+    }
+
+    @Override
+    public @NotNull FabricServerAudiences.Builder partition(final @NotNull Function<Pointered, ?> partitionFunction) {
+      this.partition = requireNonNull(partitionFunction, "partitionFunction");
+      return this;
+    }
+
+    @Override
+    public @NotNull FabricServerAudiencesImpl build() {
+      return new FabricServerAudiencesImpl(this.server, this.partition, this.renderer);
+    }
   }
 }

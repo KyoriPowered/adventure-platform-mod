@@ -27,11 +27,15 @@ import com.google.common.collect.MapMaker;
 import java.util.Map;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
+import net.kyori.adventure.identity.Identity;
+import net.kyori.adventure.permission.PermissionChecker;
 import net.kyori.adventure.platform.fabric.FabricAudiences;
 import net.kyori.adventure.platform.fabric.FabricServerAudiences;
 import net.kyori.adventure.platform.fabric.impl.server.FabricServerAudiencesImpl;
 import net.kyori.adventure.platform.fabric.impl.server.PlainAudience;
 import net.kyori.adventure.platform.fabric.impl.server.RenderableAudience;
+import net.kyori.adventure.pointer.Pointers;
+import net.kyori.adventure.util.TriState;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.rcon.RconConsoleSource;
 import org.jetbrains.annotations.NotNull;
@@ -46,15 +50,31 @@ public abstract class RconConsoleSourceMixin implements RenderableAudience, Forw
   @Shadow @Final private MinecraftServer server;
   // @formatter:off
 
+  private volatile Pointers adventure$pointers;
   private final Map<FabricAudiences, Audience> adventure$renderers = new MapMaker().weakKeys().makeMap();
 
   @Override
   public Audience renderUsing(final FabricServerAudiencesImpl controller) {
-    return this.adventure$renderers.computeIfAbsent(controller, ctrl -> new PlainAudience(ctrl, this.buffer::append));
+    return this.adventure$renderers.computeIfAbsent(controller, ctrl -> new PlainAudience(ctrl, this, this.buffer::append));
   }
 
   @Override
   public @NotNull Audience audience() {
     return FabricServerAudiences.of(this.server).audience((RconConsoleSource) (Object) this);
+  }
+
+  @Override
+  public @NotNull Pointers pointers() {
+    if (this.adventure$pointers == null) {
+      synchronized (this) {
+        if (this.adventure$pointers == null) {
+          return this.adventure$pointers = Pointers.builder()
+            .withStatic(Identity.NAME, "Server")
+            .withStatic(PermissionChecker.POINTER, perm -> TriState.TRUE)
+            .build();
+        }
+      }
+    }
+    return this.adventure$pointers;
   }
 }

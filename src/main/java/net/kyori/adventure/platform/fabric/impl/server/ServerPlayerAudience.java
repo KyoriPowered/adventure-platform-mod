@@ -24,7 +24,6 @@
 package net.kyori.adventure.platform.fabric.impl.server;
 
 import java.time.Duration;
-import java.util.Locale;
 import java.util.Objects;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.bossbar.BossBar;
@@ -34,7 +33,6 @@ import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.fabric.FabricAudiences;
 import net.kyori.adventure.platform.fabric.impl.GameEnums;
 import net.kyori.adventure.platform.fabric.impl.PointerProviderBridge;
-import net.kyori.adventure.platform.fabric.impl.accessor.ConnectionAccess;
 import net.kyori.adventure.pointer.Pointers;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.SoundStop;
@@ -196,13 +194,11 @@ public final class ServerPlayerAudience implements Audience {
   }
 
   private String adventure$plain(final @NotNull Component component) {
-    final Locale locale = ((ConnectionAccess) this.player.connection.getConnection()).getChannel().attr(FriendlyByteBufBridge.CHANNEL_LOCALE).get();
-    return PlainTextComponentSerializer.plainText().serialize(this.controller.localeRenderer().render(component, locale == null ? Locale.getDefault() : locale));
+    return PlainTextComponentSerializer.plainText().serialize(this.controller.renderer().render(component, this));
   }
 
   private String adventure$serialize(final @NotNull Component component) {
-    final Locale locale = ((ConnectionAccess) this.player.connection.getConnection()).getChannel().attr(FriendlyByteBufBridge.CHANNEL_LOCALE).get();
-    return GsonComponentSerializer.gson().serialize(this.controller.localeRenderer().render(component, locale == null ? Locale.getDefault() : locale));
+    return GsonComponentSerializer.gson().serialize(this.controller.renderer().render(component, this));
   }
 
   @Override

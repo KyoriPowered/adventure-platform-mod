@@ -23,30 +23,26 @@
  */
 package net.kyori.adventure.platform.fabric.impl.mixin;
 
-import net.kyori.adventure.platform.fabric.impl.WrappedComponent;
+import net.kyori.adventure.platform.fabric.impl.accessor.ConnectionAccess;
 import net.kyori.adventure.platform.fabric.impl.server.FriendlyByteBufBridge;
 import net.kyori.adventure.pointer.Pointered;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.Component;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.network.Connection;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(FriendlyByteBuf.class)
-public class FriendlyByteBufMixin implements FriendlyByteBufBridge {
-  private @Nullable Pointered adventure$data;
+@Mixin(ServerGamePacketListenerImpl.class)
+public class ServerGamePacketListenerImplMixin {
 
-  @ModifyVariable(method = "writeComponent", at = @At("HEAD"), argsOnly = true)
-  private Component adventure$localizeComponent(final Component input) {
-    if (this.adventure$data != null && input instanceof WrappedComponent) {
-      return ((WrappedComponent) input).rendered(this.adventure$data);
-    }
-    return input;
-  }
-
-  @Override
-  public void adventure$data(final @Nullable Pointered data) {
-    this.adventure$data = data;
+  // Initialize attribute tracking the player for component rendering
+  @Inject(method = "<init>", at = @At(value = "FIELD", target = "Lnet/minecraft/server/level/ServerPlayer;connection:Lnet/minecraft/server/network/ServerGamePacketListenerImpl;", opcode = Opcodes.PUTFIELD))
+  private void adventure$initTracking(final MinecraftServer server, final Connection conn, final ServerPlayer player, final CallbackInfo ci) {
+    ((ConnectionAccess) conn).getChannel().attr(FriendlyByteBufBridge.CHANNEL_RENDER_DATA)
+      .set((Pointered) player);
   }
 }

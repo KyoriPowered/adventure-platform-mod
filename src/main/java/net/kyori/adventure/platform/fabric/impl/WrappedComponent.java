@@ -24,12 +24,14 @@
 package net.kyori.adventure.platform.fabric.impl;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.kyori.adventure.platform.fabric.FabricAudiences;
+import net.kyori.adventure.pointer.Pointered;
+import net.kyori.adventure.pointer.Pointers;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
@@ -42,14 +44,16 @@ import org.jetbrains.annotations.Nullable;
 
 public final class WrappedComponent implements Component {
   private Component converted;
-  private @Nullable Locale deepConvertedLocalized = null;
+  private @Nullable Object deepConvertedLocalized = null;
   private final net.kyori.adventure.text.Component wrapped;
-  private final @Nullable ComponentRenderer<Locale> renderer;
-  private @Nullable Locale lastLocale;
+  private final @Nullable Function<Pointered, ?> partition;
+  private final @Nullable ComponentRenderer<Pointered> renderer;
+  private @Nullable Object lastData;
   private @Nullable WrappedComponent lastRendered;
 
-  public WrappedComponent(final net.kyori.adventure.text.Component wrapped, final @Nullable ComponentRenderer<Locale> renderer) {
+  public WrappedComponent(final net.kyori.adventure.text.Component wrapped, final @Nullable Function<Pointered, ?> partition, final @Nullable ComponentRenderer<Pointered> renderer) {
     this.wrapped = wrapped;
+    this.partition = partition;
     this.renderer = renderer;
   }
 
@@ -58,20 +62,30 @@ public final class WrappedComponent implements Component {
    *
    * @return the renderer, if any
    */
-  public @Nullable ComponentRenderer<Locale> renderer() {
+  public @Nullable ComponentRenderer<Pointered> renderer() {
     return this.renderer;
+  }
+
+  /**
+   * Partition to use to generate cache keys.
+   *
+   * @return the partition, if any
+   */
+  public @Nullable Function<Pointered, ?> partition() {
+    return this.partition;
   }
 
   public net.kyori.adventure.text.Component wrapped() {
     return this.wrapped;
   }
 
-  public synchronized WrappedComponent rendered(final Locale locale) {
-    if (Objects.equals(locale, this.lastLocale)) {
+  public synchronized WrappedComponent rendered(final Pointered ptr) {
+    final Object data = this.partition == null ? null : this.partition.apply(ptr);
+    if (this.lastData != null && Objects.equals(data, this.lastData)) {
       return this.lastRendered;
     }
-    this.lastLocale = locale;
-    return this.lastRendered = this.renderer == null ? this : new WrappedComponent(this.renderer.render(this.wrapped, locale), null);
+    this.lastData = data;
+    return this.lastRendered = this.renderer == null ? this : new WrappedComponent(this.renderer.render(this.wrapped, ptr), null, null);
   }
 
   Component deepConverted() {
@@ -86,10 +100,11 @@ public final class WrappedComponent implements Component {
   @Environment(EnvType.CLIENT)
   Component deepConvertedLocalized() {
     Component converted = this.converted;
-    final Locale target = ((LocaleHolderBridge) Minecraft.getInstance().options).adventure$locale();
-    if (converted == null || this.deepConvertedLocalized != target) {
+    final Pointered target = (Pointered) Minecraft.getInstance().player;
+    final Object data = this.partition == null ? null : this.partition.apply(target);
+    if (converted == null || this.deepConvertedLocalized != data) {
       converted = this.converted = this.rendered(target).deepConverted();
-      this.deepConvertedLocalized = target;
+      this.deepConvertedLocalized = data;
     }
     return converted;
   }
@@ -105,7 +120,7 @@ public final class WrappedComponent implements Component {
 
   @Override
   public String getString() {
-    return PlainTextComponentSerializer.plainText().serialize(this.rendered(Locale.getDefault()).wrapped);
+    return PlainTextComponentSerializer.plainText().serialize(this.rendered(AdventureCommon.pointered(Pointers::empty)).wrapped);
   }
 
   @Override
