@@ -160,7 +160,6 @@ public interface FabricAudiences {
    * @param player the player to identify
    * @return an identified representation of the player
    * @since 4.0.0
-   *
    */
   static @NotNull Identified identified(final @NotNull Player player) {
     return (Identified) player;
