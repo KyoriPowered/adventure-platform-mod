@@ -1,7 +1,6 @@
 {
   "required": true,
   "package": "net.kyori.adventure.platform.fabric.impl.accessor",
-  "refmap": "adventure-platform-fabric-accessor-refmap.json",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
     "ComponentSerializerAccess",
