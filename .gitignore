@@ -8,6 +8,13 @@ run/
 *.iml
 *.ipr
 
+# Eclipse
+/.settings/
+/.classpath
+/.factorypath
+/bin/
+*.launch
+
 # macOS
 
 .DS_Store
