@@ -124,7 +124,7 @@ public abstract class ServerPlayerMixin extends PlayerMixin implements Forwardin
 
   @Inject(method = "updateOptions", at = @At("HEAD"))
   private void adventure$handleLocaleUpdate(final ServerboundClientInformationPacket information, final CallbackInfo ci) {
-    final String language = information.getLanguage();
+    final String language = information.language();
     final @Nullable Locale locale = LocaleHolderBridge.toLocale(language);
     if (!Objects.equals(this.adventure$locale, locale)) {
       this.adventure$locale = locale;

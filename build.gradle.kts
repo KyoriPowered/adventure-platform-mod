@@ -31,7 +31,11 @@ repositories {
 }
 
 indra {
-  javaVersions().target(16)
+  javaVersions().target(17)
+}
+
+license {
+  header(file("LICENSE_HEADER"))
 }
 
 dependencies {
