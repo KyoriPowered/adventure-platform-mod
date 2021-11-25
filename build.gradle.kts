@@ -1,11 +1,11 @@
 import ca.stellardrift.build.configurate.ConfigFormats
 import ca.stellardrift.build.configurate.transformations.convertFormat
+import net.fabricmc.loom.task.RunGameTask
 import net.kyori.indra.repository.sonatypeSnapshots
 
 plugins {
   val indraVersion = "2.0.6"
   id("fabric-loom") version "0.10-SNAPSHOT"
-  // id("ca.stellardrift.opinionated.fabric") version "5.0.0"
   id("ca.stellardrift.configurate-transformations") version "5.0.0"
   id("net.kyori.indra") version indraVersion
   id("net.kyori.indra.license-header") version indraVersion
@@ -72,10 +72,6 @@ dependencies {
   checkstyle("ca.stellardrift:stylecheck:0.1")
 }
 
-/*tasks.sourcesJar {
-  duplicatesStrategy = DuplicatesStrategy.EXCLUDE // duplicate package-info.java coming in from somewhere?
-}*/
-
 // tasks.withType(net.fabricmc.loom.task.RunGameTask::class) {
 //   setClasspath(files(loom.unmappedModCollection, sourceSets.main.map { it.runtimeClasspath }))
 // }
@@ -94,6 +90,8 @@ sourceSets {
   register("testmod") {
     compileClasspath += main.get().compileClasspath
     runtimeClasspath += main.get().runtimeClasspath
+    java.srcDirs("src/testmodMixin/java")
+    resources.srcDirs("src/testmodMixin/resources")
   }
 }
 
@@ -101,7 +99,22 @@ dependencies {
   "testmodImplementation"(sourceSets.main.map { it.output })
 }
 
-// todo: restore testmod
+loom {
+  runs {
+    register("testmodClient") {
+      source("testmod")
+      client()
+    }
+    register("testmodServer") {
+      source("testmod")
+      server()
+    }
+  }
+}
+
+tasks.withType(RunGameTask::class) {
+  javaLauncher.set(javaToolchains.launcherFor { languageVersion.set(indra.javaVersions().target().map { v -> JavaLanguageVersion.of(v) })})
+}
 
 // Convert yaml files to josn
 tasks.withType(ProcessResources::class.java).configureEach {
@@ -158,5 +171,13 @@ indra {
         }
       }
     }
+  }
+}
+
+// Workaround for both loom and indra doing publication logic in an afterEvaluate :(
+indra.includeJavaSoftwareComponentInPublications(false)
+publishing {
+  publications.named("maven", MavenPublication::class) {
+   from(components["java"])
   }
 }
