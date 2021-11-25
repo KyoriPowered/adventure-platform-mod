@@ -14,12 +14,13 @@ Minecraft Version | `adventure-platform-fabric` version
 ----------------- | ------------------------------------
 1.16.x            | `4.0.0-SNAPSHOT`
 1.17.x            | `4.1.0-SNAPSHOT`
+1.18.x            | `5.0.0-SNAPSHOT`
 
 ### Contributing
 
-We appreciate contributions of any type. For any new features or typo-fix/style changes, please open an issue or come talk to us in our [Discord] first so we make sure you're going in the right direction for the project.
+We appreciate contributions of any type. For any new features or typo-fix/style changes, please open an issue or come talk to us in our [Discord] first, so we make sure you're going in the right direction for the project.
 
-All the adventure projects are built with Gradle, require at least JDK 8, and use a common checkstyle configuration. Please make sure all tests pass, license headers are updated, and checkstyle passes to help us review your contribution.
+All the adventure projects are built with Gradle and use a common checkstyle configuration. `adventure-platform-fabric` requires the same Java version that Minecraft itself does in the target version. Please make sure all tests pass, license headers are updated, and checkstyle passes to help us review your contribution.
 
 `adventure-platform-fabric` is released under the terms of the [MIT License](LICENSE).
 
