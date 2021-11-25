@@ -23,13 +23,10 @@
  */
 package net.kyori.adventure.platform.fabric;
 
-import java.util.Locale;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.platform.AudienceProvider;
-import net.kyori.adventure.platform.fabric.impl.AdventureCommon;
 import net.kyori.adventure.platform.fabric.impl.server.FabricServerAudiencesImpl;
 import net.kyori.adventure.platform.fabric.impl.server.MinecraftServerBridge;
-import net.kyori.adventure.text.renderer.ComponentRenderer;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.MinecraftServer;
@@ -66,24 +63,6 @@ public interface FabricServerAudiences extends AudienceProvider, FabricAudiences
    */
   static FabricServerAudiences.@NotNull Builder builder(final @NotNull MinecraftServer server) {
     return new FabricServerAudiencesImpl.Builder(requireNonNull(server, "server"));
-  }
-
-  /**
-   * Get a customized audience provider for the server.
-   *
-   * <p>This provider will render messages using the global translation registry.</p>
-   *
-   * @param server server to work in
-   * @param renderer renderer for messages.
-   * @return new audience provider
-   * @since 4.0.0
-   * @deprecated for removal, use {@link #builder(MinecraftServer)} instead
-   */
-  @Deprecated
-  static @NotNull FabricServerAudiences of(final @NotNull MinecraftServer server, final @NotNull ComponentRenderer<Locale> renderer) {
-    return FabricServerAudiences.builder(server)
-      .componentRenderer(AdventureCommon.localePartition(), renderer)
-      .build();
   }
 
   /**

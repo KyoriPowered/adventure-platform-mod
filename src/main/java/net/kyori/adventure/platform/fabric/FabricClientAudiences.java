@@ -23,10 +23,8 @@
  */
 package net.kyori.adventure.platform.fabric;
 
-import java.util.Locale;
 import java.util.function.Function;
 import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.platform.fabric.impl.AdventureCommon;
 import net.kyori.adventure.platform.fabric.impl.client.FabricClientAudiencesImpl;
 import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
@@ -57,21 +55,6 @@ public interface FabricClientAudiences extends FabricAudiences {
    */
   static @NotNull FabricClientAudiences.Builder builder() {
     return new FabricClientAudiencesImpl.Builder();
-  }
-
-  /**
-   * Get an audience provider that will render using the provided renderer.
-   *
-   * @param renderer Renderer to use
-   * @return new audience provider
-   * @since 4.0.0
-   * @deprecated for removal, use {@link #builder()} instead
-   */
-  @Deprecated
-  static @NotNull FabricClientAudiences of(final @NotNull ComponentRenderer<Locale> renderer) {
-    return FabricClientAudiences.builder()
-      .componentRenderer(AdventureCommon.localePartition(), renderer)
-      .build();
   }
 
   /**

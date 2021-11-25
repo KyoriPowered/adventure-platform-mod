@@ -43,7 +43,6 @@ import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.flattener.ComponentFlattener;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
-import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
 import net.kyori.adventure.translation.GlobalTranslator;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
@@ -166,12 +165,6 @@ public final class FabricServerAudiencesImpl implements FabricServerAudiences {
   @Override
   public @NotNull ComponentFlattener flattener() {
     return AdventureCommon.FLATTENER;
-  }
-
-  @Override
-  @Deprecated
-  public @NotNull PlainComponentSerializer plainSerializer() {
-    return PlainComponentSerializer.plain();
   }
 
   @Override

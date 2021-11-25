@@ -38,9 +38,6 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.flattener.ComponentFlattener;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
 import net.kyori.adventure.text.serializer.ComponentSerializer;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
-import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -141,20 +138,6 @@ public interface FabricAudiences {
   }
 
   /**
-   * Get the appropriate Gson component serializer for the running game version.
-   *
-   * <p>This can be used to convert components to their JSON representation.</p>
-   *
-   * @return the appropriate serializer
-   * @since 4.0.0
-   * @deprecated for removal, use {@link GsonComponentSerializer#gson()} instead.
-   */
-  @Deprecated
-  static @NotNull GsonComponentSerializer gsonSerializer() {
-    return GsonComponentSerializer.gson();
-  }
-
-  /**
    * Get a {@link Player} identified by their profile's {@link java.util.UUID}.
    *
    * @param player the player to identify
@@ -183,16 +166,6 @@ public interface FabricAudiences {
    * @since 4.0.0
    */
   @NotNull ComponentFlattener flattener();
-
-  /**
-   * Return a {@link PlainComponentSerializer} instance that can resolve key bindings and translations using the game's data.
-   *
-   * @return the plain serializer instance
-   * @since 4.0.0
-   * @deprecated for removal since 4.0.0, use {@link PlainTextComponentSerializer#plainText()} instead. Will be removed in 1.18 snapshots.
-   */
-  @Deprecated
-  @NotNull PlainComponentSerializer plainSerializer();
 
   /**
    * Active renderer to render components.
