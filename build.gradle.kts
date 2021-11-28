@@ -15,7 +15,7 @@ val versionLoader: String by project
 val versionFabricApi: String by project
 
 group = "net.kyori"
-version = "4.1.0-SNAPSHOT"
+version = "4.1.0"
 description = "Integration between the adventure library and Minecraft: Java Edition, using the Fabric modding system"
 
 repositories {
