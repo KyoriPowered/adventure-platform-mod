@@ -67,8 +67,12 @@ dependencies {
   modImplementation("net.fabricmc:fabric-loader:$versionLoader")
 
   // Testmod TODO figure out own scope
-  // modImplementation("net.fabricmc.fabric-api:fabric-api:$versionFabricApi")
-  modCompileOnly("net.fabricmc.fabric-api:fabric-api:$versionFabricApi")
+  val api = "net.fabricmc.fabric-api:fabric-api:$versionFabricApi"
+  if (gradle.startParameter.taskNames.contains("publish")) {
+    modCompileOnly(api)
+  } else {
+    modImplementation(api)
+  }
 
   checkstyle("ca.stellardrift:stylecheck:0.1")
 }
