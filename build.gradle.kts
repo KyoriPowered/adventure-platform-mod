@@ -16,6 +16,7 @@ val versionFabricApi: String by project
 
 group = "net.kyori"
 version = "4.1.0-SNAPSHOT"
+description = "Integration between the adventure library and Minecraft: Java Edition, using the Fabric modding system"
 
 repositories {
   mavenCentral()
@@ -51,8 +52,8 @@ dependencies {
   modImplementation("net.fabricmc:fabric-loader:$versionLoader")
 
   // Testmod TODO figure out own scope
-  modImplementation("net.fabricmc.fabric-api:fabric-api:$versionFabricApi")
-  // modRuntime("net.fabricmc.fabric-api:fabric-api:$versionFabricApi")
+  // modImplementation("net.fabricmc.fabric-api:fabric-api:$versionFabricApi")
+  modCompileOnly("net.fabricmc.fabric-api:fabric-api:$versionFabricApi")
 
   checkstyle("ca.stellardrift:stylecheck:0.1")
 }
