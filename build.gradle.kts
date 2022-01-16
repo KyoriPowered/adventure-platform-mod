@@ -16,7 +16,10 @@ plugins {
 
 val versionAdventure: String by project
 val versionAdventurePlatform: String by project
+val versionColonel: String by project
+val versionExamination: String by project
 val versionFabricApi: String by project
+val versionJetbrainsAnnotations: String by project
 val versionLoader: String by project
 val versionMinecraft: String by project
 val versionParchment: String by project
@@ -64,11 +67,11 @@ dependencies {
   modApi(fabricApi.module("fabric-api-base", versionFabricApi))
 
   // Transitive deps
-  include("net.kyori:examination-api:1.3.0")
-  include("net.kyori:examination-string:1.3.0")
-  modCompileOnly("org.jetbrains:annotations:22.0.0")
+  include("net.kyori:examination-api:$versionExamination")
+  include("net.kyori:examination-string:$versionExamination")
+  modCompileOnly("org.jetbrains:annotations:$versionJetbrainsAnnotations")
 
-  modImplementation("ca.stellardrift:colonel:0.2.1")
+  modImplementation("ca.stellardrift:colonel:$versionColonel")
 
   minecraft("com.mojang:minecraft:$versionMinecraft")
   mappings(loom.layered {
