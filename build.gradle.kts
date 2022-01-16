@@ -22,7 +22,7 @@ val versionMinecraft: String by project
 val versionParchment: String by project
 
 group = "net.kyori"
-version = "5.0.1-SNAPSHOT"
+version = "5.1.0-SNAPSHOT"
 description = "Integration between the adventure library and Minecraft: Java Edition, using the Fabric modding system"
 
 repositories {
