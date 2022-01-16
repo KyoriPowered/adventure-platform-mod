@@ -6,6 +6,7 @@ import net.kyori.indra.repository.sonatypeSnapshots
 plugins {
   val indraVersion = "2.0.6"
   id("fabric-loom") version "0.10-SNAPSHOT"
+  id("io.github.juuxel.loom-quiltflower-mini") version "1.2.1"
   id("ca.stellardrift.configurate-transformations") version "5.0.0"
   id("net.kyori.indra") version indraVersion
   id("net.kyori.indra.license-header") version indraVersion
@@ -13,11 +14,12 @@ plugins {
   id("net.kyori.indra.publishing.sonatype") version indraVersion
 }
 
-val versionMinecraft: String by project
 val versionAdventure: String by project
 val versionAdventurePlatform: String by project
-val versionLoader: String by project
 val versionFabricApi: String by project
+val versionLoader: String by project
+val versionMinecraft: String by project
+val versionParchment: String by project
 
 group = "net.kyori"
 version = "5.0.1-SNAPSHOT"
@@ -29,6 +31,15 @@ repositories {
   maven(url = "https://maven.parchmentmc.org/") {
     name = "parchment"
   }
+}
+
+quiltflower {
+  addToRuntimeClasspath.set(true)
+}
+
+// LOOM!
+tasks.withType(net.fabricmc.loom.task.GenerateSourcesTask::class).matching { it.name == "genSourcesWithQuiltflower" }.configureEach {
+  options.put("win", "0")
 }
 
 indra {
@@ -62,7 +73,7 @@ dependencies {
   minecraft("com.mojang:minecraft:$versionMinecraft")
   mappings(loom.layered {
     officialMojangMappings()
-    // parchment("org.parchmentmc.data:parchment-1.17.1:2021.10.24@zip") // not published for snapshots
+    parchment("org.parchmentmc.data:parchment-$versionParchment@zip")
   })
   modImplementation("net.fabricmc:fabric-loader:$versionLoader")
 
