@@ -57,6 +57,7 @@ dependencies {
   modApi(include("net.kyori:adventure-key:$versionAdventure")!!)
   modApi(include("net.kyori:adventure-api:$versionAdventure")!!)
   modApi(include("net.kyori:adventure-text-serializer-plain:$versionAdventure")!!)
+  modApi(include("net.kyori:adventure-text-minimessage:$versionAdventure")!!)
   modApi(include("net.kyori:adventure-platform-api:$versionAdventurePlatform") {
     exclude("com.google.code.gson")
   })

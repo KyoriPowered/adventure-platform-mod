@@ -31,11 +31,15 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Set;
+import java.util.List;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.fabric.impl.accessor.ComponentSerializerAccess;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.util.Index;
 import net.minecraft.commands.arguments.ComponentArgument;
 import org.jetbrains.annotations.NotNull;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * An argument that takes JSON-format text.
@@ -47,21 +51,19 @@ import org.jetbrains.annotations.NotNull;
  * @since 4.0.0
  */
 public final class ComponentArgumentType implements ArgumentType<Component> {
-
-  private static final ComponentArgumentType INSTANCE = new ComponentArgumentType();
-  private static final Set<String> EXAMPLES = Set.of(
-    "\"Hello world!\"",
-    "[\"Message\", {\"text\": \"example\", \"color\": \"#aabbcc\"}]"
-  );
+  private static final ComponentArgumentType JSON_INSTANCE = new ComponentArgumentType(Format.JSON);
+  private static final ComponentArgumentType MINIMESSAGE_INSTANCE = new ComponentArgumentType(Format.MINIMESSAGE);
 
   /**
    * Get the argument type for component arguments.
    *
    * @return argument type instance
    * @since 4.0.0
+   * @deprecated use {@link #json()} or {@link #miniMessage()} instead.
    */
+  @Deprecated(forRemoval = true, since = "5.1.0")
   public static @NotNull ComponentArgumentType component() {
-    return INSTANCE;
+    return JSON_INSTANCE;
   }
 
   /**
@@ -76,7 +78,44 @@ public final class ComponentArgumentType implements ArgumentType<Component> {
     return ctx.getArgument(key, Component.class);
   }
 
-  private ComponentArgumentType() {
+  /**
+   * Get the argument type for component arguments in JSON format.
+   *
+   * @return argument type instance
+   * @since 5.1.0
+   */
+  public static @NotNull ComponentArgumentType json() {
+    return JSON_INSTANCE;
+  }
+
+  /**
+   * Get the argument type for component arguments in MiniMessage format.
+   *
+   * @return argument type instance
+   * @since 5.1.0
+   */
+  public static @NotNull ComponentArgumentType miniMessage() {
+    return MINIMESSAGE_INSTANCE;
+  }
+
+  /**
+   * Get an argument type for component arguments.
+   *
+   * @param format the format to use when parsing component text
+   * @return an argument type
+   * @since 5.1.0
+   */
+  public static @NotNull ComponentArgumentType component(final @NotNull Format format) {
+    return switch (format) {
+      case JSON -> JSON_INSTANCE;
+      case MINIMESSAGE -> MINIMESSAGE_INSTANCE;
+    };
+  }
+
+  private final Format format;
+
+  private ComponentArgumentType(final Format format) {
+    this.format = requireNonNull(format, "format");
   }
 
   @Override
@@ -93,7 +132,62 @@ public final class ComponentArgumentType implements ArgumentType<Component> {
 
   @Override
   public @NotNull Collection<String> getExamples() {
-    return EXAMPLES;
+    return this.format.examples();
   }
 
+  /**
+   * {@return the format used for this argument}.
+   *
+   * @since 4.1.0
+   */
+  public @NotNull Format format() {
+    return this.format;
+  }
+
+  /**
+   * Supported text formats for registering components.
+   *
+   * @since 5.1.0
+   */
+  public enum Format {
+    JSON(
+      Key.key("adventure", "json"),
+      "\"Hello world!\"",
+      "[\"Message\", {\"text\": \"example\", \"color\": \"#aabbcc\"}]"
+    ),
+    MINIMESSAGE(
+      Key.key("adventure", "minimessage"),
+      "<rainbow>hello world!",
+      "hello <bold>everyone</bold> here!",
+      "hello <hover:show_text:'sneak sneak'>everyone</hover> who likes <blue>cats"
+    );
+
+    public static final Index<Key, Format> INDEX = Index.create(Format.class, Format::id);
+
+    private final Key id;
+    private final List<String> examples;
+
+    Format(final Key id, final String... examples) {
+      this.id = id;
+      this.examples = List.of(examples);
+    }
+
+    /**
+     * {@return a unique identifier for this format}.
+     *
+     * @since 5.1.0
+     */
+    public Key id() {
+      return this.id;
+    }
+
+    /**
+     * {@return examples of this format in use}.
+     *
+     * @since 5.1.0
+     */
+    public List<String> examples() {
+      return this.examples;
+    }
+  }
 }

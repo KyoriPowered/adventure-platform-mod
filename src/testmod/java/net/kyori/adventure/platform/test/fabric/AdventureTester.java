@@ -89,6 +89,7 @@ import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
 import static java.util.Objects.requireNonNull;
 import static net.kyori.adventure.key.Key.key;
 import static net.kyori.adventure.platform.fabric.ComponentArgumentType.component;
+import static net.kyori.adventure.platform.fabric.ComponentArgumentType.miniMessage;
 import static net.kyori.adventure.platform.fabric.KeyArgumentType.key;
 import static net.kyori.adventure.sound.Sound.sound;
 import static net.kyori.adventure.text.Component.newline;
@@ -153,7 +154,7 @@ public class AdventureTester implements ModInitializer {
           audience.sendMessage(Identity.nil(), translatable("adventure.test.description", color(0xc022cc)));
           return 1;
         }))
-        .then(literal("echo").then(argument(ARG_TEXT, component()).executes(ctx -> {
+        .then(literal("echo").then(argument(ARG_TEXT, ComponentArgumentType.miniMessage()).executes(ctx -> {
           final AdventureCommandSourceStack source = this.adventure().audience(ctx.getSource());
           final Component result = component(ctx, ARG_TEXT);
           source.sendMessage(source, result);
@@ -171,7 +172,7 @@ public class AdventureTester implements ModInitializer {
           });
           return 1;
         })))
-        .then(literal("tellall").then(argument(ARG_TARGETS, players()).then(argument(ARG_TEXT, component()).executes(ctx -> {
+        .then(literal("tellall").then(argument(ARG_TARGETS, players()).then(argument(ARG_TEXT, miniMessage()).executes(ctx -> {
           final Collection<ServerPlayer> targets = getPlayers(ctx, ARG_TARGETS);
           final AdventureCommandSourceStack source = this.adventure().audience(ctx.getSource());
           final Component message = component(ctx, ARG_TEXT);
@@ -232,7 +233,7 @@ public class AdventureTester implements ModInitializer {
           target.sendPlayerListFooter(Component.text("test platform!", COLOR_PATH));
           return Command.SINGLE_SUCCESS;
         }))
-        .then(literal("plain").then(argument(ARG_TEXT, ComponentArgumentType.component()).executes(ctx -> {
+        .then(literal("plain").then(argument(ARG_TEXT, miniMessage()).executes(ctx -> {
           final Component text = ComponentArgumentType.component(ctx, ARG_TEXT);
           ctx.getSource().sendSuccess(new TextComponent(PlainTextComponentSerializer.plainText().serialize(text)), false);
           return Command.SINGLE_SUCCESS;

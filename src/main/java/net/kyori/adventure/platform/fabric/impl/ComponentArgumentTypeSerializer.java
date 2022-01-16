@@ -25,28 +25,29 @@ package net.kyori.adventure.platform.fabric.impl;
 
 import com.google.gson.JsonObject;
 import net.kyori.adventure.platform.fabric.ComponentArgumentType;
-import net.kyori.adventure.platform.fabric.impl.accessor.ComponentSerializerAccess;
+import net.kyori.adventure.platform.fabric.FabricAudiences;
 import net.minecraft.commands.synchronization.ArgumentSerializer;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 
-public class ComponentArgumentTypeSerializer implements ArgumentSerializer<ComponentArgumentType> {
-
-  private static final ResourceLocation SERIALIZER_GSON = new ResourceLocation("adventure", "gson");
-
+public final class ComponentArgumentTypeSerializer implements ArgumentSerializer<ComponentArgumentType> {
   @Override
   public void serializeToNetwork(final ComponentArgumentType type, final FriendlyByteBuf buffer) {
-    buffer.writeResourceLocation(SERIALIZER_GSON);
+    buffer.writeResourceLocation(FabricAudiences.toNative(type.format().id()));
   }
 
   @Override
   public ComponentArgumentType deserializeFromNetwork(final FriendlyByteBuf buffer) {
-    buffer.readResourceLocation(); // TODO: Serializer type
-    return ComponentArgumentType.component();
+    final ResourceLocation id = buffer.readResourceLocation();
+    final ComponentArgumentType.Format format = ComponentArgumentType.Format.INDEX.value(FabricAudiences.toAdventure(id));
+    if (format == null) {
+      throw new IllegalArgumentException("Unknown Adventure component format: " + id);
+    }
+    return ComponentArgumentType.component(format);
   }
 
   @Override
   public void serializeToJson(final ComponentArgumentType type, final JsonObject json) {
-    json.add("serializer", ComponentSerializerAccess.getGSON().toJsonTree(SERIALIZER_GSON));
+    json.addProperty("serializer", type.format().id().asString());
   }
 }
