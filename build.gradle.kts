@@ -4,10 +4,10 @@ import net.fabricmc.loom.task.RunGameTask
 import net.kyori.indra.repository.sonatypeSnapshots
 
 plugins {
-  val indraVersion = "2.0.6"
-  id("fabric-loom") version "0.10-SNAPSHOT"
-  id("io.github.juuxel.loom-quiltflower-mini") version "1.2.1"
-  id("ca.stellardrift.configurate-transformations") version "5.0.0"
+  val indraVersion = "2.1.1"
+  id("fabric-loom") version "0.11-SNAPSHOT"
+  id("io.github.juuxel.loom-quiltflower") version "1.6.0"
+  id("ca.stellardrift.configurate-transformations") version "5.0.1"
   id("net.kyori.indra") version indraVersion
   id("net.kyori.indra.license-header") version indraVersion
   id("net.kyori.indra.checkstyle") version indraVersion
@@ -37,12 +37,11 @@ repositories {
 }
 
 quiltflower {
+  quiltflowerVersion.set("1.7.0")
+  preferences(
+    "win" to 0
+  )
   addToRuntimeClasspath.set(true)
-}
-
-// LOOM!
-tasks.withType(net.fabricmc.loom.task.GenerateSourcesTask::class).matching { it.name == "genSourcesWithQuiltflower" }.configureEach {
-  options.put("win", "0")
 }
 
 indra {
