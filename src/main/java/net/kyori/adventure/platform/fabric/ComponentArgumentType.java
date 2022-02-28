@@ -30,6 +30,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.Collection;
 import java.util.List;
+import net.kyori.adventure.Adventure;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.fabric.impl.accessor.ComponentSerializerAccess;
 import net.kyori.adventure.text.Component;
@@ -160,7 +161,7 @@ public final class ComponentArgumentType implements ArgumentType<Component> {
    */
   public enum Format {
     JSON(
-      Key.key("adventure", "json"),
+      Key.key(Adventure.NAMESPACE, "json"),
       "\"Hello world!\"",
       "[\"Message\", {\"text\": \"example\", \"color\": \"#aabbcc\"}]"
     ) {
@@ -174,7 +175,7 @@ public final class ComponentArgumentType implements ArgumentType<Component> {
       }
     },
     MINIMESSAGE(
-      Key.key("adventure", "minimessage/v1"),
+      Key.key(Adventure.NAMESPACE, "minimessage/v1"),
       "<rainbow>hello world!",
       "hello <bold>everyone</bold> here!",
       "hello <hover:show_text:'sneak sneak'>everyone</hover> who likes <blue>cats"

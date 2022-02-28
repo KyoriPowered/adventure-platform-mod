@@ -33,6 +33,7 @@ import java.util.regex.Pattern;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
+import net.kyori.adventure.Adventure;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.platform.fabric.ComponentArgumentType;
 import net.kyori.adventure.platform.fabric.KeyArgumentType;
@@ -117,7 +118,7 @@ public class AdventureCommon implements ModInitializer {
   }
 
   static ResourceLocation res(final @NotNull String value) {
-    return new ResourceLocation("adventure", value);
+    return new ResourceLocation(Adventure.NAMESPACE, value);
   }
 
   @Override
