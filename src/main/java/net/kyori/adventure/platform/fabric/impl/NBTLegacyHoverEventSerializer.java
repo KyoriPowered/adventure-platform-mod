@@ -40,7 +40,7 @@ import org.jetbrains.annotations.NotNull;
 
 public final class NBTLegacyHoverEventSerializer implements LegacyHoverEventSerializer {
   public static final NBTLegacyHoverEventSerializer INSTANCE = new NBTLegacyHoverEventSerializer();
-  private static final Codec<CompoundTag, String, CommandSyntaxException, RuntimeException> SNBT_CODEC = Codec.of(TagParser::parseTag, Tag::toString);
+  private static final Codec<CompoundTag, String, CommandSyntaxException, RuntimeException> SNBT_CODEC = Codec.codec(TagParser::parseTag, Tag::toString);
 
   static final String ITEM_TYPE = "id";
   static final String ITEM_COUNT = "Count";

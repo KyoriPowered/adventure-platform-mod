@@ -24,6 +24,7 @@
 package net.kyori.adventure.platform.fabric.impl;
 
 import ca.stellardrift.colonel.api.ServerArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.Function;
@@ -70,7 +71,7 @@ public class AdventureCommon implements ModInitializer {
 
     flattenerBuilder.complexMapper(TranslatableComponent.class, (translatable, consumer) -> {
       final String key = translatable.key();
-      for (final Translator registry : GlobalTranslator.get().sources()) {
+      for (final Translator registry : GlobalTranslator.translator().sources()) {
         if (registry instanceof TranslationRegistry && ((TranslationRegistry) registry).contains(key)) {
           consumer.accept(GlobalTranslator.render(translatable, Locale.getDefault()));
           return;
@@ -126,7 +127,12 @@ public class AdventureCommon implements ModInitializer {
       ServerArgumentType.<ComponentArgumentType>builder(res("component"))
         .type(ComponentArgumentType.class)
         .serializer(new ComponentArgumentTypeSerializer())
-        .fallbackProvider(arg -> ComponentArgument.textComponent())
+        .fallbackProvider(arg -> {
+          return switch (arg.format()) {
+            case JSON -> ComponentArgument.textComponent();
+            case MINIMESSAGE -> StringArgumentType.greedyString();
+          };
+        })
         .fallbackSuggestions(null) // client text parsing is fine
         .register();
       ServerArgumentType.<KeyArgumentType>builder(res("key"))

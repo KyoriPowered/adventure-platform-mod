@@ -137,7 +137,7 @@ public class AdventureTester implements ModInitializer {
     for (final var lang : List.of(Locale.ENGLISH, Locale.GERMAN)) {
       testmodRegistry.registerAll(lang, ResourceBundle.getBundle("net.kyori.adventure.platform.test.fabric.messages", lang), false);
     }
-    GlobalTranslator.get().addSource(testmodRegistry);
+    GlobalTranslator.translator().addSource(testmodRegistry);
 
     // Set up platform
     ServerLifecycleEvents.SERVER_STARTING.register(server -> this.platform = FabricServerAudiences.of(server));

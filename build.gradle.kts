@@ -197,6 +197,6 @@ indra {
 indra.includeJavaSoftwareComponentInPublications(false)
 publishing {
   publications.named("maven", MavenPublication::class) {
-   from(components["java"])
+    from(components["java"])
   }
 }

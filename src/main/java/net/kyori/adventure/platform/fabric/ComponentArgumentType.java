@@ -23,18 +23,17 @@
  */
 package net.kyori.adventure.platform.fabric;
 
-import com.google.gson.JsonParseException;
 import com.google.gson.stream.JsonReader;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.fabric.impl.accessor.ComponentSerializerAccess;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.util.Index;
 import net.minecraft.commands.arguments.ComponentArgument;
 import org.jetbrains.annotations.NotNull;
@@ -120,11 +119,12 @@ public final class ComponentArgumentType implements ArgumentType<Component> {
 
   @Override
   public @NotNull Component parse(final @NotNull StringReader reader) throws CommandSyntaxException {
-    try (final JsonReader json = new JsonReader(new java.io.StringReader(reader.getRemaining()))) {
-      final Component ret = ComponentSerializerAccess.getGSON().fromJson(json, Component.class);
-      reader.setCursor(reader.getCursor() + ComponentSerializerAccess.getPos(json));
-      return ret;
-    } catch (final JsonParseException | IOException ex) {
+    final String remaining = reader.getRemaining();
+    try {
+      final ReadResult result = this.format.parse(remaining);
+      reader.setCursor(reader.getCursor() + result.charsConsumed());
+      return result.parsed();
+    } catch (final Exception ex) {
       final String message = ex.getCause() == null ? ex.getMessage() : ex.getCause().getMessage();
       throw ComponentArgument.ERROR_INVALID_JSON.createWithContext(reader, message);
     }
@@ -136,13 +136,22 @@ public final class ComponentArgumentType implements ArgumentType<Component> {
   }
 
   /**
-   * {@return the format used for this argument}.
+   * Get the format used for this argument.
    *
+   * @return the format used for this argument
    * @since 4.1.0
    */
   public @NotNull Format format() {
     return this.format;
   }
+
+  /**
+   * The result of reading a component.
+   *
+   * @param parsed the parsed component
+   * @param charsConsumed the number of characters consumed from the input string
+   */
+  record ReadResult(Component parsed, int charsConsumed) {}
 
   /**
    * Supported text formats for registering components.
@@ -154,13 +163,28 @@ public final class ComponentArgumentType implements ArgumentType<Component> {
       Key.key("adventure", "json"),
       "\"Hello world!\"",
       "[\"Message\", {\"text\": \"example\", \"color\": \"#aabbcc\"}]"
-    ),
+    ) {
+
+      @Override
+      ReadResult parse(final String allInput) throws Exception {
+        try (final JsonReader json = new JsonReader(new java.io.StringReader(allInput))) {
+          final Component ret = ComponentSerializerAccess.getGSON().fromJson(json, Component.class);
+          return new ReadResult(ret, ComponentSerializerAccess.getPos(json));
+        }
+      }
+    },
     MINIMESSAGE(
-      Key.key("adventure", "minimessage"),
+      Key.key("adventure", "minimessage/v1"),
       "<rainbow>hello world!",
       "hello <bold>everyone</bold> here!",
       "hello <hover:show_text:'sneak sneak'>everyone</hover> who likes <blue>cats"
-    );
+    ) {
+      @Override
+      ReadResult parse(final String allInput) throws Exception {
+        final Component parsed = MiniMessage.miniMessage().deserialize(allInput);
+        return new ReadResult(parsed, allInput.length());
+      }
+    };
 
     public static final Index<Key, Format> INDEX = Index.create(Format.class, Format::id);
 
@@ -172,9 +196,12 @@ public final class ComponentArgumentType implements ArgumentType<Component> {
       this.examples = List.of(examples);
     }
 
+    abstract ReadResult parse(final String allInput) throws Exception;
+
     /**
-     * {@return a unique identifier for this format}.
+     * Get a unique identifier for this format.
      *
+     * @return a unique identifier for this format
      * @since 5.1.0
      */
     public Key id() {
@@ -182,8 +209,9 @@ public final class ComponentArgumentType implements ArgumentType<Component> {
     }
 
     /**
-     * {@return examples of this format in use}.
+     * Get examples of this format in use.
      *
+     * @return examples of this format in use, as an unmodifiable list
      * @since 5.1.0
      */
     public List<String> examples() {
