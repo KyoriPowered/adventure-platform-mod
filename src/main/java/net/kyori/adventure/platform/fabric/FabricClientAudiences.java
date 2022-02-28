@@ -112,7 +112,9 @@ public interface FabricClientAudiences extends FabricAudiences {
      *
      * <p>This variant validates that the component renderer only depends on information included in the partition.</p>
      *
+     * @param partition the partition function to use on this provider
      * @param componentRenderer a component renderer
+     * @param <T> the type used in the partition function
      * @return this builder
      * @since 4.0.0
      */

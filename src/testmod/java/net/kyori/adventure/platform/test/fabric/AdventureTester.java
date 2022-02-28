@@ -313,6 +313,7 @@ public class AdventureTester implements ModInitializer {
    * @param title Boss bar title
    * @param timeSeconds seconds boss bar will last
    * @param targets viewers of the action
+   * @param color the color of the boss bar
    * @param completionAction callback to execute when countdown is complete
    */
   private void beginCountdown(final Component title, final int timeSeconds, final Audience targets, final BossBar.Color color, final Consumer<Audience> completionAction) {

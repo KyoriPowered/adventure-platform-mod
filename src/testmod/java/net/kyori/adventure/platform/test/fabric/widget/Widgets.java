@@ -57,6 +57,10 @@ public final class Widgets {
   /**
    * Create a checkbox with the given label, starting out unchecked,
    * and with a consumer taking the current pressed state of the button.
+   *
+   * @param label label
+   * @param whenPressed action to perform when the checkbox is pressed
+   * @return a new checkbox
    */
   public static Checkbox checkbox(final Component label, final BooleanConsumer whenPressed) {
     return checkbox(label, false, whenPressed);
@@ -65,6 +69,11 @@ public final class Widgets {
   /**
    * Create a checkbox with the given label, the initial state,
    * and with a consumer taking the current pressed state of the button.
+   *
+   * @param label label
+   * @param initialState the checked state to start out with
+   * @param whenPressed action to perform when the checkbox is pressed
+   * @return a new checkbox
    */
   public static Checkbox checkbox(final Component label, final boolean initialState, final BooleanConsumer whenPressed) {
     final net.minecraft.network.chat.Component mcComponent = FabricClientAudiences.of().toNative(label);
