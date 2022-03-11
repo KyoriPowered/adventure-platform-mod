@@ -48,6 +48,10 @@ indra {
   javaVersions().target(17)
 }
 
+indraSonatype {
+  useAlternateSonatypeOSSHost("s01")
+}
+
 license {
   header(file("LICENSE_HEADER"))
 }
