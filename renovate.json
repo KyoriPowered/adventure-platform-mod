@@ -2,5 +2,12 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "local>KyoriPowered/.github:renovate-config"
+  ],
+  "packageRules": [
+    {
+      "description": "Correct Fabric API version handling",
+      "matchPackageNames": ["net.fabricmc.fabric-api:fabric-api"],
+      "versioning": "regex:^(?<major>\\d+)(\\.(?<minor>\\d+))?(\\.(?<patch>\\d+))?(?:\\+(?<compatibility>.*))?$"
+    }
   ]
 }
