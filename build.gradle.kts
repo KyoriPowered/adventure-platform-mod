@@ -17,6 +17,13 @@ repositories {
   maven(url = "https://maven.parchmentmc.org/") {
     name = "parchment"
   }
+  maven(url = "https://maven.quiltmc.org/repositories/release/") {
+    name = "quiltReleases"
+    mavenContent {
+      includeGroup("org.quiltmc")
+      releasesOnly()
+    }
+  }
 }
 
 quiltflower {
