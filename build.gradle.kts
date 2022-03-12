@@ -1,43 +1,26 @@
 import ca.stellardrift.build.configurate.ConfigFormats
 import ca.stellardrift.build.configurate.transformations.convertFormat
 import net.fabricmc.loom.task.RunGameTask
-import net.kyori.indra.repository.sonatypeSnapshots
 
 plugins {
-  val indraVersion = "2.1.1"
-  id("fabric-loom") version "0.11-SNAPSHOT"
-  id("io.github.juuxel.loom-quiltflower") version "1.6.0"
-  id("ca.stellardrift.configurate-transformations") version "5.0.1"
-  id("net.kyori.indra") version indraVersion
-  id("net.kyori.indra.license-header") version indraVersion
-  id("net.kyori.indra.checkstyle") version indraVersion
-  id("net.kyori.indra.publishing.sonatype") version indraVersion
+  alias(libs.plugins.loom)
+  alias(libs.plugins.loomQuiltflower)
+  alias(libs.plugins.configurateTransformations)
+  alias(libs.plugins.indra)
+  alias(libs.plugins.indra.licenseHeader)
+  alias(libs.plugins.indra.checkstyle)
+  alias(libs.plugins.indra.sonatype)
 }
-
-val versionAdventure: String by project
-val versionAdventurePlatform: String by project
-val versionColonel: String by project
-val versionExamination: String by project
-val versionFabricApi: String by project
-val versionJetbrainsAnnotations: String by project
-val versionLoader: String by project
-val versionMinecraft: String by project
-val versionParchment: String by project
-
-group = "net.kyori"
-version = "5.2.1-SNAPSHOT"
-description = "Integration between the adventure library and Minecraft: Java Edition, using the Fabric modding system"
 
 repositories {
   mavenCentral()
-  sonatypeSnapshots()
   maven(url = "https://maven.parchmentmc.org/") {
     name = "parchment"
   }
 }
 
 quiltflower {
-  quiltflowerVersion.set("1.7.0")
+  quiltflowerVersion.set(libs.versions.quiltflower.get())
   preferences(
     "win" to 0
   )
@@ -57,42 +40,50 @@ license {
 }
 
 dependencies {
-  annotationProcessor("ca.stellardrift:contract-validator:1.0.1")
-  modApi(include("net.kyori:adventure-key:$versionAdventure")!!)
-  modApi(include("net.kyori:adventure-api:$versionAdventure")!!)
-  modApi(include("net.kyori:adventure-text-serializer-plain:$versionAdventure")!!)
-  modApi(include("net.kyori:adventure-text-minimessage:$versionAdventure")!!)
-  modApi(include("net.kyori:adventure-platform-api:$versionAdventurePlatform") {
-    exclude("com.google.code.gson")
-  })
-  modImplementation(include("net.kyori:adventure-text-serializer-gson:$versionAdventure") {
-    exclude("com.google.code.gson")
-  })
-  modApi(fabricApi.module("fabric-api-base", versionFabricApi))
-
-  // Transitive deps
-  include("net.kyori:examination-api:$versionExamination")
-  include("net.kyori:examination-string:$versionExamination")
-  modCompileOnly("org.jetbrains:annotations:$versionJetbrainsAnnotations")
-
-  modImplementation("ca.stellardrift:colonel:$versionColonel")
-
-  minecraft("com.mojang:minecraft:$versionMinecraft")
-  mappings(loom.layered {
-    officialMojangMappings()
-    parchment("org.parchmentmc.data:parchment-$versionParchment@zip")
-  })
-  modImplementation("net.fabricmc:fabric-loader:$versionLoader")
-
-  // Testmod TODO figure out own scope
-  val api = "net.fabricmc.fabric-api:fabric-api:$versionFabricApi"
-  if (gradle.startParameter.taskNames.contains("publish")) {
-    modCompileOnly(api)
-  } else {
-    modImplementation(api)
+  annotationProcessor(libs.contractValidator)
+  sequenceOf(
+    libs.adventure.key,
+    libs.adventure.api,
+    libs.adventure.textSerializerPlain,
+    libs.adventure.textMinimessage
+  ).forEach {
+    modApi(it)
+    include(it)
   }
 
-  checkstyle("ca.stellardrift:stylecheck:0.1")
+  sequenceOf(
+    libs.adventure.platform.api,
+    libs.adventure.textSerializerGson
+  ).forEach {
+   modApi(it) {
+     exclude("com.google.code.gson")
+   }
+   include(it)
+  }
+  modApi(fabricApi.module("fabric-api-base", libs.versions.fabricApi.get()))
+
+  // Transitive deps
+  include(libs.examination.api)
+  include(libs.examination.string)
+  modCompileOnly(libs.jetbrainsAnnotations)
+
+  modImplementation(libs.colonel)
+
+  minecraft(libs.minecraft)
+  mappings(loom.layered {
+    officialMojangMappings()
+    parchment("org.parchmentmc.data:parchment-${libs.versions.parchment.get()}@zip")
+  })
+  modImplementation(libs.fabric.loader)
+
+  // Testmod TODO figure out own scope
+  if (gradle.startParameter.taskNames.contains("publish")) {
+    modCompileOnly(libs.fabric.api)
+  } else {
+    modImplementation(libs.fabric.api)
+  }
+
+  checkstyle(libs.stylecheck)
 }
 
 // tasks.withType(net.fabricmc.loom.task.RunGameTask::class) {
@@ -167,6 +158,7 @@ indra {
     ci(true)
   }
   mitLicense()
+  checkstyle(libs.versions.checkstyle.get())
 
   configurePublications {
     pom {
