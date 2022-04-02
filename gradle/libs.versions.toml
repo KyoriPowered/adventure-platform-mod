@@ -36,7 +36,7 @@ zCheckstyle = { module = "com.puppycrawl.tools:checkstyle", version.ref = "check
 
 [plugins]
 loom = "fabric-loom:0.11.+"
-loomQuiltflower = "io.github.juuxel.loom-quiltflower:1.6.0"
+loomQuiltflower = "io.github.juuxel.loom-quiltflower:1.6.1"
 configurateTransformations = "ca.stellardrift.configurate-transformations:5.0.1"
 indra = { id = "net.kyori.indra", version.ref = "indra" }
 indra-licenseHeader = { id = "net.kyori.indra.license-header", version.ref = "indra" }
