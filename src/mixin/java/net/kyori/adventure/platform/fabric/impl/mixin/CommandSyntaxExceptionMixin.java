@@ -36,11 +36,13 @@ import org.spongepowered.asm.mixin.Shadow;
 @Mixin(value = CommandSyntaxException.class, remap = false)
 abstract class CommandSyntaxExceptionMixin implements ComponentMessageThrowable {
   @Shadow
+  @SuppressWarnings("checkstyle:MethodName")
   public abstract Message getRawMessage();
 
   @Override
   public @NotNull Component componentMessage() {
     final net.minecraft.network.chat.Component minecraft = ComponentUtils.fromMessage(this.getRawMessage());
+
     return FabricAudiences.nonWrappingSerializer().deserialize(minecraft);
   }
 }
