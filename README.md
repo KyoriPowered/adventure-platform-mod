@@ -14,7 +14,8 @@ Minecraft Version | `adventure-platform-fabric` version
 ----------------- | ------------------------------------
 1.16.x            | `4.0.0`
 1.17.x            | `4.1.0`
-1.18.x            | `5.0.0-SNAPSHOT`
+1.18.1            | `5.1.0`
+1.18.2            | `5.2.1`
 
 ### Contributing
 
