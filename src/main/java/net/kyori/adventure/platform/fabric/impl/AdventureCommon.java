@@ -23,8 +23,6 @@
  */
 package net.kyori.adventure.platform.fabric.impl;
 
-import ca.stellardrift.colonel.api.ServerArgumentType;
-import com.mojang.brigadier.arguments.StringArgumentType;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.Function;
@@ -49,10 +47,9 @@ import net.kyori.adventure.translation.GlobalTranslator;
 import net.kyori.adventure.translation.TranslationRegistry;
 import net.kyori.adventure.translation.Translator;
 import net.minecraft.client.KeyMapping;
-import net.minecraft.commands.arguments.ComponentArgument;
-import net.minecraft.commands.arguments.ResourceLocationArgument;
-import net.minecraft.commands.synchronization.ArgumentTypes;
-import net.minecraft.commands.synchronization.EmptyArgumentSerializer;
+import net.minecraft.commands.synchronization.ArgumentTypeInfos;
+import net.minecraft.commands.synchronization.SingletonArgumentInfo;
+import net.minecraft.core.Registry;
 import net.minecraft.locale.Language;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
@@ -67,7 +64,7 @@ public class AdventureCommon implements ModInitializer {
     final ComponentFlattener.Builder flattenerBuilder = ComponentFlattener.basic().toBuilder();
 
     if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
-      flattenerBuilder.mapper(KeybindComponent.class, keybind -> KeyMapping.createNameSupplier(keybind.keybind()).get().getContents());
+      flattenerBuilder.mapper(KeybindComponent.class, keybind -> KeyMapping.createNameSupplier(keybind.keybind()).get().getString());
     }
 
     flattenerBuilder.complexMapper(TranslatableComponent.class, (translatable, consumer) -> {
@@ -125,7 +122,7 @@ public class AdventureCommon implements ModInitializer {
   public void onInitialize() {
     // Register custom argument types
     if (FabricLoader.getInstance().isModLoaded("colonel")) { // we can do server-only arg types
-      ServerArgumentType.<ComponentArgumentType>builder(res("component"))
+      /*ServerArgumentType.<ComponentArgumentType>builder(res("component"))
         .type(ComponentArgumentType.class)
         .serializer(new ComponentArgumentTypeSerializer())
         .fallbackProvider(arg -> {
@@ -141,10 +138,10 @@ public class AdventureCommon implements ModInitializer {
         .serializer(new EmptyArgumentSerializer<>(KeyArgumentType::key))
         .fallbackProvider(arg -> ResourceLocationArgument.id())
         .fallbackSuggestions(null)
-        .register();
+        .register();*/
     } else {
-      ArgumentTypes.register("adventure:component", ComponentArgumentType.class, new ComponentArgumentTypeSerializer());
-      ArgumentTypes.register("adventure:key", KeyArgumentType.class, new EmptyArgumentSerializer<>(KeyArgumentType::key));
+      ArgumentTypeInfos.register(Registry.COMMAND_ARGUMENT_TYPE, "adventure:component", ComponentArgumentType.class, new ComponentArgumentTypeSerializer());
+      ArgumentTypeInfos.register(Registry.COMMAND_ARGUMENT_TYPE, "adventure:key", KeyArgumentType.class, SingletonArgumentInfo.contextFree(KeyArgumentType::key));
     }
 
     PlayerLocales.CHANGED_EVENT.register((player, locale) -> {

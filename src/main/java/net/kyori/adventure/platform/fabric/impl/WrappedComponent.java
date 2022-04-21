@@ -37,8 +37,10 @@ import net.kyori.adventure.text.renderer.ComponentRenderer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentContents;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.contents.LiteralContents;
 import net.minecraft.util.FormattedCharSequence;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -130,9 +132,9 @@ public final class WrappedComponent implements Component {
   }
 
   @Override
-  public String getContents() {
+  public ComponentContents getContents() {
     if (this.wrapped instanceof TextComponent) {
-      return ((TextComponent) this.wrapped).content();
+      return new LiteralContents(((TextComponent) this.wrapped).content());
     } else {
       return this.deepConverted().getContents();
     }

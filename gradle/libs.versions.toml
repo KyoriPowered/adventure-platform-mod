@@ -6,7 +6,7 @@ adventure = "4.10.1"
 adventurePlatform = "4.1.0"
 checkstyle = "10.1"
 examination = "1.3.0"
-fabricApi = "0.51.1+1.18.2"
+fabricApi = "0.51.2+1.19"
 indra = "2.1.1"
 parchment = "1.18.1:2021.12.19"
 quiltflower = "1.8.0"
@@ -24,7 +24,7 @@ examination-string = { module = "net.kyori:examination-string", version.ref = "e
 fabric-loader = "net.fabricmc:fabric-loader:0.14.5"
 fabric-api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabricApi" }
 jetbrainsAnnotations = "org.jetbrains:annotations:23.0.0"
-minecraft = "com.mojang:minecraft:1.18.2"
+minecraft = "com.mojang:minecraft:22w16b"
 
 # build
 contractValidator = "ca.stellardrift:contract-validator:1.0.1"

@@ -50,6 +50,7 @@ import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.ChatVisiblity;
 import org.jetbrains.annotations.NotNull;
@@ -68,7 +69,7 @@ public class ClientAudience implements Audience {
   public void sendMessage(final Identity source, final @NotNull Component message, final @NotNull MessageType type) {
     if (this.client.isBlocked(source.uuid())) return;
 
-    final ChatVisiblity visibility = this.client.options.chatVisibility;
+    final ChatVisiblity visibility = this.client.options.chatVisibility().get();
     if (type == MessageType.CHAT) {
       // Add to chat queue (following delay and such)
       if (visibility == ChatVisiblity.FULL) {
@@ -154,7 +155,7 @@ public class ClientAudience implements Audience {
     } else {
       // not in-game
       this.client.getSoundManager().play(new SimpleSoundInstance(FabricAudiences.toNative(sound.name()), GameEnums.SOUND_SOURCE.toMinecraft(sound.source()),
-        sound.volume(), sound.pitch(), false, 0, SoundInstance.Attenuation.NONE, 0, 0, 0, true));
+        sound.volume(), sound.pitch(), RandomSource.create(), false, 0, SoundInstance.Attenuation.NONE, 0, 0, 0, true));
     }
   }
 
@@ -170,7 +171,7 @@ public class ClientAudience implements Audience {
     }
 
     // Initialize with a placeholder event
-    final EntityBoundSoundInstance mcSound = new EntityBoundSoundInstance(SoundEvents.ITEM_PICKUP, GameEnums.SOUND_SOURCE.toMinecraft(sound.source()), sound.volume(), sound.pitch(), targetEntity);
+    final EntityBoundSoundInstance mcSound = new EntityBoundSoundInstance(SoundEvents.ITEM_PICKUP, GameEnums.SOUND_SOURCE.toMinecraft(sound.source()), sound.volume(), sound.pitch(), targetEntity, System.nanoTime());
     // Then apply the ResourceLocation of our real sound event
     ((AbstractSoundInstanceAccess) mcSound).setLocation(FabricAudiences.toNative(sound.name()));
 
@@ -180,7 +181,7 @@ public class ClientAudience implements Audience {
   @Override
   public void playSound(final @NotNull Sound sound, final double x, final double y, final double z) {
     this.client.getSoundManager().play(new SimpleSoundInstance(FabricAudiences.toNative(sound.name()), GameEnums.SOUND_SOURCE.toMinecraft(sound.source()),
-      sound.volume(), sound.pitch(), false, 0, SoundInstance.Attenuation.LINEAR, x, y, z, false));
+      sound.volume(), sound.pitch(), RandomSource.create(), false, 0, SoundInstance.Attenuation.LINEAR, x, y, z, false));
   }
 
   @Override

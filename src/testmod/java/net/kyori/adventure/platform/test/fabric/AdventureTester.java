@@ -75,7 +75,6 @@ import net.kyori.adventure.translation.GlobalTranslator;
 import net.kyori.adventure.translation.TranslationRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.synchronization.SuggestionProviders;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
@@ -231,7 +230,7 @@ public class AdventureTester implements ModInitializer {
         }))
         .then(literal("plain").then(argument(ARG_TEXT, miniMessage()).executes(ctx -> {
           final Component text = ComponentArgumentType.component(ctx, ARG_TEXT);
-          ctx.getSource().sendSuccess(new TextComponent(PlainTextComponentSerializer.plainText().serialize(text)), false);
+          ctx.getSource().sendSuccess(net.minecraft.network.chat.Component.literal(PlainTextComponentSerializer.plainText().serialize(text)), false);
           return Command.SINGLE_SUCCESS;
         }))));
     });

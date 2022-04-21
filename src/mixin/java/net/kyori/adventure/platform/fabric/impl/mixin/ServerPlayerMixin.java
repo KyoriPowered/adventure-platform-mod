@@ -41,7 +41,6 @@ import net.kyori.adventure.platform.fabric.impl.server.ServerPlayerAudience;
 import net.kyori.adventure.platform.fabric.impl.server.ServerPlayerBridge;
 import net.kyori.adventure.pointer.Pointers;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.protocol.game.ClientboundTabListPacket;
 import net.minecraft.network.protocol.game.ServerboundClientInformationPacket;
 import net.minecraft.server.MinecraftServer;
@@ -69,8 +68,8 @@ public abstract class ServerPlayerMixin extends PlayerMixin implements Forwardin
   private Audience adventure$backing;
   private Locale adventure$locale;
   private final Map<FabricServerAudiencesImpl, Audience> adventure$renderers = new MapMaker().weakKeys().makeMap();
-  private Component adventure$tabListHeader = TextComponent.EMPTY;
-  private Component adventure$tabListFooter = TextComponent.EMPTY;
+  private Component adventure$tabListHeader = Component.empty();
+  private Component adventure$tabListFooter = Component.empty();
 
   protected ServerPlayerMixin(final EntityType<? extends LivingEntity> entityType, final Level level) {
     super(entityType, level);

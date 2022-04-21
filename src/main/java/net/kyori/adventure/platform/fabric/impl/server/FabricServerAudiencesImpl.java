@@ -46,7 +46,6 @@ import net.kyori.adventure.translation.GlobalTranslator;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.Registry;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -122,7 +121,7 @@ public final class FabricServerAudiencesImpl implements FabricServerAudiences {
 
   @Override
   public @NotNull AdventureCommandSourceStack audience(final @NotNull CommandSourceStack source) {
-    if (!(source instanceof AdventureCommandSourceStackInternal internal)) {
+    if (!(source instanceof final AdventureCommandSourceStackInternal internal)) {
       throw new IllegalArgumentException("The AdventureCommandSource mixin failed!");
     }
 
@@ -131,9 +130,9 @@ public final class FabricServerAudiencesImpl implements FabricServerAudiences {
 
   @Override
   public @NotNull Audience audience(final @NotNull CommandSource source) {
-    if (source instanceof RenderableAudience renderable) {
+    if (source instanceof final RenderableAudience renderable) {
       return renderable.renderUsing(this);
-    } else if (source instanceof Audience audience) {
+    } else if (source instanceof final Audience audience) {
       // TODO: How to pass component renderer through
       return audience;
     } else {
@@ -173,7 +172,7 @@ public final class FabricServerAudiencesImpl implements FabricServerAudiences {
 
   @Override
   public net.minecraft.network.chat.@NotNull Component toNative(final @NotNull Component adventure) {
-    if (adventure == Component.empty()) return TextComponent.EMPTY;
+    if (adventure == Component.empty()) return net.minecraft.network.chat.Component.empty();
 
     return new WrappedComponent(requireNonNull(adventure, "adventure"), this.partition, this.renderer);
   }

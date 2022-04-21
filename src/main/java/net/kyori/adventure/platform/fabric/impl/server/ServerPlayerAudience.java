@@ -118,13 +118,13 @@ public final class ServerPlayerAudience implements Audience {
   @Override
   public void playSound(final @NotNull Sound sound) {
     this.sendPacket(new ClientboundCustomSoundPacket(FabricAudiences.toNative(sound.name()),
-      GameEnums.SOUND_SOURCE.toMinecraft(sound.source()), this.player.position(), sound.volume(), sound.pitch()));
+      GameEnums.SOUND_SOURCE.toMinecraft(sound.source()), this.player.position(), sound.volume(), sound.pitch(), 0));
   }
 
   @Override
   public void playSound(final @NotNull Sound sound, final double x, final double y, final double z) {
     this.sendPacket(new ClientboundCustomSoundPacket(FabricAudiences.toNative(sound.name()),
-      GameEnums.SOUND_SOURCE.toMinecraft(sound.source()), new Vec3(x, y, z), sound.volume(), sound.pitch()));
+      GameEnums.SOUND_SOURCE.toMinecraft(sound.source()), new Vec3(x, y, z), sound.volume(), sound.pitch(), 0));
   }
 
   @Override
@@ -148,7 +148,7 @@ public final class ServerPlayerAudience implements Audience {
       return;
     }
 
-    this.sendPacket(new ClientboundSoundEntityPacket(event, GameEnums.SOUND_SOURCE.toMinecraft(sound.source()), targetEntity, sound.volume(), sound.pitch()));
+    this.sendPacket(new ClientboundSoundEntityPacket(event, GameEnums.SOUND_SOURCE.toMinecraft(sound.source()), targetEntity, sound.volume(), sound.pitch(), 0));
   }
 
   @Override
