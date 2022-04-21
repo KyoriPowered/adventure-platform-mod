@@ -21,7 +21,7 @@ custom:
   modmenu:api: true
 
 depends:
-  fabricloader: ">=0.4.0"
+  fabricloader: ">=0.14.0"
   fabric-api-base: "*"
 suggests:
   colonel: ">=0.1"
