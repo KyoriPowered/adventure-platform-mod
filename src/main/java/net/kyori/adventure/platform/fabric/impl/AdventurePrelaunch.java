@@ -41,12 +41,14 @@ public class AdventurePrelaunch implements PreLaunchEntrypoint {
   private static final Method ADD_URL_METHOD;
 
   static {
+    Method addUrl = null;
     try {
-      ADD_URL_METHOD = KNOT_CLASSLOADER.getClass().getMethod("addURL", URL.class);
-      ADD_URL_METHOD.setAccessible(true);
+      addUrl = KNOT_CLASSLOADER.getClass().getMethod("addURL", URL.class);
+      addUrl.setAccessible(true);
     } catch (final ReflectiveOperationException ex) {
-      throw new RuntimeException("Failed to load Classloader fields", ex);
+      // 0.14.0+
     }
+    ADD_URL_METHOD = addUrl;
   }
 
   @Override
@@ -69,7 +71,9 @@ public class AdventurePrelaunch implements PreLaunchEntrypoint {
    * @throws IllegalAccessException if an error occurs while injecting
    */
   static void hackilyLoadForMixin(final String pathOfAClass) throws ClassNotFoundException, InvocationTargetException, IllegalAccessException {
-    final URL url = Class.forName(pathOfAClass).getProtectionDomain().getCodeSource().getLocation();
-    ADD_URL_METHOD.invoke(KNOT_CLASSLOADER, url);
+    if (ADD_URL_METHOD != null) {
+      final URL url = Class.forName(pathOfAClass).getProtectionDomain().getCodeSource().getLocation();
+      ADD_URL_METHOD.invoke(KNOT_CLASSLOADER, url);
+    }
   }
 }
