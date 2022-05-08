@@ -21,7 +21,7 @@ adventure-textMinimessage = { module = "net.kyori:adventure-text-minimessage", v
 colonel = "ca.stellardrift:colonel:0.2.2"
 examination-api = { module = "net.kyori:examination-api", version.ref = "examination" }
 examination-string = { module = "net.kyori:examination-string", version.ref = "examination" }
-fabric-loader = "net.fabricmc:fabric-loader:0.14.0"
+fabric-loader = "net.fabricmc:fabric-loader:0.14.5"
 fabric-api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabricApi" }
 jetbrainsAnnotations = "org.jetbrains:annotations:23.0.0"
 minecraft = "com.mojang:minecraft:1.18.2"
