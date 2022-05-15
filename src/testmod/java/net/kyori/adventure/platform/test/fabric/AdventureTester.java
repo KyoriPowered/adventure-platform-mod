@@ -149,7 +149,7 @@ public class AdventureTester implements ModInitializer {
       dispatcher.register(literal("adventure")
         .then(literal("about").executes(ctx -> {
           // Interface injection, this lets us access the default platform instance
-          ctx.getSource().sendMessage(Identity.nil(), translatable("adventure.test.welcome", COLOR_RESPONSE, this.adventure().toAdventure(ctx.getSource().getDisplayName())));
+          ctx.getSource().sendMessage(Identity.nil(), translatable("adventure.test.welcome", COLOR_RESPONSE, ctx.getSource().getDisplayName()));
           // Or the old-fashioned way, for
           this.adventure().audience(ctx.getSource()).sendMessage(Identity.nil(), translatable("adventure.test.description", color(0xc022cc)));
           return 1;
@@ -210,7 +210,7 @@ public class AdventureTester implements ModInitializer {
         .then(literal("baron").executes(ctx -> {
           final ServerPlayer player = ctx.getSource().getPlayerOrException();
           final BossBar greeting = this.greetingBars.computeIfAbsent(player.getUUID(), id -> {
-            return BossBar.bossBar(translatable("adventure.test.greeting", NamedTextColor.GOLD, this.adventure().toAdventure(player.getDisplayName())),
+            return BossBar.bossBar(translatable("adventure.test.greeting", NamedTextColor.GOLD, player.getDisplayName()),
               1, BossBar.Color.YELLOW, BossBar.Overlay.PROGRESS);
           });
 

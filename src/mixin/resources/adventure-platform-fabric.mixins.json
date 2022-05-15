@@ -5,6 +5,7 @@
   "mixins": [
     "ClientboundStatusResponsePacketMixin",
     "CommandSourceStackMixin",
+    "ComponentMixin",
     "ComponentSerializerMixin",
     "EntityMixin",
     "FriendlyByteBufMixin",
