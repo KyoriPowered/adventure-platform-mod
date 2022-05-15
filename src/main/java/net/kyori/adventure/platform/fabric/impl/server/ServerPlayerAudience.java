@@ -56,6 +56,7 @@ import net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket;
 import net.minecraft.network.protocol.game.ClientboundSetTitlesAnimationPacket;
 import net.minecraft.network.protocol.game.ClientboundSoundEntityPacket;
 import net.minecraft.network.protocol.game.ClientboundStopSoundPacket;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
@@ -85,14 +86,14 @@ public final class ServerPlayerAudience implements Audience {
 
   @Override
   public void sendMessage(final Identity source, final Component text, final net.kyori.adventure.audience.MessageType type) {
-    final ChatType mcType;
+    final ResourceKey<ChatType> mcType;
     if (type == net.kyori.adventure.audience.MessageType.CHAT) {
       mcType = ChatType.CHAT;
     } else {
       mcType = ChatType.SYSTEM;
     }
 
-    this.player.sendMessage(this.controller.toNative(text), mcType, source.uuid());
+    this.player.sendSystemMessage(this.controller.toNative(text), mcType/*, source.uuid()*/);
   }
 
   @Override

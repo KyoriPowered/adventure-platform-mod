@@ -36,6 +36,7 @@ import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.platform.fabric.ComponentArgumentType;
 import net.kyori.adventure.platform.fabric.KeyArgumentType;
 import net.kyori.adventure.platform.fabric.PlayerLocales;
+import net.kyori.adventure.platform.fabric.impl.accessor.ArgumentTypeInfosAccess;
 import net.kyori.adventure.platform.fabric.impl.server.FabricServerAudiencesImpl;
 import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.pointer.Pointers;
@@ -47,7 +48,6 @@ import net.kyori.adventure.translation.GlobalTranslator;
 import net.kyori.adventure.translation.TranslationRegistry;
 import net.kyori.adventure.translation.Translator;
 import net.minecraft.client.KeyMapping;
-import net.minecraft.commands.synchronization.ArgumentTypeInfos;
 import net.minecraft.commands.synchronization.SingletonArgumentInfo;
 import net.minecraft.core.Registry;
 import net.minecraft.locale.Language;
@@ -140,8 +140,18 @@ public class AdventureCommon implements ModInitializer {
         .fallbackSuggestions(null)
         .register();*/
     } else {
-      ArgumentTypeInfos.register(Registry.COMMAND_ARGUMENT_TYPE, "adventure:component", ComponentArgumentType.class, new ComponentArgumentTypeSerializer());
-      ArgumentTypeInfos.register(Registry.COMMAND_ARGUMENT_TYPE, "adventure:key", KeyArgumentType.class, SingletonArgumentInfo.contextFree(KeyArgumentType::key));
+      ArgumentTypeInfosAccess.adventure$invoke$register(
+        Registry.COMMAND_ARGUMENT_TYPE,
+        "adventure:component",
+        ComponentArgumentType.class,
+        new ComponentArgumentTypeSerializer()
+      );
+      ArgumentTypeInfosAccess.adventure$invoke$register(
+        Registry.COMMAND_ARGUMENT_TYPE,
+        "adventure:key",
+        KeyArgumentType.class,
+        SingletonArgumentInfo.contextFree(KeyArgumentType::key)
+      );
     }
 
     PlayerLocales.CHANGED_EVENT.register((player, locale) -> {

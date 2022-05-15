@@ -45,7 +45,7 @@ final class CommandSourceAudience implements Audience {
 
   @Override
   public void sendMessage(final Identity source, final Component text, final MessageType type) {
-    this.output.sendMessage(this.serializer.toNative(text), source.uuid());
+    this.output.sendSystemMessage(this.serializer.toNative(text));
   }
 
   @Override
