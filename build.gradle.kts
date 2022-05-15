@@ -1,6 +1,9 @@
 import ca.stellardrift.build.configurate.ConfigFormats
 import ca.stellardrift.build.configurate.transformations.convertFormat
+import net.fabricmc.loom.task.GenerateSourcesTask
 import net.fabricmc.loom.task.RunGameTask
+import org.jetbrains.gradle.ext.settings
+import org.jetbrains.gradle.ext.taskTriggers
 
 plugins {
   alias(libs.plugins.loom)
@@ -10,6 +13,7 @@ plugins {
   alias(libs.plugins.indra.licenseHeader)
   alias(libs.plugins.indra.checkstyle)
   alias(libs.plugins.indra.sonatype)
+  alias(libs.plugins.ideaExt)
 }
 
 repositories {
@@ -138,7 +142,14 @@ tasks.withType(RunGameTask::class) {
 }
 
 // Convert yaml files to josn
-tasks.withType(ProcessResources::class.java).configureEach {
+val generatedResourcesDir = project.layout.buildDirectory.dir("generated-resources").get().asFile
+fun createProcessResourceTemplates(name: String, setProvider: NamedDomainObjectProvider<SourceSet>): TaskProvider<out Task> {
+  val destinationDir = generatedResourcesDir.resolve(name)
+  val set = setProvider.get()
+  val task = tasks.register(name, Sync::class.java) {
+    this.destinationDir = destinationDir
+    from("src/${set.name}/resource-templates")
+
     inputs.property("version", project.version)
 
     // Convert data files yaml -> json
@@ -151,14 +162,39 @@ tasks.withType(ProcessResources::class.java).configureEach {
             .toList()
     ) {
         convertFormat(ConfigFormats.YAML, ConfigFormats.JSON)
-        if (name.startsWith("fabric.mod")) {
+        if (this.name.startsWith("fabric.mod")) {
             expand("project" to project)
         }
-        name = name.substringBeforeLast('.') + ".json"
+        this.name = this.name.substringBeforeLast('.') + ".json" // todo
     }
     // Convert pack meta, without changing extension
     filesMatching("pack.mcmeta") { convertFormat(ConfigFormats.YAML, ConfigFormats.JSON) }
+  }
+
+  tasks.named(set.processResourcesTaskName) {
+    dependsOn(name)
+  }
+
+  eclipse.synchronizationTasks(task)
+  idea.project.settings.taskTriggers {
+    afterSync(task)
+  }
+  idea.module.generatedSourceDirs.add(destinationDir)
+
+  set.resources.srcDir(task.map { it.outputs })
+
+  return task
 }
+
+val generateTemplates = createProcessResourceTemplates("generateTemplates", sourceSets.main)
+val generateTestmodTemplates = createProcessResourceTemplates("generateTestmodTemplates", sourceSets.named("testmod"))
+
+// Have templates ready for IDEs
+tasks.withType(GenerateSourcesTask::class).configureEach {
+  dependsOn(generateTemplates)
+}
+
+eclipse.synchronizationTasks(generateTemplates, generateTestmodTemplates)
 
 indra {
   github("KyoriPowered", "adventure-platform-fabric") {

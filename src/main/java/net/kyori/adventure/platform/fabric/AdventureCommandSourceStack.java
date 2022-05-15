@@ -41,7 +41,9 @@ public interface AdventureCommandSourceStack extends ForwardingAudience.Single, 
    * @param sendToOps If this message should be sent to all ops listening
    * @since 4.0.0
    */
-  void sendSuccess(final @NotNull Component text, final boolean sendToOps);
+  default void sendSuccess(final @NotNull Component text, final boolean sendToOps) {
+    // Implemented by Mixin
+  }
 
   /**
    * Send an error message to the command source.
@@ -49,5 +51,7 @@ public interface AdventureCommandSourceStack extends ForwardingAudience.Single, 
    * @param text The error
    * @since 4.0.0
    */
-  void sendFailure(final @NotNull Component text);
+  default void sendFailure(final @NotNull Component text) {
+    // Implemented by Mixin
+  }
 }

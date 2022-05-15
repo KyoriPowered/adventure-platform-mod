@@ -61,7 +61,6 @@ import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.fabric.AdventureCommandSourceStack;
 import net.kyori.adventure.platform.fabric.ComponentArgumentType;
-import net.kyori.adventure.platform.fabric.FabricClientAudiences;
 import net.kyori.adventure.platform.fabric.FabricServerAudiences;
 import net.kyori.adventure.platform.fabric.KeyArgumentType;
 import net.kyori.adventure.sound.Sound;
@@ -149,16 +148,16 @@ public class AdventureTester implements ModInitializer {
     CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
       dispatcher.register(literal("adventure")
         .then(literal("about").executes(ctx -> {
-          final Audience audience = this.adventure().audience(ctx.getSource());
-          audience.sendMessage(Identity.nil(), translatable("adventure.test.welcome", COLOR_RESPONSE, this.adventure().toAdventure(ctx.getSource().getDisplayName())));
-          audience.sendMessage(Identity.nil(), translatable("adventure.test.description", color(0xc022cc)));
+          // Interface injection, this lets us access the default platform instance
+          ctx.getSource().sendMessage(Identity.nil(), translatable("adventure.test.welcome", COLOR_RESPONSE, this.adventure().toAdventure(ctx.getSource().getDisplayName())));
+          // Or the old-fashioned way, for
+          this.adventure().audience(ctx.getSource()).sendMessage(Identity.nil(), translatable("adventure.test.description", color(0xc022cc)));
           return 1;
         }))
         .then(literal("echo").then(argument(ARG_TEXT, ComponentArgumentType.miniMessage()).executes(ctx -> {
-          final AdventureCommandSourceStack source = this.adventure().audience(ctx.getSource());
           final Component result = component(ctx, ARG_TEXT);
-          source.sendMessage(source, result);
-          this.adventure().audience(ctx.getSource()).sendMessage(text("And a second time!", NamedTextColor.DARK_PURPLE));
+          ctx.getSource().sendMessage(ctx.getSource(), result);
+          ctx.getSource().sendMessage(text("And a second time!", NamedTextColor.DARK_PURPLE));
           return 1;
         })))
         .then(literal("countdown").then(argument(ARG_SECONDS, integer()).executes(ctx -> { // multiple boss bars!
@@ -176,7 +175,7 @@ public class AdventureTester implements ModInitializer {
           final Collection<ServerPlayer> targets = getPlayers(ctx, ARG_TARGETS);
           final AdventureCommandSourceStack source = this.adventure().audience(ctx.getSource());
           final Component message = component(ctx, ARG_TEXT);
-          final Audience destination = this.adventure().audience(targets);
+          final Audience destination = Audience.audience(targets);
 
           destination.sendMessage(source, message);
           source.sendMessage(Identity.nil(), text(b -> {
@@ -194,8 +193,7 @@ public class AdventureTester implements ModInitializer {
           return 1;
         })))
         .then(literal("book").executes(ctx -> {
-          final Audience viewer = this.adventure().audience(ctx.getSource());
-          viewer.openBook(Book.builder()
+          ctx.getSource().openBook(Book.builder()
             .title(text("My book", NamedTextColor.RED))
             .author(text("The adventure team", COLOR_RESPONSE))
             .addPage(text("Welcome to our rules page"))
@@ -204,9 +202,8 @@ public class AdventureTester implements ModInitializer {
           return 1;
         }))
         .then(literal("rgb").executes(ctx -> {
-          final Audience viewer = this.adventure().audience(ctx.getSource());
           for (final TextColor color : LINE_COLOURS) {
-            viewer.sendMessage(Identity.nil(), LINE.color(color));
+            ctx.getSource().sendMessage(Identity.nil(), LINE.color(color));
           }
           return Command.SINGLE_SUCCESS;
         }))
@@ -261,10 +258,8 @@ public class AdventureTester implements ModInitializer {
           .clickEvent(openFile(path.toString()))
           .build();
 
-        final FabricClientAudiences clientAudiences = FabricClientAudiences.of();
-        final Audience audience = clientAudiences.audience();
-        audience.sendMessage(message);
-        //ctx.getSource().sendFeedback(clientAudiences.toNative(message)); // Works as well!
+        ctx.getSource().getPlayer().sendMessage(message);
+        // ctx.getSource().sendFeedback(FabricClientAudiences.get().toNative(message)); // Works as well!
 
         return Command.SINGLE_SUCCESS;
       })));
@@ -300,7 +295,7 @@ public class AdventureTester implements ModInitializer {
           b.append(newline());
         }
         first = false;
-        b.append(this.adventure().toAdventure(player.getDisplayName()));
+        player.get(Identity.DISPLAY_NAME).ifPresent(b::append);
       }
     }));
     return text().content(players.size() + " players")

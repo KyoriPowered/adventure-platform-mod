@@ -118,7 +118,9 @@ public interface FabricAudiences {
    * @param entity the entity to convert
    * @return the entity as a sound emitter
    * @since 4.0.0
+   * @deprecated for removal, we can use loom interface injection instead
    */
+  @Deprecated(forRemoval = true, since = "5.3.0")
   static Sound.@NotNull Emitter asEmitter(final @NotNull Entity entity) {
     return (Sound.Emitter) entity;
   }
@@ -143,7 +145,9 @@ public interface FabricAudiences {
    * @param player the player to identify
    * @return an identified representation of the player
    * @since 4.0.0
+   * @deprecated for removal, use interface injection instead
    */
+  @Deprecated(forRemoval = true, since = "5.3.0")
   static @NotNull Identified identified(final @NotNull Player player) {
     return (Identified) player;
   }
