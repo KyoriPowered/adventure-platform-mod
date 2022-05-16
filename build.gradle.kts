@@ -36,7 +36,7 @@ quiltflower {
   preferences(
     "win" to 0
   )
-  addToRuntimeClasspath.set(true)
+  // addToRuntimeClasspath.set(true)
 }
 
 indra {
@@ -145,7 +145,6 @@ val testmodDevJar = tasks.register("testmodJar", Jar::class) {
 }
 
 val remapTestmodJar = tasks.register("remapTestmodJar", RemapJarTask::class) {
-  dependsOn(tasks.resolveQuiltflower)
   inputFile.set(testmodDevJar.flatMap { it.archiveFile })
   addNestedDependencies.set(false)
   classpath.from(testmod.map { it.runtimeClasspath })
@@ -184,7 +183,7 @@ fun createProcessResourceTemplates(name: String, setProvider: NamedDomainObjectP
         if (this.name.startsWith("fabric.mod")) {
             expand("project" to project)
         }
-        this.name = this.name.substringBeforeLast('.') + ".json" // todo
+        this.name = this.name.substringBeforeLast('.') + ".json"
     }
     // Convert pack meta, without changing extension
     filesMatching("pack.mcmeta") { convertFormat(ConfigFormats.YAML, ConfigFormats.JSON) }
@@ -195,7 +194,7 @@ fun createProcessResourceTemplates(name: String, setProvider: NamedDomainObjectP
   }
   set.resources.srcDir(task.map { it.outputs })
 
-// Have templates ready for IDEs
+  // Have templates ready for IDEs
   eclipse.synchronizationTasks(task)
   idea.project.settings.taskTriggers {
     afterSync(task)
