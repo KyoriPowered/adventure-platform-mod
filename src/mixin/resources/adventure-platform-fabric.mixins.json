@@ -16,10 +16,12 @@
     "PlayerListMixin",
     "PlayerMixin",
     "RconConsoleSourceMixin",
+    "ResourceKeyMixin",
     "ResourceLocationMixin",
     "ServerBossEventMixin",
     "ServerGamePacketListenerImplMixin",
     "ServerPlayerMixin",
+    "SoundEventMixin",
     "StyleSerializerMixin"
   ],
   "client": [
