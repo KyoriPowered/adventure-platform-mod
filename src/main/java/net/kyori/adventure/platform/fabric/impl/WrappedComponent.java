@@ -101,7 +101,7 @@ public final class WrappedComponent implements Component {
   @Environment(EnvType.CLIENT)
   Component deepConvertedLocalized() {
     Component converted = this.converted;
-    final Pointered target = (Pointered) Minecraft.getInstance().player;
+    final Pointered target = Minecraft.getInstance().player;
     final Object data = this.partition == null ? null : this.partition.apply(target);
     if (converted == null || this.deepConvertedLocalized != data) {
       converted = this.converted = this.rendered(target).deepConverted();

@@ -122,7 +122,7 @@ public interface FabricAudiences {
    */
   @Deprecated(forRemoval = true, since = "5.3.0")
   static Sound.@NotNull Emitter asEmitter(final @NotNull Entity entity) {
-    return (Sound.Emitter) entity;
+    return entity;
   }
 
   /**
@@ -149,7 +149,7 @@ public interface FabricAudiences {
    */
   @Deprecated(forRemoval = true, since = "5.3.0")
   static @NotNull Identified identified(final @NotNull Player player) {
-    return (Identified) player;
+    return player;
   }
 
   /**
