@@ -25,7 +25,6 @@ package net.kyori.adventure.platform.fabric.impl.client;
 
 import java.util.function.Function;
 import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.platform.fabric.FabricAudiences;
 import net.kyori.adventure.platform.fabric.FabricClientAudiences;
 import net.kyori.adventure.platform.fabric.impl.AdventureCommon;
 import net.kyori.adventure.platform.fabric.impl.WrappedComponent;
@@ -69,15 +68,6 @@ public class FabricClientAudiencesImpl implements FabricClientAudiences {
   @Override
   public @NotNull Component toNative(final net.kyori.adventure.text.@NotNull Component adventure) {
     return new WrappedComponent(requireNonNull(adventure, "adventure"), this.partition, this.renderer);
-  }
-
-  @Override
-  public net.kyori.adventure.text.@NotNull Component toAdventure(final @NotNull Component vanilla) {
-    if (vanilla instanceof WrappedComponent) {
-      return ((WrappedComponent) vanilla).wrapped();
-    } else {
-      return FabricAudiences.nonWrappingSerializer().deserialize(vanilla);
-    }
   }
 
   public Function<Pointered, ?> partition() {

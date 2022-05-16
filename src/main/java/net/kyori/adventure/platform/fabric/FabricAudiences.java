@@ -35,6 +35,7 @@ import net.kyori.adventure.platform.fabric.impl.accessor.ComponentSerializerAcce
 import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.flattener.ComponentFlattener;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
 import net.kyori.adventure.text.serializer.ComponentSerializer;
@@ -208,6 +209,10 @@ public interface FabricAudiences {
    * @param vanilla the native component
    * @return adventure component
    * @since 4.0.0
+   * @deprecated Use {@link ComponentLike#asComponent()} instead, implemented on {@link net.minecraft.network.chat.Component}
    */
-  @NotNull Component toAdventure(final net.minecraft.network.chat.@NotNull Component vanilla);
+  @Deprecated(forRemoval = true)
+  default @NotNull Component toAdventure(final net.minecraft.network.chat.@NotNull Component vanilla) {
+    return vanilla.asComponent();
+  }
 }

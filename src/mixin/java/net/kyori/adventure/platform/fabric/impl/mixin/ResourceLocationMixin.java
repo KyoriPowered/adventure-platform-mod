@@ -26,28 +26,28 @@ package net.kyori.adventure.platform.fabric.impl.mixin;
 import net.kyori.adventure.key.Key;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
+import org.spongepowered.asm.mixin.Implements;
+import org.spongepowered.asm.mixin.Interface;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(ResourceLocation.class)
-public abstract class ResourceLocationMixin implements Key {
+@Implements(@Interface(iface = Key.class, prefix = "key$")) // we have to soft-implement due to conflicting synthetic bridges for compareTo
+public abstract class ResourceLocationMixin {
   // @formatter:off
   @Shadow public abstract String shadow$getNamespace();
   @Shadow public abstract String shadow$getPath();
   // @formatter:on
 
-  @Override
-  public @NotNull String namespace() {
+  public @NotNull String key$namespace() {
     return this.shadow$getNamespace();
   }
 
-  @Override
-  public @NotNull String value() {
+  public @NotNull String key$value() {
     return this.shadow$getPath();
   }
 
-  @Override
-  public @NotNull String asString() {
+  public @NotNull String key$asString() {
     return this.toString();
   }
 }
