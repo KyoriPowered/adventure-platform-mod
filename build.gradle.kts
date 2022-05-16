@@ -145,6 +145,7 @@ val testmodDevJar = tasks.register("testmodJar", Jar::class) {
 }
 
 val remapTestmodJar = tasks.register("remapTestmodJar", RemapJarTask::class) {
+  dependsOn(tasks.resolveQuiltflower)
   inputFile.set(testmodDevJar.flatMap { it.archiveFile })
   addNestedDependencies.set(false)
   classpath.from(testmod.map { it.runtimeClasspath })
