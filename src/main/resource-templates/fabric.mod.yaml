@@ -29,6 +29,7 @@ custom:
     net/minecraft/class_3222: [ net/kyori/adventure/audience/Audience ] # net/minecraft/server/level/ServerPlayer
     net/minecraft/class_746: [ net/kyori/adventure/audience/Audience ] # net/minecraft/client/player/LocalPlayer
     net/minecraft/class_2561: [ net/kyori/adventure/text/ComponentLike ] # net/minecraft/network/chat/Component
+    net/minecraft/class_2960: [ net/kyori/adventure/key/Key ] # net/minecraft/resources/ResourceLocation
 
 depends:
   fabricloader: ">=0.4.0"

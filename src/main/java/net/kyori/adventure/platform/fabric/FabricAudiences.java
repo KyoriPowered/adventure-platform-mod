@@ -88,17 +88,26 @@ public interface FabricAudiences {
    * @param loc The Identifier to convert
    * @return The equivalent data as a Key
    * @since 4.0.0
+   * @deprecated ResourceLocation directly implements key, and all Keys are ResourceLocations since Loader 0.14.0
    */
+  @Deprecated(forRemoval = true, since = "5.3.0")
   @Contract("null -> null; !null -> !null")
   static Key toAdventure(final ResourceLocation loc) {
     if (loc == null) {
       return null;
+    }
+    if (loc instanceof Key) {
+      return loc;
     }
     return Key.key(loc.getNamespace(), loc.getPath());
   }
 
   /**
    * Convert a Kyori {@link Key} instance to a MC ResourceLocation.
+   *
+   * <p>All {@link Key} instances created in a Fabric environment with this
+   * mod are implemented by {@link ResourceLocation}, as long as loader 0.14 is present,
+   * so this is effectively a cast.</p>
    *
    * @param key The Key to convert
    * @return The equivalent data as an Identifier
@@ -108,6 +117,9 @@ public interface FabricAudiences {
   static ResourceLocation toNative(final Key key) {
     if (key == null) {
       return null;
+    }
+    if (key instanceof ResourceLocation) {
+      return (ResourceLocation) key;
     }
     return new ResourceLocation(key.namespace(), key.value());
   }

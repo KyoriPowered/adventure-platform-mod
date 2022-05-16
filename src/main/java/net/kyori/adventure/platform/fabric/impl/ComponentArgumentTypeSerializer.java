@@ -39,7 +39,7 @@ public final class ComponentArgumentTypeSerializer implements ArgumentSerializer
   @Override
   public ComponentArgumentType deserializeFromNetwork(final FriendlyByteBuf buffer) {
     final ResourceLocation id = buffer.readResourceLocation();
-    final ComponentArgumentType.Format format = ComponentArgumentType.Format.INDEX.value(FabricAudiences.toAdventure(id));
+    final ComponentArgumentType.Format format = ComponentArgumentType.Format.INDEX.value(id);
     if (format == null) {
       throw new IllegalArgumentException("Unknown Adventure component format: " + id);
     }
