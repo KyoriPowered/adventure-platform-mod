@@ -26,6 +26,7 @@ package net.kyori.adventure.platform.test.fabric;
 import com.google.common.base.Strings;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.logging.LogUtils;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -45,7 +46,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.ModInitializer;
@@ -78,10 +78,9 @@ import net.minecraft.commands.synchronization.SuggestionProviders;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.getInteger;
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
@@ -102,13 +101,13 @@ import static net.minecraft.commands.arguments.EntityArgument.getPlayers;
 import static net.minecraft.commands.arguments.EntityArgument.players;
 
 public class AdventureTester implements ModInitializer {
-  public static final Logger LOGGER = LogManager.getLogger();
+  public static final Logger LOGGER = LogUtils.getLogger();
   private static final Key FONT_MEOW = key("adventure", "meow");
   private static final Key FONT_IOSEVKA = key("adventure", "iosevka");
 
   private static final List<TextColor> LINE_COLOURS = IntStream.of(0x9400D3, 0x4B0082, 0x0000FF, 0x00FF00, 0xFFFF00, 0xFF7F00, 0xFF0000,
     0x55CDFC, 0xF7A8B8, 0xFFFFFF, 0xF7A8B8, 0x55CDFC)
-    .mapToObj(TextColor::color).collect(Collectors.toList());
+    .mapToObj(TextColor::color).toList();
   private static final Component LINE = text(Strings.repeat("█", 10));
 
   private static final String ARG_TEXT = "text";
@@ -343,23 +342,14 @@ public class AdventureTester implements ModInitializer {
   }
 
   static TextColor textColor(final BossBar.Color barColor) {
-    switch (barColor) {
-      case PINK:
-        return NamedTextColor.LIGHT_PURPLE;
-      case BLUE:
-        return NamedTextColor.BLUE;
-      case RED:
-        return NamedTextColor.RED;
-      case GREEN:
-        return NamedTextColor.GREEN;
-      case YELLOW:
-        return NamedTextColor.YELLOW;
-      case PURPLE:
-        return NamedTextColor.DARK_PURPLE;
-      case WHITE:
-        return NamedTextColor.WHITE;
-      default:
-        throw new IllegalArgumentException("Unknown color " + barColor);
-    }
+    return switch (barColor) {
+      case PINK -> NamedTextColor.LIGHT_PURPLE;
+      case BLUE -> NamedTextColor.BLUE;
+      case RED -> NamedTextColor.RED;
+      case GREEN -> NamedTextColor.GREEN;
+      case YELLOW -> NamedTextColor.YELLOW;
+      case PURPLE -> NamedTextColor.DARK_PURPLE;
+      case WHITE -> NamedTextColor.WHITE;
+    };
   }
 }

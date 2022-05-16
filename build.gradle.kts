@@ -1,6 +1,7 @@
 import ca.stellardrift.build.configurate.ConfigFormats
 import ca.stellardrift.build.configurate.transformations.convertFormat
 import net.fabricmc.loom.task.GenerateSourcesTask
+import net.fabricmc.loom.task.RemapJarTask
 import net.fabricmc.loom.task.RunGameTask
 import org.jetbrains.gradle.ext.settings
 import org.jetbrains.gradle.ext.taskTriggers
@@ -97,10 +98,6 @@ dependencies {
   checkstyle(libs.stylecheck)
 }
 
-// tasks.withType(net.fabricmc.loom.task.RunGameTask::class) {
-//   setClasspath(files(loom.unmappedModCollection, sourceSets.main.map { it.runtimeClasspath }))
-// }
-
 sourceSets {
   main {
     java.srcDirs(
@@ -112,12 +109,12 @@ sourceSets {
       "src/mixin/resources/"
     )
   }
-  register("testmod") {
-    compileClasspath += main.get().compileClasspath
-    runtimeClasspath += main.get().runtimeClasspath
-    java.srcDirs("src/testmodMixin/java")
-    resources.srcDirs("src/testmodMixin/resources")
-  }
+}
+val testmod = sourceSets.register("testmod") {
+  compileClasspath += sourceSets.main.get().compileClasspath
+  runtimeClasspath += sourceSets.main.get().runtimeClasspath
+  java.srcDirs("src/testmodMixin/java")
+  resources.srcDirs("src/testmodMixin/resources")
 }
 
 dependencies {
@@ -135,6 +132,27 @@ loom {
       server()
     }
   }
+  mixin {
+    add(sourceSets.main.get(), "adventure-platform-fabric-refmap.json")
+    add(testmod.get(), "adventure-platform-fabric-testmod-refmap.json")
+  }
+}
+
+// Create a remapped testmod jar
+val testmodDevJar = tasks.register("testmodJar", Jar::class) {
+  from(testmod.map { it.output })
+  archiveClassifier.set("testmod-dev")
+}
+
+val remapTestmodJar = tasks.register("remapTestmodJar", RemapJarTask::class) {
+  inputFile.set(testmodDevJar.flatMap { it.archiveFile })
+  addNestedDependencies.set(false)
+  classpath.from(testmod.map { it.runtimeClasspath })
+  archiveClassifier.set("testmod")
+}
+
+tasks.build {
+  dependsOn(remapTestmodJar)
 }
 
 tasks.withType(RunGameTask::class) {
@@ -174,27 +192,24 @@ fun createProcessResourceTemplates(name: String, setProvider: NamedDomainObjectP
   tasks.named(set.processResourcesTaskName) {
     dependsOn(name)
   }
+  set.resources.srcDir(task.map { it.outputs })
 
+// Have templates ready for IDEs
   eclipse.synchronizationTasks(task)
   idea.project.settings.taskTriggers {
     afterSync(task)
   }
   idea.module.generatedSourceDirs.add(destinationDir)
 
-  set.resources.srcDir(task.map { it.outputs })
-
   return task
 }
 
 val generateTemplates = createProcessResourceTemplates("generateTemplates", sourceSets.main)
-val generateTestmodTemplates = createProcessResourceTemplates("generateTestmodTemplates", sourceSets.named("testmod"))
+val generateTestmodTemplates = createProcessResourceTemplates("generateTestmodTemplates", testmod)
 
-// Have templates ready for IDEs
 tasks.withType(GenerateSourcesTask::class).configureEach {
   dependsOn(generateTemplates)
 }
-
-eclipse.synchronizationTasks(generateTemplates, generateTestmodTemplates)
 
 indra {
   github("KyoriPowered", "adventure-platform-fabric") {
