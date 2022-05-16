@@ -33,9 +33,9 @@ jobs:
         uses: "gradle/gradle-build-action@v2"
         with:
           cache-read-only: "${{ !startsWith(github.ref, 'refs/heads/mc/') || github.event_name == 'pull_request' }}"
-          arguments: "generateTemplates generateTestmodTemplates" # Bonk loom
+          arguments: "generateTemplates generateTestmodTemplates --stacktrace" # Bonk loom
       - name: "run gradle build"
-        run: "./gradlew build"
+        run: "./gradlew build --stacktrace"
       - name: "Archive test results"
         if: "${{ always() }}"
         uses: "actions/upload-artifact@v3"
