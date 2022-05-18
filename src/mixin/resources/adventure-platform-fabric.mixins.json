@@ -10,6 +10,7 @@
     "EntityMixin",
     "FriendlyByteBufMixin",
     "GameProfileMixin",
+    "ItemStackMixin",
     "KeyMixin",
     "MinecraftServerMixin",
     "PacketEncoderMixin",

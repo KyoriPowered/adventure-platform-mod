@@ -23,33 +23,33 @@
  */
 package net.kyori.adventure.platform.fabric.impl.mixin;
 
-import java.util.UUID;
 import java.util.function.UnaryOperator;
 import net.kyori.adventure.key.Key;
-import net.kyori.adventure.sound.Sound;
+import net.kyori.adventure.nbt.api.BinaryTagHolder;
 import net.kyori.adventure.text.event.HoverEvent;
-import net.kyori.adventure.text.event.HoverEvent.ShowEntity;
 import net.kyori.adventure.text.event.HoverEventSource;
 import net.minecraft.core.Registry;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
-@Mixin(Entity.class)
-public abstract class EntityMixin implements Sound.Emitter, HoverEventSource<HoverEvent.ShowEntity> {
+@Mixin(ItemStack.class)
+public abstract class ItemStackMixin implements HoverEventSource<HoverEvent.ShowItem> {
   // @formatter:off
-  @Shadow public abstract Component shadow$getName();
-  @Shadow public abstract EntityType<?> shadow$getType();
-  @Shadow public abstract UUID shadow$getUUID();
+  @Shadow public abstract int shadow$getCount();
+  @Shadow public abstract Item shadow$getItem();
+  @Shadow public abstract CompoundTag shadow$getTag();
   // @formatter:on
 
   @Override
-  public @NotNull HoverEvent<ShowEntity> asHoverEvent(final @NotNull UnaryOperator<ShowEntity> op) {
-    final Key entityType = Registry.ENTITY_TYPE.getKey(this.shadow$getType());
-    final ShowEntity data = HoverEvent.ShowEntity.of(entityType, this.shadow$getUUID(), this.shadow$getName().asComponent());
-    return HoverEvent.showEntity(op.apply(data));
+  public @NotNull HoverEvent<HoverEvent.ShowItem> asHoverEvent(final @NotNull UnaryOperator<HoverEvent.ShowItem> op) {
+    final Key itemType = Registry.ITEM.getKey(this.shadow$getItem());
+    final CompoundTag nbt = this.shadow$getTag();
+    final HoverEvent.ShowItem item = HoverEvent.ShowItem.of(itemType, this.shadow$getCount(), nbt == null ? null : BinaryTagHolder.binaryTagHolder(nbt.toString()));
+    return HoverEvent.showItem(op.apply(item));
   }
+
 }
