@@ -76,7 +76,9 @@ public interface PlayerLocales {
    * @param player the source of the locale
    * @return player locale
    * @since 4.0.0
+   * @deprecated Use pointer instead, {@code player.get(Identity.LOCALE).orElse(Locale.getDefault())} on a server or client player
    */
+  @Deprecated(forRemoval = true, since = "5.3.0")
   static @NotNull Locale locale(final @NotNull Player player) {
     return player instanceof LocaleHolderBridge ? ((LocaleHolderBridge) player).adventure$locale() : Locale.getDefault();
   }

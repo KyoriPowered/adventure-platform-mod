@@ -25,7 +25,6 @@ package net.kyori.adventure.platform.fabric.impl.mixin;
 
 import net.kyori.adventure.platform.fabric.impl.accessor.ConnectionAccess;
 import net.kyori.adventure.platform.fabric.impl.server.FriendlyByteBufBridge;
-import net.kyori.adventure.pointer.Pointered;
 import net.minecraft.network.Connection;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -43,6 +42,6 @@ public class ServerGamePacketListenerImplMixin {
   @Inject(method = "<init>", at = @At(value = "FIELD", target = "Lnet/minecraft/server/level/ServerPlayer;connection:Lnet/minecraft/server/network/ServerGamePacketListenerImpl;", opcode = Opcodes.PUTFIELD))
   private void adventure$initTracking(final MinecraftServer server, final Connection conn, final ServerPlayer player, final CallbackInfo ci) {
     ((ConnectionAccess) conn).getChannel().attr(FriendlyByteBufBridge.CHANNEL_RENDER_DATA)
-      .set((Pointered) player);
+      .set(player);
   }
 }

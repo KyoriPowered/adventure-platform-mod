@@ -21,35 +21,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.adventure.platform.fabric.impl.mixin;
+package net.kyori.adventure.platform.fabric.impl.accessor;
 
-import java.util.UUID;
-import java.util.function.UnaryOperator;
-import net.kyori.adventure.key.Key;
-import net.kyori.adventure.sound.Sound;
-import net.kyori.adventure.text.event.HoverEvent;
-import net.kyori.adventure.text.event.HoverEvent.ShowEntity;
-import net.kyori.adventure.text.event.HoverEventSource;
-import net.minecraft.core.Registry;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
+import net.kyori.adventure.key.InvalidKeyException;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.gen.Invoker;
 
-@Mixin(Entity.class)
-public abstract class EntityMixin implements Sound.Emitter, HoverEventSource<HoverEvent.ShowEntity> {
-  // @formatter:off
-  @Shadow public abstract Component shadow$getName();
-  @Shadow public abstract EntityType<?> shadow$getType();
-  @Shadow public abstract UUID shadow$getUUID();
-  // @formatter:on
-
-  @Override
-  public @NotNull HoverEvent<ShowEntity> asHoverEvent(final @NotNull UnaryOperator<ShowEntity> op) {
-    final Key entityType = Registry.ENTITY_TYPE.getKey(this.shadow$getType());
-    final ShowEntity data = HoverEvent.ShowEntity.of(entityType, this.shadow$getUUID(), this.shadow$getName().asComponent());
-    return HoverEvent.showEntity(op.apply(data));
+@Mixin(InvalidKeyException.class)
+public interface InvalidKeyExceptionAccess {
+  @Invoker("<init>")
+  static InvalidKeyException newInvalidKeyException(final @NotNull String keyNamespace, final @NotNull String keyValue, final @Nullable String message) {
+    throw new IncompatibleClassChangeError("mixin missing");
   }
 }

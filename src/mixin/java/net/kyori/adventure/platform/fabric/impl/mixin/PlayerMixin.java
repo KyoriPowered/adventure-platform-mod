@@ -26,7 +26,6 @@ package net.kyori.adventure.platform.fabric.impl.mixin;
 import com.mojang.authlib.GameProfile;
 import net.kyori.adventure.identity.Identified;
 import net.kyori.adventure.identity.Identity;
-import net.kyori.adventure.platform.fabric.impl.NonWrappingComponentSerializer;
 import net.kyori.adventure.platform.fabric.impl.PointerProviderBridge;
 import net.kyori.adventure.pointer.Pointers;
 import net.minecraft.world.entity.EntityType;
@@ -69,7 +68,7 @@ public abstract class PlayerMixin extends LivingEntity implements Identified, Po
         final Pointers.Builder builder = Pointers.builder()
           .withDynamic(Identity.NAME, () -> this.shadow$getGameProfile().getName())
           .withDynamic(Identity.UUID, this::getUUID)
-          .withDynamic(Identity.DISPLAY_NAME, () -> NonWrappingComponentSerializer.INSTANCE.deserialize(this.getDisplayName()));
+          .withDynamic(Identity.DISPLAY_NAME, () -> this.getDisplayName().asComponent());
 
         // add any extra data
         this.adventure$populateExtraPointers(builder);

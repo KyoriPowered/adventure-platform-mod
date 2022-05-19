@@ -23,6 +23,8 @@ We appreciate contributions of any type. For any new features or typo-fix/style 
 
 All the adventure projects are built with Gradle and use a common checkstyle configuration. `adventure-platform-fabric` requires the same Java version that Minecraft itself does in the target version. Please make sure all tests pass, license headers are updated, and checkstyle passes to help us review your contribution.
 
+An unfortunate quirk with Loom is that it resolves dependencies in the configuration phase, before any task execution can happen, so we have to run Gradle twice to generate templates, then apply our in-project interface injections. Sorry!
+
 `adventure-platform-fabric` is released under the terms of the [MIT License](LICENSE).
 
 [Discord]: https://discord.gg/MMfhJ8F

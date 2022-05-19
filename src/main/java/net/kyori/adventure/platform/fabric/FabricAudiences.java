@@ -35,6 +35,7 @@ import net.kyori.adventure.platform.fabric.impl.accessor.ComponentSerializerAcce
 import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.flattener.ComponentFlattener;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
 import net.kyori.adventure.text.serializer.ComponentSerializer;
@@ -88,17 +89,26 @@ public interface FabricAudiences {
    * @param loc The Identifier to convert
    * @return The equivalent data as a Key
    * @since 4.0.0
+   * @deprecated ResourceLocation directly implements key, and all Keys are ResourceLocations since Loader 0.14.0
    */
+  @Deprecated(forRemoval = true, since = "5.3.0")
   @Contract("null -> null; !null -> !null")
   static Key toAdventure(final ResourceLocation loc) {
     if (loc == null) {
       return null;
+    }
+    if (loc instanceof Key) {
+      return loc;
     }
     return Key.key(loc.getNamespace(), loc.getPath());
   }
 
   /**
    * Convert a Kyori {@link Key} instance to a MC ResourceLocation.
+   *
+   * <p>All {@link Key} instances created in a Fabric environment with this
+   * mod are implemented by {@link ResourceLocation}, as long as loader 0.14 is present,
+   * so this is effectively a cast.</p>
    *
    * @param key The Key to convert
    * @return The equivalent data as an Identifier
@@ -109,6 +119,9 @@ public interface FabricAudiences {
     if (key == null) {
       return null;
     }
+    if (key instanceof ResourceLocation) {
+      return (ResourceLocation) key;
+    }
     return new ResourceLocation(key.namespace(), key.value());
   }
 
@@ -118,9 +131,11 @@ public interface FabricAudiences {
    * @param entity the entity to convert
    * @return the entity as a sound emitter
    * @since 4.0.0
+   * @deprecated for removal, we can use loom interface injection instead
    */
+  @Deprecated(forRemoval = true, since = "5.3.0")
   static Sound.@NotNull Emitter asEmitter(final @NotNull Entity entity) {
-    return (Sound.Emitter) entity;
+    return entity;
   }
 
   /**
@@ -143,9 +158,11 @@ public interface FabricAudiences {
    * @param player the player to identify
    * @return an identified representation of the player
    * @since 4.0.0
+   * @deprecated for removal, use interface injection instead
    */
+  @Deprecated(forRemoval = true, since = "5.3.0")
   static @NotNull Identified identified(final @NotNull Player player) {
-    return (Identified) player;
+    return player;
   }
 
   /**
@@ -192,6 +209,10 @@ public interface FabricAudiences {
    * @param vanilla the native component
    * @return adventure component
    * @since 4.0.0
+   * @deprecated Use {@link ComponentLike#asComponent()} instead, implemented on {@link net.minecraft.network.chat.Component}
    */
-  @NotNull Component toAdventure(final net.minecraft.network.chat.@NotNull Component vanilla);
+  @Deprecated(forRemoval = true)
+  default @NotNull Component toAdventure(final net.minecraft.network.chat.@NotNull Component vanilla) {
+    return vanilla.asComponent();
+  }
 }

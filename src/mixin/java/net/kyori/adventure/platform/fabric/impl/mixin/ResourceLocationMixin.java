@@ -21,51 +21,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.adventure.platform.fabric;
+package net.kyori.adventure.platform.fabric.impl.mixin;
 
-import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.arguments.ArgumentType;
-import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kyori.adventure.key.Key;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
+import org.spongepowered.asm.mixin.Implements;
+import org.spongepowered.asm.mixin.Interface;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 
-/**
- * An argument that will be decoded as a Key.
- *
- * @since 4.0.0
- */
-public final class KeyArgumentType implements ArgumentType<Key> {
-  private static final KeyArgumentType INSTANCE = new KeyArgumentType();
+@Mixin(ResourceLocation.class)
+@Implements(@Interface(iface = Key.class, prefix = "key$")) // we have to soft-implement due to conflicting synthetic bridges for compareTo
+public abstract class ResourceLocationMixin {
+  // @formatter:off
+  @Shadow public abstract String shadow$getNamespace();
+  @Shadow public abstract String shadow$getPath();
+  // @formatter:on
 
-  /**
-   * Get an argument type instance for {@link Key}s.
-   *
-   * @return key argument type
-   * @since 4.0.0
-   */
-  public static @NotNull KeyArgumentType key() {
-    return INSTANCE;
+  public @NotNull String key$namespace() {
+    return this.shadow$getNamespace();
   }
 
-  /**
-   * Get a {@link Key}-typed value from a parsed {@link CommandContext}.
-   *
-   * @param ctx context to get the value from
-   * @param id id the argument was taken from
-   * @return provided argument
-   * @since 4.0.0
-   */
-  public static @NotNull Key key(final @NotNull CommandContext<?> ctx, final @NotNull String id) {
-    return ctx.getArgument(id, Key.class);
+  public @NotNull String key$value() {
+    return this.shadow$getPath();
   }
 
-  private KeyArgumentType() {
-  }
-
-  @Override
-  public @NotNull Key parse(final @NotNull StringReader reader) throws CommandSyntaxException {
-    return ResourceLocation.read(reader);
+  public @NotNull String key$asString() {
+    return this.toString();
   }
 }

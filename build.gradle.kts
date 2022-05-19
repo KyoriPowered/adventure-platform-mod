@@ -1,6 +1,10 @@
 import ca.stellardrift.build.configurate.ConfigFormats
 import ca.stellardrift.build.configurate.transformations.convertFormat
+import net.fabricmc.loom.task.GenerateSourcesTask
+import net.fabricmc.loom.task.RemapJarTask
 import net.fabricmc.loom.task.RunGameTask
+import org.jetbrains.gradle.ext.settings
+import org.jetbrains.gradle.ext.taskTriggers
 
 plugins {
   alias(libs.plugins.loom)
@@ -10,6 +14,7 @@ plugins {
   alias(libs.plugins.indra.licenseHeader)
   alias(libs.plugins.indra.checkstyle)
   alias(libs.plugins.indra.sonatype)
+  alias(libs.plugins.ideaExt)
 }
 
 repositories {
@@ -31,7 +36,7 @@ quiltflower {
   preferences(
     "win" to 0
   )
-  addToRuntimeClasspath.set(true)
+  // addToRuntimeClasspath.set(true)
 }
 
 indra {
@@ -93,10 +98,6 @@ dependencies {
   checkstyle(libs.stylecheck)
 }
 
-// tasks.withType(net.fabricmc.loom.task.RunGameTask::class) {
-//   setClasspath(files(loom.unmappedModCollection, sourceSets.main.map { it.runtimeClasspath }))
-// }
-
 sourceSets {
   main {
     java.srcDirs(
@@ -108,12 +109,12 @@ sourceSets {
       "src/mixin/resources/"
     )
   }
-  register("testmod") {
-    compileClasspath += main.get().compileClasspath
-    runtimeClasspath += main.get().runtimeClasspath
-    java.srcDirs("src/testmodMixin/java")
-    resources.srcDirs("src/testmodMixin/resources")
-  }
+}
+val testmod = sourceSets.register("testmod") {
+  compileClasspath += sourceSets.main.get().compileClasspath
+  runtimeClasspath += sourceSets.main.get().runtimeClasspath
+  java.srcDirs("src/testmodMixin/java")
+  resources.srcDirs("src/testmodMixin/resources")
 }
 
 dependencies {
@@ -131,6 +132,27 @@ loom {
       server()
     }
   }
+  mixin {
+    add(sourceSets.main.get(), "adventure-platform-fabric-refmap.json")
+    add(testmod.get(), "adventure-platform-fabric-testmod-refmap.json")
+  }
+}
+
+// Create a remapped testmod jar
+val testmodDevJar = tasks.register("testmodJar", Jar::class) {
+  from(testmod.map { it.output })
+  archiveClassifier.set("testmod-dev")
+}
+
+val remapTestmodJar = tasks.register("remapTestmodJar", RemapJarTask::class) {
+  inputFile.set(testmodDevJar.flatMap { it.archiveFile })
+  addNestedDependencies.set(false)
+  classpath.from(testmod.map { it.runtimeClasspath })
+  archiveClassifier.set("testmod")
+}
+
+tasks.build {
+  dependsOn(remapTestmodJar)
 }
 
 tasks.withType(RunGameTask::class) {
@@ -138,7 +160,14 @@ tasks.withType(RunGameTask::class) {
 }
 
 // Convert yaml files to josn
-tasks.withType(ProcessResources::class.java).configureEach {
+val generatedResourcesDir = project.layout.buildDirectory.dir("generated-resources").get().asFile
+fun createProcessResourceTemplates(name: String, setProvider: NamedDomainObjectProvider<SourceSet>): TaskProvider<out Task> {
+  val destinationDir = generatedResourcesDir.resolve(name)
+  val set = setProvider.get()
+  val task = tasks.register(name, Sync::class.java) {
+    this.destinationDir = destinationDir
+    from("src/${set.name}/resource-templates")
+
     inputs.property("version", project.version)
 
     // Convert data files yaml -> json
@@ -151,13 +180,35 @@ tasks.withType(ProcessResources::class.java).configureEach {
             .toList()
     ) {
         convertFormat(ConfigFormats.YAML, ConfigFormats.JSON)
-        if (name.startsWith("fabric.mod")) {
+        if (this.name.startsWith("fabric.mod")) {
             expand("project" to project)
         }
-        name = name.substringBeforeLast('.') + ".json"
+        this.name = this.name.substringBeforeLast('.') + ".json"
     }
     // Convert pack meta, without changing extension
     filesMatching("pack.mcmeta") { convertFormat(ConfigFormats.YAML, ConfigFormats.JSON) }
+  }
+
+  tasks.named(set.processResourcesTaskName) {
+    dependsOn(name)
+  }
+  set.resources.srcDir(task.map { it.outputs })
+
+  // Have templates ready for IDEs
+  eclipse.synchronizationTasks(task)
+  idea.project.settings.taskTriggers {
+    afterSync(task)
+  }
+  idea.module.generatedSourceDirs.add(destinationDir)
+
+  return task
+}
+
+val generateTemplates = createProcessResourceTemplates("generateTemplates", sourceSets.main)
+val generateTestmodTemplates = createProcessResourceTemplates("generateTestmodTemplates", testmod)
+
+tasks.withType(GenerateSourcesTask::class).configureEach {
+  dependsOn(generateTemplates)
 }
 
 indra {

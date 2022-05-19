@@ -21,51 +21,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.adventure.platform.fabric;
+package net.kyori.adventure.platform.fabric.impl.mixin;
 
-import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.arguments.ArgumentType;
-import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.sound.Sound;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
 import org.jetbrains.annotations.NotNull;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 
-/**
- * An argument that will be decoded as a Key.
- *
- * @since 4.0.0
- */
-public final class KeyArgumentType implements ArgumentType<Key> {
-  private static final KeyArgumentType INSTANCE = new KeyArgumentType();
-
-  /**
-   * Get an argument type instance for {@link Key}s.
-   *
-   * @return key argument type
-   * @since 4.0.0
-   */
-  public static @NotNull KeyArgumentType key() {
-    return INSTANCE;
-  }
-
-  /**
-   * Get a {@link Key}-typed value from a parsed {@link CommandContext}.
-   *
-   * @param ctx context to get the value from
-   * @param id id the argument was taken from
-   * @return provided argument
-   * @since 4.0.0
-   */
-  public static @NotNull Key key(final @NotNull CommandContext<?> ctx, final @NotNull String id) {
-    return ctx.getArgument(id, Key.class);
-  }
-
-  private KeyArgumentType() {
-  }
+@Mixin(SoundEvent.class)
+public class SoundEventMixin implements Sound.Type {
+  // @formatter:off
+  @Shadow @Final private ResourceLocation location;
+  // @formatter:on
 
   @Override
-  public @NotNull Key parse(final @NotNull StringReader reader) throws CommandSyntaxException {
-    return ResourceLocation.read(reader);
+  public @NotNull Key key() {
+    return this.location;
   }
 }

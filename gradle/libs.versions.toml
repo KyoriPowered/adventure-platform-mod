@@ -27,17 +27,18 @@ jetbrainsAnnotations = "org.jetbrains:annotations:23.0.0"
 minecraft = "com.mojang:minecraft:1.18.2"
 
 # build
-stylecheck = "ca.stellardrift:stylecheck:0.1"
 contractValidator = "ca.stellardrift:contract-validator:1.0.1"
+stylecheck = "ca.stellardrift:stylecheck:0.1"
 
 # For Renovate, do not use directly
-zQuiltflower = { module = "org.quiltmc:quiltflower", version.ref = "quiltflower" }
 zCheckstyle = { module = "com.puppycrawl.tools:checkstyle", version.ref = "checkstyle" }
+zQuiltflower = { module = "org.quiltmc:quiltflower", version.ref = "quiltflower" }
 
 [plugins]
+configurateTransformations = "ca.stellardrift.configurate-transformations:5.0.1"
 loom = "fabric-loom:0.11.+"
 loomQuiltflower = "io.github.juuxel.loom-quiltflower:1.7.1"
-configurateTransformations = "ca.stellardrift.configurate-transformations:5.0.1"
+ideaExt = "org.jetbrains.gradle.plugin.idea-ext:1.1.4"
 indra = { id = "net.kyori.indra", version.ref = "indra" }
 indra-licenseHeader = { id = "net.kyori.indra.license-header", version.ref = "indra" }
 indra-checkstyle = { id = "net.kyori.indra.checkstyle", version.ref = "indra" }

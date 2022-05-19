@@ -21,51 +21,34 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.adventure.platform.fabric;
+package net.kyori.adventure.platform.fabric.impl.mixin;
 
-import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.arguments.ArgumentType;
-import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.kyori.adventure.key.InvalidKeyException;
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.platform.fabric.impl.accessor.InvalidKeyExceptionAccess;
+import net.minecraft.ResourceLocationException;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
 
-/**
- * An argument that will be decoded as a Key.
- *
- * @since 4.0.0
- */
-public final class KeyArgumentType implements ArgumentType<Key> {
-  private static final KeyArgumentType INSTANCE = new KeyArgumentType();
-
+@Mixin(value = Key.class, remap = false)
+public interface KeyMixin {
   /**
-   * Get an argument type instance for {@link Key}s.
+   * Creates a key.
    *
-   * @return key argument type
-   * @since 4.0.0
+   * @param namespace the namespace
+   * @param value the value
+   * @return the key
+   * @throws InvalidKeyException if the namespace or value contains an invalid character
+   * @reason implemented by mixin to the Vanilla class
    */
-  public static @NotNull KeyArgumentType key() {
-    return INSTANCE;
-  }
-
-  /**
-   * Get a {@link Key}-typed value from a parsed {@link CommandContext}.
-   *
-   * @param ctx context to get the value from
-   * @param id id the argument was taken from
-   * @return provided argument
-   * @since 4.0.0
-   */
-  public static @NotNull Key key(final @NotNull CommandContext<?> ctx, final @NotNull String id) {
-    return ctx.getArgument(id, Key.class);
-  }
-
-  private KeyArgumentType() {
-  }
-
-  @Override
-  public @NotNull Key parse(final @NotNull StringReader reader) throws CommandSyntaxException {
-    return ResourceLocation.read(reader);
+  @Overwrite
+  static @NotNull Key key(final String namespace, final String value) {
+    try {
+      return new ResourceLocation(namespace, value);
+    } catch (final ResourceLocationException ex) {
+      throw InvalidKeyExceptionAccess.newInvalidKeyException(namespace, value, ex.getMessage());
+    }
   }
 }
