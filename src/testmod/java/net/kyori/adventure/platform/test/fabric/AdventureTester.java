@@ -26,7 +26,6 @@ package net.kyori.adventure.platform.test.fabric;
 import com.google.common.base.Strings;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.logging.LogUtils;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -70,6 +69,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.kyori.adventure.translation.GlobalTranslator;
 import net.kyori.adventure.translation.TranslationRegistry;
@@ -80,7 +80,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.getInteger;
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
@@ -101,7 +100,7 @@ import static net.minecraft.commands.arguments.EntityArgument.getPlayers;
 import static net.minecraft.commands.arguments.EntityArgument.players;
 
 public class AdventureTester implements ModInitializer {
-  public static final Logger LOGGER = LogUtils.getLogger();
+  public static final ComponentLogger LOGGER = ComponentLogger.logger();
   private static final Key FONT_MEOW = key("adventure", "meow");
   private static final Key FONT_IOSEVKA = key("adventure", "iosevka");
 
@@ -136,6 +135,8 @@ public class AdventureTester implements ModInitializer {
       testmodRegistry.registerAll(lang, ResourceBundle.getBundle("net.kyori.adventure.platform.test.fabric.messages", lang), false);
     }
     GlobalTranslator.translator().addSource(testmodRegistry);
+
+    LOGGER.info(Component.text("Setting up mod! {} is a cool mode"), Component.translatable("gameMode.adventure", NamedTextColor.BLUE));
 
     // Set up platform
     ServerLifecycleEvents.SERVER_STARTING.register(server -> this.platform = FabricServerAudiences.of(server));
