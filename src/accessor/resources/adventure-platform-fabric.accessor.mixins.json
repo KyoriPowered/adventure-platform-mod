@@ -6,12 +6,10 @@
     "ArgumentTypeInfosAccess",
     "ComponentSerializerAccess",
     "ConnectionAccess",
-    "InvalidKeyExceptionAccess"
+    "InvalidKeyExceptionAccess",
+    "LevelAccess"
   ],
   "client": [
     "client.AbstractSoundInstanceAccess"
-  ],
-  "injectors": {
-    "defaultRequire": 1
-  }
+  ]
 }

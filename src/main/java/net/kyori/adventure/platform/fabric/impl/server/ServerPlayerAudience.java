@@ -45,7 +45,9 @@ import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
+import net.minecraft.network.chat.ChatSender;
 import net.minecraft.network.chat.ChatType;
+import net.minecraft.network.chat.PlayerChatMessage;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundClearTitlesPacket;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
@@ -89,11 +91,11 @@ public final class ServerPlayerAudience implements Audience {
     final ResourceKey<ChatType> mcType;
     if (type == net.kyori.adventure.audience.MessageType.CHAT) {
       mcType = ChatType.CHAT;
+      this.player.sendChatMessage(PlayerChatMessage.unsigned(this.controller.toNative(text)), new ChatSender(source.uuid(), null), mcType);
     } else {
       mcType = ChatType.SYSTEM;
+      this.player.sendSystemMessage(this.controller.toNative(text), mcType/*, source.uuid()*/);
     }
-
-    this.player.sendSystemMessage(this.controller.toNative(text), mcType/*, source.uuid()*/);
   }
 
   @Override

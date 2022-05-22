@@ -34,6 +34,7 @@ import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.fabric.FabricAudiences;
 import net.kyori.adventure.platform.fabric.impl.GameEnums;
 import net.kyori.adventure.platform.fabric.impl.PointerProviderBridge;
+import net.kyori.adventure.platform.fabric.impl.accessor.LevelAccess;
 import net.kyori.adventure.platform.fabric.impl.accessor.client.AbstractSoundInstanceAccess;
 import net.kyori.adventure.pointer.Pointers;
 import net.kyori.adventure.sound.Sound;
@@ -164,14 +165,21 @@ public class ClientAudience implements Audience {
     final Entity targetEntity;
     if (emitter == Sound.Emitter.self()) {
       targetEntity = this.client.player;
-    } else if (emitter instanceof Entity) {
-      targetEntity = (Entity) emitter;
+    } else if (emitter instanceof final Entity entity) {
+      targetEntity = entity;
     } else {
       throw new IllegalArgumentException("Provided emitter '" + emitter + "' was not Sound.Emitter.self() or an Entity");
     }
 
     // Initialize with a placeholder event
-    final EntityBoundSoundInstance mcSound = new EntityBoundSoundInstance(SoundEvents.ITEM_PICKUP, GameEnums.SOUND_SOURCE.toMinecraft(sound.source()), sound.volume(), sound.pitch(), targetEntity, System.nanoTime());
+    final EntityBoundSoundInstance mcSound = new EntityBoundSoundInstance(
+      SoundEvents.ITEM_PICKUP,
+      GameEnums.SOUND_SOURCE.toMinecraft(sound.source()),
+      sound.volume(),
+      sound.pitch(),
+      targetEntity,
+      ((LevelAccess) targetEntity.level).accessor$threadSafeRandom().nextLong()
+    );
     // Then apply the ResourceLocation of our real sound event
     ((AbstractSoundInstanceAccess) mcSound).setLocation(FabricAudiences.toNative(sound.name()));
 
@@ -180,8 +188,20 @@ public class ClientAudience implements Audience {
 
   @Override
   public void playSound(final @NotNull Sound sound, final double x, final double y, final double z) {
-    this.client.getSoundManager().play(new SimpleSoundInstance(FabricAudiences.toNative(sound.name()), GameEnums.SOUND_SOURCE.toMinecraft(sound.source()),
-      sound.volume(), sound.pitch(), RandomSource.create(), false, 0, SoundInstance.Attenuation.LINEAR, x, y, z, false));
+    this.client.getSoundManager().play(new SimpleSoundInstance(
+      FabricAudiences.toNative(sound.name()),
+      GameEnums.SOUND_SOURCE.toMinecraft(sound.source()),
+      sound.volume(),
+      sound.pitch(),
+      RandomSource.create(((LevelAccess) this.client.level).accessor$threadSafeRandom().nextLong()),
+      false,
+      0,
+      SoundInstance.Attenuation.LINEAR,
+      x,
+      y,
+      z,
+      false
+      ));
   }
 
   @Override
