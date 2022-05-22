@@ -75,6 +75,7 @@ import net.kyori.adventure.translation.GlobalTranslator;
 import net.kyori.adventure.translation.TranslationRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.synchronization.SuggestionProviders;
+import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
@@ -157,6 +158,11 @@ public class AdventureTester implements ModInitializer {
           ctx.getSource().sendMessage(ctx.getSource(), result);
           ctx.getSource().sendMessage(text("And a second time!", NamedTextColor.DARK_PURPLE));
           return 1;
+        })))
+        .then(literal("eval").then(argument(ARG_TEXT, ComponentArgumentType.miniMessage()).executes(ctx -> {
+          final Component result = component(ctx, ARG_TEXT);
+          ctx.getSource().sendMessage(ctx.getSource(), ComponentUtils.updateForEntity(ctx.getSource(), this.platform.toNative(result), ctx.getSource().getEntity(), 0));
+          return Command.SINGLE_SUCCESS;
         })))
         .then(literal("countdown").then(argument(ARG_SECONDS, integer()).executes(ctx -> { // multiple boss bars!
           final Audience audience = this.adventure().audience(ctx.getSource());
