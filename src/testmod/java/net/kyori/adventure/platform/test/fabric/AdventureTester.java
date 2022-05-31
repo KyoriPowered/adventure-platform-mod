@@ -49,9 +49,9 @@ import java.util.function.Consumer;
 import java.util.stream.IntStream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.client.command.v1.ClientCommandManager;
-import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
-import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.kyori.adventure.audience.Audience;
@@ -60,9 +60,7 @@ import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.fabric.AdventureCommandSourceStack;
-import net.kyori.adventure.platform.fabric.ComponentArgumentType;
 import net.kyori.adventure.platform.fabric.FabricServerAudiences;
-import net.kyori.adventure.platform.fabric.KeyArgumentType;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.HoverEvent;
@@ -144,7 +142,7 @@ public class AdventureTester implements ModInitializer {
       this.greetingBars.clear();
     });
 
-    CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
+    CommandRegistrationCallback.EVENT.register((dispatcher, buildContext, environment) -> {
       dispatcher.register(literal("adventure")
         .then(literal("about").executes(ctx -> {
           // Interface injection, this lets us access the default platform instance
@@ -153,13 +151,13 @@ public class AdventureTester implements ModInitializer {
           this.adventure().audience(ctx.getSource()).sendMessage(Identity.nil(), translatable("adventure.test.description", color(0xc022cc)));
           return 1;
         }))
-        .then(literal("echo").then(argument(ARG_TEXT, ComponentArgumentType.miniMessage()).executes(ctx -> {
+        .then(literal("echo").then(argument(ARG_TEXT, miniMessage()).executes(ctx -> {
           final Component result = component(ctx, ARG_TEXT);
           ctx.getSource().sendMessage(ctx.getSource(), result);
           ctx.getSource().sendMessage(text("And a second time!", NamedTextColor.DARK_PURPLE));
           return 1;
         })))
-        .then(literal("eval").then(argument(ARG_TEXT, ComponentArgumentType.miniMessage()).executes(ctx -> {
+        .then(literal("eval").then(argument(ARG_TEXT, miniMessage()).executes(ctx -> {
           final Component result = component(ctx, ARG_TEXT);
           ctx.getSource().sendMessage(ctx.getSource(), ComponentUtils.updateForEntity(ctx.getSource(), this.platform.toNative(result), ctx.getSource().getEntity(), 0));
           return Command.SINGLE_SUCCESS;
@@ -191,7 +189,7 @@ public class AdventureTester implements ModInitializer {
         }))))
         .then(literal("sound").then(argument(ARG_SOUND, key()).suggests(SuggestionProviders.AVAILABLE_SOUNDS).executes(ctx -> {
           final Audience viewer = this.adventure().audience(ctx.getSource());
-          final Key sound = KeyArgumentType.key(ctx, ARG_SOUND);
+          final Key sound = key(ctx, ARG_SOUND);
           viewer.sendMessage(Identity.nil(), text(b -> b.content("Playing sound ").append(represent(sound)).color(COLOR_RESPONSE)));
           viewer.playSound(sound(sound, Sound.Source.MASTER, 1f, 1f));
           return 1;
@@ -235,7 +233,7 @@ public class AdventureTester implements ModInitializer {
           return Command.SINGLE_SUCCESS;
         }))
         .then(literal("plain").then(argument(ARG_TEXT, miniMessage()).executes(ctx -> {
-          final Component text = ComponentArgumentType.component(ctx, ARG_TEXT);
+          final Component text = component(ctx, ARG_TEXT);
           ctx.getSource().sendSuccess(net.minecraft.network.chat.Component.literal(PlainTextComponentSerializer.plainText().serialize(text)), false);
           return Command.SINGLE_SUCCESS;
         }))));
