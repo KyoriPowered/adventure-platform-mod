@@ -21,12 +21,37 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-/**
- * Implementation of <a href="https://docs.adventure.kyori.net">Adventure</a>
- * on Minecraft using the Fabric mod loader.
- *
- * <p>There are both server- and clientside entry points for Adventure,
- * in {@link net.kyori.adventure.platform.fabric.FabricServerAudiences}
- * and {@code FabricClientAudiences}</p>
- */
-package net.kyori.adventure.platform.fabric;
+package net.kyori.adventure.platform.fabric.impl.server;
+
+import com.google.auto.service.AutoService;
+import java.util.function.Function;
+import net.fabricmc.api.EnvType;
+import net.kyori.adventure.platform.fabric.impl.SidedProxy;
+import net.kyori.adventure.platform.fabric.impl.WrappedComponent;
+import net.kyori.adventure.pointer.Pointered;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.flattener.ComponentFlattener;
+import net.kyori.adventure.text.renderer.ComponentRenderer;
+import org.jetbrains.annotations.Nullable;
+
+@AutoService(SidedProxy.class)
+public class DedicatedServerProxy implements SidedProxy {
+  @Override
+  public boolean isApplicable(final EnvType environment) {
+    return environment == EnvType.SERVER;
+  }
+
+  @Override
+  public void contributeFlattenerElements(final ComponentFlattener.Builder flattenerBuilder) {
+    // no-op
+  }
+
+  @Override
+  public WrappedComponent createWrappedComponent(
+    final Component wrapped,
+    final @Nullable Function<Pointered, ?> partition,
+    final @Nullable ComponentRenderer<Pointered> renderer
+  ) {
+    return new WrappedComponent(wrapped, partition, renderer);
+  }
+}

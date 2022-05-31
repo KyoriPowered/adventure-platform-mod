@@ -21,16 +21,32 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.adventure.platform.fabric.impl.accessor.client;
+package net.kyori.adventure.platform.fabric.impl.client.mixin;
 
-import net.minecraft.client.resources.sounds.AbstractSoundInstance;
-import net.minecraft.resources.ResourceLocation;
+import java.util.Locale;
+import java.util.Objects;
+import net.kyori.adventure.platform.fabric.impl.LocaleHolderBridge;
+import net.minecraft.client.Options;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Accessor;
+import org.spongepowered.asm.mixin.Shadow;
 
-@Mixin(AbstractSoundInstance.class)
-public interface AbstractSoundInstanceAccess {
+@Mixin(Options.class)
+public class OptionsMixin implements LocaleHolderBridge {
   // @formatter:off
-  @Accessor void setLocation(final ResourceLocation loc);
+  @Shadow public String languageCode;
   // @formatter:on
+
+  private String adventure$cachedLanguage;
+  private Locale adventure$cachedLocale;
+
+  @Override
+  public Locale adventure$locale() {
+    final String language = this.languageCode;
+    if (Objects.equals(this.adventure$cachedLanguage, language)) {
+      return this.adventure$cachedLocale;
+    } else {
+      this.adventure$cachedLanguage = language;
+      return this.adventure$cachedLocale = LocaleHolderBridge.toLocale(language);
+    }
+  }
 }

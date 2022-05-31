@@ -7,6 +7,7 @@ import org.jetbrains.gradle.ext.settings
 import org.jetbrains.gradle.ext.taskTriggers
 
 plugins {
+  alias(libs.plugins.eclipseApt)
   alias(libs.plugins.loom)
   alias(libs.plugins.loomQuiltflower)
   alias(libs.plugins.configurateTransformations)
@@ -52,7 +53,9 @@ license {
 }
 
 dependencies {
+  annotationProcessor(libs.autoService)
   annotationProcessor(libs.contractValidator)
+  compileOnlyApi(libs.autoService.annotations)
   sequenceOf(
     libs.adventure.key,
     libs.adventure.api,
@@ -110,18 +113,27 @@ sourceSets {
     )
   }
 }
+
+loom.splitEnvironmentSourceSets()
+
+// The testmod is not split, not worth the effort
 val testmod = sourceSets.register("testmod") {
-  compileClasspath += sourceSets.main.get().compileClasspath
-  runtimeClasspath += sourceSets.main.get().runtimeClasspath
+  compileClasspath += sourceSets.named("client").get().compileClasspath
+  runtimeClasspath += sourceSets.named("client").get().runtimeClasspath
   java.srcDirs("src/testmodMixin/java")
   resources.srcDirs("src/testmodMixin/resources")
 }
 
+configurations.named("clientAnnotationProcessor") {
+  extendsFrom(configurations.annotationProcessor.get())
+}
+
 dependencies {
-  "testmodImplementation"(sourceSets.main.map { it.output })
+  "testmodImplementation"(sourceSets.named("client").map { it.output })
 }
 
 loom {
+  runtimeOnlyLog4j.set(true)
   runs {
     register("testmodClient") {
       source("testmod")
@@ -132,8 +144,19 @@ loom {
       server()
     }
   }
+
+  mods {
+    register("adventure-platform-fabric") {
+      sourceSet(sourceSets.main.get())
+      sourceSet(sourceSets.named("client").get())
+    }
+    register("adventure-platform-fabric-testmod") {
+      sourceSet(testmod.get())
+    }
+  }
   mixin {
     add(sourceSets.main.get(), "adventure-platform-fabric-refmap.json")
+    add(sourceSets.named("client").get(), "adventure-platform-fabric-client-refmap.json")
     add(testmod.get(), "adventure-platform-fabric-testmod-refmap.json")
   }
 }
@@ -157,6 +180,10 @@ tasks.build {
 
 tasks.withType(RunGameTask::class) {
   javaLauncher.set(javaToolchains.launcherFor { languageVersion.set(indra.javaVersions().target().map { v -> JavaLanguageVersion.of(v) })})
+}
+
+tasks.jar {
+  duplicatesStrategy = DuplicatesStrategy.INCLUDE // include all service elements
 }
 
 // Convert yaml files to josn

@@ -21,32 +21,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.adventure.platform.fabric.impl.mixin.client;
+package net.kyori.adventure.platform.fabric.impl.client;
 
-import java.util.Locale;
-import java.util.Objects;
-import net.kyori.adventure.platform.fabric.impl.LocaleHolderBridge;
-import net.minecraft.client.Options;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
+import java.util.function.Function;
+import net.kyori.adventure.platform.fabric.impl.WrappedComponent;
+import net.kyori.adventure.pointer.Pointered;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.renderer.ComponentRenderer;
+import net.minecraft.client.Minecraft;
+import org.jetbrains.annotations.Nullable;
 
-@Mixin(Options.class)
-public class OptionsMixin implements LocaleHolderBridge {
-  // @formatter:off
-  @Shadow public String languageCode;
-  // @formatter:on
-
-  private String adventure$cachedLanguage;
-  private Locale adventure$cachedLocale;
+public final class ClientWrappedComponent extends WrappedComponent {
+  public ClientWrappedComponent(final Component wrapped, final @Nullable Function<Pointered, ?> partition, final @Nullable ComponentRenderer<Pointered> renderer) {
+    super(wrapped, partition, renderer);
+  }
 
   @Override
-  public Locale adventure$locale() {
-    final String language = this.languageCode;
-    if (Objects.equals(this.adventure$cachedLanguage, language)) {
-      return this.adventure$cachedLocale;
-    } else {
-      this.adventure$cachedLanguage = language;
-      return this.adventure$cachedLocale = LocaleHolderBridge.toLocale(language);
+  protected net.minecraft.network.chat.Component deepConvertedLocalized() {
+    net.minecraft.network.chat.Component converted = this.converted;
+    final Pointered target = Minecraft.getInstance().player;
+    final Object data = this.partition() == null ? null : this.partition().apply(target);
+    if (converted == null || this.deepConvertedLocalized != data) {
+      converted = this.converted = this.rendered(target).deepConverted();
+      this.deepConvertedLocalized = data;
     }
+    return converted;
   }
 }

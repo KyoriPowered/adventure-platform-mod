@@ -21,34 +21,43 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.adventure.platform.fabric.impl.service;
+package net.kyori.adventure.platform.fabric.impl.client;
 
 import com.google.auto.service.AutoService;
-import java.util.function.Consumer;
-import net.kyori.adventure.platform.fabric.impl.NBTLegacyHoverEventSerializer;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
-import org.jetbrains.annotations.NotNull;
+import java.util.function.Function;
+import net.fabricmc.api.EnvType;
+import net.kyori.adventure.platform.fabric.impl.SidedProxy;
+import net.kyori.adventure.platform.fabric.impl.WrappedComponent;
+import net.kyori.adventure.pointer.Pointered;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.KeybindComponent;
+import net.kyori.adventure.text.flattener.ComponentFlattener;
+import net.kyori.adventure.text.renderer.ComponentRenderer;
+import net.minecraft.client.KeyMapping;
+import org.jetbrains.annotations.Nullable;
 
-@AutoService(GsonComponentSerializer.Provider.class)
-public class GsonComponentSerializerProviderImpl implements GsonComponentSerializer.Provider {
+@AutoService(SidedProxy.class)
+public class ClientProxy implements SidedProxy {
   @Override
-  public @NotNull GsonComponentSerializer gson() {
-    return GsonComponentSerializer.builder()
-      .legacyHoverEventSerializer(NBTLegacyHoverEventSerializer.INSTANCE)
-      .build();
+  public boolean isApplicable(
+    final EnvType environment
+  ) {
+    return environment == EnvType.CLIENT;
   }
 
   @Override
-  public @NotNull GsonComponentSerializer gsonLegacy() {
-    return GsonComponentSerializer.builder()
-      .legacyHoverEventSerializer(NBTLegacyHoverEventSerializer.INSTANCE)
-      .downsampleColors()
-      .emitLegacyHoverEvent()
-      .build();
+  public void contributeFlattenerElements(
+    final ComponentFlattener.Builder flattenerBuilder
+  ) {
+    flattenerBuilder.mapper(KeybindComponent.class, keybind -> KeyMapping.createNameSupplier(keybind.keybind()).get().getString());
   }
 
   @Override
-  public @NotNull Consumer<GsonComponentSerializer.Builder> builder() {
-    return builder -> builder.legacyHoverEventSerializer(NBTLegacyHoverEventSerializer.INSTANCE);
+  public WrappedComponent createWrappedComponent(
+    final Component wrapped,
+    final @Nullable Function<Pointered, ?> partition,
+    final @Nullable ComponentRenderer<Pointered> renderer
+  ) {
+    return new ClientWrappedComponent(wrapped, partition, renderer);
   }
 }

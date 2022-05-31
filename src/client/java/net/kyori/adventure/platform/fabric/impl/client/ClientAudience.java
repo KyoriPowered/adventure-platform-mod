@@ -35,7 +35,7 @@ import net.kyori.adventure.platform.fabric.FabricAudiences;
 import net.kyori.adventure.platform.fabric.impl.GameEnums;
 import net.kyori.adventure.platform.fabric.impl.PointerProviderBridge;
 import net.kyori.adventure.platform.fabric.impl.accessor.LevelAccess;
-import net.kyori.adventure.platform.fabric.impl.accessor.client.AbstractSoundInstanceAccess;
+import net.kyori.adventure.platform.fabric.impl.client.mixin.AbstractSoundInstanceAccess;
 import net.kyori.adventure.pointer.Pointers;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.SoundStop;

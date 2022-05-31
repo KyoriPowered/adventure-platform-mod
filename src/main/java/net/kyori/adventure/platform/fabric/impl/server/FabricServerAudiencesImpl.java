@@ -37,7 +37,6 @@ import net.kyori.adventure.platform.fabric.FabricAudiences;
 import net.kyori.adventure.platform.fabric.FabricServerAudiences;
 import net.kyori.adventure.platform.fabric.impl.AdventureCommandSourceStackInternal;
 import net.kyori.adventure.platform.fabric.impl.AdventureCommon;
-import net.kyori.adventure.platform.fabric.impl.WrappedComponent;
 import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.flattener.ComponentFlattener;
@@ -174,7 +173,7 @@ public final class FabricServerAudiencesImpl implements FabricServerAudiences {
   public net.minecraft.network.chat.@NotNull Component toNative(final @NotNull Component adventure) {
     if (adventure == Component.empty()) return net.minecraft.network.chat.Component.empty();
 
-    return new WrappedComponent(requireNonNull(adventure, "adventure"), this.partition, this.renderer);
+    return AdventureCommon.SIDE_PROXY.createWrappedComponent(requireNonNull(adventure, "adventure"), this.partition, this.renderer);
   }
 
   public ServerBossBarListener bossBars() {

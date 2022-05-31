@@ -23,8 +23,11 @@
  */
 package net.kyori.adventure.platform.fabric.impl;
 
+import com.mojang.logging.LogUtils;
 import java.util.List;
 import java.util.Locale;
+import java.util.ServiceConfigurationError;
+import java.util.ServiceLoader;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -41,31 +44,71 @@ import net.kyori.adventure.platform.fabric.impl.server.FabricServerAudiencesImpl
 import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.pointer.Pointers;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.KeybindComponent;
 import net.kyori.adventure.text.TranslatableComponent;
 import net.kyori.adventure.text.flattener.ComponentFlattener;
 import net.kyori.adventure.translation.GlobalTranslator;
 import net.kyori.adventure.translation.TranslationRegistry;
 import net.kyori.adventure.translation.Translator;
-import net.minecraft.client.KeyMapping;
 import net.minecraft.commands.synchronization.SingletonArgumentInfo;
 import net.minecraft.core.Registry;
 import net.minecraft.locale.Language;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 public class AdventureCommon implements ModInitializer {
+
+  private static final Logger LOGGER = LogUtils.getLogger();
+
+  public static final SidedProxy SIDE_PROXY;
 
   public static final ComponentFlattener FLATTENER;
   private static final Pattern LOCALIZATION_PATTERN = Pattern.compile("%(?:(\\d+)\\$)?s");
 
   static {
+    final var sidedProxy = chooseSidedProxy();
+    SIDE_PROXY = sidedProxy;
+    FLATTENER = createFlattener(sidedProxy);
+  }
+
+  private static SidedProxy chooseSidedProxy() {
+    final EnvType environment = FabricLoader.getInstance().getEnvironmentType();
+    final List<SidedProxy> proxies = ServiceLoader.load(SidedProxy.class).stream()
+      .filter(provider -> {
+        try {
+          final SidedProxy proxy = provider.get();
+          if (proxy.isApplicable(environment)) {
+            return true;
+          } else {
+            LOGGER.debug("Skipping provider {} because it was not applicable to {}", provider.type(), environment);
+          }
+        } catch (final ServiceConfigurationError ex) {
+          LOGGER.debug("Skipping provider {} due to an error while instantiating", provider.type(), ex);
+        }
+        return false;
+      })
+      .map(ServiceLoader.Provider::get)
+      .toList();
+
+    return switch (proxies.size()) {
+      case 0 -> throw new IllegalStateException("No sided proxies were available for adventure-platform-fabric");
+      case 1 -> {
+        final var proxy = proxies.get(0);
+        LOGGER.debug("Selected sided proxy {}", proxy);
+        yield proxy;
+      }
+      default -> {
+        LOGGER.warn("Multiple applicable proxies were applicable, choosing first: {}", proxies);
+        yield proxies.get(0);
+      }
+    };
+  }
+
+  private static ComponentFlattener createFlattener(final SidedProxy proxy) {
     final ComponentFlattener.Builder flattenerBuilder = ComponentFlattener.basic().toBuilder();
 
-    if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
-      flattenerBuilder.mapper(KeybindComponent.class, keybind -> KeyMapping.createNameSupplier(keybind.keybind()).get().getString());
-    }
+    proxy.contributeFlattenerElements(flattenerBuilder);
 
     flattenerBuilder.complexMapper(TranslatableComponent.class, (translatable, consumer) -> {
       final String key = translatable.key();
@@ -111,7 +154,7 @@ public class AdventureCommon implements ModInitializer {
       }
     });
 
-    FLATTENER = flattenerBuilder.build();
+    return flattenerBuilder.build();
   }
 
   static ResourceLocation res(final @NotNull String value) {

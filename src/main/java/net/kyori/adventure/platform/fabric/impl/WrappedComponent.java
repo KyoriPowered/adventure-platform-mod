@@ -27,27 +27,26 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.kyori.adventure.platform.fabric.FabricAudiences;
 import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.pointer.Pointers;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentContents;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.contents.LiteralContents;
 import net.minecraft.util.FormattedCharSequence;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public final class WrappedComponent implements Component {
-  private Component converted;
-  private @Nullable Object deepConvertedLocalized = null;
+public class WrappedComponent implements Component {
+  protected Component converted;
+  @Nullable
+  protected Object deepConvertedLocalized = null;
   private final net.kyori.adventure.text.Component wrapped;
   private final @Nullable Function<Pointered, ?> partition;
   private final @Nullable ComponentRenderer<Pointered> renderer;
@@ -88,10 +87,10 @@ public final class WrappedComponent implements Component {
       return this.lastRendered;
     }
     this.lastData = data;
-    return this.lastRendered = this.renderer == null ? this : new WrappedComponent(this.renderer.render(this.wrapped, ptr), null, null);
+    return this.lastRendered = this.renderer == null ? this : AdventureCommon.SIDE_PROXY.createWrappedComponent(this.renderer.render(this.wrapped, ptr), null, null);
   }
 
-  Component deepConverted() {
+  public Component deepConverted() {
     Component converted = this.converted;
     if (converted == null || this.deepConvertedLocalized != null) {
       converted = this.converted = FabricAudiences.nonWrappingSerializer().serialize(this.wrapped);
@@ -100,16 +99,9 @@ public final class WrappedComponent implements Component {
     return converted;
   }
 
-  @Environment(EnvType.CLIENT)
-  Component deepConvertedLocalized() {
-    Component converted = this.converted;
-    final Pointered target = Minecraft.getInstance().player;
-    final Object data = this.partition == null ? null : this.partition.apply(target);
-    if (converted == null || this.deepConvertedLocalized != data) {
-      converted = this.converted = this.rendered(target).deepConverted();
-      this.deepConvertedLocalized = data;
-    }
-    return converted;
+  @ApiStatus.OverrideOnly
+  protected Component deepConvertedLocalized() {
+    return this.deepConverted();
   }
 
   public @Nullable Component deepConvertedIfPresent() {
@@ -133,8 +125,8 @@ public final class WrappedComponent implements Component {
 
   @Override
   public ComponentContents getContents() {
-    if (this.wrapped instanceof TextComponent) {
-      return new LiteralContents(((TextComponent) this.wrapped).content());
+    if (this.wrapped instanceof TextComponent text) {
+      return new LiteralContents(text.content());
     } else {
       return this.deepConverted().getContents();
     }
@@ -156,13 +148,11 @@ public final class WrappedComponent implements Component {
   }
 
   @Override
-  @Environment(EnvType.CLIENT)
   public FormattedCharSequence getVisualOrderText() {
     return this.deepConvertedLocalized().getVisualOrderText();
   }
 
   @Override
-  @Environment(EnvType.CLIENT)
   public <T> Optional<T> visit(final StyledContentConsumer<T> visitor, final Style style) {
     return this.deepConvertedLocalized().visit(visitor, style);
   }

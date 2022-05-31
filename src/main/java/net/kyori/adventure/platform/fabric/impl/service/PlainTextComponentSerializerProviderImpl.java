@@ -23,11 +23,13 @@
  */
 package net.kyori.adventure.platform.fabric.impl.service;
 
+import com.google.auto.service.AutoService;
 import java.util.function.Consumer;
 import net.kyori.adventure.platform.fabric.impl.AdventureCommon;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 
+@AutoService(PlainTextComponentSerializer.Provider.class)
 public class PlainTextComponentSerializerProviderImpl implements PlainTextComponentSerializer.Provider {
   @Override
   public @NotNull PlainTextComponentSerializer plainTextSimple() {

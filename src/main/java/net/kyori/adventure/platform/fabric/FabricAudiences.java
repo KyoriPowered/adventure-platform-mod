@@ -29,6 +29,7 @@ import java.util.function.UnaryOperator;
 import net.kyori.adventure.identity.Identified;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.platform.fabric.impl.AdventureCommon;
 import net.kyori.adventure.platform.fabric.impl.NonWrappingComponentSerializer;
 import net.kyori.adventure.platform.fabric.impl.WrappedComponent;
 import net.kyori.adventure.platform.fabric.impl.accessor.ComponentSerializerAccess;
@@ -52,7 +53,7 @@ import static java.util.Objects.requireNonNull;
  * Common operations in both the client and server environments.
  *
  * <p>See {@link FabricServerAudiences} for logical server-specific operations,
- * and {@link FabricClientAudiences} for logical client-specific operations</p>
+ * and {@code FabricClientAudiences} for logical client-specific operations</p>
  *
  * @since 4.0.0
  */
@@ -80,7 +81,7 @@ public interface FabricAudiences {
       partition = null;
       renderer = null;
     }
-    return new WrappedComponent(modified, partition, renderer);
+    return AdventureCommon.SIDE_PROXY.createWrappedComponent(modified, partition, renderer);
   }
 
   /**

@@ -17,6 +17,7 @@ entrypoints:
 mixins:
   - "adventure-platform-fabric.accessor.mixins.json"
   - "adventure-platform-fabric.mixins.json"
+  - "adventure-platform-fabric.client.mixins.json"
 custom:
   modmenu:api: true
   loom:injected_interfaces:

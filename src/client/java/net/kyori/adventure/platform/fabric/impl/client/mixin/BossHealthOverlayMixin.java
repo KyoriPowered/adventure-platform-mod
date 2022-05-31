@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.adventure.platform.fabric.impl.mixin.client;
+package net.kyori.adventure.platform.fabric.impl.client.mixin;
 
 import com.google.common.collect.MapMaker;
 import java.util.Map;

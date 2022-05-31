@@ -8,8 +8,5 @@
     "ConnectionAccess",
     "InvalidKeyExceptionAccess",
     "LevelAccess"
-  ],
-  "client": [
-    "client.AbstractSoundInstanceAccess"
   ]
 }

@@ -21,45 +21,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.adventure.platform.fabric.impl.client;
+package net.kyori.adventure.platform.fabric.impl;
 
 import java.util.function.Function;
-import net.kyori.adventure.inventory.Book;
-import net.kyori.adventure.platform.fabric.impl.WrappedComponent;
+import net.fabricmc.api.EnvType;
 import net.kyori.adventure.pointer.Pointered;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.flattener.ComponentFlattener;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
-import net.minecraft.client.gui.screens.inventory.BookViewScreen;
-import net.minecraft.network.chat.FormattedText;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import static java.util.Objects.requireNonNull;
+public interface SidedProxy {
+  boolean isApplicable(final EnvType environment);
 
-/**
- * An implementation of the book GUI's contents.
- *
- * <p>This implementation gets its data directly from an
- * Adventure {@link Book}, without needing
- * an {@link net.minecraft.world.item.ItemStack}.</p>
- */
-public class AdventureBookAccess implements BookViewScreen.BookAccess {
-  private final Book book;
-  private final @Nullable Function<Pointered, ?> partition;
-  private final @Nullable ComponentRenderer<Pointered> renderer;
+  void contributeFlattenerElements(final ComponentFlattener.Builder flattenerBuilder);
 
-  public AdventureBookAccess(final @NotNull Book book, final @Nullable Function<Pointered, ?> partition, final @Nullable ComponentRenderer<Pointered> renderer) {
-    this.book = requireNonNull(book, "book");
-    this.partition = partition;
-    this.renderer = renderer;
-  }
-
-  @Override
-  public int getPageCount() {
-    return this.book.pages().size();
-  }
-
-  @Override
-  public FormattedText getPageRaw(final int index) {
-    return new WrappedComponent(this.book.pages().get(index), this.partition, this.renderer);
-  }
+  WrappedComponent createWrappedComponent(
+    final Component wrapped,
+    final @Nullable Function<Pointered, ?> partition,
+    final @Nullable ComponentRenderer<Pointered> renderer
+  );
 }
