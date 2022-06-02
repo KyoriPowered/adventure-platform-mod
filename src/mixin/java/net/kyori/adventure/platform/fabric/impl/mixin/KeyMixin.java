@@ -44,6 +44,7 @@ public interface KeyMixin {
    * @reason implemented by mixin to the Vanilla class
    */
   @Overwrite
+  @SuppressWarnings("overwrite")
   static @NotNull Key key(final String namespace, final String value) {
     try {
       return new ResourceLocation(namespace, value);

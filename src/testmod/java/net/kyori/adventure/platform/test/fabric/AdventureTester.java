@@ -48,7 +48,7 @@ import java.util.function.Consumer;
 import java.util.stream.IntStream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -246,26 +246,28 @@ public class AdventureTester implements ModInitializer {
   }
 
   private void onClient() {
-    ClientCommandManager.DISPATCHER.register(LiteralArgumentBuilder.<FabricClientCommandSource>literal("adventure_client")
-      .then(LiteralArgumentBuilder.<FabricClientCommandSource>literal("open_file").executes(ctx -> {
-        final Path path = FabricLoader.getInstance().getGameDir().resolve("adventure_test_file.txt").toAbsolutePath();
-        try {
-          Files.write(path, ("Hello there " + Minecraft.getInstance().getUser().getName() + "!").getBytes(StandardCharsets.UTF_8), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
-        } catch (final IOException ex) {
-          throw new RuntimeException("Uh oh! Couldn't write file!", ex);
-        }
-        final Component message = text()
-          .content("Click to open ")
-          .append(text(path.getFileName().toString(), color(0xFFA2C4)))
-          .append(text('!'))
-          .clickEvent(openFile(path.toString()))
-          .build();
+    ClientCommandRegistrationCallback.EVENT.register((dispatcher, buildContext) -> {
+      dispatcher.register(LiteralArgumentBuilder.<FabricClientCommandSource>literal("adventure_client")
+        .then(LiteralArgumentBuilder.<FabricClientCommandSource>literal("open_file").executes(ctx -> {
+          final Path path = FabricLoader.getInstance().getGameDir().resolve("adventure_test_file.txt").toAbsolutePath();
+          try {
+            Files.write(path, ("Hello there " + Minecraft.getInstance().getUser().getName() + "!").getBytes(StandardCharsets.UTF_8), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
+          } catch (final IOException ex) {
+            throw new RuntimeException("Uh oh! Couldn't write file!", ex);
+          }
+          final Component message = text()
+            .content("Click to open ")
+            .append(text(path.getFileName().toString(), color(0xFFA2C4)))
+            .append(text('!'))
+            .clickEvent(openFile(path.toString()))
+            .build();
 
-        ctx.getSource().getPlayer().sendMessage(message);
-        // ctx.getSource().sendFeedback(FabricClientAudiences.get().toNative(message)); // Works as well!
+          ctx.getSource().getPlayer().sendMessage(message);
+          // ctx.getSource().sendFeedback(FabricClientAudiences.get().toNative(message)); // Works as well!
 
-        return Command.SINGLE_SUCCESS;
-      })));
+          return Command.SINGLE_SUCCESS;
+        })));
+    });
   }
 
   private static final Component COLON = text(":", NamedTextColor.GRAY);
