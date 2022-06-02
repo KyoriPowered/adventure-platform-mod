@@ -55,6 +55,7 @@ public class AdventurePrelaunch implements PreLaunchEntrypoint {
   public void onPreLaunch() {
     try {
       AdventurePrelaunch.hackilyLoadForMixin("com.mojang.authlib.UserAuthentication");
+      AdventurePrelaunch.hackilyLoadForMixin("com.mojang.brigadier.Message");
     } catch (final ClassNotFoundException | InvocationTargetException | IllegalAccessException e) {
       throw new RuntimeException("please fix fabric loader to enable transforming libraries normally", e);
     }

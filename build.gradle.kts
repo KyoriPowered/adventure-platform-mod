@@ -59,10 +59,13 @@ dependencies {
   sequenceOf(
     libs.adventure.key,
     libs.adventure.api,
-    libs.adventure.textSerializerPlain,
-    libs.adventure.textMinimessage
+    libs.adventure.textLoggerSlf4j,
+    libs.adventure.textMinimessage,
+    libs.adventure.textSerializerPlain
   ).forEach {
-    modApi(it)
+    modApi(it) {
+      exclude("org.slf4j", "slf4j-api")
+    }
     include(it)
   }
 
