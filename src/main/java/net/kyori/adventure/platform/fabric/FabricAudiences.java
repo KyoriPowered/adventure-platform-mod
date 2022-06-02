@@ -24,6 +24,7 @@
 package net.kyori.adventure.platform.fabric;
 
 import com.mojang.authlib.GameProfile;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import net.kyori.adventure.identity.Identified;
@@ -39,6 +40,7 @@ import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.flattener.ComponentFlattener;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
 import net.kyori.adventure.text.serializer.ComponentSerializer;
+import net.kyori.adventure.util.ComponentMessageThrowable;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -136,6 +138,17 @@ public interface FabricAudiences {
   @Deprecated(forRemoval = true, since = "5.3.0")
   static Sound.@NotNull Emitter asEmitter(final @NotNull Entity entity) {
     return entity;
+  }
+
+  /**
+   * Expose a Brigadier CommandSyntaxException's message using the adventure-provided interface for rich-message exceptions.
+   *
+   * @param ex the exception to cast
+   * @return a converted command exception
+   * @since 5.3.0
+   */
+  static @NotNull ComponentMessageThrowable asComponentThrowable(final @NotNull CommandSyntaxException ex) {
+    return (ComponentMessageThrowable) ex;
   }
 
   /**
