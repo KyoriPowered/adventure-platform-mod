@@ -23,6 +23,7 @@
  */
 package net.kyori.adventure.platform.fabric.impl.service;
 
+import com.google.auto.service.AutoService;
 import java.util.Locale;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
@@ -32,6 +33,7 @@ import net.kyori.adventure.translation.GlobalTranslator;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.LoggerFactory;
 
+@AutoService(ComponentLoggerProvider.class)
 public final class FabricComponentLoggerProvider implements ComponentLoggerProvider {
   @Override
   public @NotNull ComponentLogger logger(final @NotNull LoggerHelper helper, final @NotNull String name) {
