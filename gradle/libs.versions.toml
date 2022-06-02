@@ -10,7 +10,6 @@ fabricApi = "0.51.1+1.18.2"
 indra = "2.1.1"
 parchment = "1.18.1:2021.12.19"
 quiltflower = "1.8.0"
-slf4j = "1.8.0-beta4" # matching Minecraft
 
 [libraries]
 adventure-api = { module = "net.kyori:adventure-api", version.ref = "adventure" }
@@ -28,7 +27,6 @@ fabric-loader = "net.fabricmc:fabric-loader:0.14.6"
 fabric-api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabricApi" }
 jetbrainsAnnotations = "org.jetbrains:annotations:23.0.0"
 minecraft = "com.mojang:minecraft:1.18.2"
-slf4j-ext = { module = "org.slf4j:slf4j-ext", version.ref = "slf4j" }
 
 # build
 contractValidator = "ca.stellardrift:contract-validator:1.0.1"

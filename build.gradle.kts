@@ -80,7 +80,6 @@ dependencies {
   // Transitive deps
   include(libs.examination.api)
   include(libs.examination.string)
-  include(libs.slf4j.ext)
   modCompileOnly(libs.jetbrainsAnnotations)
 
   modImplementation(libs.colonel)
