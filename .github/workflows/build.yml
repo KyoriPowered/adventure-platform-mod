@@ -72,7 +72,7 @@ jobs:
           API_URL=$(curl https://api.modrinth.com/v2/project/fabric-api/version | jq ". | map(select(.version_number == \"$API_VERSION\")) | .[0].files[0].url" -r)
           curl "$API_URL" -o testserver/mods/fabric-api.jar
           pushd testserver/
-          java -Dadventure.testMode=true fabric-server.jar nogui
+          java -Dadventure.testMode=true -jar fabric-server.jar nogui
           popd
       - name: "publish"
         if: "${{ runner.os == 'Linux' && env.STATUS != 'release' && github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/mc/')) }}"
