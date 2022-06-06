@@ -159,7 +159,7 @@ public class AdventureCommon implements ModInitializer {
     if (Boolean.getBoolean("adventure.testMode")) {
       MixinEnvironment.getCurrentEnvironment().audit();
       if (FabricLoader.getInstance().getEnvironmentType() == EnvType.SERVER) {
-        ServerLifecycleEvents.SERVER_STARTING.register(server -> {
+        ServerLifecycleEvents.SERVER_STARTED.register(server -> {
           server.execute(() -> server.stopServer());
         });
       }
