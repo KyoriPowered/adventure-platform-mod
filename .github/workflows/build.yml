@@ -54,6 +54,14 @@ jobs:
             echo "STATUS=release" >> $GITHUB_ENV
           fi
           echo "VERSION=$VERSION" >> $GITHUB_ENV
+      - name: "Cache test run data"
+        uses: "actions/cache@v3"
+        with:
+          path: |
+            testserver/libraries
+            testserver/world
+          key: testserver-${{ runner.os }}-${{ github.run_id }}
+          restore-keys: testserver-${{ runner.os }}-
       - name: "Execute production test run"
         shell: bash
         run: |
