@@ -93,7 +93,7 @@ jobs:
           popd
           echo "::endgroup" # Server Execution
           
-          echo "# Server Execution\n\n$(cat logs/latest.log)" >> $GITHUB_STEP_SUMMARY
+          echo "# Server Execution\n\n$(cat testserver/logs/latest.log)" >> $GITHUB_STEP_SUMMARY
       - name: "publish"
         if: "${{ runner.os == 'Linux' && env.STATUS != 'release' && github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/mc/')) }}"
         run: "./gradlew publish"
