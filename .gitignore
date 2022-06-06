@@ -19,3 +19,6 @@ run/
 # macOS
 
 .DS_Store
+
+# CI test server
+testserver/
