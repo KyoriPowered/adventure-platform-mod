@@ -59,6 +59,8 @@ jobs:
         with:
           path: |
             testserver/libraries
+            testserver/versions
+            testserver/.fabric/server
             testserver/world
           key: testserver-${{ runner.os }}-${{ github.run_id }}
           restore-keys: testserver-${{ runner.os }}-
@@ -96,6 +98,7 @@ jobs:
           echo '```' >> $GITHUB_STEP_SUMMARY
           cat testserver/logs/latest.log >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
+          rm -r testserver/
       - name: "publish"
         if: "${{ runner.os == 'Linux' && env.STATUS != 'release' && github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/mc/')) }}"
         run: "./gradlew publish"
