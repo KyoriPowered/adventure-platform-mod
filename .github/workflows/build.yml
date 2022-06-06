@@ -57,6 +57,7 @@ jobs:
       - name: "Execute production test run"
         shell: bash
         run: |
+          echo "::group::Environment Setup"
           pip install yq
           mkdir -p testserver/mods
           MC_VERSION="$(tomlq -r '.versions.minecraft' gradle/libs.versions.toml)"
@@ -72,9 +73,19 @@ jobs:
           API_URL=$(curl https://api.modrinth.com/v2/project/fabric-api/version | jq ". | map(select(.version_number == \"$API_VERSION\")) | .[0].files[0].url" -r)
           echo "Downloading Fabric API from $API_URL"
           curl -L "$API_URL" -o testserver/mods/fabric-api.jar
+          echo "::endgroup::" # Environment Setup
+          echo "::group::Server Execution"
           pushd testserver/
           java -Dadventure.testMode=true -jar fabric-server.jar nogui
+          if [[ -d "crash-reports" ]];
+            for i in crash-reports/*.txt; do
+              echo "::error title=Server crashed::$(cat $i)"
+            done
+          fi
           popd
+          echo "::endgroup" # Server Execution
+          
+          echo "# Server Execution\n\n$(cat logs/latest.log)" >> $GITHUB_STEP_SUMMARY
       - name: "publish"
         if: "${{ runner.os == 'Linux' && env.STATUS != 'release' && github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/mc/')) }}"
         run: "./gradlew publish"
