@@ -85,7 +85,7 @@ jobs:
           echo "::group::Server Execution"
           pushd testserver/
           java -Dadventure.testMode=true -jar fabric-server.jar nogui
-          if [[ -d "crash-reports" ]];
+          if [[ -d "crash-reports" ]]; then
             for i in crash-reports/*.txt; do
               echo "::error title=Server crashed::$(cat $i)"
             done
