@@ -45,13 +45,57 @@ jobs:
             build/reports/
             */build/reports/
       - name: Determine status
-        if: "${{ runner.os == 'Linux' }}"
+        shell: bash
         run: |
-          if [ "$(./gradlew properties | awk '/^version:/ { print $2; }' | grep '\-SNAPSHOT')" ]; then
+          VERSION="$(./gradlew properties | awk '/^version:/ { print $2; }')"
+          if [ "$(echo $VERSION | grep '\-SNAPSHOT')" ]; then
             echo "STATUS=snapshot" >> $GITHUB_ENV
           else
             echo "STATUS=release" >> $GITHUB_ENV
           fi
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+      - name: "Cache test run data"
+        uses: "actions/cache@v3"
+        with:
+          path: |
+            testserver/libraries
+            testserver/world
+          key: testserver-${{ runner.os }}-${{ github.run_id }}
+          restore-keys: testserver-${{ runner.os }}-
+      - name: "Execute production test run"
+        shell: bash
+        run: |
+          echo "::group::Environment Setup"
+          pip install yq
+          mkdir -p testserver/mods
+          MC_VERSION="$(tomlq -r '.versions.minecraft' gradle/libs.versions.toml)"
+          LOADER_VERSION="$(tomlq -r '.versions.fabricLoader' gradle/libs.versions.toml)"
+          API_VERSION="$(tomlq -r '.versions.fabricApi' gradle/libs.versions.toml)"
+          # Download fabric server launch
+          curl https://meta.fabricmc.net/v2/versions/loader/$MC_VERSION/$LOADER_VERSION/0.11.0/server/jar -o testserver/fabric-server.jar
+          # eula=true
+          echo "eula=true" > testserver/eula.txt
+          # copy artifact into mods folder
+          cp build/libs/adventure-platform-fabric-$VERSION.jar testserver/mods/adventure-platform-fabric.jar
+          # copy API
+          API_URL=$(curl https://api.modrinth.com/v2/project/fabric-api/version | jq ". | map(select(.version_number == \"$API_VERSION\")) | .[0].files[0].url" -r)
+          echo "Downloading Fabric API from $API_URL"
+          curl -L "$API_URL" -o testserver/mods/fabric-api.jar
+          echo "::endgroup::" # Environment Setup
+          echo "::group::Server Execution"
+          pushd testserver/
+          java -Dadventure.testMode=true -jar fabric-server.jar nogui
+          if [[ -d "crash-reports" ]]; then
+            for i in crash-reports/*.txt; do
+              echo "::error title=Server crashed::$(cat $i)"
+            done
+          fi
+          popd
+          echo "::endgroup" # Server Execution
+          echo "# Server Execution" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat testserver/logs/latest.log >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
       - name: "publish"
         if: "${{ runner.os == 'Linux' && env.STATUS != 'release' && github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/mc/')) }}"
         run: "./gradlew publish"
