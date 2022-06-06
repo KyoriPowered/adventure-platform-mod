@@ -45,7 +45,7 @@ jobs:
             build/reports/
             */build/reports/
       - name: Determine status
-        if: "${{ runner.os == 'Linux' }}"
+        shell: bash
         run: |
           VERSION="$(./gradlew properties | awk '/^version:/ { print $2; }')"
           if [ "$(echo $VERSION | grep '\-SNAPSHOT')" ]; then
