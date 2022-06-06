@@ -157,9 +157,9 @@ public class AdventureCommon implements ModInitializer {
 
     // If we are in development mode, shut down immediately
     if (Boolean.getBoolean("adventure.testMode")) {
-      MixinEnvironment.getCurrentEnvironment().audit();
       if (FabricLoader.getInstance().getEnvironmentType() == EnvType.SERVER) {
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
+          MixinEnvironment.getCurrentEnvironment().audit();
           server.execute(() -> server.halt(false));
         });
       }
