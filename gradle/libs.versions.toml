@@ -8,7 +8,9 @@ autoService = "1.0.1"
 checkstyle = "10.1"
 examination = "1.3.0"
 fabricApi = "0.54.0+1.19"
+fabricLoader = "0.14.6"
 indra = "2.1.1"
+minecraft = "1.19-pre5"
 parchment = "1.18.2:2022.05.02"
 quiltflower = "1.8.1"
 
@@ -24,10 +26,10 @@ adventure-textSerializerGson = { module = "net.kyori:adventure-text-serializer-g
 colonel = "ca.stellardrift:colonel:0.2.2"
 examination-api = { module = "net.kyori:examination-api", version.ref = "examination" }
 examination-string = { module = "net.kyori:examination-string", version.ref = "examination" }
-fabric-loader = "net.fabricmc:fabric-loader:0.14.6"
+fabric-loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabricLoader"}
 fabric-api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabricApi" }
 jetbrainsAnnotations = "org.jetbrains:annotations:23.0.0"
-minecraft = "com.mojang:minecraft:1.19-pre5"
+minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
 
 # build
 autoService = { module = "com.google.auto.service:auto-service", version.ref = "autoService" }

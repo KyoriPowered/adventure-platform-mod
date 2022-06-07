@@ -23,7 +23,6 @@
  */
 package net.kyori.adventure.platform.fabric.impl.mixin;
 
-import java.util.UUID;
 import java.util.function.UnaryOperator;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
@@ -31,25 +30,24 @@ import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.event.HoverEvent.ShowEntity;
 import net.kyori.adventure.text.event.HoverEventSource;
 import net.minecraft.core.Registry;
-import net.minecraft.network.chat.Component;
+import net.minecraft.world.Nameable;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.entity.EntityAccess;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(Entity.class)
-public abstract class EntityMixin implements Sound.Emitter, HoverEventSource<HoverEvent.ShowEntity> {
+public abstract class EntityMixin implements Sound.Emitter, HoverEventSource<HoverEvent.ShowEntity>, Nameable, EntityAccess {
   // @formatter:off
-  @Shadow public abstract Component shadow$getName();
   @Shadow public abstract EntityType<?> shadow$getType();
-  @Shadow public abstract UUID shadow$getUUID();
   // @formatter:on
 
   @Override
   public @NotNull HoverEvent<ShowEntity> asHoverEvent(final @NotNull UnaryOperator<ShowEntity> op) {
     final Key entityType = Registry.ENTITY_TYPE.getKey(this.shadow$getType());
-    final ShowEntity data = HoverEvent.ShowEntity.of(entityType, this.shadow$getUUID(), this.shadow$getName().asComponent());
+    final ShowEntity data = HoverEvent.ShowEntity.of(entityType, this.getUUID(), this.getName().asComponent());
     return HoverEvent.showEntity(op.apply(data));
   }
 }

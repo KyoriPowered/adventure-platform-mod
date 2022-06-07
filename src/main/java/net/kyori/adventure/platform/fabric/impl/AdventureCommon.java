@@ -33,6 +33,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.kyori.adventure.Adventure;
 import net.kyori.adventure.identity.Identity;
@@ -56,6 +57,7 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
+import org.spongepowered.asm.mixin.MixinEnvironment;
 
 public class AdventureCommon implements ModInitializer {
 
@@ -202,6 +204,16 @@ public class AdventureCommon implements ModInitializer {
         instance.bossBars().refreshTitles(player);
       });
     });
+
+    // If we are in development mode, shut down immediately
+    if (Boolean.getBoolean("adventure.testMode")) {
+      if (FabricLoader.getInstance().getEnvironmentType() == EnvType.SERVER) {
+        ServerLifecycleEvents.SERVER_STARTED.register(server -> {
+          MixinEnvironment.getCurrentEnvironment().audit();
+          server.execute(() -> server.halt(false));
+        });
+      }
+    }
   }
 
   public static Function<Pointered, Locale> localePartition() {
