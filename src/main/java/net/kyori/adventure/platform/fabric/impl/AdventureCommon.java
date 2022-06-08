@@ -29,8 +29,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
-import java.util.ServiceConfigurationError;
-import java.util.ServiceLoader;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -79,33 +77,22 @@ public class AdventureCommon implements ModInitializer {
 
   private static SidedProxy chooseSidedProxy() {
     final EnvType environment = FabricLoader.getInstance().getEnvironmentType();
-    final List<SidedProxy> proxies = ServiceLoader.load(SidedProxy.class).stream()
-      .filter(provider -> {
-        try {
-          final SidedProxy proxy = provider.get();
-          if (proxy.isApplicable(environment)) {
-            return true;
-          } else {
-            LOGGER.debug("Skipping provider {} because it was not applicable to {}", provider.type(), environment);
-          }
-        } catch (final ServiceConfigurationError ex) {
-          LOGGER.debug("Skipping provider {} due to an error while instantiating", provider.type(), ex);
-        }
-        return false;
-      })
-      .map(ServiceLoader.Provider::get)
-      .toList();
+    final var sidedProxyContainers = FabricLoader.getInstance().getEntrypointContainers(
+      "adventure-internal:sidedproxy/" + environment.name().toLowerCase(Locale.ROOT),
+      SidedProxy.class
+    );
 
-    return switch (proxies.size()) {
-      case 0 -> throw new IllegalStateException("No sided proxies were available for adventure-platform-fabric");
+    return switch (sidedProxyContainers.size()) {
+      case 0 -> throw new IllegalStateException("No sided proxies were available for adventure-platform-fabric in environment " + environment);
       case 1 -> {
-        final var proxy = proxies.get(0);
-        LOGGER.debug("Selected sided proxy {}", proxy);
-        yield proxy;
+        final var proxy = sidedProxyContainers.get(0);
+        LOGGER.debug("Selected sided proxy {} from {}", proxy.getEntrypoint(), proxy.getProvider().getMetadata().getId());
+        yield proxy.getEntrypoint();
       }
       default -> {
-        LOGGER.warn("Multiple applicable proxies were applicable, choosing first: {}", proxies);
-        yield proxies.get(0);
+        final var proxy = sidedProxyContainers.get(0);
+        LOGGER.warn("Multiple applicable proxies were applicable, choosing first available: {} from {}", proxy.getEntrypoint(), proxy.getProvider().getMetadata().getId());
+        yield proxy.getEntrypoint();
       }
     };
   }

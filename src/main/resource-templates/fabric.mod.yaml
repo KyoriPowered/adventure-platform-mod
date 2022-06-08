@@ -14,6 +14,10 @@ entrypoints:
     - "net.kyori.adventure.platform.fabric.impl.AdventureCommon"
   preLaunch:
     - "net.kyori.adventure.platform.fabric.impl.AdventurePrelaunch"
+  adventure-internal:sidedproxy/client:
+    - "net.kyori.adventure.platform.fabric.impl.client.ClientProxy"
+  adventure-internal:sidedproxy/server:
+    - "net.kyori.adventure.platform.fabric.impl.server.DedicatedServerProxy"
 mixins:
   - "adventure-platform-fabric.accessor.mixins.json"
   - "adventure-platform-fabric.mixins.json"

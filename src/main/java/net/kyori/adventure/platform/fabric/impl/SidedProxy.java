@@ -24,20 +24,18 @@
 package net.kyori.adventure.platform.fabric.impl;
 
 import java.util.function.Function;
-import net.fabricmc.api.EnvType;
 import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.flattener.ComponentFlattener;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public interface SidedProxy {
-  boolean isApplicable(final EnvType environment);
+  void contributeFlattenerElements(final ComponentFlattener.@NotNull Builder flattenerBuilder);
 
-  void contributeFlattenerElements(final ComponentFlattener.Builder flattenerBuilder);
-
-  WrappedComponent createWrappedComponent(
-    final Component wrapped,
+  @NotNull WrappedComponent createWrappedComponent(
+    final @NotNull Component wrapped,
     final @Nullable Function<Pointered, ?> partition,
     final @Nullable ComponentRenderer<Pointered> renderer
   );

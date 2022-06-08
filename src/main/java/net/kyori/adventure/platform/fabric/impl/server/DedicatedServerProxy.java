@@ -23,32 +23,25 @@
  */
 package net.kyori.adventure.platform.fabric.impl.server;
 
-import com.google.auto.service.AutoService;
 import java.util.function.Function;
-import net.fabricmc.api.EnvType;
 import net.kyori.adventure.platform.fabric.impl.SidedProxy;
 import net.kyori.adventure.platform.fabric.impl.WrappedComponent;
 import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.flattener.ComponentFlattener;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-@AutoService(SidedProxy.class)
 public class DedicatedServerProxy implements SidedProxy {
   @Override
-  public boolean isApplicable(final EnvType environment) {
-    return environment == EnvType.SERVER;
-  }
-
-  @Override
-  public void contributeFlattenerElements(final ComponentFlattener.Builder flattenerBuilder) {
+  public void contributeFlattenerElements(final ComponentFlattener.@NotNull Builder flattenerBuilder) {
     // no-op
   }
 
   @Override
-  public WrappedComponent createWrappedComponent(
-    final Component wrapped,
+  public @NotNull WrappedComponent createWrappedComponent(
+    final @NotNull Component wrapped,
     final @Nullable Function<Pointered, ?> partition,
     final @Nullable ComponentRenderer<Pointered> renderer
   ) {

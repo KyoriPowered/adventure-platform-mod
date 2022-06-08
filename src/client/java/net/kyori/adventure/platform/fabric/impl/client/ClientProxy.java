@@ -23,9 +23,7 @@
  */
 package net.kyori.adventure.platform.fabric.impl.client;
 
-import com.google.auto.service.AutoService;
 import java.util.function.Function;
-import net.fabricmc.api.EnvType;
 import net.kyori.adventure.platform.fabric.impl.SidedProxy;
 import net.kyori.adventure.platform.fabric.impl.WrappedComponent;
 import net.kyori.adventure.pointer.Pointered;
@@ -34,27 +32,20 @@ import net.kyori.adventure.text.KeybindComponent;
 import net.kyori.adventure.text.flattener.ComponentFlattener;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
 import net.minecraft.client.KeyMapping;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-@AutoService(SidedProxy.class)
 public class ClientProxy implements SidedProxy {
   @Override
-  public boolean isApplicable(
-    final EnvType environment
-  ) {
-    return environment == EnvType.CLIENT;
-  }
-
-  @Override
   public void contributeFlattenerElements(
-    final ComponentFlattener.Builder flattenerBuilder
+    final ComponentFlattener.@NotNull Builder flattenerBuilder
   ) {
     flattenerBuilder.mapper(KeybindComponent.class, keybind -> KeyMapping.createNameSupplier(keybind.keybind()).get().getString());
   }
 
   @Override
-  public WrappedComponent createWrappedComponent(
-    final Component wrapped,
+  public @NotNull WrappedComponent createWrappedComponent(
+    final @NotNull Component wrapped,
     final @Nullable Function<Pointered, ?> partition,
     final @Nullable ComponentRenderer<Pointered> renderer
   ) {
