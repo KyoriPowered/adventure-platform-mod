@@ -98,6 +98,10 @@ jobs:
           echo '```' >> $GITHUB_STEP_SUMMARY
           cat testserver/logs/latest.log >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
+          if [ ! -e "testserver/adventure-test-success.out" ]; then
+            echo "::error::Server did not exit successfully, see logs for details"
+            exit 1
+          fi
       - name: "publish"
         if: "${{ runner.os == 'Linux' && env.STATUS != 'release' && github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/mc/')) }}"
         run: "./gradlew publish"

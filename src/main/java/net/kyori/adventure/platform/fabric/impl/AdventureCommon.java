@@ -24,6 +24,9 @@
 package net.kyori.adventure.platform.fabric.impl;
 
 import com.mojang.logging.LogUtils;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
 import java.util.ServiceConfigurationError;
@@ -210,7 +213,14 @@ public class AdventureCommon implements ModInitializer {
       if (FabricLoader.getInstance().getEnvironmentType() == EnvType.SERVER) {
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
           MixinEnvironment.getCurrentEnvironment().audit();
-          server.execute(() -> server.halt(false));
+          server.execute(() -> {
+            try {
+              Files.writeString(Path.of("adventure-test-success.out"), "true");
+            } catch (final IOException ex) {
+              System.exit(1);
+            }
+            server.halt(false);
+          });
         });
       }
     }
