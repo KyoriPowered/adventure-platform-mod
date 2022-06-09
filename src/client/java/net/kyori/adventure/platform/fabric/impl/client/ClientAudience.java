@@ -148,6 +148,19 @@ public class ClientAudience implements Audience {
     BossHealthOverlayBridge.listener(this.client.gui.getBossOverlay(), this.controller).remove(bar);
   }
 
+  private long seed(final @NotNull Sound sound) {
+    if (sound.seed().isPresent()) {
+      return sound.seed().getAsLong();
+    } else {
+      final @Nullable LocalPlayer player = this.client.player;
+      if (player != null) {
+        return ((LevelAccess) player).accessor$threadSafeRandom().nextLong();
+      } else {
+        return 0l;
+      }
+    }
+  }
+
   @Override
   public void playSound(final @NotNull Sound sound) {
     final @Nullable LocalPlayer player = this.client.player;
@@ -156,7 +169,7 @@ public class ClientAudience implements Audience {
     } else {
       // not in-game
       this.client.getSoundManager().play(new SimpleSoundInstance(FabricAudiences.toNative(sound.name()), GameEnums.SOUND_SOURCE.toMinecraft(sound.source()),
-        sound.volume(), sound.pitch(), RandomSource.create(), false, 0, SoundInstance.Attenuation.NONE, 0, 0, 0, true));
+        sound.volume(), sound.pitch(), RandomSource.create(this.seed(sound)), false, 0, SoundInstance.Attenuation.NONE, 0, 0, 0, true));
     }
   }
 
@@ -178,7 +191,7 @@ public class ClientAudience implements Audience {
       sound.volume(),
       sound.pitch(),
       targetEntity,
-      ((LevelAccess) targetEntity.level).accessor$threadSafeRandom().nextLong()
+      this.seed(sound)
     );
     // Then apply the ResourceLocation of our real sound event
     ((AbstractSoundInstanceAccess) mcSound).setLocation(FabricAudiences.toNative(sound.name()));
@@ -193,7 +206,7 @@ public class ClientAudience implements Audience {
       GameEnums.SOUND_SOURCE.toMinecraft(sound.source()),
       sound.volume(),
       sound.pitch(),
-      RandomSource.create(((LevelAccess) this.client.level).accessor$threadSafeRandom().nextLong()),
+      RandomSource.create(this.seed(sound)),
       false,
       0,
       SoundInstance.Attenuation.LINEAR,

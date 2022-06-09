@@ -34,6 +34,7 @@ import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.fabric.FabricAudiences;
 import net.kyori.adventure.platform.fabric.impl.GameEnums;
 import net.kyori.adventure.platform.fabric.impl.PointerProviderBridge;
+import net.kyori.adventure.platform.fabric.impl.accessor.LevelAccess;
 import net.kyori.adventure.pointer.Pointers;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.SoundStop;
@@ -52,7 +53,6 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundClearTitlesPacket;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.network.protocol.game.ClientboundCustomSoundPacket;
-import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket;
 import net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket;
 import net.minecraft.network.protocol.game.ClientboundSetTitlesAnimationPacket;
@@ -128,7 +128,7 @@ public final class ServerPlayerAudience implements Audience {
 
   @Override
   public void sendActionBar(final @NotNull Component message) {
-    this.sendPacket(new ClientboundSetActionBarTextPacket(this.controller.toNative(message)));
+    this.player.sendSystemMessage(this.controller.toNative(message), ChatType.GAME_INFO);
   }
 
   @Override
@@ -146,16 +146,36 @@ public final class ServerPlayerAudience implements Audience {
     FabricServerAudiencesImpl.forEachInstance(controller -> controller.bossBars.unsubscribe(this.player, bar));
   }
 
+  private long seed(final @NotNull Sound sound) {
+    if (sound.seed().isPresent()) {
+      return sound.seed().getAsLong();
+    } else {
+      return ((LevelAccess) this.player.getLevel()).accessor$threadSafeRandom().nextLong();
+    }
+  }
+
   @Override
   public void playSound(final @NotNull Sound sound) {
-    this.sendPacket(new ClientboundCustomSoundPacket(FabricAudiences.toNative(sound.name()),
-      GameEnums.SOUND_SOURCE.toMinecraft(sound.source()), this.player.position(), sound.volume(), sound.pitch(), 0));
+    this.sendPacket(new ClientboundCustomSoundPacket(
+      FabricAudiences.toNative(sound.name()),
+      GameEnums.SOUND_SOURCE.toMinecraft(sound.source()),
+      this.player.position(),
+      sound.volume(),
+      sound.pitch(),
+      this.seed(sound)
+    ));
   }
 
   @Override
   public void playSound(final @NotNull Sound sound, final double x, final double y, final double z) {
-    this.sendPacket(new ClientboundCustomSoundPacket(FabricAudiences.toNative(sound.name()),
-      GameEnums.SOUND_SOURCE.toMinecraft(sound.source()), new Vec3(x, y, z), sound.volume(), sound.pitch(), 0));
+    this.sendPacket(new ClientboundCustomSoundPacket(
+      FabricAudiences.toNative(sound.name()),
+      GameEnums.SOUND_SOURCE.toMinecraft(sound.source()),
+      new Vec3(x, y, z),
+      sound.volume(),
+      sound.pitch(),
+      this.seed(sound)
+    ));
   }
 
   @Override
@@ -179,7 +199,14 @@ public final class ServerPlayerAudience implements Audience {
       return;
     }
 
-    this.sendPacket(new ClientboundSoundEntityPacket(event, GameEnums.SOUND_SOURCE.toMinecraft(sound.source()), targetEntity, sound.volume(), sound.pitch(), 0));
+    this.sendPacket(new ClientboundSoundEntityPacket(
+      event,
+      GameEnums.SOUND_SOURCE.toMinecraft(sound.source()),
+      targetEntity,
+      sound.volume(),
+      sound.pitch(),
+      this.seed(sound)
+    ));
   }
 
   @Override

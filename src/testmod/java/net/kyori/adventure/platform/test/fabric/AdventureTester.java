@@ -54,6 +54,7 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.inventory.Book;
@@ -180,7 +181,7 @@ public class AdventureTester implements ModInitializer {
           final Component message = component(ctx, ARG_TEXT);
           final Audience destination = Audience.audience(targets);
 
-          destination.sendMessage(source, message);
+          destination.sendMessage(source, message, MessageType.CHAT);
           source.sendMessage(Identity.nil(), text(b -> {
             b.content("You have sent \"");
             b.append(message).append(text("\" to ")).append(this.listPlayers(targets));
