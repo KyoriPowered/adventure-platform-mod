@@ -31,6 +31,7 @@ repositories {
       releasesOnly()
     }
   }
+  sonatype.s01Snapshots()
 }
 
 quiltflower {
