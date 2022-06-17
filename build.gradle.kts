@@ -85,8 +85,6 @@ dependencies {
   include(libs.examination.string)
   modCompileOnly(libs.jetbrainsAnnotations)
 
-  // modImplementation(libs.colonel)
-
   minecraft(libs.minecraft)
   mappings(loom.layered {
     officialMojangMappings()

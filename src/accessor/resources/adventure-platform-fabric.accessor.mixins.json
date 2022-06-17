@@ -3,10 +3,10 @@
   "package": "net.kyori.adventure.platform.fabric.impl.accessor",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "ArgumentTypeInfosAccess",
     "ComponentSerializerAccess",
     "ConnectionAccess",
     "InvalidKeyExceptionAccess",
-    "LevelAccess"
+    "LevelAccess",
+    "RequiredArgumentBuilderAccess"
   ]
 }

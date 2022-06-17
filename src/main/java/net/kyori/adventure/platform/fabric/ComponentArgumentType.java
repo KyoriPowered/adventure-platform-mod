@@ -44,9 +44,8 @@ import static java.util.Objects.requireNonNull;
 /**
  * An argument that takes JSON-format text.
  *
- * <p>At the moment, using this argument type will require this mod
- * <strong>both server- and clientside</strong>, unless the
- * <a href="https://gitlab.com/stellardrift/colonel">Colonel</a> mod is present on the server.</p>
+ * <p>For this argument type to fully function, adventure-platform-fabric must also be present on the client. Clients
+ * without the mod will receive fallback types existing in the base game.</p>
  *
  * @since 4.0.0
  */

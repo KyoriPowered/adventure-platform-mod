@@ -23,7 +23,6 @@ adventure-textMinimessage = { module = "net.kyori:adventure-text-minimessage", v
 adventure-textSerializerPlain = { module = "net.kyori:adventure-text-serializer-plain", version.ref = "adventure" }
 adventure-textSerializerGson = { module = "net.kyori:adventure-text-serializer-gson", version.ref = "adventure" }
 
-colonel = "ca.stellardrift:colonel:0.2.2"
 examination-api = { module = "net.kyori:examination-api", version.ref = "examination" }
 examination-string = { module = "net.kyori:examination-string", version.ref = "examination" }
 fabric-loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabricLoader"}

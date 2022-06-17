@@ -27,6 +27,7 @@ import com.google.common.collect.MapMaker;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.identity.Identity;
@@ -43,6 +44,7 @@ import net.kyori.adventure.pointer.Pointers;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundTabListPacket;
 import net.minecraft.network.protocol.game.ServerboundClientInformationPacket;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
@@ -70,6 +72,7 @@ public abstract class ServerPlayerMixin extends PlayerMixin implements Forwardin
   private final Map<FabricServerAudiencesImpl, Audience> adventure$renderers = new MapMaker().weakKeys().makeMap();
   private Component adventure$tabListHeader = Component.empty();
   private Component adventure$tabListFooter = Component.empty();
+  private Set<ResourceLocation> adventure$arguments = Set.of();
 
   protected ServerPlayerMixin(final EntityType<? extends LivingEntity> entityType, final Level level) {
     super(entityType, level);
@@ -142,5 +145,22 @@ public abstract class ServerPlayerMixin extends PlayerMixin implements Forwardin
   @Inject(method = "disconnect", at = @At("RETURN"))
   private void adventure$removeBossBarsOnDisconnect(final CallbackInfo ci) {
     FabricServerAudiencesImpl.forEachInstance(controller -> controller.bossBars().unsubscribeFromAll((ServerPlayer) (Object) this));
+  }
+
+  // Known argument type tracking
+
+  @Override
+  public Set<ResourceLocation> bridge$knownArguments() {
+    return this.adventure$arguments;
+  }
+
+  @Override
+  public void bridge$knownArguments(final Set<ResourceLocation> arguments) {
+    this.adventure$arguments = Set.copyOf(arguments);
+  }
+
+  @Inject(method = "restoreFrom", at = @At("RETURN"))
+  public void adventure$copyData(final ServerPlayer from, final boolean keepEverything, final CallbackInfo ci) {
+    this.bridge$knownArguments(((ServerPlayerBridge) from).bridge$knownArguments());
   }
 }

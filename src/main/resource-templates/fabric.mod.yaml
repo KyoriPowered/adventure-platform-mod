@@ -12,6 +12,8 @@ license: "MIT"
 entrypoints:
   main:
     - "net.kyori.adventure.platform.fabric.impl.AdventureCommon"
+  client:
+    - "net.kyori.adventure.platform.fabric.impl.client.AdventureClient"
   preLaunch:
     - "net.kyori.adventure.platform.fabric.impl.AdventurePrelaunch"
   adventure-internal:sidedproxy/client:
@@ -42,5 +44,3 @@ custom:
 depends:
   fabricloader: ">=0.4.0"
   fabric-api-base: "*"
-suggests:
-  colonel: ">=0.1"

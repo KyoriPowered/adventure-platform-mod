@@ -21,34 +21,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.adventure.platform.fabric.impl.server;
+package net.kyori.adventure.platform.fabric.impl.client;
 
-import java.util.Set;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.Nullable;
+import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.networking.v1.C2SPlayChannelEvents;
+import net.fabricmc.loader.api.FabricLoader;
+import net.kyori.adventure.platform.fabric.impl.AdventureCommon;
+import net.kyori.adventure.platform.fabric.impl.ClientboundRegisteredArgumentTypesPacket;
+import net.kyori.adventure.platform.fabric.impl.ServerArgumentTypes;
 
-public interface ServerPlayerBridge {
-  /**
-   * Update the tab list header and footer.
-   *
-   * @param header header, null to leave unchanged
-   * @param footer footer, null to leave unchanged
-   * @since 4.0.0
-   */
-  void bridge$updateTabList(final @Nullable Component header, final @Nullable Component footer);
+public final class AdventureClient implements ClientModInitializer {
+  @Override
+  public void onInitializeClient() {
+    this.setupCustomArgumentTypes();
+  }
 
-  /**
-   * Set of registered optional argument types.
-   *
-   * @return immutable set of type identifiers
-   */
-  Set<ResourceLocation> bridge$knownArguments();
-
-  /**
-   * Set the set of registered optional argument types.
-   *
-   * @param arguments set of type identifiers
-   */
-  void bridge$knownArguments(final Set<ResourceLocation> arguments);
+  private void setupCustomArgumentTypes() {
+    // sync is optional, so fapi is not required
+    if (FabricLoader.getInstance().isModLoaded(AdventureCommon.MOD_FAPI_NETWORKING)) {
+      C2SPlayChannelEvents.REGISTER.register((handler, sender, client, channels) -> {
+        if (channels.contains(ClientboundRegisteredArgumentTypesPacket.ID)) {
+          client.execute(() -> ClientboundRegisteredArgumentTypesPacket.of(ServerArgumentTypes.ids()).sendTo(sender));
+        }
+      });
+    }
+  }
 }

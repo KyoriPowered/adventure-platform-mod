@@ -21,34 +21,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.adventure.platform.fabric.impl.server;
+package net.kyori.adventure.platform.fabric.impl;
 
-import java.util.Set;
-import net.minecraft.network.chat.Component;
+import com.mojang.brigadier.arguments.ArgumentType;
+import com.mojang.brigadier.suggestion.SuggestionProvider;
+import java.util.function.Function;
+import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.Nullable;
 
-public interface ServerPlayerBridge {
-  /**
-   * Update the tab list header and footer.
-   *
-   * @param header header, null to leave unchanged
-   * @param footer footer, null to leave unchanged
-   * @since 4.0.0
-   */
-  void bridge$updateTabList(final @Nullable Component header, final @Nullable Component footer);
-
-  /**
-   * Set of registered optional argument types.
-   *
-   * @return immutable set of type identifiers
-   */
-  Set<ResourceLocation> bridge$knownArguments();
-
-  /**
-   * Set the set of registered optional argument types.
-   *
-   * @param arguments set of type identifiers
-   */
-  void bridge$knownArguments(final Set<ResourceLocation> arguments);
+/**
+ * An argument type that only needs to be known on the server.
+ *
+ * @param id argument id
+ * @param type argument type
+ * @param argumentTypeInfo argument type info
+ * @param fallbackProvider fallback type provider
+ * @param fallbackSuggestions fallback suggestions provider
+ * @param <T> argument type
+ */
+public record ServerArgumentType<T extends ArgumentType<?>>(
+  ResourceLocation id,
+  Class<? super T> type,
+  ArgumentTypeInfo<T, ? extends ArgumentTypeInfo.Template<T>> argumentTypeInfo,
+  Function<T, ArgumentType<?>> fallbackProvider,
+  SuggestionProvider<?> fallbackSuggestions
+) {
 }

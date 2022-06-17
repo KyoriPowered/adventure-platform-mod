@@ -35,6 +35,9 @@ public final class ComponentArgumentTypeSerializer implements ArgumentTypeInfo<C
 
   public static ComponentArgumentTypeSerializer INSTANCE = new ComponentArgumentTypeSerializer();
 
+  private ComponentArgumentTypeSerializer() {
+  }
+
   @Override
   public void serializeToNetwork(final Template type, final FriendlyByteBuf buffer) {
     buffer.writeResourceLocation(FabricAudiences.toNative(type.format.id()));

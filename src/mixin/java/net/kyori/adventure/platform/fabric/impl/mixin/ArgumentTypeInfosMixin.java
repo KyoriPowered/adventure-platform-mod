@@ -21,24 +21,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.adventure.platform.fabric.impl.accessor;
+package net.kyori.adventure.platform.fabric.impl.mixin;
 
 import com.mojang.brigadier.arguments.ArgumentType;
+import net.kyori.adventure.platform.fabric.impl.ServerArgumentType;
+import net.kyori.adventure.platform.fabric.impl.ServerArgumentTypes;
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.commands.synchronization.ArgumentTypeInfos;
-import net.minecraft.core.Registry;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Invoker;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ArgumentTypeInfos.class)
-public interface ArgumentTypeInfosAccess {
-  @Invoker("register")
-  public static <A extends ArgumentType<?>, T extends ArgumentTypeInfo.Template<A>> ArgumentTypeInfo<A, T> adventure$invoke$register(
-    final Registry<ArgumentTypeInfo<?, ?>> registry,
-    final String string,
-    final Class<? extends A> class_,
-    final ArgumentTypeInfo<A, T> argumentTypeInfo
+public abstract class ArgumentTypeInfosMixin {
+  @Inject(
+    method = "unpack(Lcom/mojang/brigadier/arguments/ArgumentType;)Lnet/minecraft/commands/synchronization/ArgumentTypeInfo$Template;",
+    at = @At("HEAD"),
+    cancellable = true
+  )
+  @SuppressWarnings("unchecked")
+  private static <A extends ArgumentType<?>> void unpackServerArgument(
+    final A argumentType,
+    final CallbackInfoReturnable<ArgumentTypeInfo.Template<?>> cir
   ) {
-    throw new IncompatibleClassChangeError("mixin not injected");
+    final ServerArgumentType<A> serverType = (ServerArgumentType<A>) ServerArgumentTypes.byClass(argumentType.getClass());
+    if (serverType != null) {
+      cir.setReturnValue(serverType.argumentTypeInfo().unpack(argumentType));
+    }
   }
 }
