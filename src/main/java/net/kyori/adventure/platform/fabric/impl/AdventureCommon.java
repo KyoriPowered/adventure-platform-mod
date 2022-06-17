@@ -69,7 +69,7 @@ public class AdventureCommon implements ModInitializer {
 
   public static final ComponentFlattener FLATTENER;
   private static final Pattern LOCALIZATION_PATTERN = Pattern.compile("%(?:(\\d+)\\$)?s");
-  public static final String MOD_FAPI_NETWORKING = "fabric-networking-v0";
+  public static final String MOD_FAPI_NETWORKING = "fabric-networking-api-v1";
 
   static {
     final var sidedProxy = chooseSidedProxy();
@@ -186,7 +186,7 @@ public class AdventureCommon implements ModInitializer {
   private void setupCustomArgumentTypes() {
     // sync is optional, so fapi is not required
     if (FabricLoader.getInstance().isModLoaded(MOD_FAPI_NETWORKING)) {
-      ClientboundRegisteredArgumentTypesPacket.register();
+      ServerboundRegisteredArgumentTypesPacket.register();
     }
 
     ServerArgumentTypes.register(

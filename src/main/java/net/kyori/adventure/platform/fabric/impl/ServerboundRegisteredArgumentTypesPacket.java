@@ -41,23 +41,23 @@ import org.checkerframework.checker.nullness.qual.NonNull;
  *
  * @param known Known argument type ids
  */
-public record ClientboundRegisteredArgumentTypesPacket(Set<ResourceLocation> known) {
+public record ServerboundRegisteredArgumentTypesPacket(Set<ResourceLocation> known) {
   public static final ResourceLocation ID = new ResourceLocation(Adventure.NAMESPACE, "registered-args");
 
   public static void register() {
     ServerPlayNetworking.registerGlobalReceiver(ID, (server, player, handler, buffer, responder) -> {
-      final ClientboundRegisteredArgumentTypesPacket pkt = ClientboundRegisteredArgumentTypesPacket.of(buffer);
+      final ServerboundRegisteredArgumentTypesPacket pkt = ServerboundRegisteredArgumentTypesPacket.of(buffer);
       server.execute(() -> { // on main thread
-        ServerArgumentTypes.knownArgumentTypes(player, pkt.known);
+        ServerArgumentTypes.knownArgumentTypes(player, pkt.known, responder);
       });
     });
   }
 
-  public static ClientboundRegisteredArgumentTypesPacket of(final Set<ResourceLocation> idents) {
-    return new ClientboundRegisteredArgumentTypesPacket(Set.copyOf(idents));
+  public static ServerboundRegisteredArgumentTypesPacket of(final Set<ResourceLocation> idents) {
+    return new ServerboundRegisteredArgumentTypesPacket(Set.copyOf(idents));
   }
 
-  public static ClientboundRegisteredArgumentTypesPacket of(final @NonNull FriendlyByteBuf buf) {
+  public static ServerboundRegisteredArgumentTypesPacket of(final @NonNull FriendlyByteBuf buf) {
     final int length = buf.readVarInt();
     final Set<ResourceLocation> items = new HashSet<>();
     for (int i = 0; i < length; ++i) {
