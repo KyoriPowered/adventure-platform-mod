@@ -1,0 +1,12 @@
+plugins {
+  alias(libs.plugins.indra) apply false // needed for Gradle dependency resolution
+  alias(libs.plugins.indra.licenseHeader) apply false // needed for Gradle dependency resolution
+  alias(libs.plugins.indra.publishing) apply false // needed for Gradle dependency resolution
+  alias(libs.plugins.indra.checkstyle) apply false // needed for Gradle dependency resolution
+  alias(libs.plugins.indra.sonatype)
+  alias(libs.plugins.ideaExt)
+}
+
+indraSonatype {
+  useAlternateSonatypeOSSHost("s01")
+}

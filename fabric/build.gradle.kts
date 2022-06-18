@@ -12,24 +12,10 @@ plugins {
   alias(libs.plugins.loomQuiltflower)
   alias(libs.plugins.configurateTransformations)
   alias(libs.plugins.indra)
+  alias(libs.plugins.indra.publishing)
   alias(libs.plugins.indra.licenseHeader)
   alias(libs.plugins.indra.checkstyle)
-  alias(libs.plugins.indra.sonatype)
   alias(libs.plugins.ideaExt)
-}
-
-repositories {
-  mavenCentral()
-  maven(url = "https://maven.parchmentmc.org/") {
-    name = "parchment"
-  }
-  maven(url = "https://maven.quiltmc.org/repositories/release/") {
-    name = "quiltReleases"
-    mavenContent {
-      includeGroup("org.quiltmc")
-      releasesOnly()
-    }
-  }
 }
 
 quiltflower {
@@ -44,12 +30,8 @@ indra {
   javaVersions().target(17)
 }
 
-indraSonatype {
-  useAlternateSonatypeOSSHost("s01")
-}
-
 license {
-  header(file("LICENSE_HEADER"))
+  header(rootProject.file("LICENSE_HEADER"))
 }
 
 dependencies {
@@ -224,7 +206,7 @@ fun createProcessResourceTemplates(name: String, setProvider: NamedDomainObjectP
 
   // Have templates ready for IDEs
   eclipse.synchronizationTasks(task)
-  idea.project.settings.taskTriggers {
+  rootProject.idea.project.settings.taskTriggers {
     afterSync(task)
   }
   idea.module.generatedSourceDirs.add(destinationDir)
