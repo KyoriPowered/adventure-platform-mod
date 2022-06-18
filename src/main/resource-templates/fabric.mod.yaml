@@ -14,8 +14,6 @@ entrypoints:
     - "net.kyori.adventure.platform.fabric.impl.AdventureCommon"
   client:
     - "net.kyori.adventure.platform.fabric.impl.client.AdventureClient"
-  preLaunch:
-    - "net.kyori.adventure.platform.fabric.impl.AdventurePrelaunch"
   adventure-internal:sidedproxy/client:
     - "net.kyori.adventure.platform.fabric.impl.client.ClientProxy"
   adventure-internal:sidedproxy/server:
@@ -42,5 +40,5 @@ custom:
     net/minecraft/class_1799: [ net/kyori/adventure/text/event/HoverEventSource ] # net/minecraft/world/item/ItemStack
 
 depends:
-  fabricloader: ">=0.4.0"
+  fabricloader: ">=0.14.0"
   fabric-api-base: "*"
