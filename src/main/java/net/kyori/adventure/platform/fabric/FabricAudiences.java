@@ -100,10 +100,7 @@ public interface FabricAudiences {
     if (loc == null) {
       return null;
     }
-    if (loc instanceof Key) {
-      return loc;
-    }
-    return Key.key(loc.getNamespace(), loc.getPath());
+    return loc;
   }
 
   /**
@@ -122,10 +119,8 @@ public interface FabricAudiences {
     if (key == null) {
       return null;
     }
-    if (key instanceof ResourceLocation) {
-      return (ResourceLocation) key;
-    }
-    return new ResourceLocation(key.namespace(), key.value());
+
+    return (ResourceLocation) key;
   }
 
   /**
