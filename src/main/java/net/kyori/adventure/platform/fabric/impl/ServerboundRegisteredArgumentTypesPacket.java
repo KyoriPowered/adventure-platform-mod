@@ -75,6 +75,8 @@ public record ServerboundRegisteredArgumentTypesPacket(Set<ResourceLocation> kno
 
   /**
    * Send the client's list of identifiers to the server.
+   *
+   * @param sender the sender to send the packet to
    */
   public void sendTo(final PacketSender sender) {
     if (ClientPlayNetworking.canSend(ID)) {
