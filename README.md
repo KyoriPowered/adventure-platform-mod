@@ -33,6 +33,8 @@ $ ./gradlew --no-daemon generateTemplates
 $ ./gradlew build
 ```
 
+To have browseable game source in your IDE, run `./gradlew genSources` before importing the mod
+
 `adventure-platform-fabric` is released under the terms of the [MIT License](LICENSE).
 
 [Discord]: https://discord.gg/MMfhJ8F

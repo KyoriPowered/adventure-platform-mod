@@ -239,6 +239,13 @@ tasks.withType(GenerateSourcesTask::class).configureEach {
   dependsOn(generateTemplates)
 }
 
+// Ugly hack for easy genSourcening
+afterEvaluate {
+    tasks.matching { it.name == "genSources" }.configureEach {
+      setDependsOn(setOf("genClientOnlySourcesWithQuiltflower", "genCommonSourcesWithQuiltflower"))
+    }
+}
+
 indra {
   github("KyoriPowered", "adventure-platform-fabric") {
     ci(true)
