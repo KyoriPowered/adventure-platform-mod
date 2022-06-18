@@ -58,7 +58,6 @@ import net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket;
 import net.minecraft.network.protocol.game.ClientboundSetTitlesAnimationPacket;
 import net.minecraft.network.protocol.game.ClientboundSoundEntityPacket;
 import net.minecraft.network.protocol.game.ClientboundStopSoundPacket;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
@@ -88,13 +87,19 @@ public final class ServerPlayerAudience implements Audience {
 
   @Override
   public void sendMessage(final Identity source, final Component text, final net.kyori.adventure.audience.MessageType type) {
-    final ResourceKey<ChatType> mcType;
     if (type == net.kyori.adventure.audience.MessageType.CHAT) {
-      mcType = ChatType.CHAT;
-      this.player.sendChatMessage(PlayerChatMessage.unsigned(this.controller.toNative(text)), new ChatSender(source.uuid(), null), mcType);
+      this.player.sendChatMessage(PlayerChatMessage.unsigned(this.controller.toNative(text)), this.rehydrateIdentity(source), ChatType.CHAT);
     } else {
-      mcType = ChatType.SYSTEM;
-      this.player.sendSystemMessage(this.controller.toNative(text), mcType/*, source.uuid()*/);
+      this.player.sendSystemMessage(this.controller.toNative(text), ChatType.SYSTEM);
+    }
+  }
+
+  private ChatSender rehydrateIdentity(final Identity ident) {
+    final var player = this.player.getServer().getPlayerList().getPlayer(ident.uuid());
+    if (player == null) {
+      return new ChatSender(ident.uuid(), null);
+    } else {
+      return player.asChatSender();
     }
   }
 
