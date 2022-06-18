@@ -42,7 +42,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
  * @param known Known argument type ids
  */
 public record ServerboundRegisteredArgumentTypesPacket(Set<ResourceLocation> known) {
-  public static final ResourceLocation ID = new ResourceLocation(Adventure.NAMESPACE, "registered-args");
+  public static final ResourceLocation ID = new ResourceLocation(Adventure.NAMESPACE, "registered_args");
 
   public static void register() {
     ServerPlayNetworking.registerGlobalReceiver(ID, (server, player, handler, buffer, responder) -> {

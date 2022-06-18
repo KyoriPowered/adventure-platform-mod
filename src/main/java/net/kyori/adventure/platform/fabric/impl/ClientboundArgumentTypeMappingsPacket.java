@@ -32,7 +32,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 
 public record ClientboundArgumentTypeMappingsPacket(Int2ObjectMap<ResourceLocation> mappings) {
-  public static final ResourceLocation ID = new ResourceLocation(Adventure.NAMESPACE, "registered-arg-mappings");
+  public static final ResourceLocation ID = new ResourceLocation(Adventure.NAMESPACE, "registered_arg_mappings");
 
   public static ClientboundArgumentTypeMappingsPacket from(final FriendlyByteBuf buffer) {
     final Int2ObjectMap<ResourceLocation> map = buffer.readMap(
