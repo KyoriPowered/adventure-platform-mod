@@ -21,34 +21,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.adventure.platform.fabric.impl.server;
+package net.kyori.adventure.platform.fabric.impl.mixin;
 
-import java.util.Set;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.Nullable;
+import net.kyori.adventure.platform.fabric.impl.ServerArgumentTypes;
+import net.minecraft.core.Registry;
+import net.minecraft.network.protocol.game.ClientboundCommandsPacket;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Redirect;
 
-public interface ServerPlayerBridge {
-  /**
-   * Update the tab list header and footer.
-   *
-   * @param header header, null to leave unchanged
-   * @param footer footer, null to leave unchanged
-   * @since 4.0.0
-   */
-  void bridge$updateTabList(final @Nullable Component header, final @Nullable Component footer);
-
-  /**
-   * Set of registered optional argument types.
-   *
-   * @return immutable set of type identifiers
-   */
-  Set<ResourceLocation> bridge$knownArguments();
-
-  /**
-   * Set the set of registered optional argument types.
-   *
-   * @param arguments set of type identifiers
-   */
-  void bridge$knownArguments(final Set<ResourceLocation> arguments);
+@Mixin(ClientboundCommandsPacket.class)
+public abstract class ClientboundCommandsPacketMixin {
+  @Redirect(
+    method = "read(Lnet/minecraft/network/FriendlyByteBuf;B)Lnet/minecraft/network/protocol/game/ClientboundCommandsPacket$NodeStub;",
+    at = @At(value = "INVOKE", target = "Lnet/minecraft/core/Registry;byId(I)Ljava/lang/Object;")
+  )
+  private static Object redirectUnmap(final Registry<?> instance, final int id) {
+    if (ServerArgumentTypes.hasId(id)) {
+      return ServerArgumentTypes.byId(id).argumentTypeInfo();
+    }
+    return instance.byId(id);
+  }
 }

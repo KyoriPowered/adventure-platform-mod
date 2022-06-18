@@ -21,34 +21,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.adventure.platform.fabric.impl.server;
+package net.kyori.adventure.platform.fabric.impl.mixin;
 
-import java.util.Set;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.kyori.adventure.platform.fabric.impl.ServerArgumentTypes;
+import net.minecraft.commands.synchronization.ArgumentTypeInfo;
+import net.minecraft.core.Registry;
 import org.jetbrains.annotations.Nullable;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Redirect;
 
-public interface ServerPlayerBridge {
-  /**
-   * Update the tab list header and footer.
-   *
-   * @param header header, null to leave unchanged
-   * @param footer footer, null to leave unchanged
-   * @since 4.0.0
-   */
-  void bridge$updateTabList(final @Nullable Component header, final @Nullable Component footer);
-
-  /**
-   * Set of registered optional argument types.
-   *
-   * @return immutable set of type identifiers
-   */
-  Set<ResourceLocation> bridge$knownArguments();
-
-  /**
-   * Set the set of registered optional argument types.
-   *
-   * @param arguments set of type identifiers
-   */
-  void bridge$knownArguments(final Set<ResourceLocation> arguments);
+@Mixin(targets = "net.minecraft.network.protocol.game.ClientboundCommandsPacket$ArgumentNodeStub")
+public abstract class ArgumentNodeStubMixin {
+  @Redirect(
+    method = "serializeCap(Lnet/minecraft/network/FriendlyByteBuf;Lnet/minecraft/commands/synchronization/ArgumentTypeInfo;Lnet/minecraft/commands/synchronization/ArgumentTypeInfo$Template;)V",
+    at = @At(value = "INVOKE", target = "Lnet/minecraft/core/Registry;getId(Ljava/lang/Object;)I")
+  )
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  private static int redirectGetId(final Registry registry, final @Nullable Object argumentTypeInfo) {
+    if (ServerArgumentTypes.isServerType((ArgumentTypeInfo<?, ?>) argumentTypeInfo)) {
+      return ServerArgumentTypes.id((ArgumentTypeInfo<?, ?>) argumentTypeInfo);
+    }
+    return registry.getId(argumentTypeInfo);
+  }
 }

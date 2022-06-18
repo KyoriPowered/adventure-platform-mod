@@ -21,34 +21,39 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.adventure.platform.fabric.impl.server;
+package net.kyori.adventure.platform.fabric.impl;
 
-import java.util.Set;
-import net.minecraft.network.chat.Component;
+import io.netty.buffer.Unpooled;
+import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import net.fabricmc.fabric.api.networking.v1.PacketSender;
+import net.kyori.adventure.Adventure;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.Nullable;
 
-public interface ServerPlayerBridge {
-  /**
-   * Update the tab list header and footer.
-   *
-   * @param header header, null to leave unchanged
-   * @param footer footer, null to leave unchanged
-   * @since 4.0.0
-   */
-  void bridge$updateTabList(final @Nullable Component header, final @Nullable Component footer);
+public record ClientboundArgumentTypeMappingsPacket(Int2ObjectMap<ResourceLocation> mappings) {
+  public static final ResourceLocation ID = new ResourceLocation(Adventure.NAMESPACE, "registered_arg_mappings");
 
-  /**
-   * Set of registered optional argument types.
-   *
-   * @return immutable set of type identifiers
-   */
-  Set<ResourceLocation> bridge$knownArguments();
+  public static ClientboundArgumentTypeMappingsPacket from(final FriendlyByteBuf buffer) {
+    final Int2ObjectMap<ResourceLocation> map = buffer.readMap(
+      Int2ObjectArrayMap::new,
+      FriendlyByteBuf::readVarInt,
+      FriendlyByteBuf::readResourceLocation
+    );
+    return new ClientboundArgumentTypeMappingsPacket(map);
+  }
 
-  /**
-   * Set the set of registered optional argument types.
-   *
-   * @param arguments set of type identifiers
-   */
-  void bridge$knownArguments(final Set<ResourceLocation> arguments);
+  private FriendlyByteBuf serialize() {
+    final FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+    buf.writeMap(
+      this.mappings,
+      FriendlyByteBuf::writeVarInt,
+      FriendlyByteBuf::writeResourceLocation
+    );
+    return buf;
+  }
+
+  public void sendTo(final PacketSender responder) {
+    responder.sendPacket(ID, this.serialize());
+  }
 }

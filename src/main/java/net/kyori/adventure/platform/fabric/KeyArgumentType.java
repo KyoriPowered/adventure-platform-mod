@@ -34,6 +34,9 @@ import org.jetbrains.annotations.NotNull;
 /**
  * An argument that will be decoded as a Key.
  *
+ * <p>For this argument type to fully function, adventure-platform-fabric must also be present on the client. Clients
+ * without the mod will receive fallback types existing in the base game.</p>
+ *
  * @since 4.0.0
  */
 public final class KeyArgumentType implements ArgumentType<Key> {

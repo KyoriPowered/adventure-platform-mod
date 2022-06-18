@@ -23,6 +23,7 @@
  */
 package net.kyori.adventure.platform.fabric.impl;
 
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.logging.LogUtils;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -41,7 +42,6 @@ import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.platform.fabric.ComponentArgumentType;
 import net.kyori.adventure.platform.fabric.KeyArgumentType;
 import net.kyori.adventure.platform.fabric.PlayerLocales;
-import net.kyori.adventure.platform.fabric.impl.accessor.ArgumentTypeInfosAccess;
 import net.kyori.adventure.platform.fabric.impl.server.FabricServerAudiencesImpl;
 import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.pointer.Pointers;
@@ -51,8 +51,9 @@ import net.kyori.adventure.text.flattener.ComponentFlattener;
 import net.kyori.adventure.translation.GlobalTranslator;
 import net.kyori.adventure.translation.TranslationRegistry;
 import net.kyori.adventure.translation.Translator;
+import net.minecraft.commands.arguments.ComponentArgument;
+import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.commands.synchronization.SingletonArgumentInfo;
-import net.minecraft.core.Registry;
 import net.minecraft.locale.Language;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
@@ -68,6 +69,7 @@ public class AdventureCommon implements ModInitializer {
 
   public static final ComponentFlattener FLATTENER;
   private static final Pattern LOCALIZATION_PATTERN = Pattern.compile("%(?:(\\d+)\\$)?s");
+  public static final String MOD_FAPI_NETWORKING = "fabric-networking-api-v1";
 
   static {
     final var sidedProxy = chooseSidedProxy();
@@ -155,39 +157,7 @@ public class AdventureCommon implements ModInitializer {
 
   @Override
   public void onInitialize() {
-    // Register custom argument types
-    if (FabricLoader.getInstance().isModLoaded("colonel")) { // we can do server-only arg types
-      /*ServerArgumentType.<ComponentArgumentType>builder(res("component"))
-        .type(ComponentArgumentType.class)
-        .serializer(new ComponentArgumentTypeSerializer())
-        .fallbackProvider(arg -> {
-          return switch (arg.format()) {
-            case JSON -> ComponentArgument.textComponent();
-            case MINIMESSAGE -> StringArgumentType.greedyString();
-          };
-        })
-        .fallbackSuggestions(null) // client text parsing is fine
-        .register();
-      ServerArgumentType.<KeyArgumentType>builder(res("key"))
-        .type(KeyArgumentType.class)
-        .serializer(new EmptyArgumentSerializer<>(KeyArgumentType::key))
-        .fallbackProvider(arg -> ResourceLocationArgument.id())
-        .fallbackSuggestions(null)
-        .register();*/
-    } else {
-      ArgumentTypeInfosAccess.adventure$invoke$register(
-        Registry.COMMAND_ARGUMENT_TYPE,
-        "adventure:component",
-        ComponentArgumentType.class,
-        new ComponentArgumentTypeSerializer()
-      );
-      ArgumentTypeInfosAccess.adventure$invoke$register(
-        Registry.COMMAND_ARGUMENT_TYPE,
-        "adventure:key",
-        KeyArgumentType.class,
-        SingletonArgumentInfo.contextFree(KeyArgumentType::key)
-      );
-    }
+    this.setupCustomArgumentTypes();
 
     PlayerLocales.CHANGED_EVENT.register((player, locale) -> {
       FabricServerAudiencesImpl.forEachInstance(instance -> {
@@ -211,6 +181,35 @@ public class AdventureCommon implements ModInitializer {
         });
       }
     }
+  }
+
+  private void setupCustomArgumentTypes() {
+    // sync is optional, so fapi is not required
+    if (FabricLoader.getInstance().isModLoaded(MOD_FAPI_NETWORKING)) {
+      ServerboundRegisteredArgumentTypesPacket.register();
+    }
+
+    ServerArgumentTypes.register(
+      new ServerArgumentType<>(
+        res("component"),
+        ComponentArgumentType.class,
+        ComponentArgumentTypeSerializer.INSTANCE,
+        arg -> switch (arg.format()) {
+          case JSON -> ComponentArgument.textComponent();
+          case MINIMESSAGE -> StringArgumentType.greedyString();
+        },
+        null
+      )
+    );
+    ServerArgumentTypes.register(
+      new ServerArgumentType<>(
+        res("key"),
+        KeyArgumentType.class,
+        SingletonArgumentInfo.contextFree(KeyArgumentType::key),
+        arg -> ResourceLocationArgument.id(),
+        null
+      )
+    );
   }
 
   public static Function<Pointered, Locale> localePartition() {

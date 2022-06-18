@@ -21,34 +21,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.adventure.platform.fabric.impl.server;
+package net.kyori.adventure.platform.fabric.impl.accessor;
 
-import java.util.Set;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.Nullable;
+import com.mojang.brigadier.arguments.ArgumentType;
+import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Mutable;
+import org.spongepowered.asm.mixin.gen.Accessor;
 
-public interface ServerPlayerBridge {
-  /**
-   * Update the tab list header and footer.
-   *
-   * @param header header, null to leave unchanged
-   * @param footer footer, null to leave unchanged
-   * @since 4.0.0
-   */
-  void bridge$updateTabList(final @Nullable Component header, final @Nullable Component footer);
+@Mixin(value = RequiredArgumentBuilder.class, remap = false)
+public interface RequiredArgumentBuilderAccess {
 
-  /**
-   * Set of registered optional argument types.
-   *
-   * @return immutable set of type identifiers
-   */
-  Set<ResourceLocation> bridge$knownArguments();
-
-  /**
-   * Set the set of registered optional argument types.
-   *
-   * @param arguments set of type identifiers
-   */
-  void bridge$knownArguments(final Set<ResourceLocation> arguments);
+  @Accessor("type")
+  @Mutable
+  void accessor$type(final ArgumentType<?> type);
 }
