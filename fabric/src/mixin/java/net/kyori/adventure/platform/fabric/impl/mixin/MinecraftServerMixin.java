@@ -31,10 +31,10 @@ import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.permission.PermissionChecker;
 import net.kyori.adventure.platform.fabric.FabricAudiences;
 import net.kyori.adventure.platform.fabric.FabricServerAudiences;
+import net.kyori.adventure.platform.fabric.impl.bridge.MinecraftServerBridge;
 import net.kyori.adventure.platform.fabric.impl.server.FabricServerAudiencesImpl;
-import net.kyori.adventure.platform.fabric.impl.server.MinecraftServerBridge;
-import net.kyori.adventure.platform.fabric.impl.server.PlainAudience;
 import net.kyori.adventure.platform.fabric.impl.server.RenderableAudience;
+import net.kyori.adventure.platform.modcommon.impl.server.PlainAudience;
 import net.kyori.adventure.pointer.Pointers;
 import net.kyori.adventure.util.TriState;
 import net.minecraft.server.MinecraftServer;
@@ -70,7 +70,7 @@ public abstract class MinecraftServerMixin implements MinecraftServerBridge, Ren
 
   @Override
   public Audience renderUsing(final FabricServerAudiencesImpl controller) {
-    return this.adventure$renderers.computeIfAbsent(controller, ctrl -> new PlainAudience(ctrl, this, LOGGER::info));
+    return this.adventure$renderers.computeIfAbsent(controller, ctrl -> new PlainAudience(ctrl::renderer, this, LOGGER::info));
   }
 
   @Override

@@ -25,7 +25,7 @@ package net.kyori.adventure.platform.fabric.impl.client.mixin;
 
 import java.util.Locale;
 import java.util.Objects;
-import net.kyori.adventure.platform.fabric.impl.LocaleHolderBridge;
+import net.kyori.adventure.platform.fabric.impl.bridge.LocaleHolderBridge;
 import net.minecraft.client.Options;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;

@@ -33,13 +33,13 @@ import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.platform.fabric.FabricServerAudiences;
 import net.kyori.adventure.platform.fabric.PlayerLocales;
-import net.kyori.adventure.platform.fabric.impl.LocaleHolderBridge;
 import net.kyori.adventure.platform.fabric.impl.accessor.ConnectionAccess;
+import net.kyori.adventure.platform.fabric.impl.bridge.LocaleHolderBridge;
+import net.kyori.adventure.platform.fabric.impl.bridge.ServerPlayerBridge;
 import net.kyori.adventure.platform.fabric.impl.server.FabricServerAudiencesImpl;
-import net.kyori.adventure.platform.fabric.impl.server.FriendlyByteBufBridge;
+import net.kyori.adventure.platform.fabric.impl.server.FabricServerPlayerAudience;
 import net.kyori.adventure.platform.fabric.impl.server.RenderableAudience;
-import net.kyori.adventure.platform.fabric.impl.server.ServerPlayerAudience;
-import net.kyori.adventure.platform.fabric.impl.server.ServerPlayerBridge;
+import net.kyori.adventure.platform.modcommon.impl.AdventureCommon;
 import net.kyori.adventure.pointer.Pointers;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundTabListPacket;
@@ -90,7 +90,7 @@ public abstract class ServerPlayerMixin extends PlayerMixin implements Forwardin
 
   @Override
   public Audience renderUsing(final FabricServerAudiencesImpl controller) {
-    return this.adventure$renderers.computeIfAbsent(controller, ctrl -> new ServerPlayerAudience((ServerPlayer) (Object) this, ctrl));
+    return this.adventure$renderers.computeIfAbsent(controller, ctrl -> new FabricServerPlayerAudience((ServerPlayer) (Object) this, ctrl));
   }
 
   @Override
@@ -139,7 +139,7 @@ public abstract class ServerPlayerMixin extends PlayerMixin implements Forwardin
   @Inject(method = "restoreFrom", at = @At("RETURN"))
   private void copyData(final ServerPlayer old, final boolean alive, final CallbackInfo ci) {
     FabricServerAudiencesImpl.forEachInstance(controller -> controller.bossBars().replacePlayer(old, (ServerPlayer) (Object) this));
-    ((ConnectionAccess) this.connection.connection).getChannel().attr(FriendlyByteBufBridge.CHANNEL_RENDER_DATA).set(this);
+    ((ConnectionAccess) this.connection.connection).getChannel().attr(AdventureCommon.CHANNEL_RENDER_DATA).set(this);
   }
 
   @Inject(method = "disconnect", at = @At("RETURN"))

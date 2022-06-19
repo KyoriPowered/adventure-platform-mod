@@ -30,10 +30,10 @@ import java.util.function.UnaryOperator;
 import net.kyori.adventure.identity.Identified;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.key.Key;
-import net.kyori.adventure.platform.fabric.impl.AdventureCommon;
-import net.kyori.adventure.platform.fabric.impl.NonWrappingComponentSerializer;
-import net.kyori.adventure.platform.fabric.impl.WrappedComponent;
+import net.kyori.adventure.platform.fabric.impl.AdventureFabricCommon;
 import net.kyori.adventure.platform.fabric.impl.accessor.ComponentSerializerAccess;
+import net.kyori.adventure.platform.modcommon.impl.NonWrappingComponentSerializer;
+import net.kyori.adventure.platform.modcommon.impl.WrappedComponent;
 import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
@@ -73,17 +73,17 @@ public interface FabricAudiences {
     final Component modified;
     final @Nullable Function<Pointered, ?> partition;
     final @Nullable ComponentRenderer<Pointered> renderer;
-    if (input instanceof WrappedComponent) {
-      modified = requireNonNull(modifier).apply(((WrappedComponent) input).wrapped());
-      partition = ((WrappedComponent) input).partition();
-      renderer = ((WrappedComponent) input).renderer();
+    if (input instanceof final WrappedComponent wrapped) {
+      modified = requireNonNull(modifier).apply(wrapped.wrapped());
+      partition = wrapped.partition();
+      renderer = wrapped.renderer();
     } else {
       final Component original = ComponentSerializerAccess.getGSON().fromJson(net.minecraft.network.chat.Component.Serializer.toJsonTree(input), Component.class);
       modified = modifier.apply(original);
       partition = null;
       renderer = null;
     }
-    return AdventureCommon.SIDE_PROXY.createWrappedComponent(modified, partition, renderer);
+    return AdventureFabricCommon.SIDE_PROXY.createWrappedComponent(modified, partition, renderer);
   }
 
   /**

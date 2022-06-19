@@ -36,7 +36,11 @@ import net.kyori.adventure.platform.fabric.AdventureCommandSourceStack;
 import net.kyori.adventure.platform.fabric.FabricAudiences;
 import net.kyori.adventure.platform.fabric.FabricServerAudiences;
 import net.kyori.adventure.platform.fabric.impl.AdventureCommandSourceStackInternal;
-import net.kyori.adventure.platform.fabric.impl.AdventureCommon;
+import net.kyori.adventure.platform.fabric.impl.AdventureFabricCommon;
+import net.kyori.adventure.platform.modcommon.impl.AdventureCommon;
+import net.kyori.adventure.platform.modcommon.impl.RendererProvider;
+import net.kyori.adventure.platform.modcommon.impl.server.CommandSourceAudience;
+import net.kyori.adventure.platform.modcommon.impl.server.ServerBossBarListener;
 import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.flattener.ComponentFlattener;
@@ -57,7 +61,7 @@ import static java.util.Objects.requireNonNull;
 /**
  * The entry point for accessing Adventure.
  */
-public final class FabricServerAudiencesImpl implements FabricServerAudiences {
+public final class FabricServerAudiencesImpl implements FabricServerAudiences, RendererProvider {
   private static final Set<FabricServerAudiencesImpl> INSTANCES = Collections.newSetFromMap(new WeakHashMap<>());
 
   /**
@@ -82,7 +86,7 @@ public final class FabricServerAudiencesImpl implements FabricServerAudiences {
     this.server = server;
     this.partition = partition;
     this.renderer = renderer;
-    this.bossBars = new ServerBossBarListener(this);
+    this.bossBars = new ServerBossBarListener(this::toNative);
     synchronized (INSTANCES) {
       INSTANCES.add(this);
     }
@@ -135,7 +139,7 @@ public final class FabricServerAudiencesImpl implements FabricServerAudiences {
       // TODO: How to pass component renderer through
       return audience;
     } else {
-      return new CommandSourceAudience(source, this);
+      return new CommandSourceAudience(source, this::toNative);
     }
   }
 
@@ -161,7 +165,7 @@ public final class FabricServerAudiencesImpl implements FabricServerAudiences {
 
   @Override
   public @NotNull ComponentFlattener flattener() {
-    return AdventureCommon.FLATTENER;
+    return AdventureFabricCommon.FLATTENER;
   }
 
   @Override
@@ -173,7 +177,7 @@ public final class FabricServerAudiencesImpl implements FabricServerAudiences {
   public net.minecraft.network.chat.@NotNull Component toNative(final @NotNull Component adventure) {
     if (adventure == Component.empty()) return net.minecraft.network.chat.Component.empty();
 
-    return AdventureCommon.SIDE_PROXY.createWrappedComponent(requireNonNull(adventure, "adventure"), this.partition, this.renderer);
+    return AdventureFabricCommon.SIDE_PROXY.createWrappedComponent(requireNonNull(adventure, "adventure"), this.partition, this.renderer);
   }
 
   public ServerBossBarListener bossBars() {

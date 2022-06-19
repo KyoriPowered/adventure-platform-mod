@@ -36,7 +36,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
-import net.kyori.adventure.platform.fabric.impl.server.ServerPlayerBridge;
+import net.kyori.adventure.platform.fabric.impl.bridge.ServerPlayerBridge;
 import net.minecraft.Util;
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.resources.ResourceLocation;

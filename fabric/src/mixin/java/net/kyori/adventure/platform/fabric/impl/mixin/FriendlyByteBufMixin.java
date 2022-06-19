@@ -23,8 +23,8 @@
  */
 package net.kyori.adventure.platform.fabric.impl.mixin;
 
-import net.kyori.adventure.platform.fabric.impl.WrappedComponent;
-import net.kyori.adventure.platform.fabric.impl.server.FriendlyByteBufBridge;
+import net.kyori.adventure.platform.fabric.impl.bridge.FriendlyByteBufBridge;
+import net.kyori.adventure.platform.modcommon.impl.WrappedComponent;
 import net.kyori.adventure.pointer.Pointered;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;

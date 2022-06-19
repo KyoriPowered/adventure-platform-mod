@@ -1,0 +1,70 @@
+plugins {
+    alias(libs.plugins.forgeGradle)
+    alias(libs.plugins.indra.publishing)
+    id 'eclipse'
+}
+
+println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
+
+def datagenResourcesDir = file("src/generated/resources")
+minecraft {
+  mappings channel: 'official', version: libs.versions.minecraft.get()
+  runs.configureEach {
+    workingDirectory project.file('run')
+    property 'forge.logging.markers', 'REGISTRIES'
+    property 'forge.logging.console.level', 'debug'
+    property 'forge.enabledGameTestNamespaces', 'adventure_platform_forge'
+    mods {
+      adventure_platform_forge {
+        source sourceSets.main
+      }
+    }
+  }
+  runs {
+      client
+      server
+      gameTestServer
+      data {
+          args '--mod', 'adventure_platform_forge', '--all', '--output', datagenResourcesDir, '--existing', datagenResourcesDir
+      }
+  }
+}
+
+sourceSets.main.resources { srcDir datagenResourcesDir }
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  minecraft libs.forge
+  implementation project(":adventure-platform-mod-shared")
+
+  /*implementation fg.deobf(group: 'com.google.code.gson', name: 'gson', version: '[2.0,3.0)')
+  jarJar fg.deobf(group: 'com.google.code.gson', name: 'gson', version: '[2.0,3.0)') {
+      jarJar.pin(it, "2.8.0")
+  }*/
+}
+
+tasks.jar {
+  manifest {
+    attributes([
+      "Specification-Title"     : "adventure",
+      "Specification-Vendor"    : "KyoriPowered",
+      "Specification-Version"   : libs.versions.adventure.get(),
+      "Implementation-Title"    : project.name,
+      "Implementation-Version"  : project.jar.archiveVersion,
+      "Implementation-Vendor"   : "KyoriPowered"
+    ])
+  }
+}
+
+jar.finalizedBy('reobfJar')
+
+publishing {
+  publications {
+    maven(MavenPublication) {
+      jarJar.component(it)
+    }
+  }
+}

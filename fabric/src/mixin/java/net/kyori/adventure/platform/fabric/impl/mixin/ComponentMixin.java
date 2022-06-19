@@ -23,7 +23,7 @@
  */
 package net.kyori.adventure.platform.fabric.impl.mixin;
 
-import net.kyori.adventure.platform.fabric.impl.NonWrappingComponentSerializer;
+import net.kyori.adventure.platform.modcommon.impl.NonWrappingComponentSerializer;
 import net.kyori.adventure.text.ComponentLike;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;

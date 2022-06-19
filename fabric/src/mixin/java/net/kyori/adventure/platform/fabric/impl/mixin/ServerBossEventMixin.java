@@ -27,7 +27,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.UUID;
-import net.kyori.adventure.platform.fabric.impl.server.ServerBossEventBridge;
+import net.kyori.adventure.platform.fabric.impl.bridge.ServerBossEventBridge;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundBossEventPacket;
 import net.minecraft.server.level.ServerBossEvent;

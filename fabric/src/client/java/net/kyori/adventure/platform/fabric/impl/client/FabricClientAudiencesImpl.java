@@ -23,10 +23,12 @@
  */
 package net.kyori.adventure.platform.fabric.impl.client;
 
-import java.util.function.Function;
+import static java.util.Objects.requireNonNull;
+
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.platform.fabric.FabricClientAudiences;
-import net.kyori.adventure.platform.fabric.impl.AdventureCommon;
+import net.kyori.adventure.platform.fabric.impl.AdventureFabricCommon;
+import net.kyori.adventure.platform.modcommon.impl.AdventureCommon;
 import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.text.flattener.ComponentFlattener;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
@@ -35,7 +37,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 
-import static java.util.Objects.requireNonNull;
+import java.util.function.Function;
 
 public class FabricClientAudiencesImpl implements FabricClientAudiences {
   public static final FabricClientAudiences INSTANCE = new Builder().build();
@@ -56,7 +58,7 @@ public class FabricClientAudiencesImpl implements FabricClientAudiences {
 
   @Override
   public @NotNull ComponentFlattener flattener() {
-    return AdventureCommon.FLATTENER;
+    return AdventureFabricCommon.FLATTENER;
   }
 
   @Override

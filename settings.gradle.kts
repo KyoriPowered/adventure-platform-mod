@@ -1,5 +1,8 @@
 pluginManagement {
   repositories {
+      mavenLocal {
+          mavenContent { snapshotsOnly() }
+      }
     maven(url = "https://repo.stellardrift.ca/repository/internal/") {
       name = "stellardriftReleases"
       mavenContent { releasesOnly() }
@@ -19,14 +22,21 @@ pluginManagement {
 
 plugins {
   id("fabric-loom") version "0.12.+"
+  id("org.spongepowered.gradle.vanilla") version "0.2.1-SNAPSHOT"
+  id("org.jetbrains.gradle.plugin.idea-ext") version "1.1.4" apply false
 }
 
 dependencyResolutionManagement {
-  repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
   repositories {
     mavenCentral()
     maven(url = "https://maven.parchmentmc.org/") {
       name = "parchment"
+    }
+    maven(url = "https://maven.minecraftforge.net/") {
+      name = "forge"
+      mavenContent {
+        releasesOnly()
+      }
     }
     maven(url = "https://maven.quiltmc.org/repositories/release/") {
       name = "quiltReleases"

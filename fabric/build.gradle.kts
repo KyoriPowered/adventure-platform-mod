@@ -26,18 +26,14 @@ quiltflower {
   // addToRuntimeClasspath.set(true)
 }
 
-indra {
-  javaVersions().target(17)
-}
-
-license {
-  header(rootProject.file("LICENSE_HEADER"))
-}
-
 dependencies {
   annotationProcessor(libs.autoService)
   annotationProcessor(libs.contractValidator)
   compileOnlyApi(libs.autoService.annotations)
+  implementation(project(":adventure-platform-mod-shared")) {
+    exclude(group = "net.minecraft")
+  }
+  
   sequenceOf(
     libs.adventure.key,
     libs.adventure.api,
@@ -67,11 +63,6 @@ dependencies {
   include(libs.examination.string)
   modCompileOnly(libs.jetbrainsAnnotations)
 
-  minecraft(libs.minecraft)
-  mappings(loom.layered {
-    officialMojangMappings()
-    parchment("org.parchmentmc.data:parchment-${libs.versions.parchment.get()}@zip")
-  })
   modImplementation(libs.fabric.loader)
 
   // Testmod TODO figure out own scope
@@ -116,7 +107,6 @@ dependencies {
 }
 
 loom {
-  runtimeOnlyLog4j.set(true)
   runs {
     register("testmodClient") {
       source("testmod")
@@ -125,6 +115,9 @@ loom {
     register("testmodServer") {
       source("testmod")
       server()
+    }
+    configureEach {
+      isIdeConfigGenerated = true
     }
   }
 
@@ -159,10 +152,6 @@ val remapTestmodJar = tasks.register("remapTestmodJar", RemapJarTask::class) {
 
 tasks.build {
   dependsOn(remapTestmodJar)
-}
-
-tasks.withType(RunGameTask::class) {
-  javaLauncher.set(javaToolchains.launcherFor { languageVersion.set(indra.javaVersions().target().map { v -> JavaLanguageVersion.of(v) })})
 }
 
 tasks.jar {
@@ -219,49 +208,6 @@ val generateTestmodTemplates = createProcessResourceTemplates("generateTestmodTe
 
 tasks.withType(GenerateSourcesTask::class).configureEach {
   dependsOn(generateTemplates)
-}
-
-// Ugly hack for easy genSourcening
-afterEvaluate {
-    tasks.matching { it.name == "genSources" }.configureEach {
-      setDependsOn(setOf("genClientOnlySourcesWithQuiltflower", "genCommonSourcesWithQuiltflower"))
-    }
-}
-
-indra {
-  github("KyoriPowered", "adventure-platform-fabric") {
-    ci(true)
-  }
-  mitLicense()
-  checkstyle(libs.versions.checkstyle.get())
-
-  configurePublications {
-    pom {
-      developers {
-        developer {
-          id.set("kashike")
-          timezone.set("America/Vancouver")
-        }
-
-        developer {
-          id.set("lucko")
-          name.set("Luck")
-          url.set("https://lucko.me")
-          email.set("git@lucko.me")
-        }
-
-        developer {
-          id.set("zml")
-          name.set("zml")
-          timezone.set("America/Vancouver")
-        }
-
-        developer {
-          id.set("Electroid")
-        }
-      }
-    }
-  }
 }
 
 // Workaround for both loom and indra doing publication logic in an afterEvaluate :(

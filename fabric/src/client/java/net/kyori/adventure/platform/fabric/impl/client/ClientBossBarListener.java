@@ -25,8 +25,9 @@ package net.kyori.adventure.platform.fabric.impl.client;
 
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Function;
 import net.kyori.adventure.bossbar.BossBar;
-import net.kyori.adventure.platform.fabric.impl.AbstractBossBarListener;
+import net.kyori.adventure.platform.modcommon.impl.AbstractBossBarListener;
 import net.minecraft.client.gui.components.LerpingBossEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.BossEvent;
@@ -35,7 +36,7 @@ import org.jetbrains.annotations.NotNull;
 public class ClientBossBarListener extends AbstractBossBarListener<LerpingBossEvent> {
   private final Map<UUID, LerpingBossEvent> hudBars;
 
-  public ClientBossBarListener(final FabricClientAudiencesImpl controller, final Map<UUID, LerpingBossEvent> hudBars) {
+  public ClientBossBarListener(final Function<net.kyori.adventure.text.Component, Component> controller, final Map<UUID, LerpingBossEvent> hudBars) {
     super(controller);
     this.hudBars = hudBars;
   }

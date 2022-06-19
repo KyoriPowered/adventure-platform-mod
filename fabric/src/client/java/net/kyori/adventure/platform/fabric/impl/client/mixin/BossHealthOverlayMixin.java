@@ -49,7 +49,7 @@ public class BossHealthOverlayMixin implements BossHealthOverlayBridge {
 
   @Override
   public @NotNull ClientBossBarListener adventure$listener(final @NotNull FabricClientAudiencesImpl controller) {
-    return this.adventure$listener.computeIfAbsent(controller, ctrl -> new ClientBossBarListener(ctrl, this.events));
+    return this.adventure$listener.computeIfAbsent(controller, ctrl -> new ClientBossBarListener(ctrl::toNative, this.events));
   }
 
   @Inject(method = "reset", at = @At("HEAD"))

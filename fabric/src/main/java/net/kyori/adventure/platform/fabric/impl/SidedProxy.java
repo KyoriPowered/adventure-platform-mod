@@ -24,6 +24,7 @@
 package net.kyori.adventure.platform.fabric.impl;
 
 import java.util.function.Function;
+import net.kyori.adventure.platform.modcommon.impl.WrappedComponent;
 import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.flattener.ComponentFlattener;

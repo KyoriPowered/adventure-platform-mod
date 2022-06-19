@@ -25,8 +25,8 @@ package net.kyori.adventure.platform.fabric;
 
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.platform.AudienceProvider;
+import net.kyori.adventure.platform.fabric.impl.bridge.MinecraftServerBridge;
 import net.kyori.adventure.platform.fabric.impl.server.FabricServerAudiencesImpl;
-import net.kyori.adventure.platform.fabric.impl.server.MinecraftServerBridge;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.MinecraftServer;

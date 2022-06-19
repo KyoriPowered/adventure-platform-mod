@@ -27,7 +27,7 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.C2SPlayChannelEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
-import net.kyori.adventure.platform.fabric.impl.AdventureCommon;
+import net.kyori.adventure.platform.fabric.impl.AdventureFabricCommon;
 import net.kyori.adventure.platform.fabric.impl.ClientboundArgumentTypeMappingsPacket;
 import net.kyori.adventure.platform.fabric.impl.ServerArgumentTypes;
 import net.kyori.adventure.platform.fabric.impl.ServerboundRegisteredArgumentTypesPacket;
@@ -40,7 +40,7 @@ public final class AdventureClient implements ClientModInitializer {
 
   private void setupCustomArgumentTypes() {
     // sync is optional, so fapi is not required
-    if (FabricLoader.getInstance().isModLoaded(AdventureCommon.MOD_FAPI_NETWORKING)) {
+    if (FabricLoader.getInstance().isModLoaded(AdventureFabricCommon.MOD_FAPI_NETWORKING)) {
       C2SPlayChannelEvents.REGISTER.register((handler, sender, client, channels) -> {
         if (channels.contains(ServerboundRegisteredArgumentTypesPacket.ID)) {
           client.execute(() -> ServerboundRegisteredArgumentTypesPacket.of(ServerArgumentTypes.ids()).sendTo(sender));

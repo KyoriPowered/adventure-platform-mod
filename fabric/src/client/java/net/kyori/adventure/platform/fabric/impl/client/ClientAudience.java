@@ -23,8 +23,6 @@
  */
 package net.kyori.adventure.platform.fabric.impl.client;
 
-import java.time.Duration;
-import java.util.Objects;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.bossbar.BossBar;
@@ -32,10 +30,10 @@ import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.fabric.FabricAudiences;
-import net.kyori.adventure.platform.fabric.impl.GameEnums;
-import net.kyori.adventure.platform.fabric.impl.PointerProviderBridge;
 import net.kyori.adventure.platform.fabric.impl.accessor.LevelAccess;
+import net.kyori.adventure.platform.fabric.impl.bridge.PointerProviderBridge;
 import net.kyori.adventure.platform.fabric.impl.client.mixin.AbstractSoundInstanceAccess;
+import net.kyori.adventure.platform.modcommon.impl.GameEnums;
 import net.kyori.adventure.pointer.Pointers;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.SoundStop;
@@ -56,6 +54,9 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.ChatVisiblity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.time.Duration;
+import java.util.Objects;
 
 public class ClientAudience implements Audience {
   private final Minecraft client;

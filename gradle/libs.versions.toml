@@ -9,6 +9,7 @@ checkstyle = "10.1"
 examination = "1.3.0"
 fabricApi = "0.56.0+1.19"
 fabricLoader = "0.14.8"
+forge = "1.19-41.0.38"
 indra = "2.1.1"
 minecraft = "1.19"
 parchment = "1.18.2:2022.05.02"
@@ -25,24 +26,30 @@ adventure-textSerializerGson = { module = "net.kyori:adventure-text-serializer-g
 
 examination-api = { module = "net.kyori:examination-api", version.ref = "examination" }
 examination-string = { module = "net.kyori:examination-string", version.ref = "examination" }
-fabric-loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabricLoader"}
-fabric-api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabricApi" }
 jetbrainsAnnotations = "org.jetbrains:annotations:23.0.0"
 minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
+
+# adventure-platform-fabric
+fabric-loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabricLoader"}
+fabric-api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabricApi" }
+
+# adventure-platform-forge
+forge = { module = "net.minecraftforge:forge", version.ref = "forge" }
 
 # build
 autoService = { module = "com.google.auto.service:auto-service", version.ref = "autoService" }
 autoService-annotations = { module = "com.google.auto.service:auto-service-annotations", version.ref = "autoService" }
 contractValidator = "ca.stellardrift:contract-validator:1.0.1"
 stylecheck = "ca.stellardrift:stylecheck:0.1"
+quiltflower = { module = "org.quiltmc:quiltflower", version.ref = "quiltflower" }
 
 # For Renovate, do not use directly
 zCheckstyle = { module = "com.puppycrawl.tools:checkstyle", version.ref = "checkstyle" }
-zQuiltflower = { module = "org.quiltmc:quiltflower", version.ref = "quiltflower" }
 
 [plugins]
 configurateTransformations = "ca.stellardrift.configurate-transformations:5.0.1"
 eclipseApt = "com.diffplug.eclipse.apt:3.36.2"
+forgeGradle = "net.minecraftforge.gradle:5.1.+"
 loom = "fabric-loom:0.12.+"
 loomQuiltflower = "io.github.juuxel.loom-quiltflower:1.7.3"
 ideaExt = "org.jetbrains.gradle.plugin.idea-ext:1.1.4"

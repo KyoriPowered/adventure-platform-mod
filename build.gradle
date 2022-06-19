@@ -1,12 +1,96 @@
+import net.fabricmc.loom.task.RunGameTask
+
 plugins {
+  id 'java'
   alias(libs.plugins.indra) apply false // needed for Gradle dependency resolution
   alias(libs.plugins.indra.licenseHeader) apply false // needed for Gradle dependency resolution
   alias(libs.plugins.indra.publishing) apply false // needed for Gradle dependency resolution
   alias(libs.plugins.indra.checkstyle) apply false // needed for Gradle dependency resolution
   alias(libs.plugins.indra.sonatype)
   alias(libs.plugins.ideaExt)
+  alias(libs.plugins.loom)
+  alias(libs.plugins.loomQuiltflower) apply false
 }
 
 indraSonatype {
   useAlternateSonatypeOSSHost("s01")
+}
+
+subprojects {
+  apply plugin: "net.kyori.indra"
+  apply plugin: "net.kyori.indra.checkstyle"
+  apply plugin: "net.kyori.indra.license-header"
+
+  license {
+    header(rootProject.file("LICENSE_HEADER"))
+  }
+  
+  indra {
+    github("KyoriPowered", "adventure-platform-fabric") {
+      ci(true)
+    }
+    javaVersions().target(17)
+    mitLicense()
+    checkstyle(libs.versions.checkstyle.get())
+
+    configurePublications {
+      pom {
+        developers {
+          developer {
+            id = "kashike"
+            timezone = "America/Vancouver"
+          }
+
+          developer {
+            id = "lucko"
+            name = "Luck"
+            url = "https://lucko.me"
+            email = "git@lucko.me"
+          }
+
+          developer {
+            id = "zml"
+            name = "zml"
+            timezone = "America/Vancouver"
+          }
+
+          developer {
+            id = "Electroid"
+          }
+        }
+      }
+    }
+  }
+
+  // Loom -- needs to run late to avoid preset config not applying properly
+  afterEvaluate {
+      tasks.withType(RunGameTask) {
+        javaLauncher.set(javaToolchains.launcherFor { languageVersion.set(indra.javaVersions().target().map { v -> JavaLanguageVersion.of(v) })})
+      }
+  }
+}
+
+allprojects {
+  // Loom-specific
+  plugins.withId('fabric-loom') {
+    dependencies {
+      println "Minecraft dep: ${libs.minecraft} (in project ${project.name})"
+      minecraft(libs.minecraft)
+      mappings(loom.layered {
+        officialMojangMappings()
+        parchment("org.parchmentmc.data:parchment-${libs.versions.parchment.get()}@zip")
+      })
+    }
+    
+    loom {
+      runtimeOnlyLog4j.set(true)
+    }
+    
+    // Ugly hack for easy genSourcening
+    afterEvaluate {
+        tasks.matching { it.name == "genSources" }.configureEach {
+          setDependsOn(["genClientOnlySourcesWithQuiltflower", "genCommonSourcesWithQuiltflower"])
+        }
+    }
+  }
 }

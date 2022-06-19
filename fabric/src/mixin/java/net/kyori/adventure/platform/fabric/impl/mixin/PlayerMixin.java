@@ -26,7 +26,7 @@ package net.kyori.adventure.platform.fabric.impl.mixin;
 import com.mojang.authlib.GameProfile;
 import net.kyori.adventure.identity.Identified;
 import net.kyori.adventure.identity.Identity;
-import net.kyori.adventure.platform.fabric.impl.PointerProviderBridge;
+import net.kyori.adventure.platform.fabric.impl.bridge.PointerProviderBridge;
 import net.kyori.adventure.pointer.Pointers;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;

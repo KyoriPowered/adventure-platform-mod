@@ -25,7 +25,7 @@ package net.kyori.adventure.platform.fabric.impl.client;
 
 import java.util.function.Function;
 import net.kyori.adventure.inventory.Book;
-import net.kyori.adventure.platform.fabric.impl.AdventureCommon;
+import net.kyori.adventure.platform.fabric.impl.AdventureFabricCommon;
 import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
 import net.minecraft.client.gui.screens.inventory.BookViewScreen;
@@ -60,6 +60,6 @@ public class AdventureBookAccess implements BookViewScreen.BookAccess {
 
   @Override
   public FormattedText getPageRaw(final int index) {
-    return AdventureCommon.SIDE_PROXY.createWrappedComponent(this.book.pages().get(index), this.partition, this.renderer);
+    return AdventureFabricCommon.SIDE_PROXY.createWrappedComponent(this.book.pages().get(index), this.partition, this.renderer);
   }
 }
