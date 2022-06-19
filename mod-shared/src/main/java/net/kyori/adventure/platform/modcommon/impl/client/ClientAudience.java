@@ -21,19 +21,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.adventure.platform.fabric.impl.client;
+package net.kyori.adventure.platform.modcommon.impl.client;
 
+import java.time.Duration;
+import java.util.Objects;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.key.Key;
-import net.kyori.adventure.platform.fabric.FabricAudiences;
-import net.kyori.adventure.platform.fabric.impl.accessor.LevelAccess;
-import net.kyori.adventure.platform.fabric.impl.bridge.PointerProviderBridge;
-import net.kyori.adventure.platform.fabric.impl.client.mixin.AbstractSoundInstanceAccess;
+import net.kyori.adventure.platform.modcommon.impl.AdventureCommon;
 import net.kyori.adventure.platform.modcommon.impl.GameEnums;
+import net.kyori.adventure.platform.modcommon.impl.RendererProvider;
 import net.kyori.adventure.pointer.Pointers;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.SoundStop;
@@ -43,29 +43,25 @@ import net.kyori.adventure.title.TitlePart;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.BookViewScreen;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.resources.sounds.EntityBoundSoundInstance;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.ChatVisiblity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.time.Duration;
-import java.util.Objects;
+public abstract class ClientAudience implements Audience {
+  protected final Minecraft client;
+  private final RendererProvider controller;
 
-public class ClientAudience implements Audience {
-  private final Minecraft client;
-  private final FabricClientAudiencesImpl controller;
-
-  public ClientAudience(final Minecraft client, final FabricClientAudiencesImpl renderer) {
+  public ClientAudience(final Minecraft client, final RendererProvider renderer) {
     this.client = client;
     this.controller = renderer;
   }
+
+  protected abstract long nextSoundSeed();
 
   @Override
   public void sendMessage(final Identity source, final @NotNull Component message, final @NotNull MessageType type) {
@@ -140,14 +136,10 @@ public class ClientAudience implements Audience {
   }
 
   @Override
-  public void showBossBar(final @NotNull BossBar bar) {
-    BossHealthOverlayBridge.listener(this.client.gui.getBossOverlay(), this.controller).add(bar);
-  }
+  public abstract void showBossBar(final @NotNull BossBar bar);
 
   @Override
-  public void hideBossBar(final @NotNull BossBar bar) {
-    BossHealthOverlayBridge.listener(this.client.gui.getBossOverlay(), this.controller).remove(bar);
-  }
+  public abstract void hideBossBar(final @NotNull BossBar bar);
 
   @Override
   public void playSound(final @NotNull Sound sound) {
@@ -156,45 +148,34 @@ public class ClientAudience implements Audience {
       this.playSound(sound, player.getX(), player.getY(), player.getZ());
     } else {
       // not in-game
-      this.client.getSoundManager().play(new SimpleSoundInstance(FabricAudiences.toNative(sound.name()), GameEnums.SOUND_SOURCE.toMinecraft(sound.source()),
-        sound.volume(), sound.pitch(), RandomSource.create(), false, 0, SoundInstance.Attenuation.NONE, 0, 0, 0, true));
+      this.client.getSoundManager().play(new SimpleSoundInstance(
+        AdventureCommon.toNative(sound.name()),
+        GameEnums.SOUND_SOURCE.toMinecraft(sound.source()),
+        sound.volume(),
+        sound.pitch(),
+        RandomSource.create(this.nextSoundSeed()),
+        false,
+        0,
+        SoundInstance.Attenuation.NONE,
+        0,
+        0,
+        0,
+        true
+        ));
     }
   }
 
   @Override
-  public void playSound(final @NotNull Sound sound, final Sound.@NotNull Emitter emitter) {
-    final Entity targetEntity;
-    if (emitter == Sound.Emitter.self()) {
-      targetEntity = this.client.player;
-    } else if (emitter instanceof final Entity entity) {
-      targetEntity = entity;
-    } else {
-      throw new IllegalArgumentException("Provided emitter '" + emitter + "' was not Sound.Emitter.self() or an Entity");
-    }
-
-    // Initialize with a placeholder event
-    final EntityBoundSoundInstance mcSound = new EntityBoundSoundInstance(
-      SoundEvents.ITEM_PICKUP,
-      GameEnums.SOUND_SOURCE.toMinecraft(sound.source()),
-      sound.volume(),
-      sound.pitch(),
-      targetEntity,
-      ((LevelAccess) targetEntity.level).accessor$threadSafeRandom().nextLong()
-    );
-    // Then apply the ResourceLocation of our real sound event
-    ((AbstractSoundInstanceAccess) mcSound).setLocation(FabricAudiences.toNative(sound.name()));
-
-    this.client.getSoundManager().play(mcSound);
-  }
+  public abstract void playSound(final @NotNull Sound sound, final Sound.@NotNull Emitter emitter);
 
   @Override
   public void playSound(final @NotNull Sound sound, final double x, final double y, final double z) {
     this.client.getSoundManager().play(new SimpleSoundInstance(
-      FabricAudiences.toNative(sound.name()),
+      AdventureCommon.toNative(sound.name()),
       GameEnums.SOUND_SOURCE.toMinecraft(sound.source()),
       sound.volume(),
       sound.pitch(),
-      RandomSource.create(((LevelAccess) this.client.level).accessor$threadSafeRandom().nextLong()),
+      RandomSource.create(this.nextSoundSeed()),
       false,
       0,
       SoundInstance.Attenuation.LINEAR,
@@ -208,7 +189,7 @@ public class ClientAudience implements Audience {
   @Override
   public void stopSound(final @NotNull SoundStop stop) {
     final @Nullable Key sound = stop.sound();
-    final @Nullable ResourceLocation soundIdent = sound == null ? null : FabricAudiences.toNative(sound);
+    final @Nullable ResourceLocation soundIdent = sound == null ? null : AdventureCommon.toNative(sound);
     final Sound.@Nullable Source source = stop.source();
     final @Nullable SoundSource category = source == null ? null : GameEnums.SOUND_SOURCE.toMinecraft(source);
     this.client.getSoundManager().stop(soundIdent, category);
@@ -239,7 +220,7 @@ public class ClientAudience implements Audience {
   public @NotNull Pointers pointers() {
     final @Nullable LocalPlayer clientPlayer = this.client.player;
     if (clientPlayer != null) {
-      return ((PointerProviderBridge) clientPlayer).adventure$pointers();
+      return AdventureCommon.HOOKS.pointers(clientPlayer);
     } else {
       return Audience.super.pointers();
     }

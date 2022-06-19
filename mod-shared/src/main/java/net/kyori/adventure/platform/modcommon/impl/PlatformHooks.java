@@ -1,6 +1,7 @@
 package net.kyori.adventure.platform.modcommon.impl;
 
 import com.google.gson.Gson;
+import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.pointer.Pointers;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerBossEvent;
@@ -16,7 +17,11 @@ public interface PlatformHooks extends SidedProxy {
 
   void updateTabList(final ServerPlayer player, final @Nullable Component header, final @Nullable Component footer);
 
-  Pointers pointers(final Player player);
+  default Pointers pointers(final Player player) {
+    return this.pointered(player).pointers();
+  }
+
+  Pointered pointered(final Player player);
 
   void replaceBossBarSubscriber(ServerBossEvent bar, ServerPlayer old, ServerPlayer newPlayer);
 }

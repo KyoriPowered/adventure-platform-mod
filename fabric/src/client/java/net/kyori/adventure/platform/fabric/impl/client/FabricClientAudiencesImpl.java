@@ -23,12 +23,13 @@
  */
 package net.kyori.adventure.platform.fabric.impl.client;
 
-import static java.util.Objects.requireNonNull;
-
+import java.util.function.Function;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.platform.fabric.FabricClientAudiences;
 import net.kyori.adventure.platform.fabric.impl.AdventureFabricCommon;
 import net.kyori.adventure.platform.modcommon.impl.AdventureCommon;
+import net.kyori.adventure.platform.modcommon.impl.RendererProvider;
+import net.kyori.adventure.platform.modcommon.impl.client.ClientWrappedComponent;
 import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.text.flattener.ComponentFlattener;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
@@ -37,18 +38,18 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.function.Function;
+import static java.util.Objects.requireNonNull;
 
-public class FabricClientAudiencesImpl implements FabricClientAudiences {
+public class FabricClientAudiencesImpl implements FabricClientAudiences, RendererProvider {
   public static final FabricClientAudiences INSTANCE = new Builder().build();
   private final Function<Pointered, ?> partition;
   private final ComponentRenderer<Pointered> renderer;
-  private final ClientAudience audience;
+  private final FabricClientAudience audience;
 
   public FabricClientAudiencesImpl(final Function<Pointered, ?> partition, final ComponentRenderer<Pointered> renderer) {
     this.partition = partition;
     this.renderer = renderer;
-    this.audience = new ClientAudience(Minecraft.getInstance(), this);
+    this.audience = new FabricClientAudience(Minecraft.getInstance(), this);
   }
 
   @Override
@@ -71,6 +72,7 @@ public class FabricClientAudiencesImpl implements FabricClientAudiences {
     return new ClientWrappedComponent(requireNonNull(adventure, "adventure"), this.partition, this.renderer);
   }
 
+  @Override
   public Function<Pointered, ?> partition() {
     return this.partition;
   }

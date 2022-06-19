@@ -39,6 +39,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.loader.api.FabricLoader;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.platform.fabric.ComponentArgumentType;
 import net.kyori.adventure.platform.fabric.KeyArgumentType;
 import net.kyori.adventure.platform.fabric.PlayerLocales;
@@ -255,6 +256,11 @@ public class AdventureFabricCommon implements ModInitializer {
     @Override
     public void replaceBossBarSubscriber(final ServerBossEvent bar, final ServerPlayer old, final ServerPlayer newPlayer) {
       ((ServerBossEventBridge) bar).adventure$replaceSubscriber(old, newPlayer);
+    }
+
+    @Override
+    public Pointered pointered(final Player player) {
+      return player instanceof Pointered ? (Pointered) player : Audience.empty();
     }
   }
 }

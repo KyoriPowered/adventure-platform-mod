@@ -21,30 +21,45 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.adventure.platform.fabric.impl.client;
+package net.kyori.adventure.platform.modcommon.impl.client;
 
 import java.util.function.Function;
-import net.kyori.adventure.platform.modcommon.impl.WrappedComponent;
+import net.kyori.adventure.inventory.Book;
+import net.kyori.adventure.platform.modcommon.impl.AdventureCommon;
 import net.kyori.adventure.pointer.Pointered;
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.inventory.BookViewScreen;
+import net.minecraft.network.chat.FormattedText;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public final class ClientWrappedComponent extends WrappedComponent {
-  public ClientWrappedComponent(final Component wrapped, final @Nullable Function<Pointered, ?> partition, final @Nullable ComponentRenderer<Pointered> renderer) {
-    super(wrapped, partition, renderer);
+import static java.util.Objects.requireNonNull;
+
+/**
+ * An implementation of the book GUI's contents.
+ *
+ * <p>This implementation gets its data directly from an
+ * Adventure {@link Book}, without needing
+ * an {@link net.minecraft.world.item.ItemStack}.</p>
+ */
+public class AdventureBookAccess implements BookViewScreen.BookAccess {
+  private final Book book;
+  private final @Nullable Function<Pointered, ?> partition;
+  private final @Nullable ComponentRenderer<Pointered> renderer;
+
+  public AdventureBookAccess(final @NotNull Book book, final @Nullable Function<Pointered, ?> partition, final @Nullable ComponentRenderer<Pointered> renderer) {
+    this.book = requireNonNull(book, "book");
+    this.partition = partition;
+    this.renderer = renderer;
   }
 
   @Override
-  protected net.minecraft.network.chat.Component deepConvertedLocalized() {
-    net.minecraft.network.chat.Component converted = this.converted;
-    final Pointered target = Minecraft.getInstance().player;
-    final Object data = this.partition() == null ? null : this.partition().apply(target);
-    if (converted == null || this.deepConvertedLocalized != data) {
-      converted = this.converted = this.rendered(target).deepConverted();
-      this.deepConvertedLocalized = data;
-    }
-    return converted;
+  public int getPageCount() {
+    return this.book.pages().size();
+  }
+
+  @Override
+  public FormattedText getPageRaw(final int index) {
+    return AdventureCommon.HOOKS.createWrappedComponent(this.book.pages().get(index), this.partition, this.renderer);
   }
 }

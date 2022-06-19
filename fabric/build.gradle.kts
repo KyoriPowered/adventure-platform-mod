@@ -26,11 +26,16 @@ quiltflower {
   // addToRuntimeClasspath.set(true)
 }
 
+var parent = configurations.register("parent")
+configurations.implementation {
+  extendsFrom(parent.get())
+}
+
 dependencies {
   annotationProcessor(libs.autoService)
   annotationProcessor(libs.contractValidator)
   compileOnlyApi(libs.autoService.annotations)
-  implementation(project(":adventure-platform-mod-shared")) {
+  parent.name(project(":adventure-platform-mod-shared")) {
     exclude(group = "net.minecraft")
   }
   
@@ -150,12 +155,17 @@ val remapTestmodJar = tasks.register("remapTestmodJar", RemapJarTask::class) {
   archiveClassifier.set("testmod")
 }
 
-tasks.build {
-  dependsOn(remapTestmodJar)
-}
-
-tasks.jar {
-  duplicatesStrategy = DuplicatesStrategy.INCLUDE // include all service elements
+tasks{
+  build {
+    dependsOn(remapTestmodJar)
+  }
+  /*val commonJar = parent.map { it.incoming.artifacts.files }
+  jar {
+    inputs.files(commonJar)
+    from(commonJar.map { collection -> {
+      project.zipTree(collection)
+    }})
+  }*/
 }
 
 // Convert yaml files to josn

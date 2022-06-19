@@ -38,7 +38,7 @@ dependencyResolutionManagement {
         releasesOnly()
       }
     }
-    maven(url = "https://maven.quiltmc.org/repositories/release/") {
+    maven(url = "https://maven.quiltmc.org/repository/release/") {
       name = "quiltReleases"
       mavenContent {
         includeGroup("org.quiltmc")

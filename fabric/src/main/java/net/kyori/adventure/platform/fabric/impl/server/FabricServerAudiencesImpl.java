@@ -185,6 +185,11 @@ public final class FabricServerAudiencesImpl implements FabricServerAudiences, R
   }
 
   @Override
+  public @NotNull Function<Pointered, ?> partition() {
+    return this.partition;
+  }
+
+  @Override
   public void close() {
   }
 
