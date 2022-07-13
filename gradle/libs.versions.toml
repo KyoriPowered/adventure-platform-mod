@@ -42,10 +42,10 @@ zQuiltflower = { module = "org.quiltmc:quiltflower", version.ref = "quiltflower"
 
 [plugins]
 configurateTransformations = "ca.stellardrift.configurate-transformations:5.0.1"
-eclipseApt = "com.diffplug.eclipse.apt:3.36.2"
+eclipseApt = "com.diffplug.eclipse.apt:3.37.1"
 loom = "fabric-loom:0.12.+"
 loomQuiltflower = "io.github.juuxel.loom-quiltflower:1.7.3"
-ideaExt = "org.jetbrains.gradle.plugin.idea-ext:1.1.4"
+ideaExt = "org.jetbrains.gradle.plugin.idea-ext:1.1.5"
 indra = { id = "net.kyori.indra", version.ref = "indra" }
 indra-licenseHeader = { id = "net.kyori.indra.license-header", version.ref = "indra" }
 indra-checkstyle = { id = "net.kyori.indra.checkstyle", version.ref = "indra" }
