@@ -74,7 +74,7 @@ public class ClientAudience implements Audience {
     if (type == MessageType.CHAT) {
       // Add to chat queue (following delay and such)
       if (visibility == ChatVisiblity.FULL) {
-        this.client.gui.getChat().enqueueMessage(this.controller.toNative(message));
+        this.client.gui.getChat().addMessage(this.controller.toNative(message), null, null);
       }
     } else {
       // Add immediately as a system message
