@@ -130,6 +130,7 @@ loom {
     register("adventure-platform-fabric") {
       sourceSet(sourceSets.main.get())
       sourceSet(sourceSets.named("client").get())
+      sourceSet(project(":adventure-platform-mod-shared").sourceSets.main.get())
     }
     register("adventure-platform-fabric-testmod") {
       sourceSet(testmod.get())
@@ -159,13 +160,12 @@ tasks{
   build {
     dependsOn(remapTestmodJar)
   }
-  /*val commonJar = parent.map { it.incoming.artifacts.files }
   jar {
-    inputs.files(commonJar)
-    from(commonJar.map { collection -> {
-      project.zipTree(collection)
-    }})
-  }*/
+    from(project(":adventure-platform-mod-shared").sourceSets.main.get().output)
+  }
+  sourcesJar {
+    from(project(":adventure-platform-mod-shared").sourceSets.main.get().allSource)
+  }
 }
 
 // Convert yaml files to josn

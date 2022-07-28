@@ -1,0 +1,13 @@
+plugins {
+    id 'java-gradle-plugin'
+    alias(libs.plugins.indra)
+}
+
+gradlePlugin {
+  plugins {
+    platform {
+      id = 'mod-platform'
+      implementationClass = 'net.kyori.adventure.build.mod.ModPlatformConventionPlugin'
+    }
+  }
+}

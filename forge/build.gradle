@@ -6,9 +6,16 @@ plugins {
 
 println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
 
+configurations {
+    library
+    implementation.extendsFrom library
+}
+
 def datagenResourcesDir = file("src/generated/resources")
 minecraft {
   mappings channel: 'official', version: libs.versions.minecraft.get()
+  accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+  
   runs.configureEach {
     workingDirectory project.file('run')
     property 'forge.logging.markers', 'REGISTRIES'
@@ -17,7 +24,11 @@ minecraft {
     mods {
       adventure_platform_forge {
         source sourceSets.main
+        source project(':adventure-platform-mod-shared').sourceSets.main
       }
+    }
+    lazyToken('minecraft_classpath') {
+        configurations.library.copyRecursive().resolve().collect { it.absolutePath }.join(File.pathSeparator)
     }
   }
   runs {
@@ -33,12 +44,15 @@ minecraft {
 sourceSets.main.resources { srcDir datagenResourcesDir }
 
 repositories {
+  mavenLocal()
   mavenCentral()
 }
 
 dependencies {
   minecraft libs.forge
-  implementation project(":adventure-platform-mod-shared")
+  compileOnly(project(":adventure-platform-mod-shared")) {
+    exclude group: 'net.minecraft'
+  }
 
   /*implementation fg.deobf(group: 'com.google.code.gson', name: 'gson', version: '[2.0,3.0)')
   jarJar fg.deobf(group: 'com.google.code.gson', name: 'gson', version: '[2.0,3.0)') {
@@ -57,6 +71,11 @@ tasks.jar {
       "Implementation-Vendor"   : "KyoriPowered"
     ])
   }
+  from project(':adventure-platform-mod-shared').sourceSets.main.output
+}
+
+tasks.sourcesJar {
+  from project(':adventure-platform-mod-shared').sourceSets.main.allSource
 }
 
 jar.finalizedBy('reobfJar')

@@ -24,7 +24,7 @@
 package net.kyori.adventure.platform.fabric.impl.server;
 
 import java.util.function.Function;
-import net.kyori.adventure.platform.fabric.impl.SidedProxy;
+import net.kyori.adventure.platform.modcommon.impl.SidedProxy;
 import net.kyori.adventure.platform.modcommon.impl.WrappedComponent;
 import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.text.Component;

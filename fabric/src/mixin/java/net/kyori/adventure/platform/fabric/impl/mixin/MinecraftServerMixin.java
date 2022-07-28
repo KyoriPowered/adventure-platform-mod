@@ -29,11 +29,11 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.permission.PermissionChecker;
-import net.kyori.adventure.platform.fabric.FabricAudiences;
 import net.kyori.adventure.platform.fabric.FabricServerAudiences;
 import net.kyori.adventure.platform.fabric.impl.bridge.MinecraftServerBridge;
 import net.kyori.adventure.platform.fabric.impl.server.FabricServerAudiencesImpl;
-import net.kyori.adventure.platform.fabric.impl.server.RenderableAudience;
+import net.kyori.adventure.platform.modcommon.impl.RenderableAudience;
+import net.kyori.adventure.platform.modcommon.impl.RendererProvider;
 import net.kyori.adventure.platform.modcommon.impl.server.PlainAudience;
 import net.kyori.adventure.pointer.Pointers;
 import net.kyori.adventure.util.TriState;
@@ -54,7 +54,7 @@ public abstract class MinecraftServerMixin implements MinecraftServerBridge, Ren
   // @formatter:on
 
   private final FabricServerAudiencesImpl adventure$globalProvider = new FabricServerAudiencesImpl.Builder((MinecraftServer) (Object) this).build();
-  private final Map<FabricAudiences, Audience> adventure$renderers = new MapMaker().weakKeys().makeMap();
+  private final Map<RendererProvider, Audience> adventure$renderers = new MapMaker().weakKeys().makeMap();
   private final Audience adventure$backing = this.renderUsing(this.adventure$globalProvider);
   private volatile Pointers adventure$pointers;
 
@@ -69,7 +69,7 @@ public abstract class MinecraftServerMixin implements MinecraftServerBridge, Ren
   }
 
   @Override
-  public Audience renderUsing(final FabricServerAudiencesImpl controller) {
+  public Audience renderUsing(final RendererProvider controller) {
     return this.adventure$renderers.computeIfAbsent(controller, ctrl -> new PlainAudience(ctrl::renderer, this, LOGGER::info));
   }
 

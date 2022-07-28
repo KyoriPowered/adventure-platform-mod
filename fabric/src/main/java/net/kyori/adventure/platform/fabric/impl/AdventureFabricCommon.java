@@ -30,11 +30,8 @@ import com.mojang.logging.LogUtils;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.Locale;
 import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -50,21 +47,16 @@ import net.kyori.adventure.platform.fabric.impl.bridge.ServerPlayerBridge;
 import net.kyori.adventure.platform.fabric.impl.server.FabricServerAudiencesImpl;
 import net.kyori.adventure.platform.modcommon.impl.AdventureCommon;
 import net.kyori.adventure.platform.modcommon.impl.PlatformHooks;
+import net.kyori.adventure.platform.modcommon.impl.SidedProxy;
 import net.kyori.adventure.platform.modcommon.impl.WrappedComponent;
 import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.pointer.Pointers;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TranslatableComponent;
-import net.kyori.adventure.text.flattener.ComponentFlattener;
 import net.kyori.adventure.text.flattener.ComponentFlattener.Builder;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
-import net.kyori.adventure.translation.GlobalTranslator;
-import net.kyori.adventure.translation.TranslationRegistry;
-import net.kyori.adventure.translation.Translator;
 import net.minecraft.commands.arguments.ComponentArgument;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.commands.synchronization.SingletonArgumentInfo;
-import net.minecraft.locale.Language;
 import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -79,14 +71,11 @@ public class AdventureFabricCommon implements ModInitializer {
 
   public static final SidedProxy SIDE_PROXY;
 
-  public static final ComponentFlattener FLATTENER;
-  private static final Pattern LOCALIZATION_PATTERN = Pattern.compile("%(?:(\\d+)\\$)?s");
   public static final String MOD_FAPI_NETWORKING = "fabric-networking-api-v1";
 
   static {
     final var sidedProxy = chooseSidedProxy();
     SIDE_PROXY = sidedProxy;
-    FLATTENER = createFlattener(sidedProxy);
   }
 
   private static SidedProxy chooseSidedProxy() {
@@ -109,58 +98,6 @@ public class AdventureFabricCommon implements ModInitializer {
         yield proxy.getEntrypoint();
       }
     };
-  }
-
-  private static ComponentFlattener createFlattener(final SidedProxy proxy) {
-    final ComponentFlattener.Builder flattenerBuilder = ComponentFlattener.basic().toBuilder();
-
-    proxy.contributeFlattenerElements(flattenerBuilder);
-
-    flattenerBuilder.complexMapper(TranslatableComponent.class, (translatable, consumer) -> {
-      final String key = translatable.key();
-      for (final Translator registry : GlobalTranslator.translator().sources()) {
-        if (registry instanceof TranslationRegistry && ((TranslationRegistry) registry).contains(key)) {
-          consumer.accept(GlobalTranslator.render(translatable, Locale.getDefault()));
-          return;
-        }
-      }
-
-      final @NotNull String translated = Language.getInstance().getOrDefault(key);
-      final Matcher matcher = LOCALIZATION_PATTERN.matcher(translated);
-      final List<Component> args = translatable.args();
-      int argPosition = 0;
-      int lastIdx = 0;
-      while (matcher.find()) {
-        // append prior
-        if (lastIdx < matcher.start()) consumer.accept(Component.text(translated.substring(lastIdx, matcher.start())));
-        lastIdx = matcher.end();
-
-        final @Nullable String argIdx = matcher.group(1);
-        // calculate argument position
-        if (argIdx != null) {
-          try {
-            final int idx = Integer.parseInt(argIdx) - 1;
-            if (idx < args.size()) {
-              consumer.accept(args.get(idx));
-            }
-          } catch (final NumberFormatException ex) {
-            // ignore, drop the format placeholder
-          }
-        } else {
-          final int idx = argPosition++;
-          if (idx < args.size()) {
-            consumer.accept(args.get(idx));
-          }
-        }
-      }
-
-      // append tail
-      if (lastIdx < translated.length()) {
-        consumer.accept(Component.text(translated.substring(lastIdx)));
-      }
-    });
-
-    return flattenerBuilder.build();
   }
 
   @Override

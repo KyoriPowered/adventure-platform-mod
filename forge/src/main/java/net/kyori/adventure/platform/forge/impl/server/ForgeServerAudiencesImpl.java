@@ -21,10 +21,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.adventure.platform.fabric.impl.server;
+package net.kyori.adventure.platform.forge.impl.server;
 
 import com.google.common.collect.Iterables;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.WeakHashMap;
@@ -32,10 +33,9 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
-import net.kyori.adventure.platform.fabric.AdventureCommandSourceStack;
-import net.kyori.adventure.platform.fabric.FabricAudiences;
-import net.kyori.adventure.platform.fabric.FabricServerAudiences;
-import net.kyori.adventure.platform.fabric.impl.AdventureCommandSourceStackInternal;
+import net.kyori.adventure.platform.forge.AdventureCapabilities;
+import net.kyori.adventure.platform.forge.ForgeAudiences;
+import net.kyori.adventure.platform.forge.ForgeServerAudiences;
 import net.kyori.adventure.platform.modcommon.impl.AdventureCommon;
 import net.kyori.adventure.platform.modcommon.impl.RenderableAudience;
 import net.kyori.adventure.platform.modcommon.impl.RendererProvider;
@@ -53,6 +53,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -61,17 +62,17 @@ import static java.util.Objects.requireNonNull;
 /**
  * The entry point for accessing Adventure.
  */
-public final class FabricServerAudiencesImpl implements FabricServerAudiences, RendererProvider {
-  private static final Set<FabricServerAudiencesImpl> INSTANCES = Collections.newSetFromMap(new WeakHashMap<>());
+public final class ForgeServerAudiencesImpl implements ForgeServerAudiences, RendererProvider {
+  private static final Set<ForgeServerAudiencesImpl> INSTANCES = Collections.newSetFromMap(new WeakHashMap<>());
 
   /**
    * Perform an action on every audience provider instance.
    *
    * @param actor a consumer that will be called for every provider
    */
-  public static void forEachInstance(final Consumer<FabricServerAudiencesImpl> actor) {
+  public static void forEachInstance(final Consumer<ForgeServerAudiencesImpl> actor) {
     synchronized (INSTANCES) {
-      for (final FabricServerAudiencesImpl instance : INSTANCES) {
+      for (final ForgeServerAudiencesImpl instance : INSTANCES) {
         actor.accept(instance);
       }
     }
@@ -82,7 +83,7 @@ public final class FabricServerAudiencesImpl implements FabricServerAudiences, R
   private final ComponentRenderer<Pointered> renderer;
   final ServerBossBarListener bossBars;
 
-  public FabricServerAudiencesImpl(final MinecraftServer server, final Function<Pointered, ?> partition, final ComponentRenderer<Pointered> renderer) {
+  public ForgeServerAudiencesImpl(final MinecraftServer server, final Function<Pointered, ?> partition, final ComponentRenderer<Pointered> renderer) {
     this.server = server;
     this.partition = partition;
     this.renderer = renderer;
@@ -123,16 +124,29 @@ public final class FabricServerAudiencesImpl implements FabricServerAudiences, R
   }
 
   @Override
-  public @NotNull AdventureCommandSourceStack audience(final @NotNull CommandSourceStack source) {
-    if (!(source instanceof final AdventureCommandSourceStackInternal internal)) {
+  public @NotNull Audience audience(final @NotNull CommandSourceStack source) {
+    if (!(source instanceof final Audience internal)) {
       throw new IllegalArgumentException("The AdventureCommandSource mixin failed!");
     }
 
-    return internal.adventure$audience(this.audience(internal.adventure$source()), this);
+    return null;
+    // return internal.adventure$audience(this.audience(internal.adventure$source()), this);
   }
 
   @Override
   public @NotNull Audience audience(final @NotNull CommandSource source) {
+    if (source instanceof final ICapabilityProvider caps) {
+      final Optional<Audience> possibility = caps.getCapability(AdventureCapabilities.AUDIENCE).resolve();
+      if (possibility.isPresent()) {
+        final var audience = possibility.get();
+        if (audience instanceof final RenderableAudience renderable) {
+          return renderable.renderUsing(this);
+        } else {
+          return audience;
+        }
+      }
+    }
+
     if (source instanceof final RenderableAudience renderable) {
       return renderable.renderUsing(this);
     } else if (source instanceof final Audience audience) {
@@ -151,7 +165,7 @@ public final class FabricServerAudiencesImpl implements FabricServerAudiences, R
   @Override
   public @NotNull Audience world(final @NotNull Key worldId) {
     final @Nullable ServerLevel level = this.server.getLevel(ResourceKey.create(Registry.DIMENSION_REGISTRY,
-      FabricAudiences.toNative(requireNonNull(worldId, "worldId"))));
+      ForgeAudiences.toNative(requireNonNull(worldId, "worldId"))));
     if (level != null) {
       return this.audience(level.players());
     }
@@ -193,7 +207,7 @@ public final class FabricServerAudiencesImpl implements FabricServerAudiences, R
   public void close() {
   }
 
-  public static final class Builder implements FabricServerAudiences.Builder {
+  public static final class Builder implements ForgeServerAudiences.Builder {
     private final MinecraftServer server;
     private Function<Pointered, ?> partition;
     private ComponentRenderer<Pointered> renderer;
@@ -204,20 +218,20 @@ public final class FabricServerAudiencesImpl implements FabricServerAudiences, R
     }
 
     @Override
-    public @NotNull FabricServerAudiences.Builder componentRenderer(final @NotNull ComponentRenderer<Pointered> componentRenderer) {
+    public @NotNull ForgeServerAudiences.Builder componentRenderer(final @NotNull ComponentRenderer<Pointered> componentRenderer) {
       this.renderer = requireNonNull(componentRenderer, "componentRenderer");
       return this;
     }
 
     @Override
-    public @NotNull FabricServerAudiences.Builder partition(final @NotNull Function<Pointered, ?> partitionFunction) {
+    public @NotNull ForgeServerAudiences.Builder partition(final @NotNull Function<Pointered, ?> partitionFunction) {
       this.partition = requireNonNull(partitionFunction, "partitionFunction");
       return this;
     }
 
     @Override
-    public @NotNull FabricServerAudiencesImpl build() {
-      return new FabricServerAudiencesImpl(this.server, this.partition, this.renderer);
+    public @NotNull ForgeServerAudiencesImpl build() {
+      return new ForgeServerAudiencesImpl(this.server, this.partition, this.renderer);
     }
   }
 }

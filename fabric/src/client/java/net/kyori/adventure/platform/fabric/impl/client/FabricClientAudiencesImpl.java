@@ -26,7 +26,6 @@ package net.kyori.adventure.platform.fabric.impl.client;
 import java.util.function.Function;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.platform.fabric.FabricClientAudiences;
-import net.kyori.adventure.platform.fabric.impl.AdventureFabricCommon;
 import net.kyori.adventure.platform.modcommon.impl.AdventureCommon;
 import net.kyori.adventure.platform.modcommon.impl.RendererProvider;
 import net.kyori.adventure.platform.modcommon.impl.client.ClientWrappedComponent;
@@ -59,7 +58,7 @@ public class FabricClientAudiencesImpl implements FabricClientAudiences, Rendere
 
   @Override
   public @NotNull ComponentFlattener flattener() {
-    return AdventureFabricCommon.FLATTENER;
+    return AdventureCommon.FLATTENER;
   }
 
   @Override

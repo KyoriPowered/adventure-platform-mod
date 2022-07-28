@@ -38,8 +38,9 @@ import net.kyori.adventure.platform.fabric.impl.bridge.LocaleHolderBridge;
 import net.kyori.adventure.platform.fabric.impl.bridge.ServerPlayerBridge;
 import net.kyori.adventure.platform.fabric.impl.server.FabricServerAudiencesImpl;
 import net.kyori.adventure.platform.fabric.impl.server.FabricServerPlayerAudience;
-import net.kyori.adventure.platform.fabric.impl.server.RenderableAudience;
 import net.kyori.adventure.platform.modcommon.impl.AdventureCommon;
+import net.kyori.adventure.platform.modcommon.impl.RenderableAudience;
+import net.kyori.adventure.platform.modcommon.impl.RendererProvider;
 import net.kyori.adventure.pointer.Pointers;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundTabListPacket;
@@ -69,7 +70,7 @@ public abstract class ServerPlayerMixin extends PlayerMixin implements Forwardin
 
   private Audience adventure$backing;
   private Locale adventure$locale;
-  private final Map<FabricServerAudiencesImpl, Audience> adventure$renderers = new MapMaker().weakKeys().makeMap();
+  private final Map<RendererProvider, Audience> adventure$renderers = new MapMaker().weakKeys().makeMap();
   private Component adventure$tabListHeader = Component.empty();
   private Component adventure$tabListFooter = Component.empty();
   private Set<ResourceLocation> adventure$arguments = Set.of();
@@ -89,7 +90,7 @@ public abstract class ServerPlayerMixin extends PlayerMixin implements Forwardin
   }
 
   @Override
-  public Audience renderUsing(final FabricServerAudiencesImpl controller) {
+  public Audience renderUsing(final RendererProvider controller) {
     return this.adventure$renderers.computeIfAbsent(controller, ctrl -> new FabricServerPlayerAudience((ServerPlayer) (Object) this, ctrl));
   }
 

@@ -21,17 +21,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.adventure.platform.fabric.impl.server;
+package net.kyori.adventure.platform.modcommon.impl;
 
 import net.kyori.adventure.audience.Audience;
 
 public interface RenderableAudience extends Audience {
-  Audience renderUsing(final FabricServerAudiencesImpl controller);
+  Audience renderUsing(final RendererProvider controller);
 
   /**
    * Refresh this audience, to update any actively displayed rendered content.
    *
-   * @since 4.0.0
+   * @since 5.4.0
    */
   void refresh();
 }

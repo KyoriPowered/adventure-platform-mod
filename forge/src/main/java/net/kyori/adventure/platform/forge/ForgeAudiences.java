@@ -1,27 +1,4 @@
-/*
- * This file is part of adventure-platform-fabric, licensed under the MIT License.
- *
- * Copyright (c) 2021 KyoriPowered
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
-package net.kyori.adventure.platform.fabric;
+package net.kyori.adventure.platform.forge;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -30,14 +7,12 @@ import java.util.function.UnaryOperator;
 import net.kyori.adventure.identity.Identified;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.key.Key;
-import net.kyori.adventure.platform.fabric.impl.AdventureFabricCommon;
-import net.kyori.adventure.platform.fabric.impl.accessor.ComponentSerializerAccess;
+import net.kyori.adventure.platform.modcommon.impl.AdventureCommon;
 import net.kyori.adventure.platform.modcommon.impl.NonWrappingComponentSerializer;
 import net.kyori.adventure.platform.modcommon.impl.WrappedComponent;
 import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.flattener.ComponentFlattener;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
 import net.kyori.adventure.text.serializer.ComponentSerializer;
@@ -51,22 +26,14 @@ import org.jetbrains.annotations.Nullable;
 
 import static java.util.Objects.requireNonNull;
 
-/**
- * Common operations in both the client and server environments.
- *
- * <p>See {@link FabricServerAudiences} for logical server-specific operations,
- * and {@code FabricClientAudiences} for logical client-specific operations</p>
- *
- * @since 4.0.0
- */
-public interface FabricAudiences {
+public interface ForgeAudiences {
   /**
    * Given an existing native component, convert it into an Adventure component for working with.
    *
    * @param input source component
    * @param modifier operator to transform the component
    * @return new component
-   * @since 4.0.0
+   * @since 5.4.0
    */
   static net.minecraft.network.chat.@NotNull Component update(final net.minecraft.network.chat.@NotNull Component input, final UnaryOperator<Component> modifier) {
     final Component modified;
@@ -77,12 +44,12 @@ public interface FabricAudiences {
       partition = wrapped.partition();
       renderer = wrapped.renderer();
     } else {
-      final Component original = ComponentSerializerAccess.getGSON().fromJson(net.minecraft.network.chat.Component.Serializer.toJsonTree(input), Component.class);
+      final Component original = AdventureCommon.HOOKS.componentSerializerGson().fromJson(net.minecraft.network.chat.Component.Serializer.toJsonTree(input), Component.class);
       modified = modifier.apply(original);
       partition = null;
       renderer = null;
     }
-    return AdventureFabricCommon.SIDE_PROXY.createWrappedComponent(modified, partition, renderer);
+    return AdventureCommon.HOOKS.createWrappedComponent(modified, partition, renderer);
   }
 
   /**
@@ -90,7 +57,7 @@ public interface FabricAudiences {
    *
    * @param loc The Identifier to convert
    * @return The equivalent data as a Key
-   * @since 4.0.0
+   * @since 5.4.0
    * @deprecated ResourceLocation directly implements key, and all Keys are ResourceLocations since Loader 0.14.0
    */
   @Deprecated(forRemoval = true, since = "5.3.0")
@@ -99,7 +66,7 @@ public interface FabricAudiences {
     if (loc == null) {
       return null;
     }
-    return loc;
+    return Key.key(loc.getNamespace(), loc.getPath());
   }
 
   /**
@@ -111,7 +78,7 @@ public interface FabricAudiences {
    *
    * @param key The Key to convert
    * @return The equivalent data as an Identifier
-   * @since 4.0.0
+   * @since 5.4.0
    */
   @Contract("null -> null; !null -> !null")
   static ResourceLocation toNative(final Key key) {
@@ -119,7 +86,7 @@ public interface FabricAudiences {
       return null;
     }
 
-    return (ResourceLocation) key;
+    return new ResourceLocation(key.namespace(), key.value());
   }
 
   /**
@@ -127,12 +94,11 @@ public interface FabricAudiences {
    *
    * @param entity the entity to convert
    * @return the entity as a sound emitter
-   * @since 4.0.0
-   * @deprecated for removal, we can use loom interface injection instead
+   * @since 5.4.0
    */
-  @Deprecated(forRemoval = true, since = "5.3.0")
   static Sound.@NotNull Emitter asEmitter(final @NotNull Entity entity) {
-    return entity;
+    // return entity;
+    return null;
   }
 
   /**
@@ -140,7 +106,7 @@ public interface FabricAudiences {
    *
    * @param ex the exception to cast
    * @return a converted command exception
-   * @since 5.3.0
+   * @since 5.4.0
    */
   static @NotNull ComponentMessageThrowable asComponentThrowable(final @NotNull CommandSyntaxException ex) {
     return (ComponentMessageThrowable) ex;
@@ -154,7 +120,7 @@ public interface FabricAudiences {
    * instances suitable for passing around the game.</p>
    *
    * @return a serializer instance
-   * @since 4.0.0
+   * @since 5.4.0
    */
   static @NotNull ComponentSerializer<Component, Component, net.minecraft.network.chat.Component> nonWrappingSerializer() {
     return NonWrappingComponentSerializer.INSTANCE;
@@ -165,12 +131,10 @@ public interface FabricAudiences {
    *
    * @param player the player to identify
    * @return an identified representation of the player
-   * @since 4.0.0
-   * @deprecated for removal, use interface injection instead
+   * @since 5.4.0
    */
-  @Deprecated(forRemoval = true, since = "5.3.0")
   static @NotNull Identified identified(final @NotNull Player player) {
-    return player;
+    return () -> identity(player.getGameProfile());
   }
 
   /**
@@ -178,17 +142,17 @@ public interface FabricAudiences {
    *
    * @param profile the profile to represent
    * @return an identity of the game profile
-   * @since 4.0.0
+   * @since 5.4.0
    */
   static @NotNull Identity identity(final @NotNull GameProfile profile) {
-    return (Identity) profile;
+    return Identity.identity(profile.getId());
   }
 
   /**
    * Return a component flattener that can use game data to resolve extra information about components.
    *
    * @return the flattener
-   * @since 4.0.0
+   * @since 5.4.0
    */
   @NotNull ComponentFlattener flattener();
 
@@ -196,7 +160,7 @@ public interface FabricAudiences {
    * Active renderer to render components.
    *
    * @return Shared renderer
-   * @since 4.0.0
+   * @since 5.4.0
    */
   @NotNull ComponentRenderer<Pointered> renderer();
 
@@ -207,7 +171,7 @@ public interface FabricAudiences {
    *
    * @param adventure adventure input
    * @return native representation
-   * @since 4.0.0
+   * @since 5.4.0
    */
   net.minecraft.network.chat.@NotNull Component toNative(final @NotNull Component adventure);
 
@@ -216,11 +180,9 @@ public interface FabricAudiences {
    *
    * @param vanilla the native component
    * @return adventure component
-   * @since 4.0.0
-   * @deprecated Use {@link ComponentLike#asComponent()} instead, implemented on {@link net.minecraft.network.chat.Component}
+   * @since 5.4.0
    */
-  @Deprecated(forRemoval = true)
   default @NotNull Component toAdventure(final net.minecraft.network.chat.@NotNull Component vanilla) {
-    return vanilla.asComponent();
+    return NonWrappingComponentSerializer.INSTANCE.deserialize(vanilla);
   }
 }

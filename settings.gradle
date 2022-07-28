@@ -1,45 +1,52 @@
 pluginManagement {
   repositories {
-      mavenLocal {
-          mavenContent { snapshotsOnly() }
-      }
-    maven(url = "https://repo.stellardrift.ca/repository/internal/") {
+    maven {
       name = "stellardriftReleases"
+      url = "https://repo.stellardrift.ca/repository/internal/"
       mavenContent { releasesOnly() }
     }
-    maven(url = "https://repo.stellardrift.ca/repository/snapshots/") {
+    maven {
       name = "stellardriftSnapshots"
+      url = "https://repo.stellardrift.ca/repository/snapshots/"
+      mavenContent { snapshotsOnly() }
+    }
+    mavenLocal {
       mavenContent { snapshotsOnly() }
     }
     mavenCentral()
     maven {
       name = "Fabric"
-      url = uri("https://maven.fabricmc.net")
+      url = "https://maven.fabricmc.net"
     }
     gradlePluginPortal()
   }
+  
+  includeBuild "build-logic"
 }
 
 plugins {
-  id("fabric-loom") version "0.12.+"
-  id("org.spongepowered.gradle.vanilla") version "0.2.1-SNAPSHOT"
-  id("org.jetbrains.gradle.plugin.idea-ext") version "1.1.4" apply false
+  id "fabric-loom" version "0.12.+"
+  id "org.spongepowered.gradle.vanilla" version "0.2.1-SNAPSHOT"
+  id "org.jetbrains.gradle.plugin.idea-ext" version "1.1.4" apply false
 }
 
 dependencyResolutionManagement {
   repositories {
     mavenCentral()
-    maven(url = "https://maven.parchmentmc.org/") {
+    maven {
       name = "parchment"
+      url = "https://maven.parchmentmc.org/"
     }
-    maven(url = "https://maven.minecraftforge.net/") {
+    maven {
       name = "forge"
+      url = "https://maven.minecraftforge.net/"
       mavenContent {
         releasesOnly()
       }
     }
-    maven(url = "https://maven.quiltmc.org/repository/release/") {
+    maven {
       name = "quiltReleases"
+      url = "https://maven.quiltmc.org/repository/release/"
       mavenContent {
         includeGroup("org.quiltmc")
         releasesOnly()
@@ -50,7 +57,7 @@ dependencyResolutionManagement {
 
 rootProject.name = "adventure-platform-mod-parent"
 
-setOf("fabric", "forge", "mod-shared").forEach {
+["fabric", "forge", "mod-shared"].each {
   include(it)
   findProject(":$it")?.name = "adventure-platform-$it"
 }
