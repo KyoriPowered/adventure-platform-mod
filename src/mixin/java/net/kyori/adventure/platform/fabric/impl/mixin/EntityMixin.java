@@ -25,10 +25,10 @@ package net.kyori.adventure.platform.fabric.impl.mixin;
 
 import java.util.function.UnaryOperator;
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.platform.fabric.EntityHoverEventSource;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.event.HoverEvent.ShowEntity;
-import net.kyori.adventure.text.event.HoverEventSource;
 import net.minecraft.core.Registry;
 import net.minecraft.world.Nameable;
 import net.minecraft.world.entity.Entity;
@@ -39,7 +39,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(Entity.class)
-public abstract class EntityMixin implements Sound.Emitter, HoverEventSource<HoverEvent.ShowEntity>, Nameable, EntityAccess {
+public abstract class EntityMixin implements Sound.Emitter, EntityHoverEventSource, Nameable, EntityAccess {
   // @formatter:off
   @Shadow public abstract EntityType<?> shadow$getType();
   // @formatter:on

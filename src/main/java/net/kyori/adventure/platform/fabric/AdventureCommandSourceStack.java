@@ -23,8 +23,10 @@
  */
 package net.kyori.adventure.platform.fabric;
 
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.identity.Identified;
+import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 
@@ -34,6 +36,16 @@ import org.jetbrains.annotations.NotNull;
  * @since 4.0.0
  */
 public interface AdventureCommandSourceStack extends ForwardingAudience.Single, Identified {
+  @Override
+  default @NotNull Identity identity() {
+    throw new UnsupportedOperationException("Must be overridden");
+  }
+
+  @Override
+  default @NotNull Audience audience() {
+    throw new UnsupportedOperationException("Must be overridden");
+  }
+
   /**
    * Send a result message to the command source.
    *

@@ -26,7 +26,7 @@ custom:
   modmenu:api: true
   loom:injected_interfaces:
     net/minecraft/class_2168: [ net/kyori/adventure/platform/fabric/AdventureCommandSourceStack ] # net/minecraft/commands/CommandSourceStack
-    net/minecraft/class_1297: [ net/kyori/adventure/sound/Sound<%= '$' %>Emitter, net/kyori/adventure/text/event/HoverEventSource ] # net/minecraft/world/entity/Entity
+    net/minecraft/class_1297: [ net/kyori/adventure/sound/Sound<%= '$' %>Emitter, net/kyori/adventure/platform/fabric/EntityHoverEventSource ] # net/minecraft/world/entity/Entity
     # com/mojang/authlib/GameProfile: [ net/kyori/adventure/identity/Identity ] # We can't inject into libs unfortunately
     net/minecraft/server/MinecraftServer: [ net/kyori/adventure/audience/Audience ]
     net/minecraft/class_1657: [ net/kyori/adventure/identity/Identified ] # net/minecraft/world/entity/player/Player
