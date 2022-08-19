@@ -24,6 +24,8 @@ mixins:
   - "adventure-platform-fabric.client.mixins.json"
 custom:
   modmenu:api: true
+  modmenu:
+    badges: [ "library" ]
   loom:injected_interfaces:
     net/minecraft/class_2168: [ net/kyori/adventure/platform/fabric/AdventureCommandSourceStack ] # net/minecraft/commands/CommandSourceStack
     net/minecraft/class_1297: [ net/kyori/adventure/sound/Sound<%= '$' %>Emitter, net/kyori/adventure/platform/fabric/EntityHoverEventSource ] # net/minecraft/world/entity/Entity
