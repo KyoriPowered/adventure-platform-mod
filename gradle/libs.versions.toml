@@ -42,7 +42,7 @@ zQuiltflower = { module = "org.quiltmc:quiltflower", version.ref = "quiltflower"
 
 [plugins]
 configurateTransformations = "ca.stellardrift.configurate-transformations:5.0.1"
-eclipseApt = "com.diffplug.eclipse.apt:3.37.1"
+eclipseApt = "com.diffplug.eclipse.apt:3.37.2"
 loom = "fabric-loom:0.12.+"
 loomQuiltflower = "io.github.juuxel.loom-quiltflower:1.7.3"
 ideaExt = "org.jetbrains.gradle.plugin.idea-ext:1.1.6"
