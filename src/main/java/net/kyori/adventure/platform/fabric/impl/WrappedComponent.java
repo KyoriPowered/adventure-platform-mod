@@ -45,8 +45,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class WrappedComponent implements Component {
   protected Component converted;
-  @Nullable
-  protected Object deepConvertedLocalized = null;
+  protected @Nullable Object deepConvertedLocalized = null;
   private final net.kyori.adventure.text.Component wrapped;
   private final @Nullable Function<Pointered, ?> partition;
   private final @Nullable ComponentRenderer<Pointered> renderer;

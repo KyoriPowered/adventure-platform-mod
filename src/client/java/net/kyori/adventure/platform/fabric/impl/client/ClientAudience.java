@@ -104,7 +104,7 @@ public class ClientAudience implements Audience {
   }
 
   @Override
-  public <T> void sendTitlePart(final @NotNull TitlePart<T> part, @NotNull final T value) {
+  public <T> void sendTitlePart(final @NotNull TitlePart<T> part, final @NotNull T value) {
     Objects.requireNonNull(value, "value");
     if (part == TitlePart.TITLE) {
       this.client.gui.setTitle(this.controller.toNative((Component) value));

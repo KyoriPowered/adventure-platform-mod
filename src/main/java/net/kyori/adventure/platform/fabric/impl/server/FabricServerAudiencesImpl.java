@@ -195,13 +195,13 @@ public final class FabricServerAudiencesImpl implements FabricServerAudiences {
     }
 
     @Override
-    public @NotNull FabricServerAudiences.Builder componentRenderer(final @NotNull ComponentRenderer<Pointered> componentRenderer) {
+    public FabricServerAudiences.@NotNull Builder componentRenderer(final @NotNull ComponentRenderer<Pointered> componentRenderer) {
       this.renderer = requireNonNull(componentRenderer, "componentRenderer");
       return this;
     }
 
     @Override
-    public @NotNull FabricServerAudiences.Builder partition(final @NotNull Function<Pointered, ?> partitionFunction) {
+    public FabricServerAudiences.@NotNull Builder partition(final @NotNull Function<Pointered, ?> partitionFunction) {
       this.partition = requireNonNull(partitionFunction, "partitionFunction");
       return this;
     }

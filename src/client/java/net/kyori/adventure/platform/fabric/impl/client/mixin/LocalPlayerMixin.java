@@ -54,7 +54,7 @@ public abstract class LocalPlayerMixin extends Player implements ForwardingAudie
 
   private final Audience adventure$default = FabricClientAudiences.of().audience();
 
-  private LocalPlayerMixin(final Level level, final BlockPos blockPos, final float f, final GameProfile gameProfile, @Nullable final ProfilePublicKey profilePublicKey) {
+  private LocalPlayerMixin(final Level level, final BlockPos blockPos, final float f, final GameProfile gameProfile, final @Nullable ProfilePublicKey profilePublicKey) {
     super(level, blockPos, f, gameProfile, profilePublicKey);
   }
 

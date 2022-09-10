@@ -5,13 +5,13 @@ version = "1.0"
 adventure = "4.11.0"
 adventurePlatform = "4.1.2"
 autoService = "1.0.1"
-checkstyle = "10.1"
+checkstyle = "10.3.3"
 examination = "1.3.0"
-fabricApi = "0.58.5+1.19.1"
+fabricApi = "0.60.0+1.19.2"
 fabricLoader = "0.14.9"
 indra = "2.1.1"
-minecraft = "1.19.1"
-parchment = "1.18.2:2022.07.17"
+minecraft = "1.19.2"
+parchment = "1.19.2:2022.09.04"
 quiltflower = "1.8.1"
 
 [libraries]
@@ -34,7 +34,7 @@ minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
 autoService = { module = "com.google.auto.service:auto-service", version.ref = "autoService" }
 autoService-annotations = { module = "com.google.auto.service:auto-service-annotations", version.ref = "autoService" }
 contractValidator = "ca.stellardrift:contract-validator:1.0.1"
-stylecheck = "ca.stellardrift:stylecheck:0.1"
+stylecheck = "ca.stellardrift:stylecheck:0.2.0"
 
 # For Renovate, do not use directly
 zCheckstyle = { module = "com.puppycrawl.tools:checkstyle", version.ref = "checkstyle" }

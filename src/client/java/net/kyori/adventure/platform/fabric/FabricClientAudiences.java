@@ -53,7 +53,7 @@ public interface FabricClientAudiences extends FabricAudiences {
    * @return the builder
    * @since 4.0.0
    */
-  static @NotNull FabricClientAudiences.Builder builder() {
+  static FabricClientAudiences.@NotNull Builder builder() {
     return new FabricClientAudiencesImpl.Builder();
   }
 
