@@ -28,4 +28,3 @@
 package net.kyori.adventure.platform.fabric.impl.mixin;
 
 import org.jetbrains.annotations.ApiStatus;
-

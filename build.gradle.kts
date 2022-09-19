@@ -16,6 +16,7 @@ plugins {
   alias(libs.plugins.indra.checkstyle)
   alias(libs.plugins.indra.sonatype)
   alias(libs.plugins.ideaExt)
+  alias(libs.plugins.spotless)
 }
 
 repositories {
@@ -48,8 +49,17 @@ indraSonatype {
   useAlternateSonatypeOSSHost("s01")
 }
 
-license {
-  header(file("LICENSE_HEADER"))
+indraSpotlessLicenser {
+  licenseHeaderFile(file("LICENSE_HEADER"))
+}
+
+spotless {
+  java {
+    importOrderFile(rootProject.file(".spotless/kyori.importorder"))
+    trimTrailingWhitespace()
+    endWithNewline()
+    indentWithSpaces(2)
+  }
 }
 
 dependencies {
