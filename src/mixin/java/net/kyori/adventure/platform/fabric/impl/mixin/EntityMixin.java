@@ -29,10 +29,11 @@ import net.kyori.adventure.platform.fabric.EntityHoverEventSource;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.event.HoverEvent.ShowEntity;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.Nameable;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.entity.EntityAccess;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
@@ -41,12 +42,17 @@ import org.spongepowered.asm.mixin.Shadow;
 @Mixin(Entity.class)
 public abstract class EntityMixin implements Sound.Emitter, EntityHoverEventSource, Nameable, EntityAccess {
   // @formatter:off
+  @Shadow public Level level;
+
   @Shadow public abstract EntityType<?> shadow$getType();
   // @formatter:on
 
   @Override
   public @NotNull HoverEvent<ShowEntity> asHoverEvent(final @NotNull UnaryOperator<ShowEntity> op) {
-    final Key entityType = Registry.ENTITY_TYPE.getKey(this.shadow$getType());
+    final Key entityType = this.level.registryAccess()
+      .registryOrThrow(Registries.ENTITY_TYPE)
+      .getKey(this.shadow$getType());
+
     final ShowEntity data = HoverEvent.ShowEntity.of(entityType, this.getUUID(), this.getName().asComponent());
     return HoverEvent.showEntity(op.apply(data));
   }

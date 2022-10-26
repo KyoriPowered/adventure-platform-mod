@@ -46,13 +46,14 @@ import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.kyori.adventure.title.Title;
 import net.kyori.adventure.title.TitlePart;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.network.chat.ChatMessageContent;
 import net.minecraft.network.chat.MessageSignature;
-import net.minecraft.network.chat.OutgoingPlayerChatMessage;
+import net.minecraft.network.chat.MessageSigner;
+import net.minecraft.network.chat.OutgoingChatMessage;
 import net.minecraft.network.chat.PlayerChatMessage;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundClearTitlesPacket;
@@ -211,7 +212,11 @@ public final class ServerPlayerAudience implements Audience {
       return;
     }
 
-    final SoundEvent event = Registry.SOUND_EVENT.getOptional(FabricAudiences.toNative(sound.name())).orElse(null);
+    final SoundEvent event = this.player.level.registryAccess()
+      .registryOrThrow(Registries.SOUND_EVENT)
+      .getOptional(FabricAudiences.toNative(sound.name()))
+      .orElse(null);
+
     if (event == null) {
       return;
     }

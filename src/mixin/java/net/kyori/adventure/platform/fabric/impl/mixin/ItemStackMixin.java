@@ -28,7 +28,7 @@ import net.kyori.adventure.key.Key;
 import net.kyori.adventure.nbt.api.BinaryTagHolder;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.event.HoverEventSource;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -46,7 +46,7 @@ public abstract class ItemStackMixin implements HoverEventSource<HoverEvent.Show
 
   @Override
   public @NotNull HoverEvent<HoverEvent.ShowItem> asHoverEvent(final @NotNull UnaryOperator<HoverEvent.ShowItem> op) {
-    final Key itemType = Registry.ITEM.getKey(this.shadow$getItem());
+    final Key itemType = BuiltInRegistries.ITEM.getKey(this.shadow$getItem());
     final CompoundTag nbt = this.shadow$getTag();
     final HoverEvent.ShowItem item = HoverEvent.ShowItem.of(itemType, this.shadow$getCount(), nbt == null ? null : BinaryTagHolder.binaryTagHolder(nbt.toString()));
     return HoverEvent.showItem(op.apply(item));

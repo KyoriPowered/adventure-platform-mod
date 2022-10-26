@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import net.minecraft.core.LayeredRegistryAccess;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -52,7 +53,7 @@ public class PlayerListMixin {
   // @formatter:on
 
   @Inject(method = "<init>", at = @At("RETURN"), require = 0)
-  private void adventure$replacePlayerLists(final MinecraftServer server, final RegistryAccess.Frozen tracker, final PlayerDataStorage handler, final int i,
+  private void adventure$replacePlayerLists(final MinecraftServer server, final LayeredRegistryAccess<RegistryAccess> tracker, final PlayerDataStorage handler, final int i,
                                             final CallbackInfo ci) {
     this.players = new CopyOnWriteArrayList<>();
     this.playersByUUID = new ConcurrentHashMap<>();

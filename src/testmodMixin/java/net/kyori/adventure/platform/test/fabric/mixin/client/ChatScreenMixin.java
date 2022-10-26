@@ -57,11 +57,11 @@ public abstract class ChatScreenMixin extends Screen {
         + Widgets.BETWEEN_GROUP_SPACING * 2); // paddings
 
     for (final AbstractWidget widget : AdventureTestButtons.testItems()) {
-      widget.x = x;
-      widget.y = y - widget.getHeight(); // the y above takes us to the bottom of a widget, since we want to align those
+      widget.setX(x);
+      widget.setY(y - widget.getHeight()); // the y above takes us to the bottom of a widget, since we want to align those
 
       if (widget.getHeight() > Widgets.BUTTON_SIZE) {
-        widget.y -= widget.getHeight() - Widgets.BUTTON_SIZE;
+        widget.setY(widget.getY() - (widget.getHeight() - Widgets.BUTTON_SIZE));
       }
 
       x += widget.getWidth() + Widgets.IN_GROUP_SPACING;
