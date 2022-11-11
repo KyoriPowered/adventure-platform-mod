@@ -128,7 +128,7 @@ public final class ServerPlayerAudience implements Audience {
 
   @Override
   public void sendActionBar(final @NotNull Component message) {
-    this.player.sendSystemMessage(this.controller.toNative(message), ChatType.GAME_INFO);
+    this.player.sendSystemMessage(this.controller.toNative(message), true);
   }
 
   @Override
