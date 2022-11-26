@@ -173,10 +173,10 @@ public class AdventureTester implements ModInitializer {
         })))
         .then(literal("countdown").then(argument(ARG_SECONDS, integer()).executes(ctx -> { // multiple boss bars!
           final Audience audience = this.adventure().audience(ctx.getSource());
-          this.beginCountdown(text("Countdown"), getInteger(ctx, ARG_SECONDS), audience, BossBar.Color.RED, complete -> {
+          this.beginCountdown(ctx.getSource().getServer(), text("Countdown"), getInteger(ctx, ARG_SECONDS), audience, BossBar.Color.RED, complete -> {
             complete.sendActionBar(text("Countdown complete!", COLOR_RESPONSE));
           });
-          this.beginCountdown(text("Faster Countdown"), getInteger(ctx, ARG_SECONDS) / 2, audience, BossBar.Color.PURPLE, complete -> {
+          this.beginCountdown(ctx.getSource().getServer(), text("Faster Countdown"), getInteger(ctx, ARG_SECONDS) / 2, audience, BossBar.Color.PURPLE, complete -> {
             complete.sendActionBar(text().content("Faster Countdown complete! ").color(COLOR_RESPONSE)
               .append(text('\uE042', Style.style().font(FONT_MEOW).build()))); // private use kitten in font
           });
@@ -326,7 +326,7 @@ public class AdventureTester implements ModInitializer {
    * @param color the color of the boss bar
    * @param completionAction callback to execute when countdown is complete
    */
-  private void beginCountdown(final Component title, final int timeSeconds, final Audience targets, final BossBar.Color color, final Consumer<Audience> completionAction) {
+  private void beginCountdown(final MinecraftServer server, final Component title, final int timeSeconds, final Audience targets, final BossBar.Color color, final Consumer<Audience> completionAction) {
     final BossBar bar = BossBar.bossBar(title.style(builder -> builder.colorIfAbsent(textColor(color)).font(FONT_IOSEVKA)), 1, color, BossBar.Overlay.PROGRESS, Collections.singleton(BossBar.Flag.PLAY_BOSS_MUSIC));
 
     final int timeMs = timeSeconds * 1000; // total time ms
@@ -351,8 +351,9 @@ public class AdventureTester implements ModInitializer {
 
       final float newFraction = bar.progress() - (dt / (float) timeMs);
       assert newFraction > 0;
-      bar.progress(newFraction);
-    }, 1, 10, TimeUnit.MILLISECONDS)); // no delay, 10ms tick rate
+
+      server.execute(() -> bar.progress(newFraction));
+    }, 1, 100, TimeUnit.MILLISECONDS)); // no delay, 100ms tick rate (every 2 ticks)
     targets.showBossBar(bar);
   }
 
