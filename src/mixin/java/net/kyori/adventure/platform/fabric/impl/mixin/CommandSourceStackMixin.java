@@ -61,7 +61,7 @@ public abstract class CommandSourceStackMixin implements AdventureCommandSourceS
   @Override
   public void sendSuccess(final @NotNull Component text, final boolean sendToOps) {
     if (this.source.acceptsSuccess() && !this.silent) {
-      this.sendMessage(Identity.nil(), text);
+      this.sendMessage(text);
     }
 
     if (sendToOps && this.source.shouldInformAdmins() && !this.silent) {
@@ -72,7 +72,7 @@ public abstract class CommandSourceStackMixin implements AdventureCommandSourceS
   @Override
   public void sendFailure(final @NotNull Component text) {
     if (this.source.acceptsFailure()) {
-      this.sendMessage(Identity.nil(), text.color(NamedTextColor.RED));
+      this.sendMessage(text.color(NamedTextColor.RED));
     }
   }
 

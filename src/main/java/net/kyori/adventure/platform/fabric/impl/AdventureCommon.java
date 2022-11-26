@@ -38,8 +38,10 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.kyori.adventure.Adventure;
+import net.kyori.adventure.chat.ChatType;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.platform.fabric.ComponentArgumentType;
+import net.kyori.adventure.platform.fabric.FabricAudiences;
 import net.kyori.adventure.platform.fabric.KeyArgumentType;
 import net.kyori.adventure.platform.fabric.PlayerLocales;
 import net.kyori.adventure.platform.fabric.impl.server.FabricServerAudiencesImpl;
@@ -54,6 +56,7 @@ import net.kyori.adventure.translation.Translator;
 import net.minecraft.commands.arguments.ComponentArgument;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.commands.synchronization.SingletonArgumentInfo;
+import net.minecraft.core.Registry;
 import net.minecraft.locale.Language;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
@@ -225,4 +228,18 @@ public class AdventureCommon implements ModInitializer {
     @Override
     @NotNull Pointers pointers();
   }
+
+  public static net.minecraft.network.chat.ChatType.@NotNull Bound chatTypeToNative(final ChatType.@NotNull Bound bound, final FabricAudiencesInternal audiences) {
+    final net.minecraft.network.chat.ChatType type = audiences.registryAccess()
+      .registryOrThrow(Registry.CHAT_TYPE_REGISTRY)
+      .get(FabricAudiences.toNative(bound.type().key()));
+
+    if (type == null) {
+      throw new IllegalArgumentException("Could not resolve chat type for key " + bound.type().key());
+    }
+
+    final net.minecraft.network.chat.ChatType.Bound ret = type.bind(audiences.toNative(bound.name()));
+    return bound.target() == null ? ret : ret.withTargetName(audiences.toNative(bound.target()));
+  }
+
 }

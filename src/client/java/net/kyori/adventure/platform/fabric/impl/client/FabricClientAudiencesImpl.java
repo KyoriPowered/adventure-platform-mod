@@ -27,17 +27,22 @@ import java.util.function.Function;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.platform.fabric.FabricClientAudiences;
 import net.kyori.adventure.platform.fabric.impl.AdventureCommon;
+import net.kyori.adventure.platform.fabric.impl.FabricAudiencesInternal;
 import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.text.flattener.ComponentFlattener;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
 import net.kyori.adventure.translation.GlobalTranslator;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.data.BuiltinRegistries;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import static java.util.Objects.requireNonNull;
 
-public class FabricClientAudiencesImpl implements FabricClientAudiences {
+public class FabricClientAudiencesImpl implements FabricClientAudiences, FabricAudiencesInternal {
   public static final FabricClientAudiences INSTANCE = new Builder().build();
   private final Function<Pointered, ?> partition;
   private final ComponentRenderer<Pointered> renderer;
@@ -71,6 +76,12 @@ public class FabricClientAudiencesImpl implements FabricClientAudiences {
 
   public Function<Pointered, ?> partition() {
     return this.partition;
+  }
+
+  @Override
+  public @NotNull RegistryAccess registryAccess() {
+    final @Nullable ClientLevel level = Minecraft.getInstance().level;
+    return level == null ? BuiltinRegistries.ACCESS : level.registryAccess();
   }
 
   public static final class Builder implements FabricClientAudiences.Builder {

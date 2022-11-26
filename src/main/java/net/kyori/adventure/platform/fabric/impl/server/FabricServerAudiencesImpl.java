@@ -37,6 +37,7 @@ import net.kyori.adventure.platform.fabric.FabricAudiences;
 import net.kyori.adventure.platform.fabric.FabricServerAudiences;
 import net.kyori.adventure.platform.fabric.impl.AdventureCommandSourceStackInternal;
 import net.kyori.adventure.platform.fabric.impl.AdventureCommon;
+import net.kyori.adventure.platform.fabric.impl.FabricAudiencesInternal;
 import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.flattener.ComponentFlattener;
@@ -45,6 +46,7 @@ import net.kyori.adventure.translation.GlobalTranslator;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.Registry;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -57,7 +59,7 @@ import static java.util.Objects.requireNonNull;
 /**
  * The entry point for accessing Adventure.
  */
-public final class FabricServerAudiencesImpl implements FabricServerAudiences {
+public final class FabricServerAudiencesImpl implements FabricServerAudiences, FabricAudiencesInternal {
   private static final Set<FabricServerAudiencesImpl> INSTANCES = Collections.newSetFromMap(new WeakHashMap<>());
 
   /**
@@ -182,6 +184,11 @@ public final class FabricServerAudiencesImpl implements FabricServerAudiences {
 
   @Override
   public void close() {
+  }
+
+  @Override
+  public @NotNull RegistryAccess registryAccess() {
+    return this.server.registryAccess();
   }
 
   public static final class Builder implements FabricServerAudiences.Builder {

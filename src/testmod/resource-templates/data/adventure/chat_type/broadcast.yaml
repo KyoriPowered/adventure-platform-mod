@@ -1,0 +1,9 @@
+chat: &type
+  parameters: [
+    "sender",
+    "content"
+  ]
+  translation_key: "[%s] >> %s"
+  style:
+    bold: true
+narration: *type

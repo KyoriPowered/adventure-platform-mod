@@ -28,10 +28,13 @@ import java.util.Objects;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.chat.ChatType;
+import net.kyori.adventure.chat.SignedMessage;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.fabric.FabricAudiences;
+import net.kyori.adventure.platform.fabric.impl.AdventureCommon;
 import net.kyori.adventure.platform.fabric.impl.GameEnums;
 import net.kyori.adventure.platform.fabric.impl.PointerProviderBridge;
 import net.kyori.adventure.platform.fabric.impl.accessor.LevelAccess;
@@ -47,18 +50,20 @@ import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
-import net.minecraft.network.chat.ChatType;
-import net.minecraft.network.chat.MessageSigner;
+import net.minecraft.network.chat.ChatMessageContent;
+import net.minecraft.network.chat.MessageSignature;
+import net.minecraft.network.chat.OutgoingPlayerChatMessage;
+import net.minecraft.network.chat.PlayerChatMessage;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundClearTitlesPacket;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.network.protocol.game.ClientboundCustomSoundPacket;
+import net.minecraft.network.protocol.game.ClientboundDeleteChatPacket;
 import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket;
 import net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket;
 import net.minecraft.network.protocol.game.ClientboundSetTitlesAnimationPacket;
 import net.minecraft.network.protocol.game.ClientboundSoundEntityPacket;
 import net.minecraft.network.protocol.game.ClientboundStopSoundPacket;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
@@ -87,21 +92,13 @@ public final class ServerPlayerAudience implements Audience {
   }
 
   @Override
-  public void sendMessage(final Identity source, final Component text, final net.kyori.adventure.audience.MessageType type) {
-    // TODO: signing
-    /*if (type == net.kyori.adventure.audience.MessageType.CHAT) {
-      this.player.sendChatMessage(
-        new OutgoingPlayerChatMessage.NotTracked(PlayerChatMessage.unsigned(
-          signer(source),
-          new ChatMessageContent(PlainTextComponentSerializer.plainText().serialize(text), this.controller.toNative(text))
-        )),
-        true,
-        this.rehydrateType(ChatType.CHAT, source)
-      );
-    } else {
-      this.player.sendSystemMessage(this.controller.toNative(text));
-    }*/
+  public void sendMessage(final @NotNull Component message) {
+    this.player.sendSystemMessage(this.controller.toNative(message));
+  }
 
+  @Override
+  @Deprecated
+  public void sendMessage(final Identity source, final Component text, final net.kyori.adventure.audience.MessageType type) {
     final boolean shouldSend = switch (this.player.getChatVisibility()) {
       case FULL -> true;
       case SYSTEM -> type == MessageType.SYSTEM;
@@ -113,17 +110,37 @@ public final class ServerPlayerAudience implements Audience {
     }
   }
 
-  private static MessageSigner signer(final Identity identity) {
-    return MessageSigner.create(identity.uuid());
+  private net.minecraft.network.chat.ChatType.Bound toMc(final ChatType.Bound adv) {
+    return AdventureCommon.chatTypeToNative(adv, this.controller);
   }
 
-  private ChatType.Bound rehydrateType(final ResourceKey<ChatType> type, final Identity ident) {
-    final var player = this.player.getServer().getPlayerList().getPlayer(ident.uuid());
-    if (player == null) {
-      return ChatType.bind(type, this.player.getLevel().registryAccess(), net.minecraft.network.chat.Component.literal(ident.uuid().toString()));
+  @Override
+  public void sendMessage(final @NotNull Component message, final ChatType.@NotNull Bound boundChatType) {
+    final OutgoingPlayerChatMessage outgoing = new OutgoingPlayerChatMessage.NotTracked(
+      PlayerChatMessage.system(new ChatMessageContent(
+        PlainTextComponentSerializer.plainText().serialize(message),
+        this.controller.toNative(message)
+      ))
+    );
+    this.player.sendChatMessage(outgoing, false, this.toMc(boundChatType));
+  }
+
+  @Override
+  public void sendMessage(final @NotNull SignedMessage signedMessage, final ChatType.@NotNull Bound boundChatType) {
+    if ((Object) signedMessage instanceof PlayerChatMessage pcm) {
+      if (pcm.signer().isSystem()) {
+        this.player.sendChatMessage(new OutgoingPlayerChatMessage.NotTracked(pcm), false, this.toMc(boundChatType));
+      } else {
+        this.player.sendChatMessage(new OutgoingPlayerChatMessage.Tracked(pcm), false, this.toMc(boundChatType));
+      }
     } else {
-      return ChatType.bind(type, player);
+      this.sendMessage(Objects.requireNonNullElse(signedMessage.unsignedContent(), Component.text(signedMessage.message())), boundChatType);
     }
+  }
+
+  @Override
+  public void deleteMessage(final SignedMessage.@NotNull Signature signature) {
+    this.sendPacket(new ClientboundDeleteChatPacket((MessageSignature) signature));
   }
 
   @Override

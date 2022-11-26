@@ -18,8 +18,10 @@
     "GameProfileMixin",
     "ItemStackMixin",
     "KeyMixin",
+    "MessageSignatureMixin",
     "MinecraftServerMixin",
     "PacketEncoderMixin",
+    "PlayerChatMessageMixin",
     "PlayerListMixin",
     "PlayerMixin",
     "RconConsoleSourceMixin",
@@ -28,6 +30,7 @@
     "ServerBossEventMixin",
     "ServerGamePacketListenerImplMixin",
     "ServerPlayerMixin",
+    "SignedMessageMixin",
     "SoundEventMixin",
     "StyleSerializerMixin"
   ],

@@ -29,8 +29,8 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.permission.PermissionChecker;
-import net.kyori.adventure.platform.fabric.FabricAudiences;
 import net.kyori.adventure.platform.fabric.FabricServerAudiences;
+import net.kyori.adventure.platform.fabric.impl.FabricAudiencesInternal;
 import net.kyori.adventure.platform.fabric.impl.server.FabricServerAudiencesImpl;
 import net.kyori.adventure.platform.fabric.impl.server.MinecraftServerBridge;
 import net.kyori.adventure.platform.fabric.impl.server.PlainAudience;
@@ -54,7 +54,7 @@ public abstract class MinecraftServerMixin implements MinecraftServerBridge, Ren
   // @formatter:on
 
   private final FabricServerAudiencesImpl adventure$globalProvider = new FabricServerAudiencesImpl.Builder((MinecraftServer) (Object) this).build();
-  private final Map<FabricAudiences, Audience> adventure$renderers = new MapMaker().weakKeys().makeMap();
+  private final Map<FabricAudiencesInternal, Audience> adventure$renderers = new MapMaker().weakKeys().makeMap();
   private final Audience adventure$backing = this.renderUsing(this.adventure$globalProvider);
   private volatile Pointers adventure$pointers;
 

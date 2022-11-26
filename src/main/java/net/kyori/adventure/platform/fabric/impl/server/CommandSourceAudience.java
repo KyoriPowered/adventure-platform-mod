@@ -25,8 +25,11 @@ package net.kyori.adventure.platform.fabric.impl.server;
 
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.MessageType;
+import net.kyori.adventure.chat.ChatType;
+import net.kyori.adventure.chat.SignedMessage;
 import net.kyori.adventure.identity.Identity;
-import net.kyori.adventure.platform.fabric.FabricAudiences;
+import net.kyori.adventure.platform.fabric.impl.AdventureCommon;
+import net.kyori.adventure.platform.fabric.impl.FabricAudiencesInternal;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSource;
 import org.jetbrains.annotations.NotNull;
@@ -36,20 +39,37 @@ import org.jetbrains.annotations.NotNull;
  */
 final class CommandSourceAudience implements Audience {
   private final CommandSource output;
-  private final FabricAudiences serializer;
+  private final FabricAudiencesInternal serializer;
 
-  CommandSourceAudience(final CommandSource output, final FabricAudiences serializer) {
+  CommandSourceAudience(final CommandSource output, final FabricAudiencesInternal serializer) {
     this.output = output;
     this.serializer = serializer;
   }
 
   @Override
+  public void sendMessage(final @NotNull Component message) {
+    this.output.sendSystemMessage(this.serializer.toNative(message));
+  }
+
+  @Override
+  public void sendMessage(final @NotNull Component message, final ChatType.@NotNull Bound boundChatType) {
+    this.output.sendSystemMessage(AdventureCommon.chatTypeToNative(boundChatType, this.serializer).decorate(this.serializer.toNative(message)));
+  }
+
+  @Override
+  public void sendMessage(final @NotNull SignedMessage signedMessage, final ChatType.@NotNull Bound boundChatType) {
+    final Component message = signedMessage.unsignedContent() != null ? signedMessage.unsignedContent() : Component.text(signedMessage.message());
+    this.output.sendSystemMessage(AdventureCommon.chatTypeToNative(boundChatType, this.serializer).decorate(this.serializer.toNative(message)));
+  }
+
+  @Override
+  @Deprecated
   public void sendMessage(final Identity source, final Component text, final MessageType type) {
     this.output.sendSystemMessage(this.serializer.toNative(text));
   }
 
   @Override
   public void sendActionBar(final @NotNull Component message) {
-    this.sendMessage(Identity.nil(), message);
+    this.sendMessage(message);
   }
 }
