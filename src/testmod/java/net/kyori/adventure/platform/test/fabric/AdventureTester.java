@@ -55,6 +55,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.chat.ChatType;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.key.Key;
@@ -74,6 +75,7 @@ import net.kyori.adventure.translation.TranslationRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.synchronization.SuggestionProviders;
 import net.minecraft.network.chat.ComponentUtils;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
@@ -82,7 +84,6 @@ import org.jetbrains.annotations.Nullable;
 import static com.mojang.brigadier.arguments.IntegerArgumentType.getInteger;
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
 import static java.util.Objects.requireNonNull;
-import static net.kyori.adventure.key.Key.key;
 import static net.kyori.adventure.platform.fabric.ComponentArgumentType.component;
 import static net.kyori.adventure.platform.fabric.ComponentArgumentType.miniMessage;
 import static net.kyori.adventure.platform.fabric.KeyArgumentType.key;
@@ -99,8 +100,8 @@ import static net.minecraft.commands.arguments.EntityArgument.players;
 
 public class AdventureTester implements ModInitializer {
   public static final ComponentLogger LOGGER = ComponentLogger.logger();
-  private static final Key FONT_MEOW = key("adventure", "meow");
-  private static final Key FONT_IOSEVKA = key("adventure", "iosevka");
+  private static final Key FONT_MEOW = advKey("meow");
+  private static final Key FONT_IOSEVKA = advKey("iosevka");
 
   private static final List<TextColor> LINE_COLOURS = IntStream.of(0x9400D3, 0x4B0082, 0x0000FF, 0x00FF00, 0xFFFF00, 0xFF7F00, 0xFF0000,
     0x55CDFC, 0xF7A8B8, 0xFFFFFF, 0xF7A8B8, 0x55CDFC)
@@ -117,7 +118,13 @@ public class AdventureTester implements ModInitializer {
   private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
   private @Nullable FabricServerAudiences platform;
 
-  public FabricServerAudiences adventure() {
+  private static final ChatType ADVENTURE_BROADCAST = net.kyori.adventure.chat.ChatType.chatType(advKey("broadcast"));
+
+  private static ResourceLocation advKey(final String location) {
+    return new ResourceLocation("adventure", location);
+  }
+
+  public @NotNull FabricServerAudiences adventure() {
     return requireNonNull(this.platform, "Tried to access Fabric platform without a running server");
   }
 
@@ -128,7 +135,7 @@ public class AdventureTester implements ModInitializer {
   @Override
   public void onInitialize() {
     // Register localizations
-    final TranslationRegistry testmodRegistry = TranslationRegistry.create(key("adventure", "testmod_localizations"));
+    final TranslationRegistry testmodRegistry = TranslationRegistry.create(advKey("testmod_localizations"));
     for (final var lang : List.of(Locale.ENGLISH, Locale.GERMAN)) {
       testmodRegistry.registerAll(lang, ResourceBundle.getBundle("net.kyori.adventure.platform.test.fabric.messages", lang), false);
     }
@@ -147,20 +154,20 @@ public class AdventureTester implements ModInitializer {
       dispatcher.register(literal("adventure")
         .then(literal("about").executes(ctx -> {
           // Interface injection, this lets us access the default platform instance
-          ctx.getSource().sendMessage(Identity.nil(), translatable("adventure.test.welcome", COLOR_RESPONSE, ctx.getSource().getDisplayName()));
+          ctx.getSource().sendMessage(translatable("adventure.test.welcome", COLOR_RESPONSE, ctx.getSource().getDisplayName()));
           // Or the old-fashioned way, for
-          this.adventure().audience(ctx.getSource()).sendMessage(Identity.nil(), translatable("adventure.test.description", color(0xc022cc)));
+          this.adventure().audience(ctx.getSource()).sendMessage(translatable("adventure.test.description", color(0xc022cc)));
           return 1;
         }))
         .then(literal("echo").then(argument(ARG_TEXT, miniMessage()).executes(ctx -> {
           final Component result = component(ctx, ARG_TEXT);
-          ctx.getSource().sendMessage(ctx.getSource(), result);
+          ctx.getSource().sendMessage(result, ChatType.SAY_COMMAND.bind(ctx.getSource().getDisplayName()));
           ctx.getSource().sendMessage(text("And a second time!", NamedTextColor.DARK_PURPLE));
           return 1;
         })))
         .then(literal("eval").then(argument(ARG_TEXT, miniMessage()).executes(ctx -> {
           final Component result = component(ctx, ARG_TEXT);
-          ctx.getSource().sendMessage(ctx.getSource(), ComponentUtils.updateForEntity(ctx.getSource(), this.platform.toNative(result), ctx.getSource().getEntity(), 0));
+          ctx.getSource().sendMessage(ComponentUtils.updateForEntity(ctx.getSource(), this.platform.toNative(result), ctx.getSource().getEntity(), 0));
           return Command.SINGLE_SUCCESS;
         })))
         .then(literal("countdown").then(argument(ARG_SECONDS, integer()).executes(ctx -> { // multiple boss bars!
@@ -180,8 +187,8 @@ public class AdventureTester implements ModInitializer {
           final Component message = component(ctx, ARG_TEXT);
           final Audience destination = Audience.audience(targets);
 
-          destination.sendMessage(source, message);
-          source.sendMessage(Identity.nil(), text(b -> {
+          destination.sendMessage(message, ADVENTURE_BROADCAST.bind(ctx.getSource().getDisplayName()));
+          source.sendMessage(text(b -> {
             b.content("You have sent \"");
             b.append(message).append(text("\" to ")).append(this.listPlayers(targets));
             b.color(COLOR_RESPONSE);
@@ -191,7 +198,7 @@ public class AdventureTester implements ModInitializer {
         .then(literal("sound").then(argument(ARG_SOUND, key()).suggests(SuggestionProviders.AVAILABLE_SOUNDS).executes(ctx -> {
           final Audience viewer = this.adventure().audience(ctx.getSource());
           final Key sound = key(ctx, ARG_SOUND);
-          viewer.sendMessage(Identity.nil(), text(b -> b.content("Playing sound ").append(represent(sound)).color(COLOR_RESPONSE)));
+          viewer.sendMessage(text(b -> b.content("Playing sound ").append(represent(sound)).color(COLOR_RESPONSE)));
           viewer.playSound(sound(sound, Sound.Source.MASTER, 1f, 1f));
           return 1;
         })))
@@ -206,7 +213,7 @@ public class AdventureTester implements ModInitializer {
         }))
         .then(literal("rgb").executes(ctx -> {
           for (final TextColor color : LINE_COLOURS) {
-            ctx.getSource().sendMessage(Identity.nil(), LINE.color(color));
+            ctx.getSource().sendMessage(LINE.color(color));
           }
           return Command.SINGLE_SUCCESS;
         }))

@@ -28,10 +28,13 @@ import java.util.Objects;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.chat.ChatType;
+import net.kyori.adventure.chat.SignedMessage;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.fabric.FabricAudiences;
+import net.kyori.adventure.platform.fabric.impl.AdventureCommon;
 import net.kyori.adventure.platform.fabric.impl.GameEnums;
 import net.kyori.adventure.platform.fabric.impl.PointerProviderBridge;
 import net.kyori.adventure.platform.fabric.impl.accessor.LevelAccess;
@@ -42,12 +45,14 @@ import net.kyori.adventure.sound.SoundStop;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
 import net.kyori.adventure.title.TitlePart;
+import net.minecraft.client.GuiMessageTag;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.BookViewScreen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.resources.sounds.EntityBoundSoundInstance;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
+import net.minecraft.network.chat.MessageSignature;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -67,6 +72,49 @@ public class ClientAudience implements Audience {
   }
 
   @Override
+  public void sendMessage(final @NotNull Component message) {
+    this.client.gui.getChat().addMessage(this.controller.toNative(message));
+  }
+
+  private net.minecraft.network.chat.ChatType.Bound toMc(final ChatType.Bound bound) {
+    return AdventureCommon.chatTypeToNative(bound, this.controller);
+  }
+
+  @Override
+  public void sendMessage(final @NotNull Component message, final ChatType.@NotNull Bound boundChatType) {
+    final net.minecraft.network.chat.ChatType.Bound bound = this.toMc(boundChatType);
+    this.client.gui.getChat().addMessage(bound.decorate(this.controller.toNative(message)), null, GuiMessageTag.chatNotSecure());
+  }
+
+  @Override
+  public void sendMessage(final @NotNull SignedMessage signedMessage, final ChatType.@NotNull Bound boundChatType) {
+    final net.minecraft.network.chat.ChatType.Bound bound = this.toMc(boundChatType);
+    final Component message = Objects.requireNonNullElse(signedMessage.unsignedContent(), Component.text(signedMessage.message()));
+
+    this.client.gui.getChat().addMessage(bound.decorate(this.controller.toNative(message)), (MessageSignature) signedMessage.signature(), this.tag(signedMessage));
+  }
+
+  private GuiMessageTag tag(final SignedMessage message) {
+    if (message == null) {
+      return null;
+    } else if (message.isSystem()) {
+      return GuiMessageTag.system();
+    } else if (message.unsignedContent() != null && !message.unsignedContent().equals(Component.text(message.message()))) {
+      return GuiMessageTag.chatModified(message.message());
+    } else if (message.signature() == null) {
+      return GuiMessageTag.chatNotSecure();
+    }
+
+    return null;
+  }
+
+  @Override
+  public void deleteMessage(final SignedMessage.@NotNull Signature signature) {
+    this.client.gui.getChat().deleteMessage((MessageSignature) signature);
+  }
+
+  @Override
+  @Deprecated
   public void sendMessage(final Identity source, final @NotNull Component message, final @NotNull MessageType type) {
     if (this.client.isBlocked(source.uuid())) return;
 
@@ -94,7 +142,7 @@ public class ClientAudience implements Audience {
     final net.minecraft.network.chat.@Nullable Component titleText = title.title() == Component.empty() ? null : this.controller.toNative(title.title());
     final net.minecraft.network.chat.@Nullable Component subtitleText = title.subtitle() == Component.empty() ? null : this.controller.toNative(title.subtitle());
     final Title.@Nullable Times times = title.times();
-    this.client.gui.setTitle(titleText);;
+    this.client.gui.setTitle(titleText);
     this.client.gui.setSubtitle(subtitleText);
     this.client.gui.setTimes(
       this.adventure$ticks(times == null ? null : times.fadeIn()),
@@ -148,6 +196,19 @@ public class ClientAudience implements Audience {
     BossHealthOverlayBridge.listener(this.client.gui.getBossOverlay(), this.controller).remove(bar);
   }
 
+  private long seed(final @NotNull Sound sound) {
+    if (sound.seed().isPresent()) {
+      return sound.seed().getAsLong();
+    } else {
+      final @Nullable LocalPlayer player = this.client.player;
+      if (player != null) {
+        return ((LevelAccess) player).accessor$threadSafeRandom().nextLong();
+      } else {
+        return 0l;
+      }
+    }
+  }
+
   @Override
   public void playSound(final @NotNull Sound sound) {
     final @Nullable LocalPlayer player = this.client.player;
@@ -156,7 +217,7 @@ public class ClientAudience implements Audience {
     } else {
       // not in-game
       this.client.getSoundManager().play(new SimpleSoundInstance(FabricAudiences.toNative(sound.name()), GameEnums.SOUND_SOURCE.toMinecraft(sound.source()),
-        sound.volume(), sound.pitch(), RandomSource.create(), false, 0, SoundInstance.Attenuation.NONE, 0, 0, 0, true));
+        sound.volume(), sound.pitch(), RandomSource.create(this.seed(sound)), false, 0, SoundInstance.Attenuation.NONE, 0, 0, 0, true));
     }
   }
 
@@ -178,7 +239,7 @@ public class ClientAudience implements Audience {
       sound.volume(),
       sound.pitch(),
       targetEntity,
-      ((LevelAccess) targetEntity.level).accessor$threadSafeRandom().nextLong()
+      this.seed(sound)
     );
     // Then apply the ResourceLocation of our real sound event
     ((AbstractSoundInstanceAccess) mcSound).setLocation(FabricAudiences.toNative(sound.name()));
@@ -193,7 +254,7 @@ public class ClientAudience implements Audience {
       GameEnums.SOUND_SOURCE.toMinecraft(sound.source()),
       sound.volume(),
       sound.pitch(),
-      RandomSource.create(((LevelAccess) this.client.level).accessor$threadSafeRandom().nextLong()),
+      RandomSource.create(this.seed(sound)),
       false,
       0,
       SoundInstance.Attenuation.LINEAR,

@@ -26,8 +26,10 @@ package net.kyori.adventure.platform.fabric.impl.server;
 import java.util.function.Consumer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.MessageType;
+import net.kyori.adventure.chat.ChatType;
 import net.kyori.adventure.identity.Identity;
-import net.kyori.adventure.platform.fabric.FabricAudiences;
+import net.kyori.adventure.platform.fabric.impl.AdventureCommon;
+import net.kyori.adventure.platform.fabric.impl.FabricAudiencesInternal;
 import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.pointer.Pointers;
 import net.kyori.adventure.text.Component;
@@ -35,24 +37,35 @@ import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 
 public final class PlainAudience implements Audience {
-  private final FabricAudiences controller;
+  private final FabricAudiencesInternal controller;
   private final Pointered source;
   private final Consumer<String> plainOutput;
 
-  public PlainAudience(final FabricAudiences controller, final Pointered source, final Consumer<String> plainOutput) {
+  public PlainAudience(final FabricAudiencesInternal controller, final Pointered source, final Consumer<String> plainOutput) {
     this.controller = controller;
     this.source = source;
     this.plainOutput = plainOutput;
   }
 
   @Override
-  public void sendMessage(final @NotNull Identity source, final @NotNull Component message, final @NotNull MessageType type) {
-    this.plainOutput.accept(PlainTextComponentSerializer.plainText().serialize(this.controller.renderer().render(message, this.source)));
+  public void sendMessage(final @NotNull Component message) {
+    this.plainOutput.accept(PlainTextComponentSerializer.plainText().serialize(message));
+  }
+
+  @Override
+  public void sendMessage(final @NotNull Component message, final ChatType.@NotNull Bound boundChatType) {
+    this.plainOutput.accept(AdventureCommon.chatTypeToNative(boundChatType, this.controller).decorate(this.controller.toNative(message)).getString());
+  }
+
+  @Override
+  @Deprecated
+  public void sendMessage(final Identity source, final Component text, final MessageType type) {
+    this.sendMessage(text);
   }
 
   @Override
   public void sendActionBar(final @NotNull Component message) {
-    this.sendMessage(Identity.nil(), message);
+    this.sendMessage(message);
   }
 
   @Override
