@@ -26,13 +26,12 @@ package net.kyori.adventure.platform.fabric.impl;
 import io.netty.buffer.Unpooled;
 import java.util.HashSet;
 import java.util.Set;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.kyori.adventure.Adventure;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * A packet sent client to server, to let the server know which optional argument types are available on the server.
@@ -57,7 +56,7 @@ public record ServerboundRegisteredArgumentTypesPacket(Set<ResourceLocation> kno
     return new ServerboundRegisteredArgumentTypesPacket(Set.copyOf(idents));
   }
 
-  public static ServerboundRegisteredArgumentTypesPacket of(final @NonNull FriendlyByteBuf buf) {
+  public static ServerboundRegisteredArgumentTypesPacket of(final @NotNull FriendlyByteBuf buf) {
     final int length = buf.readVarInt();
     final Set<ResourceLocation> items = new HashSet<>();
     for (int i = 0; i < length; ++i) {
@@ -79,10 +78,8 @@ public record ServerboundRegisteredArgumentTypesPacket(Set<ResourceLocation> kno
    * @param sender the sender to send the packet to
    */
   public void sendTo(final PacketSender sender) {
-    if (ClientPlayNetworking.canSend(ID)) {
-      final FriendlyByteBuf buffer = new FriendlyByteBuf(Unpooled.buffer(this.known.size() * 8));
-      this.toPacket(buffer);
-      sender.sendPacket(ID, buffer);
-    }
+    final FriendlyByteBuf buffer = new FriendlyByteBuf(Unpooled.buffer(this.known.size() * 8));
+    this.toPacket(buffer);
+    sender.sendPacket(ID, buffer);
   }
 }

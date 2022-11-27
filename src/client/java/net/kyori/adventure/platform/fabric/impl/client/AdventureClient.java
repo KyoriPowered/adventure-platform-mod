@@ -43,7 +43,11 @@ public final class AdventureClient implements ClientModInitializer {
     if (FabricLoader.getInstance().isModLoaded(AdventureCommon.MOD_FAPI_NETWORKING)) {
       C2SPlayChannelEvents.REGISTER.register((handler, sender, client, channels) -> {
         if (channels.contains(ServerboundRegisteredArgumentTypesPacket.ID)) {
-          client.execute(() -> ServerboundRegisteredArgumentTypesPacket.of(ServerArgumentTypes.ids()).sendTo(sender));
+          client.execute(() -> {
+            if (ClientPlayNetworking.canSend(ServerboundRegisteredArgumentTypesPacket.ID)) {
+              ServerboundRegisteredArgumentTypesPacket.of(ServerArgumentTypes.ids()).sendTo(sender);
+            }
+          });
         }
       });
       ClientPlayNetworking.registerGlobalReceiver(ClientboundArgumentTypeMappingsPacket.ID, (client, handler, buffer, responder) -> {
