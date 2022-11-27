@@ -27,10 +27,12 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.stream.Stream;
 import net.kyori.adventure.chat.SignedMessage;
+import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import net.kyori.examination.ExaminableProperty;
 import net.minecraft.network.chat.FilterMask;
 import net.minecraft.network.chat.MessageSignature;
+import net.minecraft.network.chat.MessageSigner;
 import net.minecraft.network.chat.PlayerChatMessage;
 import net.minecraft.network.chat.SignedMessageBody;
 import net.minecraft.network.chat.SignedMessageHeader;
@@ -47,6 +49,7 @@ public abstract class PlayerChatMessageMixin implements SignedMessage {
   @Shadow public abstract MessageSignature shadow$headerSignature();
   @Shadow public abstract Optional<net.minecraft.network.chat.Component> shadow$unsignedContent();
   @Shadow public abstract SignedMessageBody shadow$signedBody();
+  @Shadow public abstract MessageSigner shadow$signer();
 
   @Shadow @Final private SignedMessageHeader signedHeader;
   @Shadow @Final private MessageSignature headerSignature;
@@ -54,6 +57,11 @@ public abstract class PlayerChatMessageMixin implements SignedMessage {
   @Shadow @Final private Optional<net.minecraft.network.chat.Component> unsignedContent;
   @Shadow @Final private FilterMask filterMask;
   // @formatter:on
+
+  @Override
+  public @NotNull Identity identity() {
+    return this.shadow$signer().isSystem() ? Identity.nil() : Identity.identity(this.shadow$signer().profileId());
+  }
 
   @Override
   public @NotNull Instant timestamp() {
@@ -82,7 +90,7 @@ public abstract class PlayerChatMessageMixin implements SignedMessage {
 
   @Override
   public boolean isSystem() {
-    return SignedMessage.super.isSystem();
+    return this.shadow$signer().isSystem();
   }
 
   @Override
