@@ -38,6 +38,7 @@ import net.kyori.adventure.platform.fabric.impl.AdventureCommon;
 import net.kyori.adventure.platform.fabric.impl.GameEnums;
 import net.kyori.adventure.platform.fabric.impl.PointerProviderBridge;
 import net.kyori.adventure.platform.fabric.impl.accessor.LevelAccess;
+import net.kyori.adventure.platform.fabric.impl.accessor.ServerGamePacketListenerImplAccess;
 import net.kyori.adventure.pointer.Pointers;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.SoundStop;
@@ -50,9 +51,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
-import net.minecraft.network.chat.ChatMessageContent;
 import net.minecraft.network.chat.MessageSignature;
-import net.minecraft.network.chat.MessageSigner;
 import net.minecraft.network.chat.OutgoingChatMessage;
 import net.minecraft.network.chat.PlayerChatMessage;
 import net.minecraft.network.protocol.Packet;
@@ -117,11 +116,8 @@ public final class ServerPlayerAudience implements Audience {
 
   @Override
   public void sendMessage(final @NotNull Component message, final ChatType.@NotNull Bound boundChatType) {
-    final OutgoingPlayerChatMessage outgoing = new OutgoingPlayerChatMessage.NotTracked(
-      PlayerChatMessage.system(new ChatMessageContent(
-        PlainTextComponentSerializer.plainText().serialize(message),
+    final OutgoingChatMessage outgoing = new OutgoingChatMessage.Disguised(
         this.controller.toNative(message)
-      ))
     );
     this.player.sendChatMessage(outgoing, false, this.toMc(boundChatType));
   }
@@ -129,10 +125,10 @@ public final class ServerPlayerAudience implements Audience {
   @Override
   public void sendMessage(final @NotNull SignedMessage signedMessage, final ChatType.@NotNull Bound boundChatType) {
     if ((Object) signedMessage instanceof PlayerChatMessage pcm) {
-      if (pcm.signer().isSystem()) {
-        this.player.sendChatMessage(new OutgoingPlayerChatMessage.NotTracked(pcm), false, this.toMc(boundChatType));
+      if (pcm.isSystem()) {
+        this.player.sendChatMessage(new OutgoingChatMessage.Disguised(pcm.decoratedContent()), false, this.toMc(boundChatType));
       } else {
-        this.player.sendChatMessage(new OutgoingPlayerChatMessage.Tracked(pcm), false, this.toMc(boundChatType));
+        this.player.sendChatMessage(new OutgoingChatMessage.Player(pcm), false, this.toMc(boundChatType));
       }
     } else {
       this.sendMessage(Objects.requireNonNullElse(signedMessage.unsignedContent(), Component.text(signedMessage.message())), boundChatType);
@@ -141,7 +137,7 @@ public final class ServerPlayerAudience implements Audience {
 
   @Override
   public void deleteMessage(final SignedMessage.@NotNull Signature signature) {
-    this.sendPacket(new ClientboundDeleteChatPacket((MessageSignature) signature));
+    this.sendPacket(new ClientboundDeleteChatPacket(((MessageSignature) signature).pack(((ServerGamePacketListenerImplAccess) this.player.connection).accessor$messageSignatureCache())));
   }
 
   @Override

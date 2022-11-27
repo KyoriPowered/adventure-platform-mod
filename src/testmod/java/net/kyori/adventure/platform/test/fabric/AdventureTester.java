@@ -320,6 +320,7 @@ public class AdventureTester implements ModInitializer {
   /**
    * Begin a countdown shown on a boss bar, completing with the specified action.
    *
+   * @param server The server to schedule operations on
    * @param title Boss bar title
    * @param timeSeconds seconds boss bar will last
    * @param targets viewers of the action

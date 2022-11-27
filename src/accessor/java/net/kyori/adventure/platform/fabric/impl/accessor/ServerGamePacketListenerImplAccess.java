@@ -21,29 +21,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.adventure.platform.fabric.impl.mixin;
+package net.kyori.adventure.platform.fabric.impl.accessor;
 
-import net.kyori.adventure.chat.SignedMessage;
-import net.minecraft.network.chat.MessageSignature;
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
+import net.minecraft.network.chat.MessageSignatureCache;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(value = SignedMessage.class, remap = false)
-public interface SignedMessageMixin {
-  /**
-   * Create a signature.
-   *
-   * @author zml
-   * @param bytes input
-   * @return the signature
-   * @since 5.4.0
-   * @reason To replace the Adventure signature implementation with the Minecraft one.
-   */
-  @Contract(value = "_ -> new", pure = true)
-  @Overwrite
-  static SignedMessage.@NotNull Signature signature(final byte[] bytes) {
-    return new MessageSignature(bytes);
-  }
+@Mixin(ServerGamePacketListenerImpl.class)
+public interface ServerGamePacketListenerImplAccess {
+  @Accessor("messageSignatureCache")
+  @Final
+  MessageSignatureCache accessor$messageSignatureCache();
 }

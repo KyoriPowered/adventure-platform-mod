@@ -24,7 +24,6 @@
 package net.kyori.adventure.platform.fabric.impl.mixin;
 
 import java.time.Instant;
-import java.util.Optional;
 import java.util.stream.Stream;
 import net.kyori.adventure.chat.SignedMessage;
 import net.kyori.adventure.identity.Identity;
@@ -33,35 +32,39 @@ import net.kyori.adventure.text.ComponentLike;
 import net.kyori.examination.ExaminableProperty;
 import net.minecraft.network.chat.FilterMask;
 import net.minecraft.network.chat.MessageSignature;
-import net.minecraft.network.chat.MessageSigner;
 import net.minecraft.network.chat.PlayerChatMessage;
 import net.minecraft.network.chat.SignedMessageBody;
-import net.minecraft.network.chat.SignedMessageHeader;
+import net.minecraft.network.chat.SignedMessageLink;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Implements;
+import org.spongepowered.asm.mixin.Interface;
+import org.spongepowered.asm.mixin.Intrinsic;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
+@Implements(@Interface(iface = SignedMessage.class, prefix = "signedMessage$"))
 @Mixin(PlayerChatMessage.class)
 public abstract class PlayerChatMessageMixin implements SignedMessage {
 
   // @formatter:off
-  @Shadow public abstract MessageSignature shadow$headerSignature();
-  @Shadow public abstract Optional<net.minecraft.network.chat.Component> shadow$unsignedContent();
+  @Shadow public abstract MessageSignature shadow$signature();
+  @Shadow public abstract net.minecraft.network.chat.@Nullable Component shadow$unsignedContent();
   @Shadow public abstract SignedMessageBody shadow$signedBody();
-  @Shadow public abstract MessageSigner shadow$signer();
+  @Shadow public abstract SignedMessageLink shadow$link();
+  @Shadow public abstract boolean shadow$isSystem();
 
-  @Shadow @Final private SignedMessageHeader signedHeader;
-  @Shadow @Final private MessageSignature headerSignature;
+  @Shadow @Final private SignedMessageLink link;
+  @Shadow @Final private MessageSignature signature;
   @Shadow @Final private SignedMessageBody signedBody;
-  @Shadow @Final private Optional<net.minecraft.network.chat.Component> unsignedContent;
+  @Shadow @Final private net.minecraft.network.chat.@Nullable Component unsignedContent;
   @Shadow @Final private FilterMask filterMask;
   // @formatter:on
 
   @Override
   public @NotNull Identity identity() {
-    return this.shadow$signer().isSystem() ? Identity.nil() : Identity.identity(this.shadow$signer().profileId());
+    return this.shadow$isSystem() ? Identity.nil() : Identity.identity(this.shadow$link().sender());
   }
 
   @Override
@@ -76,34 +79,34 @@ public abstract class PlayerChatMessageMixin implements SignedMessage {
 
   @Override
   public @Nullable Signature signature() {
-    return this.shadow$headerSignature();
+    return this.shadow$signature();
   }
 
   @Override
   public @Nullable Component unsignedContent() {
-    return ComponentLike.unbox(this.shadow$unsignedContent().orElse(this.shadow$signedBody().content().decorated()));
+    return ComponentLike.unbox(this.shadow$unsignedContent());
   }
 
   @Override
   public @NotNull String message() {
-    return this.shadow$signedBody().content().plain();
+    return this.shadow$signedBody().content();
   }
 
-  @Override
-  public boolean isSystem() {
-    return this.shadow$signer().isSystem();
+  @Intrinsic
+  public boolean signedMessage$isSystem() {
+    return this.shadow$isSystem();
   }
 
   @Override
   public boolean canDelete() {
-    return this.shadow$headerSignature() != null;
+    return this.shadow$signature() != null;
   }
 
   @Override
   public @NotNull Stream<? extends ExaminableProperty> examinableProperties() {
     return Stream.of(
-      ExaminableProperty.of("signedHeader", this.signedHeader),
-      ExaminableProperty.of("headerSignature", this.headerSignature),
+      ExaminableProperty.of("link", this.link),
+      ExaminableProperty.of("signature", this.signature),
       ExaminableProperty.of("signedBody", this.signedBody),
       ExaminableProperty.of("unsignedContent", this.unsignedContent),
       ExaminableProperty.of("filterMask", this.filterMask)
