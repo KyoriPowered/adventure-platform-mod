@@ -8,6 +8,7 @@ contact:
   issues: "https://github.com/KyoriPowered/adventure-platform-fabric/issues"
   sources: "https://github.com/KyoriPowered/adventure-platform-fabric"
 license: "MIT"
+icon: assets/adventure-platform-fabric/logo.png
 
 entrypoints:
   main:
