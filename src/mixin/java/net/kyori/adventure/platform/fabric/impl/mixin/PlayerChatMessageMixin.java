@@ -29,6 +29,7 @@ import java.util.stream.Stream;
 import net.kyori.adventure.chat.SignedMessage;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.ComponentLike;
 import net.kyori.examination.ExaminableProperty;
 import net.minecraft.network.chat.FilterMask;
 import net.minecraft.network.chat.MessageSignature;
@@ -80,7 +81,7 @@ public abstract class PlayerChatMessageMixin implements SignedMessage {
 
   @Override
   public @Nullable Component unsignedContent() {
-    return this.shadow$unsignedContent().orElse(this.shadow$signedBody().content().decorated()).asComponent();
+    return ComponentLike.unbox(this.shadow$unsignedContent().orElse(this.shadow$signedBody().content().decorated()));
   }
 
   @Override
