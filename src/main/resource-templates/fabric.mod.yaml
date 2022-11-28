@@ -41,6 +41,7 @@ custom:
     net/minecraft/class_5321: [ net/kyori/adventure/key/Keyed ] # net/minecraft/resources/ResourceKey
     net/minecraft/class_1799: [ net/kyori/adventure/text/event/HoverEventSource ] # net/minecraft/world/item/ItemStack
     net/minecraft/class_7469: [ net/kyori/adventure/chat/SignedMessage<%= '$' %>Signature ] # net/minecraft/network/chat/MessageSignature
+    net/minecraft/class_7471: [ net/kyori/adventure/chat/SignedMessage ] # net/minecraft/network/chat/PlayerChatMessage
 
 depends:
   fabricloader: ">=0.14.0"
