@@ -47,6 +47,7 @@ import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.kyori.adventure.title.Title;
 import net.kyori.adventure.title.TitlePart;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -57,13 +58,14 @@ import net.minecraft.network.chat.PlayerChatMessage;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundClearTitlesPacket;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
-import net.minecraft.network.protocol.game.ClientboundCustomSoundPacket;
 import net.minecraft.network.protocol.game.ClientboundDeleteChatPacket;
 import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket;
 import net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket;
 import net.minecraft.network.protocol.game.ClientboundSetTitlesAnimationPacket;
 import net.minecraft.network.protocol.game.ClientboundSoundEntityPacket;
+import net.minecraft.network.protocol.game.ClientboundSoundPacket;
 import net.minecraft.network.protocol.game.ClientboundStopSoundPacket;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
@@ -72,7 +74,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.WrittenBookItem;
-import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -168,24 +169,28 @@ public final class ServerPlayerAudience implements Audience {
     }
   }
 
+  private Holder<SoundEvent> eventHolder(final @NotNull Sound sound) {
+    final var soundEventRegistry = this.controller.registryAccess()
+      .registryOrThrow(Registries.SOUND_EVENT);
+    final var soundKey = FabricAudiences.toNative(sound.name());
+
+    final var eventOptional = soundEventRegistry.getHolder(ResourceKey.create(Registries.SOUND_EVENT, soundKey));
+    return eventOptional.isPresent() ? eventOptional.get() : Holder.direct(SoundEvent.createVariableRangeEvent(soundKey));
+  }
+
   @Override
   public void playSound(final @NotNull Sound sound) {
-    this.sendPacket(new ClientboundCustomSoundPacket(
-      FabricAudiences.toNative(sound.name()),
-      GameEnums.SOUND_SOURCE.toMinecraft(sound.source()),
-      this.player.position(),
-      sound.volume(),
-      sound.pitch(),
-      this.seed(sound)
-    ));
+    this.playSound(sound, this.player.getX(), this.player.getY(), this.player.getZ());
   }
 
   @Override
   public void playSound(final @NotNull Sound sound, final double x, final double y, final double z) {
-    this.sendPacket(new ClientboundCustomSoundPacket(
-      FabricAudiences.toNative(sound.name()),
+    this.sendPacket(new ClientboundSoundPacket(
+      this.eventHolder(sound),
       GameEnums.SOUND_SOURCE.toMinecraft(sound.source()),
-      new Vec3(x, y, z),
+      x,
+      y,
+      z,
       sound.volume(),
       sound.pitch(),
       this.seed(sound)
@@ -208,17 +213,8 @@ public final class ServerPlayerAudience implements Audience {
       return;
     }
 
-    final SoundEvent event = this.player.level.registryAccess()
-      .registryOrThrow(Registries.SOUND_EVENT)
-      .getOptional(FabricAudiences.toNative(sound.name()))
-      .orElse(null);
-
-    if (event == null) {
-      return;
-    }
-
     this.sendPacket(new ClientboundSoundEntityPacket(
-      event,
+      this.eventHolder(sound),
       GameEnums.SOUND_SOURCE.toMinecraft(sound.source()),
       targetEntity,
       sound.volume(),
