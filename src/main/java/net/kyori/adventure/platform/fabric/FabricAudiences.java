@@ -33,7 +33,7 @@ import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.fabric.impl.AdventureCommon;
 import net.kyori.adventure.platform.fabric.impl.NonWrappingComponentSerializer;
 import net.kyori.adventure.platform.fabric.impl.WrappedComponent;
-import net.kyori.adventure.platform.fabric.impl.accessor.ComponentSerializerAccess;
+import net.kyori.adventure.platform.fabric.impl.accessor.minecraft.network.chat.Component_SerializerAccess;
 import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
@@ -78,7 +78,7 @@ public interface FabricAudiences {
       partition = ((WrappedComponent) input).partition();
       renderer = ((WrappedComponent) input).renderer();
     } else {
-      final Component original = ComponentSerializerAccess.getGSON().fromJson(net.minecraft.network.chat.Component.Serializer.toJsonTree(input), Component.class);
+      final Component original = Component_SerializerAccess.getGSON().fromJson(net.minecraft.network.chat.Component.Serializer.toJsonTree(input), Component.class);
       modified = modifier.apply(original);
       partition = null;
       renderer = null;

@@ -1,11 +1,10 @@
 {
-  "required": true,
+  "parent": "adventure-platform-fabric.parent.mixins.json",
   "package": "net.kyori.adventure.platform.fabric.impl.client.mixin",
-  "compatibilityLevel": "JAVA_17",
   "client": [
-    "AbstractSoundInstanceAccess",
-    "BossHealthOverlayMixin",
-    "LocalPlayerMixin",
-    "OptionsMixin"
+    "minecraft.OptionsMixin",
+    "minecraft.gui.components.BossHealthOverlayMixin",
+    "minecraft.player.LocalPlayerMixin",
+    "minecraft.resources.sounds.AbstractSoundInstanceAccess"
   ]
 }
