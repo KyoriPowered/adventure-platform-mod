@@ -195,10 +195,6 @@ tasks {
     javaLauncher.set(project.javaToolchains.launcherFor { languageVersion.set(indra.javaVersions().target().map { v -> JavaLanguageVersion.of(v) }) })
   }
 
-  jar {
-    duplicatesStrategy = DuplicatesStrategy.INCLUDE // include all service elements
-  }
-
   javadoc {
     exclude("net/kyori/adventure/platform/fabric/impl/**")
     val client = sourceSets.getByName("client")
