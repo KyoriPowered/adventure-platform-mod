@@ -46,7 +46,7 @@ configurateTransformations = "ca.stellardrift.configurate-transformations:6.0.1"
 eclipseApt = "com.diffplug.eclipse.apt:3.40.0"
 loom = "fabric-loom:1.0.+"
 loomQuiltflower = "io.github.juuxel.loom-quiltflower:1.8.0"
-ideaExt = "org.jetbrains.gradle.plugin.idea-ext:1.1.6"
+ideaExt = "org.jetbrains.gradle.plugin.idea-ext:1.1.7"
 indra = { id = "net.kyori.indra", version.ref = "indra" }
 indra-licenseHeader = { id = "net.kyori.indra.licenser.spotless", version.ref = "indra" }
 indra-checkstyle = { id = "net.kyori.indra.checkstyle", version.ref = "indra" }
