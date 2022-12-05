@@ -27,7 +27,6 @@ import com.google.common.base.Strings;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -60,6 +59,7 @@ import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.fabric.AdventureCommandSourceStack;
+import net.kyori.adventure.platform.fabric.FabricClientAudiences;
 import net.kyori.adventure.platform.fabric.FabricServerAudiences;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
@@ -72,6 +72,7 @@ import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.kyori.adventure.translation.GlobalTranslator;
 import net.kyori.adventure.translation.TranslationRegistry;
+import net.minecraft.client.GuiMessageTag;
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.synchronization.SuggestionProviders;
 import net.minecraft.network.chat.ComponentUtils;
@@ -253,12 +254,13 @@ public class AdventureTester implements ModInitializer {
   }
 
   private void onClient() {
+    final GuiMessageTag kyoriMessage = new GuiMessageTag(0x987bd8, null, net.minecraft.network.chat.Component.literal("Adventure Message"), "Adventure");
     ClientCommandRegistrationCallback.EVENT.register((dispatcher, buildContext) -> {
       dispatcher.register(LiteralArgumentBuilder.<FabricClientCommandSource>literal("adventure_client")
         .then(LiteralArgumentBuilder.<FabricClientCommandSource>literal("open_file").executes(ctx -> {
           final Path path = FabricLoader.getInstance().getGameDir().resolve("adventure_test_file.txt").toAbsolutePath();
           try {
-            Files.write(path, ("Hello there " + Minecraft.getInstance().getUser().getName() + "!").getBytes(StandardCharsets.UTF_8), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
+            Files.writeString(path, "Hello there " + Minecraft.getInstance().getUser().getName() + "!", StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
           } catch (final IOException ex) {
             throw new RuntimeException("Uh oh! Couldn't write file!", ex);
           }
@@ -269,8 +271,8 @@ public class AdventureTester implements ModInitializer {
             .clickEvent(openFile(path.toString()))
             .build();
 
-          ctx.getSource().getPlayer().sendMessage(message);
-          // ctx.getSource().sendFeedback(FabricClientAudiences.get().toNative(message)); // Works as well!
+          ctx.getSource().getClient().gui.getChat().addMessage(FabricClientAudiences.of().toNative(message), null, kyoriMessage);
+          // ctx.getSource().getPlayer().sendMessage(message); // Works as well!
 
           return Command.SINGLE_SUCCESS;
         })));
