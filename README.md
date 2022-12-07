@@ -17,8 +17,8 @@ Minecraft Version | `adventure-platform-fabric` version
 1.18.1            | `5.1.0`
 1.18.2            | `5.3.1`
 1.19              | `5.4.0`
-1.19.1 / 1.19.2   | `5.5.0`
-1.19.3            | `5.6.0-SNAPSHOT`
+1.19.1 / 1.19.2   | `5.5.1`
+1.19.3            | `5.6.0`
 
 ### Contributing
 
