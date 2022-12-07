@@ -1,11 +1,7 @@
 {
-  "required": true,
+  "parent": "adventure-platform-fabric.parent.mixins.json",
   "package": "net.kyori.adventure.platform.test.fabric.mixin",
-  "compatibilityLevel": "JAVA_8",
   "client": [
-    "client.ChatScreenMixin"
-  ],
-  "injectors": {
-    "defaultRequire": 1
-  }
+    "minecraft.client.gui.screens.ChatScreenMixin"
+  ]
 }

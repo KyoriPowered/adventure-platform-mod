@@ -56,7 +56,7 @@ import net.kyori.adventure.translation.Translator;
 import net.minecraft.commands.arguments.ComponentArgument;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.commands.synchronization.SingletonArgumentInfo;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.locale.Language;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
@@ -231,7 +231,7 @@ public class AdventureCommon implements ModInitializer {
 
   public static net.minecraft.network.chat.ChatType.@NotNull Bound chatTypeToNative(final ChatType.@NotNull Bound bound, final FabricAudiencesInternal audiences) {
     final net.minecraft.network.chat.ChatType type = audiences.registryAccess()
-      .registryOrThrow(Registry.CHAT_TYPE_REGISTRY)
+      .registryOrThrow(Registries.CHAT_TYPE)
       .get(FabricAudiences.toNative(bound.type().key()));
 
     if (type == null) {

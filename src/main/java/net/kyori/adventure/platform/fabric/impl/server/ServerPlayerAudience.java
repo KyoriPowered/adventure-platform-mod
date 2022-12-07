@@ -37,7 +37,8 @@ import net.kyori.adventure.platform.fabric.FabricAudiences;
 import net.kyori.adventure.platform.fabric.impl.AdventureCommon;
 import net.kyori.adventure.platform.fabric.impl.GameEnums;
 import net.kyori.adventure.platform.fabric.impl.PointerProviderBridge;
-import net.kyori.adventure.platform.fabric.impl.accessor.LevelAccess;
+import net.kyori.adventure.platform.fabric.impl.accessor.minecraft.network.ServerGamePacketListenerImplAccess;
+import net.kyori.adventure.platform.fabric.impl.accessor.minecraft.world.level.LevelAccess;
 import net.kyori.adventure.pointer.Pointers;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.SoundStop;
@@ -46,24 +47,25 @@ import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.kyori.adventure.title.Title;
 import net.kyori.adventure.title.TitlePart;
-import net.minecraft.core.Registry;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
-import net.minecraft.network.chat.ChatMessageContent;
 import net.minecraft.network.chat.MessageSignature;
-import net.minecraft.network.chat.OutgoingPlayerChatMessage;
+import net.minecraft.network.chat.OutgoingChatMessage;
 import net.minecraft.network.chat.PlayerChatMessage;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundClearTitlesPacket;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
-import net.minecraft.network.protocol.game.ClientboundCustomSoundPacket;
 import net.minecraft.network.protocol.game.ClientboundDeleteChatPacket;
 import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket;
 import net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket;
 import net.minecraft.network.protocol.game.ClientboundSetTitlesAnimationPacket;
 import net.minecraft.network.protocol.game.ClientboundSoundEntityPacket;
+import net.minecraft.network.protocol.game.ClientboundSoundPacket;
 import net.minecraft.network.protocol.game.ClientboundStopSoundPacket;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
@@ -72,7 +74,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.WrittenBookItem;
-import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -116,11 +117,8 @@ public final class ServerPlayerAudience implements Audience {
 
   @Override
   public void sendMessage(final @NotNull Component message, final ChatType.@NotNull Bound boundChatType) {
-    final OutgoingPlayerChatMessage outgoing = new OutgoingPlayerChatMessage.NotTracked(
-      PlayerChatMessage.system(new ChatMessageContent(
-        PlainTextComponentSerializer.plainText().serialize(message),
+    final OutgoingChatMessage outgoing = new OutgoingChatMessage.Disguised(
         this.controller.toNative(message)
-      ))
     );
     this.player.sendChatMessage(outgoing, false, this.toMc(boundChatType));
   }
@@ -128,10 +126,10 @@ public final class ServerPlayerAudience implements Audience {
   @Override
   public void sendMessage(final @NotNull SignedMessage signedMessage, final ChatType.@NotNull Bound boundChatType) {
     if ((Object) signedMessage instanceof PlayerChatMessage pcm) {
-      if (pcm.signer().isSystem()) {
-        this.player.sendChatMessage(new OutgoingPlayerChatMessage.NotTracked(pcm), false, this.toMc(boundChatType));
+      if (pcm.isSystem()) {
+        this.player.sendChatMessage(new OutgoingChatMessage.Disguised(pcm.decoratedContent()), false, this.toMc(boundChatType));
       } else {
-        this.player.sendChatMessage(new OutgoingPlayerChatMessage.Tracked(pcm), false, this.toMc(boundChatType));
+        this.player.sendChatMessage(new OutgoingChatMessage.Player(pcm), false, this.toMc(boundChatType));
       }
     } else {
       this.sendMessage(Objects.requireNonNullElse(signedMessage.unsignedContent(), Component.text(signedMessage.message())), boundChatType);
@@ -140,7 +138,7 @@ public final class ServerPlayerAudience implements Audience {
 
   @Override
   public void deleteMessage(final SignedMessage.@NotNull Signature signature) {
-    this.sendPacket(new ClientboundDeleteChatPacket((MessageSignature) signature));
+    this.sendPacket(new ClientboundDeleteChatPacket(((MessageSignature) signature).pack(((ServerGamePacketListenerImplAccess) this.player.connection).accessor$messageSignatureCache())));
   }
 
   @Override
@@ -171,24 +169,28 @@ public final class ServerPlayerAudience implements Audience {
     }
   }
 
+  private Holder<SoundEvent> eventHolder(final @NotNull Sound sound) {
+    final var soundEventRegistry = this.controller.registryAccess()
+      .registryOrThrow(Registries.SOUND_EVENT);
+    final var soundKey = FabricAudiences.toNative(sound.name());
+
+    final var eventOptional = soundEventRegistry.getHolder(ResourceKey.create(Registries.SOUND_EVENT, soundKey));
+    return eventOptional.isPresent() ? eventOptional.get() : Holder.direct(SoundEvent.createVariableRangeEvent(soundKey));
+  }
+
   @Override
   public void playSound(final @NotNull Sound sound) {
-    this.sendPacket(new ClientboundCustomSoundPacket(
-      FabricAudiences.toNative(sound.name()),
-      GameEnums.SOUND_SOURCE.toMinecraft(sound.source()),
-      this.player.position(),
-      sound.volume(),
-      sound.pitch(),
-      this.seed(sound)
-    ));
+    this.playSound(sound, this.player.getX(), this.player.getY(), this.player.getZ());
   }
 
   @Override
   public void playSound(final @NotNull Sound sound, final double x, final double y, final double z) {
-    this.sendPacket(new ClientboundCustomSoundPacket(
-      FabricAudiences.toNative(sound.name()),
+    this.sendPacket(new ClientboundSoundPacket(
+      this.eventHolder(sound),
       GameEnums.SOUND_SOURCE.toMinecraft(sound.source()),
-      new Vec3(x, y, z),
+      x,
+      y,
+      z,
       sound.volume(),
       sound.pitch(),
       this.seed(sound)
@@ -211,13 +213,8 @@ public final class ServerPlayerAudience implements Audience {
       return;
     }
 
-    final SoundEvent event = Registry.SOUND_EVENT.getOptional(FabricAudiences.toNative(sound.name())).orElse(null);
-    if (event == null) {
-      return;
-    }
-
     this.sendPacket(new ClientboundSoundEntityPacket(
-      event,
+      this.eventHolder(sound),
       GameEnums.SOUND_SOURCE.toMinecraft(sound.source()),
       targetEntity,
       sound.volume(),

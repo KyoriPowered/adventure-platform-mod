@@ -15,6 +15,7 @@ plugins {
   alias(libs.plugins.indra.licenseHeader)
   alias(libs.plugins.indra.checkstyle)
   alias(libs.plugins.indra.sonatype)
+  alias(libs.plugins.indra.crossdoc)
   alias(libs.plugins.ideaExt)
   alias(libs.plugins.spotless)
 }
@@ -185,17 +186,26 @@ val remapTestmodJar = tasks.register("remapTestmodJar", RemapJarTask::class) {
   classpath.from(testmod.map { it.runtimeClasspath })
   archiveClassifier.set("testmod")
 }
-
 tasks.build {
   dependsOn(remapTestmodJar)
 }
 
-tasks.withType(RunGameTask::class) {
-  javaLauncher.set(javaToolchains.launcherFor { languageVersion.set(indra.javaVersions().target().map { v -> JavaLanguageVersion.of(v) })})
-}
+tasks {
+  withType(RunGameTask::class).configureEach {
+    javaLauncher.set(project.javaToolchains.launcherFor { languageVersion.set(indra.javaVersions().target().map { v -> JavaLanguageVersion.of(v) }) })
+  }
 
-tasks.jar {
-  duplicatesStrategy = DuplicatesStrategy.INCLUDE // include all service elements
+  javadoc {
+    exclude("net/kyori/adventure/platform/fabric/impl/**")
+    val client = sourceSets.getByName("client")
+    source(client.allJava)
+    classpath += client.output
+    (options as? StandardJavadocDocletOptions)?.links(
+      "https://jd.adventure.kyori.net/api/${libs.versions.adventure.get()}",
+      "https://jd.adventure.kyori.net/key/${libs.versions.adventure.get()}",
+      "https://jd.adventure.kyori.net/platform/api/${libs.versions.adventurePlatform.get()}",
+    )
+  }
 }
 
 // Convert yaml files to josn
@@ -298,5 +308,12 @@ indra.includeJavaSoftwareComponentInPublications(false)
 publishing {
   publications.named("maven", MavenPublication::class) {
     from(components["java"])
+  }
+}
+
+indraCrossdoc {
+  baseUrl().set(providers.gradleProperty("javadocPublishRoot"))
+  nameBasedDocumentationUrlProvider {
+    projectNamePrefix.set("adventure-platform-")
   }
 }

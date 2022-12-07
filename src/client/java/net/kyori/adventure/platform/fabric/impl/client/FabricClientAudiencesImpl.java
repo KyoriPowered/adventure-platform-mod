@@ -35,8 +35,8 @@ import net.kyori.adventure.translation.GlobalTranslator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.data.BuiltinRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.RegistryLayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -81,7 +81,7 @@ public class FabricClientAudiencesImpl implements FabricClientAudiences, FabricA
   @Override
   public @NotNull RegistryAccess registryAccess() {
     final @Nullable ClientLevel level = Minecraft.getInstance().level;
-    return level == null ? BuiltinRegistries.ACCESS : level.registryAccess();
+    return level == null ? RegistryLayer.createRegistryAccess().compositeAccess() : level.registryAccess();
   }
 
   public static final class Builder implements FabricClientAudiences.Builder {

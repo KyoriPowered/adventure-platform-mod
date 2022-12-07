@@ -29,6 +29,8 @@ import net.kyori.adventure.text.Component;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Checkbox;
+import net.minecraft.client.gui.components.Tooltip;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * An action that can be performed.
@@ -44,14 +46,17 @@ public final class Widgets {
   public static final int BETWEEN_GROUP_SPACING = 4;
 
   public static Button button(final Component label, final Button.OnPress clickAction) {
-    return button(label, clickAction, Button.NO_TOOLTIP);
+    return button(label, clickAction, null);
   }
 
-  public static Button button(final Component label, final Button.OnPress clickAction, final Button.OnTooltip tooltip) {
+  public static Button button(final Component label, final Button.OnPress clickAction, final @Nullable Tooltip tooltip) {
     final net.minecraft.network.chat.Component mcComponent = FabricClientAudiences.of().toNative(label);
     final int textWidth = Minecraft.getInstance().font.width(mcComponent);
     // x, y, width, height, label, clickAction, tooltipAction
-    return new Button(0, 0, IN_GROUP_SPACING * 2 + textWidth, BUTTON_SIZE, mcComponent, clickAction, tooltip);
+    return Button.builder(mcComponent, clickAction)
+      .bounds(0, 0, IN_GROUP_SPACING * 2 + textWidth, BUTTON_SIZE)
+      .tooltip(tooltip)
+      .build();
   }
 
   /**

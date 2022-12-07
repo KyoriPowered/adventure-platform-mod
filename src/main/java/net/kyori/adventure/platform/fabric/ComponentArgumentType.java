@@ -32,7 +32,7 @@ import java.util.Collection;
 import java.util.List;
 import net.kyori.adventure.Adventure;
 import net.kyori.adventure.key.Key;
-import net.kyori.adventure.platform.fabric.impl.accessor.ComponentSerializerAccess;
+import net.kyori.adventure.platform.fabric.impl.accessor.minecraft.network.chat.Component_SerializerAccess;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.util.Index;
@@ -168,8 +168,8 @@ public final class ComponentArgumentType implements ArgumentType<Component> {
       @Override
       ReadResult parse(final String allInput) throws Exception {
         try (final JsonReader json = new JsonReader(new java.io.StringReader(allInput))) {
-          final Component ret = ComponentSerializerAccess.getGSON().fromJson(json, Component.class);
-          return new ReadResult(ret, ComponentSerializerAccess.getPos(json));
+          final Component ret = Component_SerializerAccess.getGSON().fromJson(json, Component.class);
+          return new ReadResult(ret, Component_SerializerAccess.getPos(json));
         }
       }
     },

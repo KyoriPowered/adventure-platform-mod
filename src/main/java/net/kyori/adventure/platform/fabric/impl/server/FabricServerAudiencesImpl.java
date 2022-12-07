@@ -45,8 +45,8 @@ import net.kyori.adventure.text.renderer.ComponentRenderer;
 import net.kyori.adventure.translation.GlobalTranslator;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -148,7 +148,7 @@ public final class FabricServerAudiencesImpl implements FabricServerAudiences, F
 
   @Override
   public @NotNull Audience world(final @NotNull Key worldId) {
-    final @Nullable ServerLevel level = this.server.getLevel(ResourceKey.create(Registry.DIMENSION_REGISTRY,
+    final @Nullable ServerLevel level = this.server.getLevel(ResourceKey.create(Registries.DIMENSION,
       FabricAudiences.toNative(requireNonNull(worldId, "worldId"))));
     if (level != null) {
       return this.audience(level.players());

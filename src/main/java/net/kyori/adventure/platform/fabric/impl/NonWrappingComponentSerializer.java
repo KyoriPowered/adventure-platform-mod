@@ -23,7 +23,7 @@
  */
 package net.kyori.adventure.platform.fabric.impl;
 
-import net.kyori.adventure.platform.fabric.impl.accessor.ComponentSerializerAccess;
+import net.kyori.adventure.platform.fabric.impl.accessor.minecraft.network.chat.Component_SerializerAccess;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.ComponentSerializer;
 import net.minecraft.network.chat.MutableComponent;
@@ -46,7 +46,7 @@ public final class NonWrappingComponentSerializer implements ComponentSerializer
       return ((WrappedComponent) input).wrapped();
     }
 
-    return ComponentSerializerAccess.getGSON().fromJson(net.minecraft.network.chat.Component.Serializer.toJsonTree(input), Component.class);
+    return Component_SerializerAccess.getGSON().fromJson(net.minecraft.network.chat.Component.Serializer.toJsonTree(input), Component.class);
   }
 
   @Override
@@ -54,7 +54,7 @@ public final class NonWrappingComponentSerializer implements ComponentSerializer
     this.bypassIsAllowedFromServer.set(true);
     final MutableComponent mutableComponent;
     try {
-      mutableComponent = net.minecraft.network.chat.Component.Serializer.fromJson(ComponentSerializerAccess.getGSON().toJsonTree(component));
+      mutableComponent = net.minecraft.network.chat.Component.Serializer.fromJson(Component_SerializerAccess.getGSON().toJsonTree(component));
     } finally {
       this.bypassIsAllowedFromServer.set(false);
     }

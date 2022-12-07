@@ -1,12 +1,12 @@
 {
-  "required": true,
+  "parent": "adventure-platform-fabric.parent.mixins.json",
   "package": "net.kyori.adventure.platform.fabric.impl.accessor",
-  "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "ComponentSerializerAccess",
-    "ConnectionAccess",
-    "InvalidKeyExceptionAccess",
-    "LevelAccess",
-    "RequiredArgumentBuilderAccess"
+    "api.key.InvalidKeyExceptionAccess",
+    "brigadier.builder.RequiredArgumentBuilderAccess",
+    "minecraft.network.ConnectionAccess",
+    "minecraft.network.ServerGamePacketListenerImplAccess",
+    "minecraft.network.chat.Component_SerializerAccess",
+    "minecraft.world.level.LevelAccess"
   ]
 }
