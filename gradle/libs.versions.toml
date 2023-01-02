@@ -28,7 +28,7 @@ examination-api = { module = "net.kyori:examination-api", version.ref = "examina
 examination-string = { module = "net.kyori:examination-string", version.ref = "examination" }
 fabric-loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabricLoader"}
 fabric-api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabricApi" }
-jetbrainsAnnotations = "org.jetbrains:annotations:23.0.0"
+jetbrainsAnnotations = "org.jetbrains:annotations:23.1.0"
 minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
 
 # build
