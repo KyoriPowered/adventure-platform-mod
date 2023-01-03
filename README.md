@@ -1,6 +1,6 @@
 # adventure-platform-fabric
 
-![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/KyoriPowered/adventure-platform-fabric/build/master) [![MIT License](https://img.shields.io/badge/license-MIT-blue)](LICENSE) [![Maven Central](https://img.shields.io/maven-central/v/net.kyori/adventure-platform-fabric?label=stable)](https://search.maven.org/search?q=g:net.kyori%20AND%20a:adventure*) ![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/net.kyori/adventure-platform-fabric?label=dev&server=https%3A%2F%2Fs01.oss.sonatype.org)
+![GitHub Workflow Status (branch)](https://img.shields.io/github/actions/workflow/status/KyoriPowered/adventure-platform-fabric/build.yml?branch=mc/1.19) [![MIT License](https://img.shields.io/badge/license-MIT-blue)](LICENSE) [![Maven Central](https://img.shields.io/maven-central/v/net.kyori/adventure-platform-fabric?label=stable)](https://search.maven.org/search?q=g:net.kyori%20AND%20a:adventure*) ![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/net.kyori/adventure-platform-fabric?label=dev&server=https%3A%2F%2Fs01.oss.sonatype.org)
 
 Integration between the [adventure](https://github.com/KyoriPowered/adventure) library and *Minecraft: Java Edition* using the [Fabric](https://fabricmc.net) modding system.
 
@@ -18,7 +18,7 @@ Minecraft Version | `adventure-platform-fabric` version
 1.18.2            | `5.3.1`
 1.19              | `5.4.0`
 1.19.1 / 1.19.2   | `5.5.1`
-1.19.3            | `5.6.0`
+1.19.3            | `5.6.1`
 
 ### Contributing
 
