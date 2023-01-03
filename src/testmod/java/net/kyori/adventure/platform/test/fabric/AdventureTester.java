@@ -74,11 +74,13 @@ import net.kyori.adventure.translation.GlobalTranslator;
 import net.kyori.adventure.translation.TranslationRegistry;
 import net.minecraft.client.GuiMessageTag;
 import net.minecraft.client.Minecraft;
+import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.synchronization.SuggestionProviders;
 import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -111,6 +113,7 @@ public class AdventureTester implements ModInitializer {
 
   private static final String ARG_TEXT = "text";
   private static final String ARG_SECONDS = "seconds";
+  private static final String ARG_TARGET = "target";
   private static final String ARG_TARGETS = "targets";
   private static final String ARG_SOUND = "sound";
   private static final TextColor COLOR_RESPONSE = color(0x22EE99);
@@ -127,10 +130,6 @@ public class AdventureTester implements ModInitializer {
 
   public @NotNull FabricServerAudiences adventure() {
     return requireNonNull(this.platform, "Tried to access Fabric platform without a running server");
-  }
-
-  public void serverStarted(final MinecraftServer server) {
-    this.platform = FabricServerAudiences.of(server);
   }
 
   @Override
@@ -212,6 +211,20 @@ public class AdventureTester implements ModInitializer {
             .build());
           return 1;
         }))
+        .then(literal("rename").then(argument(ARG_TARGET, EntityArgument.entity()).then(argument(ARG_TEXT, miniMessage()).executes(ctx -> {
+          final Entity target = EntityArgument.getEntity(ctx, ARG_TARGET);
+          final Component title = component(ctx, ARG_TEXT);
+          final var oldDisplayName = target.getDisplayName();
+          target.setCustomName(this.adventure().toNative(title));
+          ctx.getSource().sendSuccess(Component.text()
+            .color(COLOR_RESPONSE)
+            .content("Successfully set entity ")
+            .append(oldDisplayName)
+            .append(text("'s display name to "))
+            .append(title)
+            .build(), false);
+          return Command.SINGLE_SUCCESS;
+        }))))
         .then(literal("rgb").executes(ctx -> {
           for (final TextColor color : LINE_COLOURS) {
             ctx.getSource().sendMessage(LINE.color(color));

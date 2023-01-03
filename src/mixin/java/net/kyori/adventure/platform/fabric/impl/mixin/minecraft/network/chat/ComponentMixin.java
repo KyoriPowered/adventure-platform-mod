@@ -55,12 +55,12 @@ public interface ComponentMixin extends ComponentLike {
     @Shadow public abstract JsonElement shadow$serialize(final Component text, final Type type, final JsonSerializationContext jsonSerializationContext);
     // @formatter:on
 
-    @Inject(method = "serialize", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "serialize(Lnet/minecraft/network/chat/Component;Ljava/lang/reflect/Type;Lcom/google/gson/JsonSerializationContext;)Lcom/google/gson/JsonElement;", at = @At("HEAD"), cancellable = true)
     public void adventure$writeComponentText(final Component text, final Type type, final JsonSerializationContext ctx, final CallbackInfoReturnable<JsonElement> cir) {
       if (text instanceof WrappedComponent) {
         final @Nullable Component converted = ((WrappedComponent) text).deepConvertedIfPresent();
         if (converted != null) {
-          cir.setReturnValue(this.shadow$serialize(text, type, ctx));
+          cir.setReturnValue(this.shadow$serialize(converted, type, ctx));
         } else {
           cir.setReturnValue(ctx.serialize(((WrappedComponent) text).wrapped(), net.kyori.adventure.text.Component.class));
         }

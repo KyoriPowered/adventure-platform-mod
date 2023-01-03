@@ -11,7 +11,7 @@ fabricApi = "0.71.0+1.19.3"
 fabricLoader = "0.14.12"
 indra = "3.0.1"
 minecraft = "1.19.3"
-parchment = "1.19.2:2022.11.27"
+parchment = "1.19.3:2022.12.18"
 quiltflower = "1.9.0"
 spotless = "6.12.1"
 
