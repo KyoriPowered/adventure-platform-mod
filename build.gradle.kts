@@ -56,6 +56,8 @@ indraSpotlessLicenser {
 }
 
 spotless {
+  ratchetFrom("origin/mc/${libs.versions.minecraft.get().splitToSequence('.').take(2).joinToString(".")}")
+
   java {
     importOrderFile(rootProject.file(".spotless/kyori.importorder"))
     trimTrailingWhitespace()
