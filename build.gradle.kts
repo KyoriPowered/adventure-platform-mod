@@ -93,6 +93,9 @@ dependencies {
    include(it)
   }
   modApi(fabricApi.module("fabric-api-base", libs.versions.fabricApi.get()))
+  modImplementation(fabricApi.module("fabric-networking-api-v1", libs.versions.fabricApi.get()))
+  // Only used for prod test
+  modCompileOnly(fabricApi.module("fabric-lifecycle-events-v1", libs.versions.fabricApi.get()))
 
   // Transitive deps
   include(libs.examination.api)
@@ -105,13 +108,6 @@ dependencies {
     parchment("org.parchmentmc.data:parchment-${libs.versions.parchment.get()}@zip")
   })
   modImplementation(libs.fabric.loader)
-
-  // Testmod TODO figure out own scope
-  if (gradle.startParameter.taskNames.contains("publish")) {
-    modCompileOnly(libs.fabric.api)
-  } else {
-    modImplementation(libs.fabric.api)
-  }
 
   checkstyle(libs.stylecheck)
 }
@@ -143,11 +139,10 @@ configurations.named("clientAnnotationProcessor") {
   extendsFrom(configurations.annotationProcessor.get())
 }
 
-dependencies {
-  "testmodImplementation"(sourceSets.named("client").map { it.output })
-}
-
 loom {
+  // XX: Temporary workaround, since interface injection uses dependencies it shouldn't
+  interfaceInjection.enableDependencyInterfaceInjection.set(false)
+
   runtimeOnlyLog4j.set(true)
   runs {
     register("testmodClient") {
@@ -169,11 +164,22 @@ loom {
       sourceSet(testmod.get())
     }
   }
+
   mixin {
     add(sourceSets.main.get(), "adventure-platform-fabric-refmap.json")
     add(sourceSets.named("client").get(), "adventure-platform-fabric-client-refmap.json")
     add(testmod.get(), "adventure-platform-fabric-testmod-refmap.json")
   }
+
+  createRemapConfigurations(testmod.get())
+}
+
+
+dependencies {
+  "testmodImplementation"(sourceSets.named("client").map { it.output })
+
+  // Testmod-specific dependencies
+  "modTestmodImplementation"(libs.fabric.api)
 }
 
 // Create a remapped testmod jar

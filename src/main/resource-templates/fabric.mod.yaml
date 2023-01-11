@@ -47,3 +47,6 @@ custom:
 depends:
   fabricloader: ">=0.14.0"
   fabric-api-base: "*"
+
+recommends:
+  fabric-networking-api-v1: "*"
