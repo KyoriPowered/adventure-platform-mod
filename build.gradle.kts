@@ -140,9 +140,6 @@ configurations.named("clientAnnotationProcessor") {
 }
 
 loom {
-  // XX: Temporary workaround, since interface injection uses dependencies it shouldn't
-  interfaceInjection.enableDependencyInterfaceInjection.set(false)
-
   runtimeOnlyLog4j.set(true)
   runs {
     register("testmodClient") {
