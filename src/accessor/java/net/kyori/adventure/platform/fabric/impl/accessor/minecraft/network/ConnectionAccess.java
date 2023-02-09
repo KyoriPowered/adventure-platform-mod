@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-fabric, licensed under the MIT License.
  *
- * Copyright (c) 2020-2022 KyoriPowered
+ * Copyright (c) 2020-2023 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,6 +31,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(Connection.class)
 public interface ConnectionAccess {
   // @formatter:off
-  @Accessor Channel getChannel();
+  @Accessor("channel") Channel accessor$channel();
   // @formatter:on
 }
