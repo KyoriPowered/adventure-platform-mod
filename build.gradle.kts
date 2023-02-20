@@ -156,7 +156,8 @@ loom {
     configureEach {
       vmArgs(
         "-Dmixin.debug.countInjections=true",
-        "-Dmixin.debug.strict=true"
+        "-Dmixin.debug.strict=true",
+        "-Dadventure.mixins.audit=true"
       )
     }
   }

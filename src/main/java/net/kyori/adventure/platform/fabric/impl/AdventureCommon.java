@@ -208,6 +208,8 @@ public class AdventureCommon implements ModInitializer {
           });
         });
       }
+    } else if (Boolean.getBoolean("adventure.mixins.audit")) {
+      MixinEnvironment.getCurrentEnvironment().audit();
     }
   }
 
