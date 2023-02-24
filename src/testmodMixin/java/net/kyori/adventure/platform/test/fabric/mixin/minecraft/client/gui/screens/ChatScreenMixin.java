@@ -25,11 +25,14 @@ package net.kyori.adventure.platform.test.fabric.mixin.minecraft.client.gui.scre
 
 import net.kyori.adventure.platform.test.fabric.widget.AdventureTestButtons;
 import net.kyori.adventure.platform.test.fabric.widget.Widgets;
+import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.navigation.FocusNavigationEvent;
 import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -68,5 +71,10 @@ public abstract class ChatScreenMixin extends Screen {
 
       this.addRenderableWidget(widget);
     }
+  }
+
+  @Override
+  protected void changeFocus(final ComponentPath componentPath) {
+    this.setFocused(this.input);
   }
 }
