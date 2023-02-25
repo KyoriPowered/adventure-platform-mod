@@ -206,9 +206,9 @@ tasks {
     source(client.allJava)
     classpath += client.output
     (options as? StandardJavadocDocletOptions)?.links(
-      "https://jd.adventure.kyori.net/api/${libs.versions.adventure.get()}",
-      "https://jd.adventure.kyori.net/key/${libs.versions.adventure.get()}",
-      "https://jd.adventure.kyori.net/platform/api/${libs.versions.adventurePlatform.get()}",
+      "https://jd.advntr.dev/api/${libs.versions.adventure.get()}",
+      "https://jd.advntr.dev/key/${libs.versions.adventure.get()}",
+      "https://jd.advntr.dev/platform/api/${libs.versions.adventurePlatform.get()}",
     )
   }
 }
