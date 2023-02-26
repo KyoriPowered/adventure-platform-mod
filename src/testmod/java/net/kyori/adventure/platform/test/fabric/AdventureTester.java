@@ -63,6 +63,7 @@ import net.kyori.adventure.platform.fabric.FabricClientAudiences;
 import net.kyori.adventure.platform.fabric.FabricServerAudiences;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
@@ -202,13 +203,19 @@ public class AdventureTester implements ModInitializer {
           viewer.playSound(sound(sound, Sound.Source.MASTER, 1f, 1f));
           return 1;
         })))
-        .then(literal("book").executes(ctx -> {
-          ctx.getSource().openBook(Book.builder()
-            .title(text("My book", NamedTextColor.RED))
-            .author(text("The adventure team", COLOR_RESPONSE))
-            .addPage(text("Welcome to our rules page"))
-            .addPage(text("Let's do a thing!"))
-            .build());
+        .then(literal("book_callback").executes(ctx -> {
+          final ClickEvent callback = ClickEvent.callback(
+            aud -> aud.openBook(Book.builder()
+              .title(text("My book", NamedTextColor.RED))
+              .author(text("The adventure team", COLOR_RESPONSE))
+              .addPage(text("Welcome to our rules page"))
+              .addPage(text("Let's do a thing!"))
+              .build()),
+            opts -> opts.uses(1)
+          );
+          LOGGER.info("{}", callback);
+
+          ctx.getSource().sendMessage(Component.textOfChildren(Component.text("Click here").clickEvent(callback), Component.text(" to see important information!")));
           return 1;
         }))
         .then(literal("rename").then(argument(ARG_TARGET, EntityArgument.entity()).then(argument(ARG_TEXT, miniMessage()).executes(ctx -> {

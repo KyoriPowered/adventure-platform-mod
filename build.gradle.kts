@@ -94,6 +94,7 @@ dependencies {
   }
   modApi(fabricApi.module("fabric-api-base", libs.versions.fabricApi.get()))
   modImplementation(fabricApi.module("fabric-networking-api-v1", libs.versions.fabricApi.get()))
+  modImplementation(fabricApi.module("fabric-command-api-v2", libs.versions.fabricApi.get()))
   // Only used for prod test
   modCompileOnly(fabricApi.module("fabric-lifecycle-events-v1", libs.versions.fabricApi.get()))
 
@@ -149,6 +150,13 @@ loom {
     register("testmodServer") {
       source("testmod")
       server()
+    }
+
+    configureEach {
+      vmArgs(
+        "-Dmixin.debug.countInjections=true",
+        "-Dmixin.debug.strict=true"
+      )
     }
   }
 

@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-fabric, licensed under the MIT License.
  *
- * Copyright (c) 2020-2022 KyoriPowered
+ * Copyright (c) 2020-2023 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,6 +23,7 @@
  */
 package net.kyori.adventure.platform.fabric.impl;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.logging.LogUtils;
 import java.io.IOException;
@@ -30,11 +31,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.kyori.adventure.Adventure;
@@ -68,6 +73,7 @@ public class AdventureCommon implements ModInitializer {
 
   private static final Logger LOGGER = LogUtils.getLogger();
 
+  public static final ScheduledExecutorService SCHEDULER;
   public static final SidedProxy SIDE_PROXY;
 
   public static final ComponentFlattener FLATTENER;
@@ -75,6 +81,13 @@ public class AdventureCommon implements ModInitializer {
   public static final String MOD_FAPI_NETWORKING = "fabric-networking-api-v1";
 
   static {
+    // Daemon thread executor for scheduled tasks
+    SCHEDULER = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder()
+      .setNameFormat("adventure-platform-fabric-scheduler-%d")
+      .setDaemon(true)
+      .setUncaughtExceptionHandler((thread, ex) -> LOGGER.error("An uncaught exception occurred in scheduler thread '{}':", thread.getName(), ex))
+      .build());
+
     final var sidedProxy = chooseSidedProxy();
     SIDE_PROXY = sidedProxy;
     FLATTENER = createFlattener(sidedProxy);
@@ -167,6 +180,18 @@ public class AdventureCommon implements ModInitializer {
         instance.bossBars().refreshTitles(player);
       });
     });
+
+    CommandRegistrationCallback.EVENT.register((dispatcher, registries, env) -> {
+      ClickCallbackRegistry.INSTANCE.registerToDispatcher(dispatcher);
+    });
+
+    // Perform scheduled cleanup
+    SCHEDULER.scheduleWithFixedDelay(
+      ClickCallbackRegistry.INSTANCE::cleanUp,
+      ClickCallbackRegistry.CLEAN_UP_RATE,
+      ClickCallbackRegistry.CLEAN_UP_RATE,
+      TimeUnit.SECONDS
+    );
 
     // If we are in development mode, shut down immediately
     if (Boolean.getBoolean("adventure.testMode")) {
