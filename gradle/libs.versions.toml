@@ -13,7 +13,7 @@ indra = "3.0.1"
 minecraft = "1.19.3"
 parchment = "1.19.3:2022.12.18"
 quiltflower = "1.9.0"
-spotless = "6.14.0"
+spotless = "6.16.0"
 
 [libraries]
 adventure-api = { module = "net.kyori:adventure-api", version.ref = "adventure" }
@@ -43,7 +43,7 @@ zQuiltflower = { module = "org.quiltmc:quiltflower", version.ref = "quiltflower"
 
 [plugins]
 configurateTransformations = "ca.stellardrift.configurate-transformations:6.0.1"
-eclipseApt = "com.diffplug.eclipse.apt:3.40.0"
+eclipseApt = "com.diffplug.eclipse.apt:3.41.1"
 loom = "fabric-loom:1.1.+"
 loomQuiltflower = "io.github.juuxel.loom-quiltflower:1.8.0"
 ideaExt = "org.jetbrains.gradle.plugin.idea-ext:1.1.7"
