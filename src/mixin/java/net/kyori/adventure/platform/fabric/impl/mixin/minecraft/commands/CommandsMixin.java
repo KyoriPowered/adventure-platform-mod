@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-fabric, licensed under the MIT License.
  *
- * Copyright (c) 2022 KyoriPowered
+ * Copyright (c) 2022-2023 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,6 +23,7 @@
  */
 package net.kyori.adventure.platform.fabric.impl.mixin.minecraft.commands;
 
+import com.google.common.collect.Iterators;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
@@ -32,6 +33,7 @@ import com.mojang.brigadier.tree.CommandNode;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import net.kyori.adventure.platform.fabric.impl.HiddenRequirement;
 import net.kyori.adventure.platform.fabric.impl.ServerArgumentType;
 import net.kyori.adventure.platform.fabric.impl.ServerArgumentTypes;
 import net.kyori.adventure.platform.fabric.impl.accessor.brigadier.builder.RequiredArgumentBuilderAccess;
@@ -42,6 +44,7 @@ import net.minecraft.resources.ResourceLocation;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
@@ -79,5 +82,18 @@ public abstract class CommandsMixin {
       type = ServerArgumentTypes.byClass((Class) builder.getType().getClass());
     }
 
+  }
+
+  /**
+   * Hide hidden commands from the client upon sync.
+   *
+   * <p>This injection is optional because its failure won't break any essential behavior.</p>
+   *
+   * @param itr original rootCommandSource.getChildren() iterator
+   * @return the filtered iterator
+   */
+  @ModifyVariable(method = "fillUsableCommands", at = @At("STORE"), ordinal = 0, require = 0)
+  private Iterator<CommandNode<CommandSourceStack>> adventure$filterHiddenCommands(final Iterator<CommandNode<CommandSourceStack>> itr) {
+    return Iterators.filter(itr, node -> !(node.getRequirement() instanceof HiddenRequirement<CommandSourceStack>));
   }
 }
