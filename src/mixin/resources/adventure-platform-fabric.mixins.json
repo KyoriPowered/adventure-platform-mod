@@ -19,7 +19,6 @@
     "minecraft.network.chat.Style_SerializerMixin",
     "minecraft.network.protocol.game.ClientboundCommandsPacketMixin",
     "minecraft.network.protocol.game.ClientboundCommandsPacketMixin$ArgumentNodeStubMixin",
-    "minecraft.network.protocol.status.ClientboundStatusResponsePacketMixin",
     "minecraft.resources.ResourceKeyMixin",
     "minecraft.resources.ResourceLocationMixin",
     "minecraft.server.MinecraftServerMixin",

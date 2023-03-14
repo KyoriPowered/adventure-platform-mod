@@ -56,7 +56,8 @@ indraSpotlessLicenser {
 }
 
 spotless {
-  ratchetFrom("origin/mc/${libs.versions.minecraft.get().splitToSequence('.').take(2).joinToString(".")}")
+  // ratchetFrom("origin/mc/${libs.versions.minecraft.get().splitToSequence('.').take(2).joinToString(".")}")
+  ratchetFrom("origin/mc/1.19")
 
   java {
     importOrderFile(rootProject.file(".spotless/kyori.importorder"))
@@ -155,7 +156,8 @@ loom {
     configureEach {
       vmArgs(
         "-Dmixin.debug.countInjections=true",
-        "-Dmixin.debug.strict=true"
+        "-Dmixin.debug.strict=true",
+        "-Dadventure.mixins.audit=true"
       )
     }
   }
@@ -275,9 +277,9 @@ tasks.withType(GenerateSourcesTask::class).configureEach {
 
 // Ugly hack for easy genSourcening
 afterEvaluate {
-    tasks.matching { it.name == "genSources" }.configureEach {
-      setDependsOn(setOf("genClientOnlySourcesWithQuiltflower", "genCommonSourcesWithQuiltflower"))
-    }
+  tasks.matching { it.name == "genSources" }.configureEach {
+    setDependsOn(setOf("genClientOnlySourcesWithQuiltflower", "genCommonSourcesWithQuiltflower"))
+  }
 }
 
 indra {

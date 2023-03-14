@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-fabric, licensed under the MIT License.
  *
- * Copyright (c) 2020-2022 KyoriPowered
+ * Copyright (c) 2020-2023 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@ package net.kyori.adventure.platform.test.fabric.mixin.minecraft.client.gui.scre
 
 import net.kyori.adventure.platform.test.fabric.widget.AdventureTestButtons;
 import net.kyori.adventure.platform.test.fabric.widget.Widgets;
+import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.ChatScreen;
@@ -68,5 +69,10 @@ public abstract class ChatScreenMixin extends Screen {
 
       this.addRenderableWidget(widget);
     }
+  }
+
+  @Override
+  protected void changeFocus(final ComponentPath componentPath) {
+    this.setFocused(this.input);
   }
 }
