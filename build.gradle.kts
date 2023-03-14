@@ -156,7 +156,7 @@ loom {
     configureEach {
       vmArgs(
         "-Dmixin.debug.countInjections=true",
-        "-Dmixin.debug.strict=true",
+        // "-Dmixin.debug.strict=true", // Breaks FAPI :(
         "-Dadventure.mixins.audit=true"
       )
     }

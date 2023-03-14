@@ -19,6 +19,7 @@ Minecraft Version | `adventure-platform-fabric` version
 1.19              | `5.4.0`
 1.19.1 / 1.19.2   | `5.5.1`
 1.19.3            | `5.7.0`
+1.19.4            | `5.8.0`
 
 ### Contributing
 
