@@ -31,6 +31,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -123,13 +124,17 @@ public class AdventureCommon implements ModInitializer {
     flattenerBuilder.complexMapper(TranslatableComponent.class, (translatable, consumer) -> {
       final String key = translatable.key();
       for (final Translator registry : GlobalTranslator.translator().sources()) {
-        if (registry instanceof TranslationRegistry && ((TranslationRegistry) registry).contains(key)) {
+        if (registry instanceof TranslationRegistry tr && tr.contains(key)) {
           consumer.accept(GlobalTranslator.render(translatable, Locale.getDefault()));
           return;
         }
       }
 
-      final @NotNull String translated = Language.getInstance().getOrDefault(key);
+      final @Nullable String translated = Objects.requireNonNullElse(
+        Language.getInstance().getOrDefault(key, translatable.fallback()),
+        key
+      );
+
       final Matcher matcher = LOCALIZATION_PATTERN.matcher(translated);
       final List<Component> args = translatable.args();
       int argPosition = 0;
