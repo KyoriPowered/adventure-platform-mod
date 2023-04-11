@@ -46,6 +46,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.kyori.adventure.Adventure;
 import net.kyori.adventure.chat.ChatType;
 import net.kyori.adventure.identity.Identity;
+import net.kyori.adventure.platform.fabric.CollectPointersCallback;
 import net.kyori.adventure.platform.fabric.ComponentArgumentType;
 import net.kyori.adventure.platform.fabric.FabricAudiences;
 import net.kyori.adventure.platform.fabric.KeyArgumentType;
@@ -184,6 +185,12 @@ public class AdventureCommon implements ModInitializer {
       FabricServerAudiencesImpl.forEachInstance(instance -> {
         instance.bossBars().refreshTitles(player);
       });
+    });
+
+    CollectPointersCallback.EVENT.register((pointered, builder) -> {
+      if (pointered instanceof LocaleHolderBridge holder) {
+        builder.withDynamic(Identity.LOCALE, holder::adventure$locale);
+      }
     });
 
     CommandRegistrationCallback.EVENT.register((dispatcher, registries, env) -> {
