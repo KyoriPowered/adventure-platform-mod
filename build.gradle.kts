@@ -64,6 +64,7 @@ spotless {
     trimTrailingWhitespace()
     endWithNewline()
     indentWithSpaces(2)
+    removeUnusedImports()
   }
 }
 
