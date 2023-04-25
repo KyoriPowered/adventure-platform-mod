@@ -1,8 +1,10 @@
 import ca.stellardrift.build.configurate.ConfigFormats
 import ca.stellardrift.build.configurate.transformations.convertFormat
+import net.fabricmc.loom.api.RemapConfigurationSettings
 import net.fabricmc.loom.task.GenerateSourcesTask
 import net.fabricmc.loom.task.RemapJarTask
 import net.fabricmc.loom.task.RunGameTask
+import org.gradle.configurationcache.extensions.capitalized
 import org.jetbrains.gradle.ext.settings
 import org.jetbrains.gradle.ext.taskTriggers
 
@@ -131,18 +133,46 @@ sourceSets {
 
 loom.splitEnvironmentSourceSets()
 
+// create a secondary set, with a configuration name matching the source set name
+// this configuration is available at compile- and runtime, and not published
+fun createSecondarySet(name: String, action: Action<SourceSet> = Action { }): SourceSet {
+  val set = sourceSets.create(name) {
+    compileClasspath += sourceSets.named("client").get().compileClasspath
+    runtimeClasspath += sourceSets.named("client").get().runtimeClasspath
+    action(this)
+  }
+
+  val setConfig = configurations.create(name)
+
+  configurations.named(set.compileClasspathConfigurationName) {
+    extendsFrom(setConfig)
+  }
+  configurations.named(set.runtimeClasspathConfigurationName) {
+    extendsFrom(setConfig)
+  }
+
+  loom.addRemapConfiguration("mod${name.capitalized()}") {
+    sourceSet.set(set)
+    targetConfigurationName.set(name)
+    onCompileClasspath.set(true)
+    onRuntimeClasspath.set(true)
+    publishingMode.set(RemapConfigurationSettings.PublishingMode.NONE)
+  }
+
+  dependencies {
+    set.implementationConfigurationName(sourceSets.named("client").map { it.output })
+  }
+
+  return set
+}
+
 // The testmod is not split, not worth the effort
-val testmod = sourceSets.register("testmod") {
-  compileClasspath += sourceSets.named("client").get().compileClasspath
-  runtimeClasspath += sourceSets.named("client").get().runtimeClasspath
+val testmod = createSecondarySet("testmod") {
   java.srcDirs("src/testmodMixin/java")
   resources.srcDirs("src/testmodMixin/resources")
 }
 
-val permissionsApiCompat = sourceSets.register("permissionsApiCompat") {
-  compileClasspath += sourceSets.named("client").get().compileClasspath
-  runtimeClasspath += sourceSets.named("client").get().runtimeClasspath
-}
+val permissionsApiCompat = createSecondarySet("permissionsApiCompat")
 
 configurations.named("clientAnnotationProcessor") {
   extendsFrom(configurations.annotationProcessor.get())
@@ -173,44 +203,40 @@ loom {
     register("adventure-platform-fabric") {
       sourceSet(sourceSets.main.get())
       sourceSet(sourceSets.named("client").get())
-      sourceSet(permissionsApiCompat.get())
+      sourceSet(permissionsApiCompat)
     }
     register("adventure-platform-fabric-testmod") {
-      sourceSet(testmod.get())
+      sourceSet(testmod)
     }
   }
 
   mixin {
     add(sourceSets.main.get(), "adventure-platform-fabric-refmap.json")
     add(sourceSets.named("client").get(), "adventure-platform-fabric-client-refmap.json")
-    add(testmod.get(), "adventure-platform-fabric-testmod-refmap.json")
+    add(testmod, "adventure-platform-fabric-testmod-refmap.json")
   }
 
-  createRemapConfigurations(testmod.get())
-  createRemapConfigurations(permissionsApiCompat.get())
 }
 
 
 dependencies {
-  "testmodImplementation"(sourceSets.named("client").map { it.output })
-  "permissionsApiCompatImplementation"(sourceSets.named("client").map { it.output })
-  "testmodRuntimeOnly"(permissionsApiCompat.map { it.output })
-  "modPermissionsApiCompatImplementation"(libs.fabric.permissionsApi)
+  "testmodRuntimeOnly"(permissionsApiCompat.output)
+  "modPermissionsApiCompat"(libs.fabric.permissionsApi)
 
   // Testmod-specific dependencies
-  "modTestmodImplementation"(libs.fabric.api)
+  "modTestmod"(libs.fabric.api)
 }
 
 // Create a remapped testmod jar
 val testmodDevJar = tasks.register("testmodJar", Jar::class) {
-  from(testmod.map { it.output })
+  from(testmod.output)
   archiveClassifier.set("testmod-dev")
 }
 
 val remapTestmodJar = tasks.register("remapTestmodJar", RemapJarTask::class) {
   inputFile.set(testmodDevJar.flatMap { it.archiveFile })
   addNestedDependencies.set(false)
-  classpath.from(testmod.map { it.runtimeClasspath })
+  classpath.from(testmod.runtimeClasspath)
   archiveClassifier.set("testmod")
 }
 tasks.build {
@@ -235,19 +261,18 @@ tasks {
   }
 
   jar {
-    from(permissionsApiCompat.map { it.output })
+    from(permissionsApiCompat.output)
   }
 
   sourcesJar {
-    from(permissionsApiCompat.map { it.allSource })
+    from(permissionsApiCompat.allSource)
   }
 }
 
 // Convert yaml files to josn
 val generatedResourcesDir = project.layout.buildDirectory.dir("generated-resources").get().asFile
-fun createProcessResourceTemplates(name: String, setProvider: NamedDomainObjectProvider<SourceSet>): TaskProvider<out Task> {
+fun createProcessResourceTemplates(name: String, set: SourceSet): TaskProvider<out Task> {
   val destinationDir = generatedResourcesDir.resolve(name)
-  val set = setProvider.get()
   val task = tasks.register(name, Sync::class.java) {
     this.destinationDir = destinationDir
     from("src/${set.name}/resource-templates")
@@ -288,7 +313,7 @@ fun createProcessResourceTemplates(name: String, setProvider: NamedDomainObjectP
   return task
 }
 
-val generateTemplates = createProcessResourceTemplates("generateTemplates", sourceSets.main)
+val generateTemplates = createProcessResourceTemplates("generateTemplates", sourceSets.main.get())
 val generateTestmodTemplates = createProcessResourceTemplates("generateTestmodTemplates", testmod)
 
 tasks.withType(GenerateSourcesTask::class).configureEach {
