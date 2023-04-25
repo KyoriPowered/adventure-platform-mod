@@ -32,6 +32,7 @@ repositories {
       releasesOnly()
     }
   }
+  sonatype.ossSnapshots()
   sonatype.s01Snapshots()
 }
 
@@ -138,6 +139,11 @@ val testmod = sourceSets.register("testmod") {
   resources.srcDirs("src/testmodMixin/resources")
 }
 
+val permissionsApiCompat = sourceSets.register("permissionsApiCompat") {
+  compileClasspath += sourceSets.named("client").get().compileClasspath
+  runtimeClasspath += sourceSets.named("client").get().runtimeClasspath
+}
+
 configurations.named("clientAnnotationProcessor") {
   extendsFrom(configurations.annotationProcessor.get())
 }
@@ -167,6 +173,7 @@ loom {
     register("adventure-platform-fabric") {
       sourceSet(sourceSets.main.get())
       sourceSet(sourceSets.named("client").get())
+      sourceSet(permissionsApiCompat.get())
     }
     register("adventure-platform-fabric-testmod") {
       sourceSet(testmod.get())
@@ -180,11 +187,15 @@ loom {
   }
 
   createRemapConfigurations(testmod.get())
+  createRemapConfigurations(permissionsApiCompat.get())
 }
 
 
 dependencies {
   "testmodImplementation"(sourceSets.named("client").map { it.output })
+  "permissionsApiCompatImplementation"(sourceSets.named("client").map { it.output })
+  "testmodRuntimeOnly"(permissionsApiCompat.map { it.output })
+  "modPermissionsApiCompatImplementation"(libs.fabric.permissionsApi)
 
   // Testmod-specific dependencies
   "modTestmodImplementation"(libs.fabric.api)
@@ -221,6 +232,14 @@ tasks {
       "https://jd.advntr.dev/key/${libs.versions.adventure.get()}",
       "https://jd.advntr.dev/platform/api/${libs.versions.adventurePlatform.get()}",
     )
+  }
+
+  jar {
+    from(permissionsApiCompat.map { it.output })
+  }
+
+  sourcesJar {
+    from(permissionsApiCompat.map { it.allSource })
   }
 }
 

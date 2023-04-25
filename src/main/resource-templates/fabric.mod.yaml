@@ -13,6 +13,7 @@ icon: assets/adventure-platform-fabric/logo.png
 entrypoints:
   main:
     - "net.kyori.adventure.platform.fabric.impl.AdventureCommon"
+    - "net.kyori.adventure.platform.fabric.impl.compat.permissions.PermissionsApiIntegration"
   client:
     - "net.kyori.adventure.platform.fabric.impl.client.AdventureClient"
   adventure-internal:sidedproxy/client:
