@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-fabric, licensed under the MIT License.
  *
- * Copyright (c) 2020-2022 KyoriPowered
+ * Copyright (c) 2020-2023 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,6 @@ import com.mojang.authlib.GameProfile;
 import java.util.Locale;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
-import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.platform.fabric.FabricClientAudiences;
 import net.kyori.adventure.platform.fabric.impl.LocaleHolderBridge;
 import net.kyori.adventure.pointer.Pointers;
@@ -74,11 +73,5 @@ public abstract class LocalPlayerMixin extends Player implements ForwardingAudie
   @Override
   public @NotNull Locale adventure$locale() {
     return ((LocaleHolderBridge) this.minecraft.options).adventure$locale();
-  }
-
-  // @Override via PlayerMixin
-  @SuppressWarnings("unused")
-  protected void adventure$populateExtraPointers(final Pointers.Builder builder) {
-    builder.withDynamic(Identity.LOCALE, this::adventure$locale);
   }
 }

@@ -31,7 +31,6 @@ import java.util.Objects;
 import java.util.Set;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
-import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.platform.fabric.FabricServerAudiences;
 import net.kyori.adventure.platform.fabric.PlayerLocales;
 import net.kyori.adventure.platform.fabric.impl.LocaleHolderBridge;
@@ -43,7 +42,6 @@ import net.kyori.adventure.platform.fabric.impl.server.FriendlyByteBufBridge;
 import net.kyori.adventure.platform.fabric.impl.server.RenderableAudience;
 import net.kyori.adventure.platform.fabric.impl.server.ServerPlayerAudience;
 import net.kyori.adventure.platform.fabric.impl.server.ServerPlayerBridge;
-import net.kyori.adventure.pointer.Pointers;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundTabListPacket;
 import net.minecraft.network.protocol.game.ServerboundClientInformationPacket;
@@ -99,11 +97,6 @@ public abstract class ServerPlayerMixin extends PlayerMixin implements Forwardin
   @Override
   public @NotNull Locale adventure$locale() {
     return this.adventure$locale;
-  }
-
-  @Override
-  protected void adventure$populateExtraPointers(final Pointers.Builder builder) {
-    builder.withDynamic(Identity.LOCALE, this::adventure$locale);
   }
 
   // Tab list

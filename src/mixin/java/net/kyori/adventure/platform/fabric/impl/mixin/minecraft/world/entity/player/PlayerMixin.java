@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-fabric, licensed under the MIT License.
  *
- * Copyright (c) 2020-2022 KyoriPowered
+ * Copyright (c) 2020-2023 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,7 +26,9 @@ package net.kyori.adventure.platform.fabric.impl.mixin.minecraft.world.entity.pl
 import com.mojang.authlib.GameProfile;
 import net.kyori.adventure.identity.Identified;
 import net.kyori.adventure.identity.Identity;
+import net.kyori.adventure.platform.fabric.CollectPointersCallback;
 import net.kyori.adventure.platform.fabric.impl.PointerProviderBridge;
+import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.pointer.Pointers;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -71,17 +73,14 @@ public abstract class PlayerMixin extends LivingEntity implements Identified, Po
           .withDynamic(Identity.DISPLAY_NAME, () -> this.getDisplayName().asComponent());
 
         // add any extra data
-        this.adventure$populateExtraPointers(builder);
+        if (this instanceof Pointered p) {
+          CollectPointersCallback.EVENT.invoker().registerPointers(p, builder);
+        }
 
         this.adventure$pointers = pointers = builder.build();
       }
     }
 
     return pointers;
-  }
-
-  protected void adventure$populateExtraPointers(final Pointers.Builder builder) {
-    // for overriding by implementations
-    // todo: support permissions here if Luck's permissions API is available
   }
 }
