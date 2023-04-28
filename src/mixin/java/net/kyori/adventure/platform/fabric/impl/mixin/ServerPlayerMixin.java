@@ -24,6 +24,7 @@
 package net.kyori.adventure.platform.fabric.impl.mixin;
 
 import com.google.common.collect.MapMaker;
+import io.netty.channel.Channel;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -139,7 +140,12 @@ public abstract class ServerPlayerMixin extends PlayerMixin implements Forwardin
   @Inject(method = "restoreFrom", at = @At("RETURN"))
   private void copyData(final ServerPlayer old, final boolean alive, final CallbackInfo ci) {
     FabricServerAudiencesImpl.forEachInstance(controller -> controller.bossBars().replacePlayer(old, (ServerPlayer) (Object) this));
-    ((ConnectionAccess) this.connection.connection).getChannel().attr(FriendlyByteBufBridge.CHANNEL_RENDER_DATA).set(this);
+    final @Nullable ConnectionAccess conn = ((ConnectionAccess) this.connection.connection);
+    if (conn == null) return;
+
+    final Channel chan = conn.getChannel();
+    if (chan == null) return;
+    chan.attr(FriendlyByteBufBridge.CHANNEL_RENDER_DATA).set(this);
   }
 
   @Inject(method = "disconnect", at = @At("RETURN"))
