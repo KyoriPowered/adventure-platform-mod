@@ -263,7 +263,7 @@ public class AdventureTester implements ModInitializer {
         }))
         .then(literal("plain").then(argument(ARG_TEXT, miniMessage()).executes(ctx -> {
           final Component text = component(ctx, ARG_TEXT);
-          ctx.getSource().sendSuccess(net.minecraft.network.chat.Component.literal(PlainTextComponentSerializer.plainText().serialize(text)), false);
+          ctx.getSource().sendSuccess(() -> net.minecraft.network.chat.Component.literal(PlainTextComponentSerializer.plainText().serialize(text)), false);
           return Command.SINGLE_SUCCESS;
         }))));
     });
