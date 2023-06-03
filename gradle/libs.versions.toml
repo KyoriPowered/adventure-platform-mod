@@ -36,7 +36,7 @@ minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
 autoService = { module = "com.google.auto.service:auto-service", version.ref = "autoService" }
 autoService-annotations = { module = "com.google.auto.service:auto-service-annotations", version.ref = "autoService" }
 contractValidator = "ca.stellardrift:contract-validator:1.0.1"
-stylecheck = "ca.stellardrift:stylecheck:0.2.0"
+stylecheck = "ca.stellardrift:stylecheck:0.2.1"
 
 # For Renovate, do not use directly
 zCheckstyle = { module = "com.puppycrawl.tools:checkstyle", version.ref = "checkstyle" }
