@@ -108,6 +108,7 @@ dependencies {
   include(libs.examination.api)
   include(libs.examination.string)
   include(libs.adventure.textSerializerJson)
+  include(libs.ansi)
   modCompileOnly(libs.jetbrainsAnnotations)
 
   minecraft(libs.minecraft)
