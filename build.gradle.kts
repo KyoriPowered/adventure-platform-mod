@@ -73,7 +73,8 @@ dependencies {
     libs.adventure.api,
     libs.adventure.textLoggerSlf4j,
     libs.adventure.textMinimessage,
-    libs.adventure.textSerializerPlain
+    libs.adventure.textSerializerPlain,
+    libs.adventure.textSerializerAnsi
   ).forEach {
     modApi(it) {
       exclude("org.slf4j", "slf4j-api")
