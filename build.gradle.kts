@@ -106,6 +106,7 @@ dependencies {
   // Transitive deps
   include(libs.examination.api)
   include(libs.examination.string)
+  include(libs.adventure.textSerializerJson)
   modCompileOnly(libs.jetbrainsAnnotations)
 
   minecraft(libs.minecraft)
