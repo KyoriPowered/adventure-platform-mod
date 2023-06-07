@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-fabric, licensed under the MIT License.
  *
- * Copyright (c) 2020-2022 KyoriPowered
+ * Copyright (c) 2020-2023 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -53,7 +53,7 @@ public abstract class EntityMixin implements Sound.Emitter, EntityHoverEventSour
       .registryOrThrow(Registries.ENTITY_TYPE)
       .getKey(this.shadow$getType());
 
-    final ShowEntity data = HoverEvent.ShowEntity.of(entityType, this.getUUID(), this.getName().asComponent());
+    final ShowEntity data = HoverEvent.ShowEntity.showEntity(entityType, this.getUUID(), this.getName().asComponent());
     return HoverEvent.showEntity(op.apply(data));
   }
 }

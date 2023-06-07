@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-fabric, licensed under the MIT License.
  *
- * Copyright (c) 2020-2022 KyoriPowered
+ * Copyright (c) 2020-2023 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,7 +30,7 @@ import net.kyori.adventure.key.Key;
 import net.kyori.adventure.nbt.api.BinaryTagHolder;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.HoverEvent;
-import net.kyori.adventure.text.serializer.gson.LegacyHoverEventSerializer;
+import net.kyori.adventure.text.serializer.json.LegacyHoverEventSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.kyori.adventure.util.Codec;
 import net.minecraft.nbt.CompoundTag;
@@ -59,7 +59,7 @@ public final class NBTLegacyHoverEventSerializer implements LegacyHoverEventSeri
     try {
       final CompoundTag contents = SNBT_CODEC.decode(raw);
       final CompoundTag tag = contents.getCompound(ITEM_TAG);
-      return HoverEvent.ShowItem.of(
+      return HoverEvent.ShowItem.showItem(
         Key.key(contents.getString(ITEM_TYPE)),
         contents.contains(ITEM_COUNT) ? contents.getByte(ITEM_COUNT) : 1,
         tag.isEmpty() ? null : BinaryTagHolder.encode(tag, SNBT_CODEC)
@@ -74,7 +74,7 @@ public final class NBTLegacyHoverEventSerializer implements LegacyHoverEventSeri
     final String raw = PlainTextComponentSerializer.plainText().serialize(input);
     try {
       final CompoundTag contents = SNBT_CODEC.decode(raw);
-      return HoverEvent.ShowEntity.of(
+      return HoverEvent.ShowEntity.showEntity(
         Key.key(contents.getString(ENTITY_TYPE)),
         UUID.fromString(contents.getString(ENTITY_ID)),
         componentCodec.decode(contents.getString(ENTITY_NAME))
