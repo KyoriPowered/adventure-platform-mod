@@ -80,7 +80,8 @@ dependencies {
     libs.adventure.api,
     libs.adventure.textLoggerSlf4j,
     libs.adventure.textMinimessage,
-    libs.adventure.textSerializerPlain
+    libs.adventure.textSerializerPlain,
+    libs.adventure.textSerializerAnsi
   ).forEach {
     modApi(it) {
       exclude("org.slf4j", "slf4j-api")
@@ -107,6 +108,7 @@ dependencies {
   include(libs.examination.api)
   include(libs.examination.string)
   include(libs.adventure.textSerializerJson)
+  include(libs.ansi)
   modCompileOnly(libs.jetbrainsAnnotations)
 
   minecraft(libs.minecraft)
