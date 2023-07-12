@@ -9,7 +9,7 @@ checkstyle = "10.12.0"
 examination = "1.3.0"
 fabricApi = "0.77.0+1.19.4"
 fabricLoader = "0.14.19"
-indra = "3.1.1"
+indra = "3.1.2"
 minecraft = "1.19.4"
 parchment = "1.19.3:2023.03.12"
 quiltflower = "1.9.0"
@@ -44,9 +44,9 @@ zQuiltflower = { module = "org.quiltmc:quiltflower", version.ref = "quiltflower"
 
 [plugins]
 configurateTransformations = "ca.stellardrift.configurate-transformations:6.0.1"
-eclipseApt = "com.diffplug.eclipse.apt:3.41.1"
+eclipseApt = "com.diffplug.eclipse.apt:3.42.2"
 loom = "fabric-loom:1.1.+"
-loomQuiltflower = "io.github.juuxel.loom-quiltflower:1.10.0"
+loomQuiltflower = "io.github.juuxel.loom-quiltflower:1.11.0"
 ideaExt = "org.jetbrains.gradle.plugin.idea-ext:1.1.7"
 indra = { id = "net.kyori.indra", version.ref = "indra" }
 indra-licenseHeader = { id = "net.kyori.indra.licenser.spotless", version.ref = "indra" }
