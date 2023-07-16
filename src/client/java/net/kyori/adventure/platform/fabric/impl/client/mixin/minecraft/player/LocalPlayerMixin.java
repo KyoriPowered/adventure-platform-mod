@@ -27,6 +27,9 @@ import com.mojang.authlib.GameProfile;
 import java.util.Locale;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
+import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.bossbar.BossBarViewer;
+import net.kyori.adventure.platform.fabric.FabricBossBarViewer;
 import net.kyori.adventure.platform.fabric.FabricClientAudiences;
 import net.kyori.adventure.platform.fabric.impl.LocaleHolderBridge;
 import net.kyori.adventure.pointer.Pointers;
@@ -37,12 +40,13 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.UnmodifiableView;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(LocalPlayer.class)
-public abstract class LocalPlayerMixin extends Player implements ForwardingAudience.Single, LocaleHolderBridge {
+public abstract class LocalPlayerMixin extends Player implements ForwardingAudience.Single, LocaleHolderBridge, FabricBossBarViewer {
   // @formatter:off
   @Shadow @Final protected Minecraft minecraft;
   // @formatter:on
@@ -73,5 +77,10 @@ public abstract class LocalPlayerMixin extends Player implements ForwardingAudie
   @Override
   public @NotNull Locale adventure$locale() {
     return ((LocaleHolderBridge) this.minecraft.options).adventure$locale();
+  }
+
+  @Override
+  public @UnmodifiableView @NotNull Iterable<? extends BossBar> activeBossBars() {
+    return ((BossBarViewer) this.adventure$default).activeBossBars();
   }
 }

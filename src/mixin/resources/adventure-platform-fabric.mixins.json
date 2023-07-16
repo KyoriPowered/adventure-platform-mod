@@ -6,8 +6,8 @@
     "api.SignedMessageMixin",
     "authlib.GameProfileMixin",
     "brigadier.exceptions.CommandSyntaxExceptionMixin",
-    "minecraft.commands.CommandSourceStackMixin",
     "minecraft.commands.CommandsMixin",
+    "minecraft.commands.CommandSourceStackMixin",
     "minecraft.commands.synchronization.ArgumentTypeInfosMixin",
     "minecraft.commands.synchronization.ArgumentUtilsMixin",
     "minecraft.network.FriendlyByteBufMixin",
@@ -28,6 +28,7 @@
     "minecraft.server.players.PlayerListMixin",
     "minecraft.server.rcon.RconConsoleSourceMixin",
     "minecraft.sounds.SoundEventMixin",
+    "minecraft.world.BossEventMixin",
     "minecraft.world.entity.EntityMixin",
     "minecraft.world.entity.player.PlayerMixin",
     "minecraft.world.item.ItemStackMixin"

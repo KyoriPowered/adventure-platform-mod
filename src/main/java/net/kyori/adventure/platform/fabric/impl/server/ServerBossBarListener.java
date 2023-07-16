@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-fabric, licensed under the MIT License.
  *
- * Copyright (c) 2020-2021 KyoriPowered
+ * Copyright (c) 2020-2023 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,11 +23,13 @@
  */
 package net.kyori.adventure.platform.fabric.impl.server;
 
-import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Map;
+import java.util.Set;
+
 import net.kyori.adventure.bossbar.BossBar;
-import net.kyori.adventure.platform.fabric.FabricAudiences;
+import net.kyori.adventure.bossbar.BossBarViewer;
+import net.kyori.adventure.platform.fabric.FabricServerAudiences;
 import net.kyori.adventure.platform.fabric.impl.AbstractBossBarListener;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundBossEventPacket;
@@ -37,40 +39,19 @@ import org.jetbrains.annotations.NotNull;
 
 import static java.util.Objects.requireNonNull;
 
-public class ServerBossBarListener extends AbstractBossBarListener<ServerBossEvent> {
-  public ServerBossBarListener(final FabricAudiences controller) {
-    super(controller);
+public class ServerBossBarListener extends AbstractBossBarListener<ServerBossEvent, FabricServerAudiences> {
+  public ServerBossBarListener(final FabricServerAudiences controller) {
+    super(controller, ServerBossEvent.class);
   }
 
   public void subscribe(final ServerPlayer player, final BossBar bar) {
     this.minecraftCreating(requireNonNull(bar, "bar")).addPlayer(requireNonNull(player, "player"));
   }
 
-  public void subscribeAll(final Collection<ServerPlayer> players, final BossBar bar) {
-    ((ServerBossEventBridge) this.minecraftCreating(requireNonNull(bar, "bar"))).adventure$addAll(players);
-  }
-
   public void unsubscribe(final ServerPlayer player, final BossBar bar) {
-    this.bars.computeIfPresent(bar, (key, old) -> {
-      old.removePlayer(player);
-      if (old.getPlayers().isEmpty()) {
-        key.removeListener(this);
-        return null;
-      } else {
-        return old;
-      }
-    });
-  }
-
-  public void unsubscribeAll(final Collection<ServerPlayer> players, final BossBar bar) {
-    this.bars.computeIfPresent(bar, (key, old) -> {
-      ((ServerBossEventBridge) old).adventure$removeAll(players);
-      if (old.getPlayers().isEmpty()) {
-        key.removeListener(this);
-        return null;
-      } else {
-        return old;
-      }
+    this.maybeRemoveMinecraft(bar, (adv, mc) -> {
+      mc.removePlayer(player);
+      return mc.getPlayers().isEmpty();
     });
   }
 
@@ -84,8 +65,8 @@ public class ServerBossBarListener extends AbstractBossBarListener<ServerBossEve
    * @param newPlayer new one
    */
   public void replacePlayer(final ServerPlayer old, final ServerPlayer newPlayer) {
-    for (final ServerBossEvent bar : this.bars.values()) {
-      ((ServerBossEventBridge) bar).adventure$replaceSubscriber(old, newPlayer);
+    for (final BossBar bar : this.bars) {
+      ((ServerBossEventBridge) this.minecraft(bar)).adventure$replaceSubscriber(old, newPlayer);
     }
   }
 
@@ -95,9 +76,10 @@ public class ServerBossBarListener extends AbstractBossBarListener<ServerBossEve
    * @param player player to refresh titles fro
    */
   public void refreshTitles(final ServerPlayer player) {
-    for (final ServerBossEvent bar : this.bars.values()) {
-      if (bar.getPlayers().contains(player)) {
-        player.connection.send(ClientboundBossEventPacket.createUpdateNamePacket(bar));
+    for (final BossBar bar : this.bars) {
+      final ServerBossEvent mc = this.minecraft(bar);
+      if (mc.getPlayers().contains(player)) {
+        player.connection.send(ClientboundBossEventPacket.createUpdateNamePacket(mc));
       }
     }
   }
@@ -108,15 +90,23 @@ public class ServerBossBarListener extends AbstractBossBarListener<ServerBossEve
    * @param player The player to remove
    */
   public void unsubscribeFromAll(final ServerPlayer player) {
-    for (final Iterator<Map.Entry<BossBar, ServerBossEvent>> it = this.bars.entrySet().iterator(); it.hasNext();) {
-      final ServerBossEvent bar = it.next().getValue();
-      if (bar.getPlayers().contains(player)) {
-        bar.removePlayer(player);
-        if (bar.getPlayers().isEmpty()) {
-          it.remove();
+    final Set<BossBar> bars = new HashSet<>(this.bars);
+    for (final Iterator<BossBar> it = bars.iterator(); it.hasNext();) {
+      this.maybeRemoveMinecraft(it.next(), (adv, mc) -> {
+        if (mc.getPlayers().contains(player)) {
+          mc.removePlayer(player);
+          return mc.getPlayers().isEmpty();
         }
-      }
+        return false;
+      });
     }
+  }
+
+  @Override
+  protected Iterable<? extends BossBarViewer> viewers(ServerBossEvent event) {
+    return event.getPlayers().stream()
+      .map(p -> (BossBarViewer) this.controller.audience(p))
+      .toList();
   }
 
   @Override

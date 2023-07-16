@@ -35,8 +35,8 @@ custom:
     net/minecraft/server/MinecraftServer: [ net/kyori/adventure/audience/Audience ]
     net/minecraft/class_1657: [ net/kyori/adventure/identity/Identified ] # net/minecraft/world/entity/player/Player
     net/minecraft/class_3350: [ net/kyori/adventure/audience/Audience ] # net/minecraft/server/rcon/RconConsoleSource
-    net/minecraft/class_3222: [ net/kyori/adventure/audience/Audience ] # net/minecraft/server/level/ServerPlayer
-    net/minecraft/class_746: [ net/kyori/adventure/audience/Audience ] # net/minecraft/client/player/LocalPlayer
+    net/minecraft/class_3222: [ net/kyori/adventure/audience/Audience, net/kyori/adventure/platform/fabric/FabricBossBarViewer ] # net/minecraft/server/level/ServerPlayer
+    net/minecraft/class_746: [ net/kyori/adventure/audience/Audience, net/kyori/adventure/platform/fabric/FabricBossBarViewer ] # net/minecraft/client/player/LocalPlayer
     net/minecraft/class_2561: [ net/kyori/adventure/text/ComponentLike ] # net/minecraft/network/chat/Component
     net/minecraft/class_2960: [ net/kyori/adventure/key/Key ] # net/minecraft/resources/ResourceLocation
     net/minecraft/class_3414: [ net/kyori/adventure/sound/Sound<%= '$' %>Type ] # net/minecraft/sounds/SoundEvent

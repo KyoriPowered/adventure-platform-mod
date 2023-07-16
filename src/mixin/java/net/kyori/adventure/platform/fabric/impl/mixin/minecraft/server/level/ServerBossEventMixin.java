@@ -28,11 +28,13 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.UUID;
 import net.kyori.adventure.platform.fabric.impl.server.ServerBossEventBridge;
+import net.kyori.adventure.platform.fabric.impl.server.ServerPlayerBridge;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundBossEventPacket;
 import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.BossEvent;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -61,14 +63,19 @@ public abstract class ServerBossEventMixin extends BossEvent implements ServerBo
   // If a player has respawned, we still want to be able to remove the player using old references to their entity
   @Redirect(method = "removePlayer", at = @At(value = "INVOKE", target = "Ljava/util/Set;remove(Ljava/lang/Object;)Z"))
   private boolean adventure$removeByUuid(final Set<?> instance, final Object player) {
+    if (player instanceof ServerPlayerBridge br) {
+      br.adventure$bridge$untrackBossEvent((ServerBossEvent) (Object) this);
+    }
+
     if (instance.remove(player)) {
       return true;
     }
-    if (!(player instanceof ServerPlayer)) {
+
+    if (!(player instanceof ServerPlayer server)) {
       return false;
     }
 
-    final UUID testId = ((ServerPlayer) player).getUUID();
+    final UUID testId = server.getUUID();
     for (final Iterator<?> it = instance.iterator(); it.hasNext();) {
       if (((ServerPlayer) it.next()).getUUID().equals(testId)) {
         it.remove();
@@ -83,6 +90,7 @@ public abstract class ServerBossEventMixin extends BossEvent implements ServerBo
     final ClientboundBossEventPacket pkt = ClientboundBossEventPacket.createAddPacket(this);
     for (final ServerPlayer player : players) {
       if (this.players.add(player) && this.shadow$isVisible()) {
+        ((ServerPlayerBridge) player).adventure$bridge$trackBossEvent((ServerBossEvent) (Object) this);
         player.connection.send(pkt);
       }
     }
@@ -92,6 +100,7 @@ public abstract class ServerBossEventMixin extends BossEvent implements ServerBo
   public void adventure$removeAll(final Collection<ServerPlayer> players) {
     final ClientboundBossEventPacket pkt = ClientboundBossEventPacket.createRemovePacket(this.getId());
     for (final ServerPlayer player : players) {
+      ((ServerPlayerBridge) player).adventure$bridge$untrackBossEvent((ServerBossEvent) (Object) this);
       if (this.players.remove(player) && this.shadow$isVisible()) {
         player.connection.send(pkt);
       }
@@ -102,6 +111,30 @@ public abstract class ServerBossEventMixin extends BossEvent implements ServerBo
   public void adventure$replaceSubscriber(final ServerPlayer oldSub, final ServerPlayer newSub) {
     if (this.players.remove(oldSub)) {
       this.players.add(newSub);
+    }
+  }
+
+  // track on players
+
+  @Inject(method = "addPlayer", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/server/level/ServerPlayer;connection:Lnet/minecraft/server/network/ServerGamePacketListenerImpl;"))
+  private void adventure$trackBossEventsOnPlayer(final ServerPlayer player, final CallbackInfo ci) {
+    ((ServerPlayerBridge) player).adventure$bridge$trackBossEvent((ServerBossEvent) (Object) this);
+  }
+
+  @Inject(method = "removePlayer", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/server/level/ServerPlayer;connection:Lnet/minecraft/server/network/ServerGamePacketListenerImpl;"))
+  private void adventure$untrackBossEventsOnPlayer(final ServerPlayer player, final CallbackInfo ci) {
+    ((ServerPlayerBridge) player).adventure$bridge$untrackBossEvent((ServerBossEvent) (Object) this);
+  }
+
+  @Inject(method = "setVisible", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/server/level/ServerPlayer;connection:Lnet/minecraft/server/network/ServerGamePacketListenerImpl;"))
+  private void adventure$adjustTrackingForVisibility(final boolean visible, final CallbackInfo ci) {
+    for (final ServerPlayer player : this.players) {
+      if (visible) {
+        ((ServerPlayerBridge) player).adventure$bridge$trackBossEvent((ServerBossEvent) (Object) this);
+      } else {
+        ((ServerPlayerBridge) player).adventure$bridge$untrackBossEvent((ServerBossEvent) (Object) this);
+      }
+      // todo: make sure stale ServerPlayer instances are not tracked thru boss bars
     }
   }
 

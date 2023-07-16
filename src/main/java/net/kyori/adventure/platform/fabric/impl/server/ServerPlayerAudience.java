@@ -23,11 +23,13 @@
  */
 package net.kyori.adventure.platform.fabric.impl.server;
 
+import com.google.common.collect.Sets;
 import java.time.Duration;
 import java.util.Objects;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.bossbar.BossBarViewer;
 import net.kyori.adventure.chat.ChatType;
 import net.kyori.adventure.chat.SignedMessage;
 import net.kyori.adventure.identity.Identity;
@@ -35,6 +37,7 @@ import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.fabric.FabricAudiences;
 import net.kyori.adventure.platform.fabric.impl.AdventureCommon;
+import net.kyori.adventure.platform.fabric.impl.BossEventBridge;
 import net.kyori.adventure.platform.fabric.impl.GameEnums;
 import net.kyori.adventure.platform.fabric.impl.PointerProviderBridge;
 import net.kyori.adventure.platform.fabric.impl.accessor.minecraft.network.ServerGamePacketListenerImplAccess;
@@ -76,10 +79,11 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.WrittenBookItem;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnmodifiableView;
 
 import static java.util.Objects.requireNonNull;
 
-public final class ServerPlayerAudience implements Audience {
+public final class ServerPlayerAudience implements Audience, BossBarViewer {
   private final ServerPlayer player;
   private final FabricServerAudiencesImpl controller;
 
@@ -351,5 +355,15 @@ public final class ServerPlayerAudience implements Audience {
   @Override
   public @NotNull Pointers pointers() {
     return ((PointerProviderBridge) this.player).adventure$pointers();
+  }
+
+  @Override
+  public @UnmodifiableView @NotNull Iterable<? extends BossBar> activeBossBars() {
+    return ((ServerPlayerBridge) this.player).bridge$trackedBossEvents()
+      .stream()
+      .filter(event -> ((BossEventBridge) event).adventure$bridge$controller() == this.controller.bossBars)
+      .map(event -> ((BossEventBridge) event).adventure$bridge$bar())
+      .filter(event -> event != null)
+      .toList();
   }
 }

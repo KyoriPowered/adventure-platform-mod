@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-fabric, licensed under the MIT License.
  *
- * Copyright (c) 2020-2022 KyoriPowered
+ * Copyright (c) 2020-2023 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,21 +23,30 @@
  */
 package net.kyori.adventure.platform.fabric.impl.client;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.bossbar.BossBarViewer;
 import net.kyori.adventure.platform.fabric.impl.AbstractBossBarListener;
+import net.kyori.adventure.platform.fabric.impl.BossEventBridge;
 import net.minecraft.client.gui.components.LerpingBossEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.BossEvent;
 import org.jetbrains.annotations.NotNull;
 
-public class ClientBossBarListener extends AbstractBossBarListener<LerpingBossEvent> {
-  private final Map<UUID, LerpingBossEvent> hudBars;
+public class ClientBossBarListener extends AbstractBossBarListener<LerpingBossEvent, FabricClientAudiencesImpl> {
+  private final Map<UUID, LerpingBossEvent> hudBars; // a live map of boss events displayed in the game gui
 
   public ClientBossBarListener(final FabricClientAudiencesImpl controller, final Map<UUID, LerpingBossEvent> hudBars) {
-    super(controller);
+    super(controller, LerpingBossEvent.class);
     this.hudBars = hudBars;
+  }
+
+  @Override
+  protected Iterable<? extends BossBarViewer> viewers(LerpingBossEvent event) {
+    return ((BossEventBridge) event).adventure$bridge$controller() == this ? List.of((BossBarViewer) this.controller.audience()) : List.of(); // ClientAudience is a BossBarViewer
   }
 
   @Override
@@ -54,17 +63,16 @@ public class ClientBossBarListener extends AbstractBossBarListener<LerpingBossEv
   }
 
   public void remove(final BossBar bar) {
-    final LerpingBossEvent mc = this.bars.remove(bar);
-    if (mc != null) {
+    if (this.bars.remove(bar)) {
       bar.removeListener(this);
-      this.hudBars.remove(mc.getId());
+      this.hudBars.remove(this.minecraft(bar).getId());
     }
   }
 
   public void clear() {
-    for (final Map.Entry<BossBar, LerpingBossEvent> entry : this.bars.entrySet()) {
-      entry.getKey().removeListener(this);
-      this.hudBars.remove(entry.getValue().getId());
+    for (final BossBar entry : this.bars) {
+      entry.removeListener(this);
+      this.hudBars.remove(this.minecraft(entry).getId());
     }
     this.bars.clear();
   }

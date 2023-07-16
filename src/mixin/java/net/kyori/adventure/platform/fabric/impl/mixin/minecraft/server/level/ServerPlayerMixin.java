@@ -25,12 +25,15 @@ package net.kyori.adventure.platform.fabric.impl.mixin.minecraft.server.level;
 
 import com.google.common.collect.MapMaker;
 import io.netty.channel.Channel;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
+import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.platform.fabric.FabricBossBarViewer;
 import net.kyori.adventure.platform.fabric.FabricServerAudiences;
 import net.kyori.adventure.platform.fabric.PlayerLocales;
 import net.kyori.adventure.platform.fabric.impl.LocaleHolderBridge;
@@ -47,6 +50,7 @@ import net.minecraft.network.protocol.game.ClientboundTabListPacket;
 import net.minecraft.network.protocol.game.ServerboundClientInformationPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.entity.EntityType;
@@ -54,6 +58,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnmodifiableView;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -62,7 +67,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerPlayer.class)
-public abstract class ServerPlayerMixin extends PlayerMixin implements ForwardingAudience.Single, LocaleHolderBridge, RenderableAudience, ServerPlayerBridge {
+public abstract class ServerPlayerMixin extends PlayerMixin implements ForwardingAudience.Single, LocaleHolderBridge, RenderableAudience, ServerPlayerBridge, FabricBossBarViewer {
   // @formatter:off
   @Shadow @Final public MinecraftServer server;
   @Shadow public ServerGamePacketListenerImpl connection;
@@ -74,6 +79,7 @@ public abstract class ServerPlayerMixin extends PlayerMixin implements Forwardin
   private Component adventure$tabListHeader = Component.empty();
   private Component adventure$tabListFooter = Component.empty();
   private Set<ResourceLocation> adventure$arguments = Set.of();
+  private final Set<ServerBossEvent> adventure$trackedBossEvents = new HashSet<>();
 
   protected ServerPlayerMixin(final EntityType<? extends LivingEntity> entityType, final Level level) {
     super(entityType, level);
@@ -81,12 +87,17 @@ public abstract class ServerPlayerMixin extends PlayerMixin implements Forwardin
 
   @Inject(method = "<init>", at = @At("TAIL"))
   private void adventure$init(final CallbackInfo ci) {
-    this.adventure$backing = FabricServerAudiences.of(this.server).audience(this);
+    this.adventure$backing = this.renderUsing((FabricServerAudiencesImpl) FabricServerAudiences.of(this.server));
   }
 
   @Override
   public @NotNull Audience audience() {
     return this.adventure$backing;
+  }
+
+  @Override
+  public @UnmodifiableView @NotNull Iterable<? extends BossBar> activeBossBars() {
+    return ((ServerPlayerAudience) this.adventure$backing).activeBossBars();
   }
 
   @Override
@@ -139,11 +150,28 @@ public abstract class ServerPlayerMixin extends PlayerMixin implements Forwardin
     if (channel != null) {
       channel.attr(FriendlyByteBufBridge.CHANNEL_RENDER_DATA).set(this);
     }
+
+    this.adventure$trackedBossEvents.addAll(((ServerPlayerBridge) old).bridge$trackedBossEvents());
   }
 
   @Inject(method = "disconnect", at = @At("RETURN"))
   private void adventure$removeBossBarsOnDisconnect(final CallbackInfo ci) {
     FabricServerAudiencesImpl.forEachInstance(controller -> controller.bossBars().unsubscribeFromAll((ServerPlayer) (Object) this));
+  }
+
+  @Override
+  public Set<ServerBossEvent> bridge$trackedBossEvents() {
+    return this.adventure$trackedBossEvents;
+  }
+
+  @Override
+  public void adventure$bridge$trackBossEvent(ServerBossEvent event) {
+    this.adventure$trackedBossEvents.add(event);
+  }
+
+  @Override
+  public void adventure$bridge$untrackBossEvent(ServerBossEvent event) {
+    this.adventure$trackedBossEvents.remove(event);
   }
 
   // Known argument type tracking

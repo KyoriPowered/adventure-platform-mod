@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-fabric, licensed under the MIT License.
  *
- * Copyright (c) 2020-2022 KyoriPowered
+ * Copyright (c) 2023 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,43 +21,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.adventure.platform.fabric.impl.server;
+package net.kyori.adventure.platform.fabric.impl;
 
-import java.util.Set;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerBossEvent;
+import net.kyori.adventure.bossbar.BossBar;
 import org.jetbrains.annotations.Nullable;
 
-public interface ServerPlayerBridge {
-  /**
-   * Update the tab list header and footer.
-   *
-   * @param header header, null to leave unchanged
-   * @param footer footer, null to leave unchanged
-   * @since 4.0.0
-   */
-  void bridge$updateTabList(final @Nullable Component header, final @Nullable Component footer);
+public interface BossEventBridge {
+  @Nullable AbstractBossBarListener<?, ?> adventure$bridge$controller();
+  @Nullable BossBar adventure$bridge$bar();
 
-  /**
-   * Set of registered optional argument types.
-   *
-   * @return immutable set of type identifiers
-   */
-  Set<ResourceLocation> bridge$knownArguments();
-
-  /**
-   * Set the set of registered optional argument types.
-   *
-   * @param arguments set of type identifiers
-   */
-  void bridge$knownArguments(final Set<ResourceLocation> arguments);
-
-  Set<ServerBossEvent> bridge$trackedBossEvents();
-
-  void adventure$bridge$trackBossEvent(final ServerBossEvent event);
-
-  void adventure$bridge$untrackBossEvent(final ServerBossEvent event);
-
-
+  // returns old value, if any
+  @Nullable AbstractBossBarListener<?, ?> adventure$bridge$link(final @Nullable AbstractBossBarListener<?, ?> controller, final BossBar advBar);
+  @Nullable AbstractBossBarListener<?, ?> adventure$bridge$unlink();
 }

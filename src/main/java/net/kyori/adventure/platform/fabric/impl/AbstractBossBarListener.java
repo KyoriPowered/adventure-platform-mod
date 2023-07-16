@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-fabric, licensed under the MIT License.
  *
- * Copyright (c) 2020-2021 KyoriPowered
+ * Copyright (c) 2020-2023 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,22 +23,34 @@
  */
 package net.kyori.adventure.platform.fabric.impl;
 
-import java.util.IdentityHashMap;
-import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiPredicate;
+
 import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.bossbar.BossBarViewer;
 import net.kyori.adventure.platform.fabric.FabricAudiences;
 import net.kyori.adventure.text.Component;
 import net.minecraft.world.BossEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class AbstractBossBarListener<T extends BossEvent> implements BossBar.Listener {
-  private final FabricAudiences controller;
-  protected final Map<BossBar, T> bars = new IdentityHashMap<>();
+import static net.kyori.adventure.platform.fabric.impl.FabricBossBarImplementation.fabricImplementation;
 
-  protected AbstractBossBarListener(final FabricAudiences controller) {
+/**
+ * Boss bar tracking for syncing between Adventure and Vanilla boss bars.
+ *
+ * @param <T> the type of game boss bar we handle
+ * @param <A> the sided audience provider
+ */
+public abstract class AbstractBossBarListener<T extends BossEvent, A extends FabricAudiences> implements BossBar.Listener {
+  protected final A controller;
+  protected final Set<BossBar> bars = ConcurrentHashMap.newKeySet();
+  protected final Class<T> barType;
+
+  protected AbstractBossBarListener(final A controller, final Class<T> barType) {
     this.controller = controller;
+    this.barType = barType;
   }
 
   @Override
@@ -80,29 +92,60 @@ public abstract class AbstractBossBarListener<T extends BossEvent> implements Bo
     bar.setPlayBossMusic(flags.contains(BossBar.Flag.PLAY_BOSS_MUSIC));
   }
 
-  private T minecraft(final @NotNull BossBar bar) {
-    final @Nullable T mc = this.bars.get(bar);
-    if (mc == null) {
+  protected T minecraft(final @NotNull BossBar bar) {
+    final @Nullable T mc = fabricImplementation(bar).nativeBar(this.barType);
+    if (mc == null || ((BossEventBridge) mc).adventure$bridge$controller() != this) {
       throw new IllegalArgumentException("Unknown boss bar instance " + bar);
     }
     return mc;
   }
+
+  protected abstract Iterable<? extends BossBarViewer> viewers(final T event);
 
   protected abstract T newBar(final net.minecraft.network.chat.@NotNull Component title,
                               final BossEvent.@NotNull BossBarColor color,
                               final BossEvent.@NotNull BossBarOverlay style,
                               final float progress);
 
-  protected T minecraftCreating(final @NotNull BossBar bar) {
-    return this.bars.computeIfAbsent(bar, key -> {
-      final T ret = this.newBar(this.controller.toNative(key.name()),
-        GameEnums.BOSS_BAR_COLOR.toMinecraft(key.color()),
-        GameEnums.BOSS_BAR_OVERLAY.toMinecraft(key.overlay()),
-        key.progress());
+  public Iterable<? extends BossBar> activeBars() {
+    return this.bars;
+  }
 
-      updateFlags(ret, key.flags());
-      key.addListener(this);
+  protected T minecraftCreating(final @NotNull BossBar bar) {
+    final var fabricImpl = fabricImplementation(bar);
+
+    if (fabricImpl.nativeBar() == null) {
+      final T ret = this.newBar(this.controller.toNative(bar.name()),
+        GameEnums.BOSS_BAR_COLOR.toMinecraft(bar.color()),
+        GameEnums.BOSS_BAR_OVERLAY.toMinecraft(bar.overlay()),
+        bar.progress());
+      ((BossEventBridge) ret).adventure$bridge$controller(this);
+
+      updateFlags(ret, bar.flags());
+      final BossEvent oldBar = fabricImpl.nativeBar(ret, this::viewers);
+      bar.addListener(this);
+
+      if (oldBar != null) {
+        final AbstractBossBarListener<?, ?> oldController = ((BossEventBridge) oldBar).adventure$bridge$controller(null);
+        if (oldController != null) {
+          bar.removeListener(oldController);
+        }
+      }
       return ret;
-    });
+    } else {
+      return fabricImpl.nativeBar(this.barType);
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  protected void maybeRemoveMinecraft(final @NotNull BossBar bar, final @NotNull BiPredicate<BossBar, T> shouldRemove) {
+    final var impl = fabricImplementation(bar);
+    final BossEvent nativeBar = impl.nativeBar();
+    if (this.barType.isInstance(nativeBar)) {
+      if (shouldRemove.test(bar, (T) nativeBar)) {
+        impl.clearNativeBar();
+        ((BossEventBridge) nativeBar).adventure$bridge$controller(null);
+      }
+    }
   }
 }
