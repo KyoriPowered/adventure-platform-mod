@@ -330,6 +330,7 @@ indra {
   mitLicense()
   checkstyle(libs.versions.checkstyle.get())
 
+  signWithKeyFromPrefixedProperties("kyori")
   configurePublications {
     pom {
       developers {
