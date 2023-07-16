@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-fabric, licensed under the MIT License.
  *
- * Copyright (c) 2020-2022 KyoriPowered
+ * Copyright (c) 2020-2023 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,6 +24,7 @@
 package net.kyori.adventure.platform.fabric.impl.mixin.minecraft.commands;
 
 import java.util.Objects;
+import java.util.function.Supplier;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.identity.Identified;
 import net.kyori.adventure.identity.Identity;
@@ -41,6 +42,8 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
+import static java.util.Objects.requireNonNull;
+
 /**
  * The methods in this class should match the implementations of their Text-using counterparts in {@link CommandSourceStack}.
  */
@@ -52,6 +55,7 @@ public abstract class CommandSourceStackMixin implements AdventureCommandSourceS
   @Shadow @Final private MinecraftServer server;
 
   @Shadow protected abstract void shadow$broadcastToAdmins(net.minecraft.network.chat.Component text);
+  @Shadow public abstract void shadow$sendSuccess(Supplier<net.minecraft.network.chat.Component> text, boolean sendToOps);
   // @formatter:on
 
   private boolean adventure$assigned = false;
@@ -60,18 +64,18 @@ public abstract class CommandSourceStackMixin implements AdventureCommandSourceS
 
   @Override
   public void sendSuccess(final @NotNull Component text, final boolean sendToOps) {
-    if (this.source.acceptsSuccess() && !this.silent) {
-      this.sendMessage(text);
-    }
+    this.shadow$sendSuccess(() -> this.adventure$controller.toNative(text), sendToOps);
+  }
 
-    if (sendToOps && this.source.shouldInformAdmins() && !this.silent) {
-      this.shadow$broadcastToAdmins(this.adventure$controller.toNative(text));
-    }
+  @Override
+  public void sendLazySuccess(final @NotNull Supplier<Component> text, final boolean sendToOps) {
+    requireNonNull(text, "text");
+    this.shadow$sendSuccess(() -> this.adventure$controller.toNative(text.get()), sendToOps);
   }
 
   @Override
   public void sendFailure(final @NotNull Component text) {
-    if (this.source.acceptsFailure()) {
+    if (this.source.acceptsFailure() && !this.silent) {
       this.sendMessage(text.color(NamedTextColor.RED));
     }
   }

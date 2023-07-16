@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-fabric, licensed under the MIT License.
  *
- * Copyright (c) 2020-2022 KyoriPowered
+ * Copyright (c) 2020-2023 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -165,7 +165,7 @@ public final class ServerPlayerAudience implements Audience {
     if (sound.seed().isPresent()) {
       return sound.seed().getAsLong();
     } else {
-      return ((LevelAccess) this.player.getLevel()).accessor$threadSafeRandom().nextLong();
+      return ((LevelAccess) this.player.level()).accessor$threadSafeRandom().nextLong();
     }
   }
 
@@ -208,7 +208,7 @@ public final class ServerPlayerAudience implements Audience {
       throw new IllegalArgumentException("Provided emitter '" + emitter + "' was not Sound.Emitter.self() or an Entity");
     }
 
-    if (!this.player.level.equals(targetEntity.level)) {
+    if (!this.player.level().equals(targetEntity.level())) {
       // don't send unless entities are in the same dimension
       return;
     }

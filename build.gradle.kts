@@ -145,11 +145,11 @@ fun createSecondarySet(name: String, action: Action<SourceSet> = Action { }): So
   }
 
   loom.addRemapConfiguration("mod${name.capitalized()}") {
-    sourceSet.set(set)
-    targetConfigurationName.set(name)
-    onCompileClasspath.set(true)
-    onRuntimeClasspath.set(true)
-    publishingMode.set(RemapConfigurationSettings.PublishingMode.NONE)
+    sourceSet = set
+    targetConfigurationName = name
+    onCompileClasspath = true
+    onRuntimeClasspath = true
+    publishingMode = RemapConfigurationSettings.PublishingMode.NONE
   }
 
   dependencies {
@@ -172,7 +172,7 @@ configurations.named("clientAnnotationProcessor") {
 }
 
 loom {
-  runtimeOnlyLog4j.set(true)
+  runtimeOnlyLog4j = true
   runs {
     register("testmodClient") {
       source("testmod")
@@ -223,14 +223,14 @@ dependencies {
 // Create a remapped testmod jar
 val testmodDevJar = tasks.register("testmodJar", Jar::class) {
   from(testmod.output)
-  archiveClassifier.set("testmod-dev")
+  archiveClassifier = "testmod-dev"
 }
 
 val remapTestmodJar = tasks.register("remapTestmodJar", RemapJarTask::class) {
-  inputFile.set(testmodDevJar.flatMap { it.archiveFile })
-  addNestedDependencies.set(false)
+  inputFile = testmodDevJar.flatMap { it.archiveFile }
+  addNestedDependencies = false
   classpath.from(testmod.runtimeClasspath)
-  archiveClassifier.set("testmod")
+  archiveClassifier = "testmod"
 }
 tasks.build {
   dependsOn(remapTestmodJar)
@@ -238,7 +238,7 @@ tasks.build {
 
 tasks {
   withType(RunGameTask::class).configureEach {
-    javaLauncher.set(project.javaToolchains.launcherFor { languageVersion.set(indra.javaVersions().target().map { v -> JavaLanguageVersion.of(v) }) })
+    javaLauncher = project.javaToolchains.launcherFor { languageVersion.set(indra.javaVersions().target().map { v -> JavaLanguageVersion.of(v) }) }
   }
 
   javadoc {
@@ -331,25 +331,25 @@ indra {
     pom {
       developers {
         developer {
-          id.set("kashike")
-          timezone.set("America/Vancouver")
+          id = "kashike"
+          timezone = "America/Vancouver"
         }
 
         developer {
-          id.set("lucko")
-          name.set("Luck")
-          url.set("https://lucko.me")
-          email.set("git@lucko.me")
+          id = "lucko"
+          name = "Luck"
+          url = "https://lucko.me"
+          email = "git@lucko.me"
         }
 
         developer {
-          id.set("zml")
-          name.set("zml")
-          timezone.set("America/Vancouver")
+          id = "zml"
+          name = "zml"
+          timezone = "America/Vancouver"
         }
 
         developer {
-          id.set("Electroid")
+          id = "Electroid"
         }
       }
     }
@@ -367,6 +367,6 @@ publishing {
 indraCrossdoc {
   baseUrl().set(providers.gradleProperty("javadocPublishRoot"))
   nameBasedDocumentationUrlProvider {
-    projectNamePrefix.set("adventure-platform-")
+    projectNamePrefix = "adventure-platform-"
   }
 }

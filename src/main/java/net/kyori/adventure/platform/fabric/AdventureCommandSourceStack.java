@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-fabric, licensed under the MIT License.
  *
- * Copyright (c) 2020-2022 KyoriPowered
+ * Copyright (c) 2020-2023 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,6 +23,7 @@
  */
 package net.kyori.adventure.platform.fabric;
 
+import java.util.function.Supplier;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.identity.Identified;
@@ -54,6 +55,17 @@ public interface AdventureCommandSourceStack extends ForwardingAudience.Single, 
    * @since 4.0.0
    */
   default void sendSuccess(final @NotNull Component text, final boolean sendToOps) {
+    // Implemented by Mixin
+  }
+
+  /**
+   * Send a result message to the command source.
+   *
+   * @param text A supplier providing the message to send
+   * @param sendToOps If this message should be sent to all ops listening
+   * @since 5.10.0
+   */
+  default void sendLazySuccess(final @NotNull Supplier<Component> text, final boolean sendToOps) {
     // Implemented by Mixin
   }
 
