@@ -11,7 +11,7 @@ import org.jetbrains.gradle.ext.taskTriggers
 plugins {
   alias(libs.plugins.eclipseApt)
   alias(libs.plugins.loom)
-  alias(libs.plugins.loomQuiltflower)
+  alias(libs.plugins.loomVineflower)
   alias(libs.plugins.configurateTransformations)
   alias(libs.plugins.indra)
   alias(libs.plugins.indra.licenseHeader)
@@ -27,19 +27,12 @@ repositories {
   maven(url = "https://maven.parchmentmc.org/") {
     name = "parchment"
   }
-  maven(url = "https://maven.quiltmc.org/repositories/release/") {
-    name = "quiltReleases"
-    mavenContent {
-      includeGroup("org.quiltmc")
-      releasesOnly()
-    }
-  }
   sonatype.ossSnapshots()
   sonatype.s01Snapshots()
 }
 
-quiltflower {
-  quiltflowerVersion.set(libs.versions.quiltflower.get())
+vineflower {
+  toolVersion = libs.versions.vineflower.get()
   preferences(
     "win" to 0
   )
@@ -323,7 +316,7 @@ tasks.withType(GenerateSourcesTask::class).configureEach {
 // Ugly hack for easy genSourcening
 afterEvaluate {
   tasks.matching { it.name == "genSources" }.configureEach {
-    setDependsOn(setOf("genClientOnlySourcesWithQuiltflower", "genCommonSourcesWithQuiltflower"))
+    setDependsOn(setOf("genClientOnlySourcesWithVineflower", "genCommonSourcesWithVineflower"))
   }
 }
 

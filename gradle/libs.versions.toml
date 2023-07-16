@@ -12,7 +12,7 @@ fabricLoader = "0.14.19"
 indra = "3.1.2"
 minecraft = "1.19.4"
 parchment = "1.19.3:2023.03.12"
-quiltflower = "1.9.0"
+vineflower = "1.9.1"
 spotless = "6.19.0"
 
 [libraries]
@@ -40,13 +40,13 @@ stylecheck = "ca.stellardrift:stylecheck:0.2.1"
 
 # For Renovate, do not use directly
 zCheckstyle = { module = "com.puppycrawl.tools:checkstyle", version.ref = "checkstyle" }
-zQuiltflower = { module = "org.quiltmc:quiltflower", version.ref = "quiltflower" }
+zVineflower = { module = "org.vineflower:vineflower", version.ref = "vineflower" }
 
 [plugins]
 configurateTransformations = "ca.stellardrift.configurate-transformations:6.0.1"
 eclipseApt = "com.diffplug.eclipse.apt:3.42.2"
 loom = "fabric-loom:1.1.+"
-loomQuiltflower = "io.github.juuxel.loom-quiltflower:1.11.0"
+loomVineflower = "io.github.juuxel.loom-vineflower:1.11.0"
 ideaExt = "org.jetbrains.gradle.plugin.idea-ext:1.1.7"
 indra = { id = "net.kyori.indra", version.ref = "indra" }
 indra-licenseHeader = { id = "net.kyori.indra.licenser.spotless", version.ref = "indra" }
