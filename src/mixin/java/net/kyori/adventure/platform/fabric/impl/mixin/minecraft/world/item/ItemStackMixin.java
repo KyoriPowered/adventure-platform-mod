@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-fabric, licensed under the MIT License.
  *
- * Copyright (c) 2020-2022 KyoriPowered
+ * Copyright (c) 2020-2023 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -48,7 +48,7 @@ public abstract class ItemStackMixin implements HoverEventSource<HoverEvent.Show
   public @NotNull HoverEvent<HoverEvent.ShowItem> asHoverEvent(final @NotNull UnaryOperator<HoverEvent.ShowItem> op) {
     final Key itemType = BuiltInRegistries.ITEM.getKey(this.shadow$getItem());
     final CompoundTag nbt = this.shadow$getTag();
-    final HoverEvent.ShowItem item = HoverEvent.ShowItem.of(itemType, this.shadow$getCount(), nbt == null ? null : BinaryTagHolder.binaryTagHolder(nbt.toString()));
+    final HoverEvent.ShowItem item = HoverEvent.ShowItem.showItem(itemType, this.shadow$getCount(), nbt == null ? null : BinaryTagHolder.binaryTagHolder(nbt.toString()));
     return HoverEvent.showItem(op.apply(item));
   }
 
