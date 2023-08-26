@@ -29,6 +29,7 @@ import net.kyori.adventure.platform.fabric.impl.server.FriendlyByteBufBridge;
 import net.minecraft.network.Connection;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.CommonListenerCookie;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import org.jetbrains.annotations.Nullable;
 import org.objectweb.asm.Opcodes;
@@ -41,7 +42,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class ServerGamePacketListenerImplMixin {
   // Initialize attribute tracking the player for component rendering
   @Inject(method = "<init>", at = @At(value = "FIELD", target = "Lnet/minecraft/server/level/ServerPlayer;connection:Lnet/minecraft/server/network/ServerGamePacketListenerImpl;", opcode = Opcodes.PUTFIELD))
-  private void adventure$initTracking(final MinecraftServer server, final Connection conn, final ServerPlayer player, final CallbackInfo ci) {
+  private void adventure$initTracking(final MinecraftServer server, final Connection conn, final ServerPlayer player, final CommonListenerCookie cookie, final CallbackInfo ci) {
     final @Nullable Channel chan = ((ConnectionAccess) conn).accessor$channel(); // XX: Broken mods that refuse to fix their fake player implementations throw an NPE here
     if (chan != null) {
       chan.attr(FriendlyByteBufBridge.CHANNEL_RENDER_DATA).set(player);

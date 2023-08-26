@@ -35,7 +35,7 @@ import net.kyori.adventure.platform.fabric.FabricServerAudiences;
 import net.kyori.adventure.platform.fabric.PlayerLocales;
 import net.kyori.adventure.platform.fabric.impl.LocaleHolderBridge;
 import net.kyori.adventure.platform.fabric.impl.accessor.minecraft.network.ConnectionAccess;
-import net.kyori.adventure.platform.fabric.impl.accessor.minecraft.network.ServerGamePacketListenerImplAccess;
+import net.kyori.adventure.platform.fabric.impl.accessor.minecraft.network.ServerCommonPacketListenerImplAccess;
 import net.kyori.adventure.platform.fabric.impl.mixin.minecraft.world.entity.player.PlayerMixin;
 import net.kyori.adventure.platform.fabric.impl.server.FabricServerAudiencesImpl;
 import net.kyori.adventure.platform.fabric.impl.server.FriendlyByteBufBridge;
@@ -44,9 +44,9 @@ import net.kyori.adventure.platform.fabric.impl.server.ServerPlayerAudience;
 import net.kyori.adventure.platform.fabric.impl.server.ServerPlayerBridge;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundTabListPacket;
-import net.minecraft.network.protocol.game.ServerboundClientInformationPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ClientInformation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.entity.EntityType;
@@ -121,7 +121,7 @@ public abstract class ServerPlayerMixin extends PlayerMixin implements Forwardin
   // Locale tracking
 
   @Inject(method = "updateOptions", at = @At("HEAD"))
-  private void adventure$handleLocaleUpdate(final ServerboundClientInformationPacket information, final CallbackInfo ci) {
+  private void adventure$handleLocaleUpdate(final ClientInformation information, final CallbackInfo ci) {
     final String language = information.language();
     final @Nullable Locale locale = LocaleHolderBridge.toLocale(language);
     if (!Objects.equals(this.adventure$locale, locale)) {
@@ -135,7 +135,7 @@ public abstract class ServerPlayerMixin extends PlayerMixin implements Forwardin
   @Inject(method = "restoreFrom", at = @At("RETURN"))
   private void copyData(final ServerPlayer old, final boolean alive, final CallbackInfo ci) {
     FabricServerAudiencesImpl.forEachInstance(controller -> controller.bossBars().replacePlayer(old, (ServerPlayer) (Object) this));
-    final Channel channel = ((ConnectionAccess) ((ServerGamePacketListenerImplAccess) this.connection).accessor$connection()).accessor$channel();
+    final Channel channel = ((ConnectionAccess) ((ServerCommonPacketListenerImplAccess) this.connection).accessor$connection()).accessor$channel();
     if (channel != null) {
       channel.attr(FriendlyByteBufBridge.CHANNEL_RENDER_DATA).set(this);
     }

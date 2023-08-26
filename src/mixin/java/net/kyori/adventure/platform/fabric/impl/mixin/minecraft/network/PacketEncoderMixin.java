@@ -25,6 +25,7 @@ package net.kyori.adventure.platform.fabric.impl.mixin.minecraft.network;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.util.Attribute;
 import net.kyori.adventure.platform.fabric.impl.server.FriendlyByteBufBridge;
 import net.minecraft.network.ConnectionProtocol;
 import net.minecraft.network.FriendlyByteBuf;
@@ -39,7 +40,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 @Mixin(PacketEncoder.class)
 public class PacketEncoderMixin {
   @Inject(method = "encode(Lio/netty/channel/ChannelHandlerContext;Lnet/minecraft/network/protocol/Packet;Lio/netty/buffer/ByteBuf;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/FriendlyByteBuf;writeVarInt(I)Lnet/minecraft/network/FriendlyByteBuf;"), locals = LocalCapture.CAPTURE_FAILHARD)
-  private void adventure$applyLocaleToBuffer(final ChannelHandlerContext ctx, final Packet<?> pkt, final ByteBuf orig, final CallbackInfo ci, final ConnectionProtocol unused$proto, final int unused$id, final FriendlyByteBuf buffer) {
+  private void adventure$applyLocaleToBuffer(final ChannelHandlerContext ctx, final Packet<?> pkt, final ByteBuf orig, final CallbackInfo ci, final Attribute<?> unused$protoAttr, final ConnectionProtocol.CodecData<?> unused$protocol, final int unused$id, final FriendlyByteBuf buffer) {
     ((FriendlyByteBufBridge) buffer).adventure$data(ctx.channel().attr(FriendlyByteBufBridge.CHANNEL_RENDER_DATA).get());
   }
 }

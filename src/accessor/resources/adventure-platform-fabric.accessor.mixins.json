@@ -5,6 +5,7 @@
     "api.key.InvalidKeyExceptionAccess",
     "brigadier.builder.RequiredArgumentBuilderAccess",
     "minecraft.network.ConnectionAccess",
+    "minecraft.network.ServerCommonPacketListenerImplAccess",
     "minecraft.network.ServerGamePacketListenerImplAccess",
     "minecraft.network.chat.Component_SerializerAccess",
     "minecraft.world.level.LevelAccess"
