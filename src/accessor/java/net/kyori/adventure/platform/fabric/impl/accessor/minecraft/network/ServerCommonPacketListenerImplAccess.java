@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-fabric, licensed under the MIT License.
  *
- * Copyright (c) 2020-2023 KyoriPowered
+ * Copyright (c) 2023 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,15 +23,15 @@
  */
 package net.kyori.adventure.platform.fabric.impl.accessor.minecraft.network;
 
-import net.minecraft.network.chat.MessageSignatureCache;
-import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import net.minecraft.network.Connection;
+import net.minecraft.server.network.ServerCommonPacketListenerImpl;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(ServerGamePacketListenerImpl.class)
-public interface ServerGamePacketListenerImplAccess {
+@Mixin(ServerCommonPacketListenerImpl.class)
+public interface ServerCommonPacketListenerImplAccess {
   // @formatter:off
-  @Accessor("messageSignatureCache") @Final MessageSignatureCache accessor$messageSignatureCache();
+  @Accessor("connection") @Final Connection accessor$connection();
   // @formatter:on
 }
