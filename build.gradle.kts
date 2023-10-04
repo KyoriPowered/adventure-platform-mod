@@ -11,7 +11,6 @@ import org.jetbrains.gradle.ext.taskTriggers
 plugins {
   alias(libs.plugins.eclipseApt)
   alias(libs.plugins.loom)
-  alias(libs.plugins.loomVineflower)
   alias(libs.plugins.configurateTransformations)
   alias(libs.plugins.indra)
   alias(libs.plugins.indra.licenseHeader)
@@ -29,14 +28,6 @@ repositories {
   }
   sonatype.ossSnapshots()
   sonatype.s01Snapshots()
-}
-
-vineflower {
-  toolVersion = libs.versions.vineflower.get()
-  preferences(
-    "win" to 0
-  )
-  // addToRuntimeClasspath.set(true)
 }
 
 indra {
@@ -65,6 +56,7 @@ spotless {
 }
 
 dependencies {
+  vineflowerDecompilerClasspath(libs.vineflower)
   annotationProcessor(libs.autoService)
   annotationProcessor(libs.contractValidator)
   compileOnlyApi(libs.autoService.annotations)
@@ -212,6 +204,9 @@ loom {
     add(testmod, "adventure-platform-fabric-testmod-refmap.json")
   }
 
+  decompilerOptions.named("vineflower") {
+    options.put("win", "0")
+  }
 }
 
 

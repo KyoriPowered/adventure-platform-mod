@@ -41,16 +41,15 @@ autoService = { module = "com.google.auto.service:auto-service", version.ref = "
 autoService-annotations = { module = "com.google.auto.service:auto-service-annotations", version.ref = "autoService" }
 contractValidator = "ca.stellardrift:contract-validator:1.0.1"
 stylecheck = "ca.stellardrift:stylecheck:0.2.1"
+vineflower = { module = "org.vineflower:vineflower", version.ref = "vineflower" }
 
 # For Renovate, do not use directly
 zCheckstyle = { module = "com.puppycrawl.tools:checkstyle", version.ref = "checkstyle" }
-zVineflower = { module = "org.vineflower:vineflower", version.ref = "vineflower" }
 
 [plugins]
 configurateTransformations = "ca.stellardrift.configurate-transformations:6.1.0"
 eclipseApt = "com.diffplug.eclipse.apt:3.42.2"
 loom = "fabric-loom:1.4.1"
-loomVineflower = "io.github.juuxel.loom-vineflower:1.11.0"
 ideaExt = "org.jetbrains.gradle.plugin.idea-ext:1.1.7"
 indra = { id = "net.kyori.indra", version.ref = "indra" }
 indra-licenseHeader = { id = "net.kyori.indra.licenser.spotless", version.ref = "indra" }
