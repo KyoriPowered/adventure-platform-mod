@@ -69,7 +69,8 @@ class ComponentConversionTest extends BootstrappedTest {
   @MethodSource("net.kyori.adventure.platform.fabric.ComponentConversionTest#testedComponents")
   @Target(ElementType.METHOD)
   @Retention(RetentionPolicy.RUNTIME)
-  @interface TestOnComponents {}
+  @interface TestOnComponents {
+  }
 
   @TestOnComponents
   void testComponentEqualSerializationWrapped(final Component input) {
