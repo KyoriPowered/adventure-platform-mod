@@ -102,8 +102,16 @@ dependencies {
   })
   modImplementation(libs.fabric.loader)
 
+  testImplementation(libs.fabric.loader.junit)
+  testImplementation(platform(libs.junit.bom))
+  testImplementation(libs.junit.api)
+  testImplementation(libs.junit.params)
+  testRuntimeOnly(libs.junit.engine)
+  testRuntimeOnly(libs.junit.launcher)
+
   checkstyle(libs.stylecheck)
 }
+
 
 sourceSets {
   main {
@@ -165,6 +173,15 @@ configurations.named("clientAnnotationProcessor") {
   extendsFrom(configurations.annotationProcessor.get())
 }
 
+sourceSets {
+  test {
+    compileClasspath += main.get().compileClasspath
+    runtimeClasspath += main.get().runtimeClasspath
+    compileClasspath += getByName("client").compileClasspath
+    runtimeClasspath += getByName("client").runtimeClasspath
+  }
+}
+
 loom {
   runtimeOnlyLog4j = true
   runs {
@@ -181,7 +198,6 @@ loom {
       vmArgs(
         "-Dmixin.debug.countInjections=true",
         // "-Dmixin.debug.strict=true", // Breaks FAPI :(
-        "-Dadventure.mixins.audit=true"
       )
     }
   }
