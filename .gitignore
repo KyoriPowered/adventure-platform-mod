@@ -2,6 +2,7 @@
 .gradle/
 build/
 run/
+/logs/
 
 # IntelliJ
 

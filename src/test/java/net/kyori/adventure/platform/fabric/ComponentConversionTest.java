@@ -26,6 +26,10 @@ package net.kyori.adventure.platform.fabric;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.Locale;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -35,6 +39,7 @@ import net.kyori.adventure.platform.fabric.impl.WrappedComponent;
 import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.translation.GlobalTranslator;
@@ -53,13 +58,20 @@ class ComponentConversionTest extends BootstrappedTest {
   static Stream<Object> testedComponents() {
     return Stream.of(
       Component.text("Hi"),
-      Component.translatable("gameMode.creative", style(NamedTextColor.RED).font(Key.key("uniform")))
+      Component.translatable("gameMode.creative", style(NamedTextColor.RED).font(Key.key("uniform"))),
+      Component.text("Hello").append(Component.text(" friends", TextColor.color(0xaabbcc))),
+      Component.keybind("key.jump")
     )
       .map(comp -> named(MiniMessage.miniMessage().serialize(comp), comp));
   }
 
   @ParameterizedTest
-  @MethodSource("testedComponents")
+  @MethodSource("net.kyori.adventure.platform.fabric.ComponentConversionTest#testedComponents")
+  @Target(ElementType.METHOD)
+  @Retention(RetentionPolicy.RUNTIME)
+  @interface TestOnComponents {}
+
+  @TestOnComponents
   void testComponentEqualSerializationWrapped(final Component input) {
     final JsonElement serialized = GsonComponentSerializer.gson().serializeToTree(input);
     final JsonElement serializedNative = net.minecraft.network.chat.Component.Serializer.toJsonTree(this.toNativeWrapped(input));
@@ -67,8 +79,7 @@ class ComponentConversionTest extends BootstrappedTest {
     assertJsonTreesEqual(serializedNative, serialized);
   }
 
-  @ParameterizedTest
-  @MethodSource("testedComponents")
+  @TestOnComponents
   void testNonWrappingSerializerComponentsEqual(final Component input) {
     final JsonElement serialized = GsonComponentSerializer.gson().serializeToTree(input);
     final JsonElement serializedNative = net.minecraft.network.chat.Component.Serializer.toJsonTree(net.minecraft.network.chat.Component.Serializer.fromJson(serialized));
@@ -76,13 +87,21 @@ class ComponentConversionTest extends BootstrappedTest {
     assertJsonTreesEqual(serializedNative, serialized);
   }
 
-  @ParameterizedTest
-  @MethodSource("testedComponents")
+  @TestOnComponents
   void testComponentEqualSerializationWrappedAfterDeepConversion(final Component input) {
     final JsonElement serialized = GsonComponentSerializer.gson().serializeToTree(input);
     final net.minecraft.network.chat.Component mc = this.toNativeWrapped(input);
     mc.getStyle(); // trigger deep conversion
-    final JsonElement serializedNative = net.minecraft.network.chat.Component.Serializer.toJsonTree(this.toNativeWrapped(input));
+    final JsonElement serializedNative = net.minecraft.network.chat.Component.Serializer.toJsonTree(mc);
+
+    assertJsonTreesEqual(serializedNative, serialized);
+  }
+
+  @TestOnComponents
+  void testSerializationEqualWhenWrappedNested(final Component input) {
+    final JsonElement serialized = GsonComponentSerializer.gson().serializeToTree(Component.text("Adventure says: ").append(input));
+    final net.minecraft.network.chat.Component mc = net.minecraft.network.chat.Component.literal("Adventure says: ").append(this.toNativeWrapped(input));
+    final JsonElement serializedNative = net.minecraft.network.chat.Component.Serializer.toJsonTree(mc);
 
     assertJsonTreesEqual(serializedNative, serialized);
   }
