@@ -23,11 +23,7 @@
  */
 package net.kyori.adventure.platform.fabric.impl.mixin.minecraft.network.chat;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonSerializationContext;
-import java.lang.reflect.Type;
 import net.kyori.adventure.platform.fabric.impl.NonWrappingComponentSerializer;
 import net.kyori.adventure.platform.fabric.impl.WrappedComponent;
 import net.kyori.adventure.text.ComponentLike;
@@ -36,11 +32,9 @@ import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(Component.class)
 public interface ComponentMixin extends ComponentLike {
@@ -49,29 +43,19 @@ public interface ComponentMixin extends ComponentLike {
     return NonWrappingComponentSerializer.INSTANCE.deserialize((Component) this);
   }
 
+  // Hook into the codec?
+
   @Mixin(Component.Serializer.class)
   abstract class SerializerMixin {
-    // @formatter:off
-    @Shadow public abstract JsonElement shadow$serialize(final Component text, final Type type, final JsonSerializationContext jsonSerializationContext);
-    // @formatter:on
-
-    @Inject(method = "serialize(Lnet/minecraft/network/chat/Component;Ljava/lang/reflect/Type;Lcom/google/gson/JsonSerializationContext;)Lcom/google/gson/JsonElement;", at = @At("HEAD"), cancellable = true)
-    public void adventure$writeComponentText(final Component text, final Type type, final JsonSerializationContext ctx, final CallbackInfoReturnable<JsonElement> cir) {
-      if (text instanceof WrappedComponent) {
-        final @Nullable Component converted = ((WrappedComponent) text).deepConvertedIfPresent();
-        if (converted != null) {
-          cir.setReturnValue(this.shadow$serialize(converted, type, ctx));
-        } else {
-          cir.setReturnValue(ctx.serialize(((WrappedComponent) text).wrapped(), net.kyori.adventure.text.Component.class));
+    @Inject(method = "serialize(Lnet/minecraft/network/chat/Component;)Lcom/google/gson/JsonElement;", at = @At("HEAD"), cancellable = true)
+    private static void adventure$writeComponentBase(final Component text, final CallbackInfoReturnable<JsonElement> cir) {
+      // Skip serialization logic if we're a top-level our codec
+      if (text instanceof WrappedComponent w) {
+        final @Nullable Component converted = w.deepConvertedIfPresent();
+        if (converted == null) {
+          cir.setReturnValue(GsonComponentSerializer.gson().serializeToTree(w.wrapped()));
         }
       }
-    }
-
-    // inject into the anonymous function to build a gson instance
-    @Inject(method = "*()Lcom/google/gson/Gson;", at = @At(value = "INVOKE_ASSIGN", target = "com/google/gson/GsonBuilder.disableHtmlEscaping()Lcom/google/gson/GsonBuilder;", remap = false),
-      locals = LocalCapture.CAPTURE_FAILEXCEPTION, remap = false)
-    private static void adventure$injectGson(final CallbackInfoReturnable<Gson> cir, final GsonBuilder gson) {
-      GsonComponentSerializer.gson().populator().apply(gson);
     }
   }
 }

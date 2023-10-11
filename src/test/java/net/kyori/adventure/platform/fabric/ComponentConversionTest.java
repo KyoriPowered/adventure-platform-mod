@@ -23,13 +23,15 @@
  */
 package net.kyori.adventure.platform.fabric;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
+import java.io.StringWriter;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.Comparator;
 import java.util.Locale;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -43,18 +45,16 @@ import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.translation.GlobalTranslator;
+import net.minecraft.util.GsonHelper;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import static net.kyori.adventure.text.format.Style.style;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Named.named;
 
 class ComponentConversionTest extends BootstrappedTest {
-  private static final Gson PRETTY_GSON = new GsonBuilder()
-    .setPrettyPrinting()
-    .create();
-
   static Stream<Object> testedComponents() {
     return Stream.of(
       Component.text("Hi"),
@@ -108,7 +108,21 @@ class ComponentConversionTest extends BootstrappedTest {
   }
 
   private static void assertJsonTreesEqual(final JsonElement expected, final JsonElement actual) {
-    assertEquals(PRETTY_GSON.toJson(expected), PRETTY_GSON.toJson(actual));
+    assertEquals(toStableString(expected), toStableString(actual));
+  }
+
+  private static String toStableString(final JsonElement stringable) {
+    final StringWriter writer = new StringWriter();
+    final JsonWriter jw = new JsonWriter(writer);
+    jw.setIndent("  ");
+    jw.setHtmlSafe(false);
+    try {
+      GsonHelper.writeValue(jw, stringable, Comparator.naturalOrder());
+    } catch (final IOException ex) {
+      fail("Could not write json", ex);
+    }
+
+    return writer.toString();
   }
 
   private WrappedComponent toNativeWrapped(final Component component) {

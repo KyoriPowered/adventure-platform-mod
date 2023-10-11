@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-fabric, licensed under the MIT License.
  *
- * Copyright (c) 2020-2022 KyoriPowered
+ * Copyright (c) 2020-2023 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,6 +35,7 @@ import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.fabric.impl.accessor.minecraft.network.chat.Component_SerializerAccess;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.util.Index;
 import net.minecraft.commands.arguments.ComponentArgument;
 import org.jetbrains.annotations.NotNull;
@@ -168,7 +169,7 @@ public final class ComponentArgumentType implements ArgumentType<Component> {
       @Override
       ReadResult parse(final String allInput) throws Exception {
         try (final JsonReader json = new JsonReader(new java.io.StringReader(allInput))) {
-          final Component ret = Component_SerializerAccess.getGSON().fromJson(json, Component.class);
+          final Component ret = GsonComponentSerializer.gson().serializer().fromJson(json, Component.class);
           return new ReadResult(ret, Component_SerializerAccess.getPos(json));
         }
       }

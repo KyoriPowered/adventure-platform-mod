@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-fabric, licensed under the MIT License.
  *
- * Copyright (c) 2020-2022 KyoriPowered
+ * Copyright (c) 2020-2023 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,19 +23,14 @@
  */
 package net.kyori.adventure.platform.fabric.impl.accessor.minecraft.network.chat;
 
-import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import net.minecraft.network.chat.Component;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
 @Mixin(Component.Serializer.class)
 public interface Component_SerializerAccess {
   // @formatter:off
-  @Accessor static Gson getGSON() {
-    throw new AssertionError();
-  }
   @Invoker("getPos") static int getPos(final JsonReader reader) {
     throw new AssertionError();
   }

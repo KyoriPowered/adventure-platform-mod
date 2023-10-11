@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-fabric, licensed under the MIT License.
  *
- * Copyright (c) 2022 KyoriPowered
+ * Copyright (c) 2022-2023 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,8 +26,8 @@ package net.kyori.adventure.platform.fabric.impl;
 import com.mojang.brigadier.arguments.ArgumentType;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenCustomHashMap;
+import it.unimi.dsi.fastutil.objects.Reference2IntMap;
+import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,7 +37,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.kyori.adventure.platform.fabric.impl.server.ServerPlayerBridge;
-import net.minecraft.Util;
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -50,13 +49,17 @@ public final class ServerArgumentTypes {
   private static final Map<ResourceLocation, ServerArgumentType<?>> BY_LOCATION = new ConcurrentHashMap<>();
   private static final Map<ArgumentTypeInfo<?, ?>, ServerArgumentType<?>> BY_INFO = new HashMap<>();
   private static final Int2ObjectMap<ServerArgumentType<?>> BY_ID = new Int2ObjectArrayMap<>();
-  private static final Object2IntMap<ArgumentTypeInfo<?, ?>> IDS_BY_TYPE_INFO = new Object2IntOpenCustomHashMap<>(Util.identityStrategy());
+  private static final Reference2IntMap<ArgumentTypeInfo<?, ?>> IDS_BY_TYPE_INFO = new Reference2IntOpenHashMap<>();
   private static final AtomicInteger ID_COUNTER = new AtomicInteger(100000); // start at 100,000. hopefully nobody registers that many types.
   private static @Nullable Int2ObjectMap<ServerArgumentType<?>> BY_ID_ACTIVE_SERVER = null;
 
   @SuppressWarnings("unchecked")
   public static <T extends ArgumentType<?>> ServerArgumentType<T> byClass(final Class<T> clazz) {
     return (ServerArgumentType<T>) BY_TYPE.get(requireNonNull(clazz, "clazz"));
+  }
+
+  static {
+    IDS_BY_TYPE_INFO.defaultReturnValue(-1);
   }
 
   private ServerArgumentTypes() {
