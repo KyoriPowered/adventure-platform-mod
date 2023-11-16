@@ -23,7 +23,7 @@ entrypoints:
 mixins:
   - "adventure-platform-fabric.accessor.mixins.json"
   - "adventure-platform-fabric.mixins.json"
-  - "adventure-platform-fabric.client.mixins.json"
+  - { environment: "client", "config": "adventure-platform-fabric.client.mixins.json" }
 custom:
   modmenu:api: true
   modmenu:
