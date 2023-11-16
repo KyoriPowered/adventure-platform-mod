@@ -21,15 +21,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.adventure.platform.fabric.impl.accessor.minecraft.network.chat;
+package net.kyori.adventure.platform.fabric.impl.accessor.minecraft.commands;
 
 import com.google.gson.stream.JsonReader;
-import net.minecraft.network.chat.Component;
+import net.minecraft.commands.ParserUtils;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
-@Mixin(Component.Serializer.class)
-public interface Component_SerializerAccess {
+@Mixin(ParserUtils.class)
+public interface ParserUtilsAccess {
   // @formatter:off
   @Invoker("getPos") static int getPos(final JsonReader reader) {
     throw new AssertionError();

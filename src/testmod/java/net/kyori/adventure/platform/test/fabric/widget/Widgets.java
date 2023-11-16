@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-fabric, licensed under the MIT License.
  *
- * Copyright (c) 2020-2022 KyoriPowered
+ * Copyright (c) 2020-2023 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -82,15 +82,10 @@ public final class Widgets {
    */
   public static Checkbox checkbox(final Component label, final boolean initialState, final BooleanConsumer whenPressed) {
     final net.minecraft.network.chat.Component mcComponent = FabricClientAudiences.of().toNative(label);
-    final int textWidth = Minecraft.getInstance().font.width(mcComponent);
-    return new Checkbox(0, 0, IN_GROUP_SPACING * 2 + textWidth + BUTTON_SIZE /* checkbox width */, BUTTON_SIZE, mcComponent, initialState) {
-      @Override
-      public void onPress() {
-        super.onPress();
-
-        whenPressed.accept(this.selected());
-      }
-    };
+    return Checkbox.builder(mcComponent, Minecraft.getInstance().font)
+      .selected(initialState)
+      .onValueChange((checkbox, bl) -> whenPressed.accept(bl))
+      .build();
   }
 
   private Widgets() {
