@@ -112,6 +112,10 @@ dependencies {
   checkstyle(libs.stylecheck)
 }
 
+configurations {
+  runtimeClasspath { extendsFrom(vineflowerDecompilerClasspath.get()) }
+}
+
 
 sourceSets {
   main {
