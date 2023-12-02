@@ -63,4 +63,5 @@ indra-licenseHeader = { id = "net.kyori.indra.licenser.spotless", version.ref = 
 indra-checkstyle = { id = "net.kyori.indra.checkstyle", version.ref = "indra" }
 indra-crossdoc = { id = "net.kyori.indra.crossdoc", version.ref = "indra" }
 indra-sonatype = { id = "net.kyori.indra.publishing.sonatype", version.ref = "indra" }
+nexusPublish = { id = "io.github.gradle-nexus.publish-plugin", version = "2.0.0-rc-1" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }

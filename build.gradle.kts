@@ -18,6 +18,7 @@ plugins {
   alias(libs.plugins.indra.sonatype)
   alias(libs.plugins.indra.crossdoc)
   alias(libs.plugins.ideaExt)
+  alias(libs.plugins.nexusPublish)
   alias(libs.plugins.spotless)
 }
 
