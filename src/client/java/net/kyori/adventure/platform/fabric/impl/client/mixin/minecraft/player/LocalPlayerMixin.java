@@ -28,6 +28,8 @@ import java.util.Locale;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.platform.fabric.FabricClientAudiences;
+import net.kyori.adventure.platform.fabric.impl.ControlledAudience;
+import net.kyori.adventure.platform.fabric.impl.FabricAudiencesInternal;
 import net.kyori.adventure.platform.fabric.impl.LocaleHolderBridge;
 import net.kyori.adventure.pointer.Pointers;
 import net.kyori.adventure.sound.Sound;
@@ -42,7 +44,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(LocalPlayer.class)
-public abstract class LocalPlayerMixin extends Player implements ForwardingAudience.Single, LocaleHolderBridge {
+public abstract class LocalPlayerMixin extends Player implements ForwardingAudience.Single, ControlledAudience, LocaleHolderBridge {
   // @formatter:off
   @Shadow @Final protected Minecraft minecraft;
   // @formatter:on
@@ -63,6 +65,11 @@ public abstract class LocalPlayerMixin extends Player implements ForwardingAudie
   @Override
   public @NotNull Pointers pointers() {
     return this.audience().pointers();
+  }
+
+  @Override
+  public @NotNull FabricAudiencesInternal controller() {
+    return (FabricAudiencesInternal) FabricClientAudiences.of();
   }
 
   @Override

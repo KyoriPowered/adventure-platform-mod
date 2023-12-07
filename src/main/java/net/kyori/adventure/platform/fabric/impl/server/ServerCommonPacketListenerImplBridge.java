@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-fabric, licensed under the MIT License.
  *
- * Copyright (c) 2020-2023 KyoriPowered
+ * Copyright (c) 2023 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,34 +21,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.adventure.platform.fabric.impl.service;
+package net.kyori.adventure.platform.fabric.impl.server;
 
-import com.google.auto.service.AutoService;
-import java.util.function.Consumer;
-import net.kyori.adventure.platform.fabric.impl.NBTLegacyHoverEventSerializer;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+import java.util.UUID;
+import net.kyori.adventure.resource.ResourcePackCallback;
 import org.jetbrains.annotations.NotNull;
 
-@AutoService(GsonComponentSerializer.Provider.class)
-public class GsonComponentSerializerProviderImpl implements GsonComponentSerializer.Provider {
-  @Override
-  public @NotNull GsonComponentSerializer gson() {
-    return GsonComponentSerializer.builder()
-      .legacyHoverEventSerializer(NBTLegacyHoverEventSerializer.INSTANCE)
-      .build();
-  }
+public interface ServerCommonPacketListenerImplBridge {
 
-  @Override
-  public @NotNull GsonComponentSerializer gsonLegacy() {
-    return GsonComponentSerializer.builder()
-      .legacyHoverEventSerializer(NBTLegacyHoverEventSerializer.INSTANCE)
-      .downsampleColors()
-      .emitLegacyHoverEvent()
-      .build();
-  }
+  record PackCallbackState(@NotNull FabricServerAudiencesImpl controller, @NotNull ResourcePackCallback cb) {}
 
-  @Override
-  public @NotNull Consumer<GsonComponentSerializer.Builder> builder() {
-    return builder -> builder.legacyHoverEventSerializer(NBTLegacyHoverEventSerializer.INSTANCE);
-  }
+  void adventure$bridge$registerPackCallback(final @NotNull UUID id, final @NotNull FabricServerAudiencesImpl controller, final @NotNull ResourcePackCallback cb);
 }

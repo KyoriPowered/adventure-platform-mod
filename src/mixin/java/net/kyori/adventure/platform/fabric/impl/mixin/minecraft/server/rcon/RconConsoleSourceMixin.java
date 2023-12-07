@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-fabric, licensed under the MIT License.
  *
- * Copyright (c) 2020-2022 KyoriPowered
+ * Copyright (c) 2020-2023 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,6 +30,7 @@ import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.permission.PermissionChecker;
 import net.kyori.adventure.platform.fabric.FabricServerAudiences;
+import net.kyori.adventure.platform.fabric.impl.ControlledAudience;
 import net.kyori.adventure.platform.fabric.impl.FabricAudiencesInternal;
 import net.kyori.adventure.platform.fabric.impl.server.FabricServerAudiencesImpl;
 import net.kyori.adventure.platform.fabric.impl.server.PlainAudience;
@@ -44,7 +45,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(RconConsoleSource.class)
-public abstract class RconConsoleSourceMixin implements RenderableAudience, ForwardingAudience.Single {
+public abstract class RconConsoleSourceMixin implements RenderableAudience, ForwardingAudience.Single, ControlledAudience {
   // @formatter:off
   @Shadow @Final private StringBuffer buffer;
   @Shadow @Final private MinecraftServer server;
@@ -76,5 +77,10 @@ public abstract class RconConsoleSourceMixin implements RenderableAudience, Forw
       }
     }
     return this.adventure$pointers;
+  }
+
+  @Override
+  public @NotNull FabricAudiencesInternal controller() {
+    return (FabricAudiencesInternal) FabricServerAudiences.of(this.server);
   }
 }

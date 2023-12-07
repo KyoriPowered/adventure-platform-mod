@@ -33,6 +33,8 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.platform.fabric.FabricServerAudiences;
 import net.kyori.adventure.platform.fabric.PlayerLocales;
+import net.kyori.adventure.platform.fabric.impl.ControlledAudience;
+import net.kyori.adventure.platform.fabric.impl.FabricAudiencesInternal;
 import net.kyori.adventure.platform.fabric.impl.LocaleHolderBridge;
 import net.kyori.adventure.platform.fabric.impl.accessor.minecraft.network.ConnectionAccess;
 import net.kyori.adventure.platform.fabric.impl.accessor.minecraft.network.ServerCommonPacketListenerImplAccess;
@@ -62,7 +64,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerPlayer.class)
-public abstract class ServerPlayerMixin extends PlayerMixin implements ForwardingAudience.Single, LocaleHolderBridge, RenderableAudience, ServerPlayerBridge {
+public abstract class ServerPlayerMixin extends PlayerMixin implements ForwardingAudience.Single, LocaleHolderBridge, RenderableAudience, ServerPlayerBridge, ControlledAudience {
   // @formatter:off
   @Shadow @Final public MinecraftServer server;
   @Shadow public ServerGamePacketListenerImpl connection;
@@ -97,6 +99,11 @@ public abstract class ServerPlayerMixin extends PlayerMixin implements Forwardin
   @Override
   public @NotNull Locale adventure$locale() {
     return this.adventure$locale;
+  }
+
+  @Override
+  public @NotNull FabricAudiencesInternal controller() {
+    return (FabricAudiencesInternal) FabricServerAudiences.of(this.server);
   }
 
   // Tab list
