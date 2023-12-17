@@ -2,7 +2,7 @@
 version = "1.0"
 
 [versions]
-adventure = "4.14.0"
+adventure = "4.15.0-SNAPSHOT"
 adventurePlatform = "4.3.1"
 ansi = "1.0.3"
 autoService = "1.1.1"
