@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-fabric, licensed under the MIT License.
  *
- * Copyright (c) 2020-2022 KyoriPowered
+ * Copyright (c) 2020-2023 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,6 +30,7 @@ import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.permission.PermissionChecker;
 import net.kyori.adventure.platform.fabric.FabricServerAudiences;
+import net.kyori.adventure.platform.fabric.impl.ControlledAudience;
 import net.kyori.adventure.platform.fabric.impl.FabricAudiencesInternal;
 import net.kyori.adventure.platform.fabric.impl.server.FabricServerAudiencesImpl;
 import net.kyori.adventure.platform.fabric.impl.server.MinecraftServerBridge;
@@ -37,7 +38,9 @@ import net.kyori.adventure.platform.fabric.impl.server.PlainAudience;
 import net.kyori.adventure.platform.fabric.impl.server.RenderableAudience;
 import net.kyori.adventure.pointer.Pointers;
 import net.kyori.adventure.util.TriState;
+import net.minecraft.core.LayeredRegistryAccess;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.RegistryLayer;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.spongepowered.asm.mixin.Final;
@@ -48,10 +51,13 @@ import org.spongepowered.asm.mixin.Shadow;
  * Implement ComponentCommandOutput for output to the server console.
  */
 @Mixin(value = MinecraftServer.class)
-public abstract class MinecraftServerMixin implements MinecraftServerBridge, RenderableAudience, ForwardingAudience.Single {
+public abstract class MinecraftServerMixin implements MinecraftServerBridge, RenderableAudience, ForwardingAudience.Single, ControlledAudience {
   // @formatter:off
   @Shadow @Final private static Logger LOGGER;
   // @formatter:on
+
+  @Shadow
+  public abstract LayeredRegistryAccess<RegistryLayer> registries();
 
   private final FabricServerAudiencesImpl adventure$globalProvider = new FabricServerAudiencesImpl.Builder((MinecraftServer) (Object) this).build();
   private final Map<FabricAudiencesInternal, Audience> adventure$renderers = new MapMaker().weakKeys().makeMap();
@@ -86,6 +92,11 @@ public abstract class MinecraftServerMixin implements MinecraftServerBridge, Ren
       }
     }
     return this.adventure$pointers;
+  }
+
+  @Override
+  public @NotNull FabricAudiencesInternal controller() {
+    return this.adventure$globalProvider;
   }
 
   @Override

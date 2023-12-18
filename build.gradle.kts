@@ -44,8 +44,7 @@ indraSpotlessLicenser {
 }
 
 spotless {
-  // ratchetFrom("origin/mc/${libs.versions.minecraft.get().splitToSequence('.').take(2).joinToString(".")}")
-  ratchetFrom("origin/mc/1.20")
+  ratchetFrom("origin/mc/${libs.versions.minecraft.get().splitToSequence('.').take(2).joinToString(".")}")
 
   java {
     importOrderFile(rootProject.file(".spotless/kyori.importorder"))
@@ -95,6 +94,7 @@ dependencies {
   include(libs.examination.string)
   include(libs.adventure.textSerializerJson)
   include(libs.ansi)
+  include(libs.option)
   modCompileOnly(libs.jetbrainsAnnotations)
 
   minecraft(libs.minecraft)
