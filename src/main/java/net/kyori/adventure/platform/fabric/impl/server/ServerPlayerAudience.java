@@ -106,7 +106,7 @@ public final class ServerPlayerAudience implements ControlledAudience {
     this.player.connection.send(packet);
   }
 
-  @SuppressWarnings({"unchucked", "rawtypes"}) // bundle generics don't handle configuration phase
+  @SuppressWarnings({"unchecked", "rawtypes"}) // bundle generics don't handle configuration phase
   void sendBundle(final List<? extends Packet<? extends ClientCommonPacketListener>> packet) {
     this.player.connection.send(new ClientboundBundlePacket((List) packet));
   }

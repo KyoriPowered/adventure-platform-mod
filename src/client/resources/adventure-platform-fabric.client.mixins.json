@@ -5,6 +5,7 @@
     "minecraft.OptionsMixin",
     "minecraft.gui.components.BossHealthOverlayMixin",
     "minecraft.player.LocalPlayerMixin",
+    "minecraft.resources.server.DownloadedPackSourceMixin",
     "minecraft.resources.sounds.AbstractSoundInstanceAccess"
   ]
 }

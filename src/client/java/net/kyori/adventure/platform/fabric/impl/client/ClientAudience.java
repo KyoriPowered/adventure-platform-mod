@@ -313,12 +313,14 @@ public class ClientAudience implements ControlledAudience {
     }
 
     for (final ResourcePackInfo info : request.packs()) {
+      ListeningPackFeedbackWrapper.registerCallback(info.id(), request.callback(), this);
+
       try {
         this.client.getDownloadedPackSource().pushPack(info.id(), info.uri().toURL(), info.hash());
       } catch (final MalformedURLException ex) {
         request.callback().packEventReceived(info.id(), ResourcePackStatus.INVALID_URL, this);
       }
-      // TODO: callbacks, required, prompting?
+      // TODO: required, prompting?
     }
   }
 
