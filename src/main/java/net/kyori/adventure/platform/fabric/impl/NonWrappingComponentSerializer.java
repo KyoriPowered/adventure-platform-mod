@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-fabric, licensed under the MIT License.
  *
- * Copyright (c) 2020-2022 KyoriPowered
+ * Copyright (c) 2020-2023 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,9 +23,9 @@
  */
 package net.kyori.adventure.platform.fabric.impl;
 
-import net.kyori.adventure.platform.fabric.impl.accessor.minecraft.network.chat.Component_SerializerAccess;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.ComponentSerializer;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.minecraft.network.chat.MutableComponent;
 
 public final class NonWrappingComponentSerializer implements ComponentSerializer<Component, Component, net.minecraft.network.chat.Component> {
@@ -46,7 +46,7 @@ public final class NonWrappingComponentSerializer implements ComponentSerializer
       return ((WrappedComponent) input).wrapped();
     }
 
-    return Component_SerializerAccess.getGSON().fromJson(net.minecraft.network.chat.Component.Serializer.toJsonTree(input), Component.class);
+    return GsonComponentSerializer.gson().deserializeFromTree(net.minecraft.network.chat.Component.Serializer.toJsonTree(input));
   }
 
   @Override
@@ -54,7 +54,7 @@ public final class NonWrappingComponentSerializer implements ComponentSerializer
     this.bypassIsAllowedFromServer.set(true);
     final MutableComponent mutableComponent;
     try {
-      mutableComponent = net.minecraft.network.chat.Component.Serializer.fromJson(Component_SerializerAccess.getGSON().toJsonTree(component));
+      mutableComponent = net.minecraft.network.chat.Component.Serializer.fromJson(GsonComponentSerializer.gson().serializeToTree(component));
     } finally {
       this.bypassIsAllowedFromServer.set(false);
     }

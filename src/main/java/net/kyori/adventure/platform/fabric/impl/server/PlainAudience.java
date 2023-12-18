@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-fabric, licensed under the MIT License.
  *
- * Copyright (c) 2020-2022 KyoriPowered
+ * Copyright (c) 2020-2023 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,11 +24,11 @@
 package net.kyori.adventure.platform.fabric.impl.server;
 
 import java.util.function.Consumer;
-import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.chat.ChatType;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.platform.fabric.impl.AdventureCommon;
+import net.kyori.adventure.platform.fabric.impl.ControlledAudience;
 import net.kyori.adventure.platform.fabric.impl.FabricAudiencesInternal;
 import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.pointer.Pointers;
@@ -36,7 +36,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 
-public final class PlainAudience implements Audience {
+public final class PlainAudience implements ControlledAudience {
   private final FabricAudiencesInternal controller;
   private final Pointered source;
   private final Consumer<String> plainOutput;
@@ -45,6 +45,11 @@ public final class PlainAudience implements Audience {
     this.controller = controller;
     this.source = source;
     this.plainOutput = plainOutput;
+  }
+
+  @Override
+  public @NotNull FabricAudiencesInternal controller() {
+    return this.controller;
   }
 
   @Override

@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-fabric, licensed under the MIT License.
  *
- * Copyright (c) 2020-2022 KyoriPowered
+ * Copyright (c) 2020-2023 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,9 +23,10 @@
  */
 package net.kyori.adventure.platform.fabric.impl.client;
 
+import java.net.MalformedURLException;
 import java.time.Duration;
 import java.util.Objects;
-import net.kyori.adventure.audience.Audience;
+import java.util.UUID;
 import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.chat.ChatType;
@@ -35,11 +36,16 @@ import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.fabric.FabricAudiences;
 import net.kyori.adventure.platform.fabric.impl.AdventureCommon;
+import net.kyori.adventure.platform.fabric.impl.ControlledAudience;
+import net.kyori.adventure.platform.fabric.impl.FabricAudiencesInternal;
 import net.kyori.adventure.platform.fabric.impl.GameEnums;
 import net.kyori.adventure.platform.fabric.impl.PointerProviderBridge;
 import net.kyori.adventure.platform.fabric.impl.accessor.minecraft.world.level.LevelAccess;
 import net.kyori.adventure.platform.fabric.impl.client.mixin.minecraft.resources.sounds.AbstractSoundInstanceAccess;
 import net.kyori.adventure.pointer.Pointers;
+import net.kyori.adventure.resource.ResourcePackInfo;
+import net.kyori.adventure.resource.ResourcePackRequest;
+import net.kyori.adventure.resource.ResourcePackStatus;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.SoundStop;
 import net.kyori.adventure.text.Component;
@@ -62,13 +68,18 @@ import net.minecraft.world.entity.player.ChatVisiblity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class ClientAudience implements Audience {
+public class ClientAudience implements ControlledAudience {
   private final Minecraft client;
   private final FabricClientAudiencesImpl controller;
 
   public ClientAudience(final Minecraft client, final FabricClientAudiencesImpl renderer) {
     this.client = client;
     this.controller = renderer;
+  }
+
+  @Override
+  public @NotNull FabricAudiencesInternal controller() {
+    return this.controller;
   }
 
   @Override
@@ -296,12 +307,41 @@ public class ClientAudience implements Audience {
   }
 
   @Override
+  public void sendResourcePacks(final @NotNull ResourcePackRequest request) {
+    if (request.replace()) {
+      this.client.getDownloadedPackSource().popAll();
+    }
+
+    for (final ResourcePackInfo info : request.packs()) {
+      try {
+        this.client.getDownloadedPackSource().pushPack(info.id(), info.uri().toURL(), info.hash());
+      } catch (final MalformedURLException ex) {
+        request.callback().packEventReceived(info.id(), ResourcePackStatus.INVALID_URL, this);
+      }
+      // TODO: callbacks, required, prompting?
+    }
+  }
+
+  @Override
+  public void removeResourcePacks(final @NotNull UUID id, final @NotNull UUID@NotNull... others) {
+    this.client.getDownloadedPackSource().popPack(id);
+    for (final UUID other : others) {
+      this.client.getDownloadedPackSource().popPack(other);
+    }
+  }
+
+  @Override
+  public void clearResourcePacks() {
+    this.client.getDownloadedPackSource().popAll();
+  }
+
+  @Override
   public @NotNull Pointers pointers() {
     final @Nullable LocalPlayer clientPlayer = this.client.player;
     if (clientPlayer != null) {
       return ((PointerProviderBridge) clientPlayer).adventure$pointers();
     } else {
-      return Audience.super.pointers();
+      return ControlledAudience.super.pointers();
     }
   }
 }

@@ -23,39 +23,20 @@
  */
 package net.kyori.adventure.platform.fabric.impl.mixin.minecraft.network.chat;
 
-import com.google.gson.JsonElement;
 import net.kyori.adventure.platform.fabric.impl.NonWrappingComponentSerializer;
-import net.kyori.adventure.platform.fabric.impl.WrappedComponent;
-import net.kyori.adventure.text.ComponentLike;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ClickEvent;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.Redirect;
 
-@Mixin(Component.class)
-public interface ComponentMixin extends ComponentLike {
-  @Override
-  default net.kyori.adventure.text.@NotNull Component asComponent() {
-    return NonWrappingComponentSerializer.INSTANCE.deserialize((Component) this);
-  }
-
-  // Hook into the codec?
-
-  @Mixin(Component.Serializer.class)
-  abstract class SerializerMixin {
-    @Inject(method = "serialize(Lnet/minecraft/network/chat/Component;)Lcom/google/gson/JsonElement;", at = @At("HEAD"), cancellable = true)
-    private static void adventure$writeComponentBase(final Component text, final CallbackInfoReturnable<JsonElement> cir) {
-      // Skip serialization logic if we're a top-level our codec
-      if (text instanceof WrappedComponent w) {
-        final @Nullable Component converted = w.deepConvertedIfPresent();
-        if (converted == null) {
-          cir.setReturnValue(GsonComponentSerializer.gson().serializeToTree(w.wrapped()));
-        }
-      }
+@Mixin(ClickEvent.Action.class)
+abstract class ClickEvent_ActionMixin {
+  @Redirect(method = "filterForSerialization", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/chat/ClickEvent$Action;isAllowedFromServer()Z"))
+  private static boolean adventure$redirectIsAllowedFromServer(final ClickEvent.@NotNull Action action) {
+    if (NonWrappingComponentSerializer.INSTANCE.bypassIsAllowedFromServer()) {
+      return true;
     }
+    return action.isAllowedFromServer();
   }
 }

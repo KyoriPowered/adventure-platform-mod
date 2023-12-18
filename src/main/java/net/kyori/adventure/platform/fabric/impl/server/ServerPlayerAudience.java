@@ -24,8 +24,12 @@
 package net.kyori.adventure.platform.fabric.impl.server;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Objects;
-import net.kyori.adventure.audience.Audience;
+import java.util.Optional;
+import java.util.UUID;
 import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.chat.ChatType;
@@ -35,11 +39,16 @@ import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.fabric.FabricAudiences;
 import net.kyori.adventure.platform.fabric.impl.AdventureCommon;
+import net.kyori.adventure.platform.fabric.impl.ControlledAudience;
+import net.kyori.adventure.platform.fabric.impl.FabricAudiencesInternal;
 import net.kyori.adventure.platform.fabric.impl.GameEnums;
 import net.kyori.adventure.platform.fabric.impl.PointerProviderBridge;
 import net.kyori.adventure.platform.fabric.impl.accessor.minecraft.network.ServerGamePacketListenerImplAccess;
 import net.kyori.adventure.platform.fabric.impl.accessor.minecraft.world.level.LevelAccess;
 import net.kyori.adventure.pointer.Pointers;
+import net.kyori.adventure.resource.ResourcePackCallback;
+import net.kyori.adventure.resource.ResourcePackInfo;
+import net.kyori.adventure.resource.ResourcePackRequest;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.SoundStop;
 import net.kyori.adventure.text.Component;
@@ -47,6 +56,7 @@ import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.kyori.adventure.title.Title;
 import net.kyori.adventure.title.TitlePart;
+import net.kyori.adventure.util.MonkeyBars;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -56,6 +66,10 @@ import net.minecraft.network.chat.MessageSignature;
 import net.minecraft.network.chat.OutgoingChatMessage;
 import net.minecraft.network.chat.PlayerChatMessage;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.common.ClientCommonPacketListener;
+import net.minecraft.network.protocol.common.ClientboundResourcePackPopPacket;
+import net.minecraft.network.protocol.common.ClientboundResourcePackPushPacket;
+import net.minecraft.network.protocol.game.ClientboundBundlePacket;
 import net.minecraft.network.protocol.game.ClientboundClearTitlesPacket;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.network.protocol.game.ClientboundDeleteChatPacket;
@@ -79,7 +93,7 @@ import org.jetbrains.annotations.Nullable;
 
 import static java.util.Objects.requireNonNull;
 
-public final class ServerPlayerAudience implements Audience {
+public final class ServerPlayerAudience implements ControlledAudience {
   private final ServerPlayer player;
   private final FabricServerAudiencesImpl controller;
 
@@ -88,8 +102,13 @@ public final class ServerPlayerAudience implements Audience {
     this.controller = controller;
   }
 
-  void sendPacket(final Packet<?> packet) {
+  void sendPacket(final Packet<? extends ClientCommonPacketListener> packet) {
     this.player.connection.send(packet);
+  }
+
+  @SuppressWarnings({"unchucked", "rawtypes"}) // bundle generics don't handle configuration phase
+  void sendBundle(final List<? extends Packet<? extends ClientCommonPacketListener>> packet) {
+    this.player.connection.send(new ClientboundBundlePacket((List) packet));
   }
 
   @Override
@@ -349,7 +368,54 @@ public final class ServerPlayerAudience implements Audience {
   }
 
   @Override
+  public void sendResourcePacks(final @NotNull ResourcePackRequest request) {
+    final List<Packet<ClientCommonPacketListener>> packets = new ArrayList<>(request.packs().size());
+    if (request.replace()) {
+      packets.add(new ClientboundResourcePackPopPacket(Optional.empty()));
+    }
+
+    final net.minecraft.network.chat.@Nullable Component prompt = this.toNativeNullable(request.prompt());
+    for (final Iterator<ResourcePackInfo> it = request.packs().iterator(); it.hasNext();) {
+      final ResourcePackInfo pack = it.next();
+      packets.add(new ClientboundResourcePackPushPacket(
+        pack.id(),
+        pack.uri().toASCIIString(),
+        pack.hash(),
+        request.required(),
+        it.hasNext() ? null : prompt
+      ));
+
+      if (request.callback() != ResourcePackCallback.noOp()) {
+        ((ServerCommonPacketListenerImplBridge) this.player.connection).adventure$bridge$registerPackCallback(pack.id(), this.controller, request.callback());
+      }
+    }
+
+    this.sendBundle(packets);
+  }
+
+  @Override
+  public void removeResourcePacks(final @NotNull UUID id, final @NotNull UUID@NotNull... others) {
+    this.sendBundle(
+      MonkeyBars.nonEmptyArrayToList(pack -> new ClientboundResourcePackPopPacket(Optional.of(pack)), id, others)
+    );
+  }
+
+  @Override
+  public void clearResourcePacks() {
+    this.sendPacket(new ClientboundResourcePackPopPacket(Optional.empty()));
+  }
+
+  private net.minecraft.network.chat.@Nullable Component toNativeNullable(final @Nullable Component comp) {
+    return comp == null ? null : this.controller.toNative(comp);
+  }
+
+  @Override
   public @NotNull Pointers pointers() {
     return ((PointerProviderBridge) this.player).adventure$pointers();
+  }
+
+  @Override
+  public @NotNull FabricAudiencesInternal controller() {
+    return this.controller;
   }
 }

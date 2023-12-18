@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-fabric, licensed under the MIT License.
  *
- * Copyright (c) 2020-2022 KyoriPowered
+ * Copyright (c) 2020-2023 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,6 +27,8 @@ import com.google.auto.service.AutoService;
 import java.util.function.Consumer;
 import net.kyori.adventure.platform.fabric.impl.NBTLegacyHoverEventSerializer;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+import net.kyori.adventure.text.serializer.json.JSONOptions;
+import net.minecraft.SharedConstants;
 import org.jetbrains.annotations.NotNull;
 
 @AutoService(GsonComponentSerializer.Provider.class)
@@ -42,13 +44,17 @@ public class GsonComponentSerializerProviderImpl implements GsonComponentSeriali
   public @NotNull GsonComponentSerializer gsonLegacy() {
     return GsonComponentSerializer.builder()
       .legacyHoverEventSerializer(NBTLegacyHoverEventSerializer.INSTANCE)
-      .downsampleColors()
-      .emitLegacyHoverEvent()
+      .editOptions(b -> b
+        .value(JSONOptions.EMIT_RGB, false)
+        .value(JSONOptions.EMIT_HOVER_EVENT_TYPE, JSONOptions.HoverEventValueMode.BOTH)
+      )
       .build();
   }
 
   @Override
   public @NotNull Consumer<GsonComponentSerializer.Builder> builder() {
-    return builder -> builder.legacyHoverEventSerializer(NBTLegacyHoverEventSerializer.INSTANCE);
+    return builder -> builder
+      .legacyHoverEventSerializer(NBTLegacyHoverEventSerializer.INSTANCE)
+      .options(JSONOptions.byDataVersion().at(SharedConstants.getCurrentVersion().getDataVersion().getVersion()));
   }
 }

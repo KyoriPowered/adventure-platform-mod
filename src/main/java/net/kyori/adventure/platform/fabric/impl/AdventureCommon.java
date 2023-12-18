@@ -56,6 +56,7 @@ import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.pointer.Pointers;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TranslatableComponent;
+import net.kyori.adventure.text.TranslationArgument;
 import net.kyori.adventure.text.flattener.ComponentFlattener;
 import net.kyori.adventure.translation.GlobalTranslator;
 import net.kyori.adventure.translation.TranslationRegistry;
@@ -137,7 +138,7 @@ public class AdventureCommon implements ModInitializer {
       );
 
       final Matcher matcher = LOCALIZATION_PATTERN.matcher(translated);
-      final List<Component> args = translatable.args();
+      final List<TranslationArgument> args = translatable.arguments();
       int argPosition = 0;
       int lastIdx = 0;
       while (matcher.find()) {
@@ -151,7 +152,7 @@ public class AdventureCommon implements ModInitializer {
           try {
             final int idx = Integer.parseInt(argIdx) - 1;
             if (idx < args.size()) {
-              consumer.accept(args.get(idx));
+              consumer.accept(args.get(idx).asComponent());
             }
           } catch (final NumberFormatException ex) {
             // ignore, drop the format placeholder
@@ -159,7 +160,7 @@ public class AdventureCommon implements ModInitializer {
         } else {
           final int idx = argPosition++;
           if (idx < args.size()) {
-            consumer.accept(args.get(idx));
+            consumer.accept(args.get(idx).asComponent());
           }
         }
       }
