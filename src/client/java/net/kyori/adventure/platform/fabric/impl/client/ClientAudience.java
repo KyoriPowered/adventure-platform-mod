@@ -42,6 +42,7 @@ import net.kyori.adventure.platform.fabric.impl.GameEnums;
 import net.kyori.adventure.platform.fabric.impl.PointerProviderBridge;
 import net.kyori.adventure.platform.fabric.impl.accessor.minecraft.world.level.LevelAccess;
 import net.kyori.adventure.platform.fabric.impl.client.mixin.minecraft.resources.sounds.AbstractSoundInstanceAccess;
+import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.pointer.Pointers;
 import net.kyori.adventure.resource.ResourcePackInfo;
 import net.kyori.adventure.resource.ResourcePackRequest;
@@ -273,7 +274,7 @@ public class ClientAudience implements ControlledAudience {
       y,
       z,
       false
-      ));
+    ));
   }
 
   @Override
@@ -325,7 +326,7 @@ public class ClientAudience implements ControlledAudience {
   }
 
   @Override
-  public void removeResourcePacks(final @NotNull UUID id, final @NotNull UUID@NotNull... others) {
+  public void removeResourcePacks(final @NotNull UUID id, final @NotNull UUID @NotNull ... others) {
     this.client.getDownloadedPackSource().popPack(id);
     for (final UUID other : others) {
       this.client.getDownloadedPackSource().popPack(other);
@@ -343,7 +344,7 @@ public class ClientAudience implements ControlledAudience {
     if (clientPlayer != null) {
       return ((PointerProviderBridge) clientPlayer).adventure$pointers();
     } else {
-      return ControlledAudience.super.pointers();
+      return ((Pointered) this.client).pointers();
     }
   }
 }
