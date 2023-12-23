@@ -32,6 +32,8 @@ import org.jetbrains.annotations.NotNull;
  * provided at runtime via Mixin or otherwise.
  *
  * <p>The default implementation is required due to interface injection.</p>
+ *
+ * @since 5.11.0
  */
 public interface IdentifiedAtRuntime extends Identified {
   @Override
