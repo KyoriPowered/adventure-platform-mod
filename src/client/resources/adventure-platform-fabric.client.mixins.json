@@ -2,6 +2,7 @@
   "parent": "adventure-platform-fabric.parent.mixins.json",
   "package": "net.kyori.adventure.platform.fabric.impl.client.mixin",
   "client": [
+    "minecraft.MinecraftMixin",
     "minecraft.OptionsMixin",
     "minecraft.gui.components.BossHealthOverlayMixin",
     "minecraft.player.LocalPlayerMixin",

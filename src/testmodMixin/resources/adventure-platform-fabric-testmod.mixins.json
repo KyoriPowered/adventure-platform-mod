@@ -2,6 +2,7 @@
   "parent": "adventure-platform-fabric.parent.mixins.json",
   "package": "net.kyori.adventure.platform.test.fabric.mixin",
   "client": [
-    "minecraft.client.gui.screens.ChatScreenMixin"
+    "minecraft.client.gui.screens.ChatScreenMixin",
+    "minecraft.client.gui.screens.TitleScreenMixin"
   ]
 }
