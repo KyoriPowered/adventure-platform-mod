@@ -83,11 +83,14 @@ dependencies {
    }
    include(it)
   }
-  modApi(fabricApi.module("fabric-api-base", libs.versions.fabricApi.get()))
-  modImplementation(fabricApi.module("fabric-networking-api-v1", libs.versions.fabricApi.get()))
-  modImplementation(fabricApi.module("fabric-command-api-v2", libs.versions.fabricApi.get()))
+  sequenceOf<(Any) -> Dependency?>(
+    ::modImplementation, ::modApi, ::modCompileOnly
+  ).forEach { it(platform(libs.fabric.api.bom)) }
+  modApi(libs.fabric.api.base)
+  modImplementation(libs.fabric.api.networking)
+  modImplementation(libs.fabric.api.command)
   // Only used for prod test
-  modCompileOnly(fabricApi.module("fabric-lifecycle-events-v1", libs.versions.fabricApi.get()))
+  modCompileOnly(libs.fabric.api.lifecycle)
 
   // Transitive deps
   include(libs.examination.api)
