@@ -8,18 +8,7 @@ See the [documentation](https://docs.adventure.kyori.net/platform/fabric.html) f
 
 ### Versions
 
-`adventure-platform-fabric` tends to not work on more than one major version of Minecraft at a time. We test the following version combinations:
-
-Minecraft Version | `adventure-platform-fabric` version
------------------ | ------------------------------------
-1.16.x            | `4.0.0`
-1.17.x            | `4.1.0`
-1.18.1            | `5.1.0`
-1.18.2            | `5.3.1`
-1.19              | `5.4.0`
-1.19.1 / 1.19.2   | `5.5.2`
-1.19.3            | `5.7.0`
-1.19.4            | `5.8.0`
+`adventure-platform-fabric` tends to not work on more than one major version of Minecraft at a time. See the docs for the latest tested versions on each Minecraft release.
 
 ### Contributing
 
@@ -36,7 +25,7 @@ $ ./gradlew --no-daemon generateTemplates
 $ ./gradlew build
 ```
 
-To have browseable game source in your IDE, run `./gradlew genSources` before importing the mod
+To have browsable game source in your IDE, run `./gradlew genSources` before importing the mod
 
 `adventure-platform-fabric` is released under the terms of the [MIT License](LICENSE).
 
