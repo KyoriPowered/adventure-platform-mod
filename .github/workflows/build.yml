@@ -10,44 +10,36 @@ concurrency:
   group: "${{ github.workflow }}-${{ github.event.number || github.ref }}"
   cancel-in-progress: true
 
-env:
-  RUNTIME_VERSION: 17
-
 jobs:
   build:
     # Only run on PRs if the source branch is on someone else's repo
-    if: ${{ github.event_name != 'pull_request' || github.repository != github.event.pull_request.head.repo.full_name }}
+    if: "${{ github.event_name != 'pull_request' || github.repository != github.event.pull_request.head.repo.full_name }}"
     strategy:
       matrix:
         os: ["ubuntu-latest", "windows-latest"]
     runs-on: "${{ matrix.os }}"
     steps:
-      - name: "checkout repository"
-        uses: "actions/checkout@v4"
+      - name: "setup env"
+        id: "setup"
+        uses: "KyoriPowered/.github/.github/actions/setup-java-env@trunk"
         with:
-          fetch-depth: 0
-      - name: "setup jdk ${{ env.RUNTIME_VERSION }}"
-        uses: "actions/setup-java@v4"
-        with:
-          distribution: "temurin"
-          java-version: "${{ env.RUNTIME_VERSION }}"
+          runtime_version: 17
+          publishing_branch_regex: "(?:(?:(?:mc\/)?(\d+(?:\.\d+)*(?:\.x)?)))"
+          gradle_warning_mode: "all"
       - name: "prime gradle build"
-        uses: "gradle/gradle-build-action@v2"
-        with:
-          cache-read-only: "${{ !startsWith(github.ref, 'refs/heads/mc/') || github.event_name == 'pull_request' }}"
-          arguments: "generateTemplates generateTestmodTemplates --stacktrace" # Bonk loom
+        run: "./gradlew generateTemplates generateTestmodTemplates --stacktrace" # Bonk loom
       - name: "run gradle build"
         run: "./gradlew build --stacktrace"
-      - name: "Archive test results"
+      - name: "archive test results"
         if: "${{ always() }}"
-        uses: "actions/upload-artifact@v4"
+        uses: "actions/upload-artifact@v4.2.0"
         with:
           name: "${{ runner.os }}-test-results"
           path: |
             build/reports/
             */build/reports/
-      - name: Determine status
-        shell: bash
+      - name: "determine status"
+        shell: "bash"
         run: |
           VERSION="$(./gradlew properties | awk '/^version:/ { print $2; }')"
           if [ "$(echo $VERSION | grep '\-SNAPSHOT')" ]; then
@@ -57,7 +49,7 @@ jobs:
           fi
           echo "VERSION=$VERSION" >> $GITHUB_ENV
       - name: "Cache test run data"
-        uses: "actions/cache@v4"
+        uses: "actions/cache@v4.0.0"
         with:
           path: |
             testserver/libraries
@@ -105,7 +97,7 @@ jobs:
             exit 1
           fi
       - name: "publish"
-        if: "${{ runner.os == 'Linux' && env.STATUS != 'release' && github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/mc/')) }}"
+        if: "${{ runner.os == 'Linux' && env.STATUS != 'release' && github.event_name == 'push' && steps.setup.outputs.publishing_branch != '' }}"
         run: "./gradlew publish"
         env:
           ORG_GRADLE_PROJECT_sonatypeUsername: "${{ secrets.SONATYPE_USERNAME }}"
