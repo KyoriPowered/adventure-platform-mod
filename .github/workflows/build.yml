@@ -24,7 +24,7 @@ jobs:
         uses: "KyoriPowered/.github/.github/actions/setup-java-env@trunk"
         with:
           runtime_version: 17
-          publishing_branch_regex: "(?:(?:(?:mc\/)?(\d+(?:\.\d+)*(?:\.x)?)))"
+          publishing_branch_regex: '(?:(?:(?:mc\/)?(\d+(?:\.\d+)*(?:\.x)?)))'
           gradle_warning_mode: "all"
       - name: "prime gradle build"
         run: "./gradlew generateTemplates generateTestmodTemplates --stacktrace" # Bonk loom
