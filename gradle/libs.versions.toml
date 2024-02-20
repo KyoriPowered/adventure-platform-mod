@@ -15,7 +15,7 @@ junit = "5.10.1"
 minecraft = "1.20.4"
 parchment = "1.20.3:2023.12.31"
 vineflower = "1.9.3"
-spotless = "6.21.0"
+spotless = "6.25.0"
 
 [libraries]
 adventure-api = { module = "net.kyori:adventure-api", version.ref = "adventure" }
@@ -61,13 +61,13 @@ zCheckstyle = { module = "com.puppycrawl.tools:checkstyle", version.ref = "check
 
 [plugins]
 configurateTransformations = "ca.stellardrift.configurate-transformations:6.1.0"
-eclipseApt = "com.diffplug.eclipse.apt:3.42.2"
-loom = "fabric-loom:1.5.6"
+eclipseApt = "com.diffplug.eclipse.apt:3.44.0"
+loom = "fabric-loom:1.5.7"
 ideaExt = "org.jetbrains.gradle.plugin.idea-ext:1.1.7"
 indra = { id = "net.kyori.indra", version.ref = "indra" }
 indra-licenseHeader = { id = "net.kyori.indra.licenser.spotless", version.ref = "indra" }
 indra-checkstyle = { id = "net.kyori.indra.checkstyle", version.ref = "indra" }
 indra-crossdoc = { id = "net.kyori.indra.crossdoc", version.ref = "indra" }
 indra-sonatype = { id = "net.kyori.indra.publishing.sonatype", version.ref = "indra" }
-nexusPublish = { id = "io.github.gradle-nexus.publish-plugin", version = "2.0.0-rc-1" }
+nexusPublish = { id = "io.github.gradle-nexus.publish-plugin", version = "2.0.0-rc-2" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
