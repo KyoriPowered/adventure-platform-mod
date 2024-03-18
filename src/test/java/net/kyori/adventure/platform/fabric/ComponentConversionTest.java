@@ -61,7 +61,7 @@ class ComponentConversionTest extends BootstrappedTest {
       Component.translatable("gameMode.creative", style(NamedTextColor.RED).font(Key.key("uniform"))),
       Component.text("Hello").append(Component.text(" friends", TextColor.color(0xaabbcc))),
       Component.keybind("key.jump")
-      // Component.text("Hello world", style(new ItemStack(Items.ACACIA_LOG, 1).asHoverEvent())) // todo: needs changes in adventure to match exactly
+    // Component.text("Hello world", style(new ItemStack(Items.ACACIA_LOG, 1).asHoverEvent())) // todo: needs changes in adventure to match exactly
     )
       .map(comp -> named(MiniMessage.miniMessage().serialize(comp), comp));
   }
