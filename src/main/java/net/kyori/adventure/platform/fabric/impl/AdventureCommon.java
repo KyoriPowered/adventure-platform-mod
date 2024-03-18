@@ -238,8 +238,8 @@ public class AdventureCommon implements ModInitializer {
         res("component"),
         ComponentArgumentType.class,
         ComponentArgumentTypeSerializer.INSTANCE,
-        arg -> switch (arg.format()) {
-          case JSON -> ComponentArgument.textComponent();
+        (arg, ctx) -> switch (arg.format()) {
+          case JSON -> ComponentArgument.textComponent(ctx);
           case MINIMESSAGE -> StringArgumentType.greedyString();
         },
         null
@@ -250,7 +250,7 @@ public class AdventureCommon implements ModInitializer {
         res("key"),
         KeyArgumentType.class,
         SingletonArgumentInfo.contextFree(KeyArgumentType::key),
-        arg -> ResourceLocationArgument.id(),
+        (arg, ctx) -> ResourceLocationArgument.id(),
         null
       )
     );

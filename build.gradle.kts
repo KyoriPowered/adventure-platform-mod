@@ -206,7 +206,7 @@ loom {
 
     configureEach {
       vmArgs(
-        "-Dmixin.debug.countInjections=true",
+        // "-Dmixin.debug.countInjections=true",
         // "-Dmixin.debug.strict=true", // Breaks FAPI :(
       )
     }
@@ -237,7 +237,9 @@ loom {
 
 dependencies {
   "testmodRuntimeOnly"(permissionsApiCompat.output)
-  "modPermissionsApiCompat"(libs.fabric.permissionsApi)
+  "modPermissionsApiCompat"(libs.fabric.permissionsApi) {
+    isTransitive = false
+  }
 
   // Testmod-specific dependencies
   "modTestmod"(libs.fabric.api)

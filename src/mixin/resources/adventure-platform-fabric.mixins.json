@@ -19,6 +19,7 @@
     "minecraft.network.chat.PlayerChatMessageMixin",
     "minecraft.network.protocol.game.ClientboundCommandsPacketMixin",
     "minecraft.network.protocol.game.ClientboundCommandsPacketMixin$ArgumentNodeStubMixin",
+    "minecraft.resources.DelegatingOpsMixin",
     "minecraft.resources.ResourceKeyMixin",
     "minecraft.resources.ResourceLocationMixin",
     "minecraft.server.MinecraftServerMixin",

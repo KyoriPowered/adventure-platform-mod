@@ -28,4 +28,6 @@ import org.jetbrains.annotations.Nullable;
 
 public interface FriendlyByteBufBridge {
   void adventure$data(final @Nullable Pointered data);
+
+  Pointered adventure$data();
 }
