@@ -24,7 +24,7 @@ jobs:
         id: "setup"
         uses: "KyoriPowered/.github/.github/actions/setup-java-env@trunk"
         with:
-          runtime_version: 17
+          runtime_version: 21
           publishing_branch_regex: '(?:(?:(?:mc\/)?(\d+(?:\.\d+)*(?:\.x)?)))'
           gradle_warning_mode: "all"
       - name: "prime gradle build"

@@ -40,9 +40,9 @@ public interface LocaleHolderBridge {
 
     final String[] parts = mcLocale.split("_", 3);
     return switch (parts.length) {
-      case 1 -> parts[0].isEmpty() ? null : new Locale(parts[0]);
-      case 2 -> new Locale(parts[0], parts[1]);
-      case 3 -> new Locale(parts[0], parts[1], parts[2]);
+      case 1 -> parts[0].isEmpty() ? null : Locale.of(parts[0]);
+      case 2 -> Locale.of(parts[0], parts[1]);
+      case 3 -> Locale.of(parts[0], parts[1], parts[2]);
       default -> null;
     };
   }
