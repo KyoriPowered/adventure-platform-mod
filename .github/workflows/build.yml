@@ -50,7 +50,7 @@ jobs:
           fi
           echo "VERSION=$VERSION" >> $GITHUB_ENV
       - name: "Cache test run data"
-        uses: "actions/cache@v4.0.1"
+        uses: "actions/cache@v4.0.2"
         with:
           path: |
             testserver/libraries
