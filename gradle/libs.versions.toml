@@ -62,8 +62,8 @@ zCheckstyle = { module = "com.puppycrawl.tools:checkstyle", version.ref = "check
 [plugins]
 configurateTransformations = "ca.stellardrift.configurate-transformations:6.1.0"
 eclipseApt = "com.diffplug.eclipse.apt:3.44.0"
-loom = "fabric-loom:1.5.8"
-ideaExt = "org.jetbrains.gradle.plugin.idea-ext:1.1.7"
+loom = "fabric-loom:1.6.5"
+ideaExt = "org.jetbrains.gradle.plugin.idea-ext:1.1.8"
 indra = { id = "net.kyori.indra", version.ref = "indra" }
 indra-licenseHeader = { id = "net.kyori.indra.licenser.spotless", version.ref = "indra" }
 indra-checkstyle = { id = "net.kyori.indra.checkstyle", version.ref = "indra" }
