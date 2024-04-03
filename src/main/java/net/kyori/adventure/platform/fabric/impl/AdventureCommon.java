@@ -108,12 +108,12 @@ public class AdventureCommon implements ModInitializer {
     return switch (sidedProxyContainers.size()) {
       case 0 -> throw new IllegalStateException("No sided proxies were available for adventure-platform-fabric in environment " + environment);
       case 1 -> {
-        final var proxy = sidedProxyContainers.get(0);
+        final var proxy = sidedProxyContainers.getFirst();
         LOGGER.debug("Selected sided proxy {} from {}", proxy.getEntrypoint(), proxy.getProvider().getMetadata().getId());
         yield proxy.getEntrypoint();
       }
       default -> {
-        final var proxy = sidedProxyContainers.get(0);
+        final var proxy = sidedProxyContainers.getFirst();
         LOGGER.warn("Multiple applicable proxies were applicable, choosing first available: {} from {}", proxy.getEntrypoint(), proxy.getProvider().getMetadata().getId());
         yield proxy.getEntrypoint();
       }

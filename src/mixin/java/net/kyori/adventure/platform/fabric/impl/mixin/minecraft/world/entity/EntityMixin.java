@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-fabric, licensed under the MIT License.
  *
- * Copyright (c) 2020-2023 KyoriPowered
+ * Copyright (c) 2020-2024 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -42,7 +42,7 @@ import org.spongepowered.asm.mixin.Shadow;
 @Mixin(Entity.class)
 public abstract class EntityMixin implements Sound.Emitter, EntityHoverEventSource, Nameable, EntityAccess {
   // @formatter:off
-  @Shadow public Level level;
+  @Shadow private Level level;
 
   @Shadow public abstract EntityType<?> shadow$getType();
   // @formatter:on

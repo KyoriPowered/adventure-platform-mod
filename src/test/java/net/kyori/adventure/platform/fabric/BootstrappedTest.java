@@ -24,7 +24,6 @@
 package net.kyori.adventure.platform.fabric;
 
 import com.google.gson.JsonElement;
-import com.mojang.logging.LogUtils;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.SharedConstants;
 import net.minecraft.core.HolderLookup;
@@ -36,10 +35,8 @@ import net.minecraft.resources.RegistryOps;
 import net.minecraft.server.Bootstrap;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeAll;
-import org.slf4j.Logger;
 
 abstract class BootstrappedTest {
-  private static final Logger LOGGER = LogUtils.getLogger();
   private static RegistryAccess registries;
 
   @BeforeAll
@@ -56,6 +53,6 @@ abstract class BootstrappedTest {
 
   protected JsonElement componentToJson(final @NotNull Component mc) {
     final RegistryOps<JsonElement> ops = lookup().createSerializationContext(JsonOps.INSTANCE);
-    return ComponentSerialization.CODEC.encodeStart(ops, mc).getOrThrow(false, err -> LOGGER.error("Failed to write component: {}", err, new Exception()));
+    return ComponentSerialization.CODEC.encodeStart(ops, mc).getOrThrow(err -> new RuntimeException("Failed to write component: " + err));
   }
 }

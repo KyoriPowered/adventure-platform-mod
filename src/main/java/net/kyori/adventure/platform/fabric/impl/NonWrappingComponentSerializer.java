@@ -24,6 +24,7 @@
 package net.kyori.adventure.platform.fabric.impl;
 
 import com.google.common.base.Suppliers;
+import com.google.gson.JsonParseException;
 import com.mojang.serialization.JsonOps;
 import java.util.function.Supplier;
 import net.kyori.adventure.text.Component;
@@ -62,7 +63,7 @@ public final class NonWrappingComponentSerializer implements ComponentSerializer
 
     return GsonComponentSerializer.gson().deserializeFromTree(
       ComponentSerialization.CODEC.encodeStart(this.holderProvider.get().createSerializationContext(JsonOps.INSTANCE), input)
-      .getOrThrow(false, $ -> {})
+        .getOrThrow(JsonParseException::new)
     );
   }
 
