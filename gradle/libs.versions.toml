@@ -8,13 +8,13 @@ ansi = "1.0.3"
 autoService = "1.1.1"
 checkstyle = "10.14.0"
 examination = "1.3.0"
-fabricApi = "0.96.14+1.20.5"
+fabricApi = "0.97.3+1.20.5"
 fabricLoader = "0.15.9"
 indra = "3.1.3"
 junit = "5.10.2"
-minecraft = "24w14a"
-parchment = "1.20.4:2024.02.25"
-vineflower = "1.9.3"
+minecraft = "1.20.5-rc1"
+parchment = "1.20.4:2024.04.14"
+vineflower = "1.10.1"
 spotless = "6.25.0"
 
 [libraries]
@@ -39,7 +39,7 @@ fabric-api-base = { module = "net.fabricmc.fabric-api:fabric-api-base" }
 fabric-api-networking = { module = "net.fabricmc.fabric-api:fabric-networking-api-v1" }
 fabric-api-command = { module = "net.fabricmc.fabric-api:fabric-command-api-v2" }
 fabric-api-lifecycle = { module = "net.fabricmc.fabric-api:fabric-lifecycle-events-v1" }
-fabric-permissionsApi = { module = "me.lucko:fabric-permissions-api", version = "0.3-SNAPSHOT" }
+fabric-permissionsApi = { module = "me.lucko:fabric-permissions-api", version = "0.3.1" }
 jetbrainsAnnotations = "org.jetbrains:annotations:24.1.0"
 minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
 option = { module = "net.kyori:option", version = "1.0.0" }
@@ -62,8 +62,8 @@ zCheckstyle = { module = "com.puppycrawl.tools:checkstyle", version.ref = "check
 [plugins]
 configurateTransformations = "ca.stellardrift.configurate-transformations:6.1.0"
 eclipseApt = "com.diffplug.eclipse.apt:3.44.0"
-loom = "fabric-loom:1.6.2"
-ideaExt = "org.jetbrains.gradle.plugin.idea-ext:1.1.7"
+loom = "fabric-loom:1.6.10"
+ideaExt = "org.jetbrains.gradle.plugin.idea-ext:1.1.8"
 indra = { id = "net.kyori.indra", version.ref = "indra" }
 indra-licenseHeader = { id = "net.kyori.indra.licenser.spotless", version.ref = "indra" }
 indra-checkstyle = { id = "net.kyori.indra.checkstyle", version.ref = "indra" }

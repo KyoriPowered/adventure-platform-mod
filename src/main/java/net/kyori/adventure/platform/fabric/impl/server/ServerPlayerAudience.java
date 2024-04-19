@@ -86,6 +86,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.WritableBookContent;
 import net.minecraft.world.item.component.WrittenBookContent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -251,8 +252,8 @@ public final class ServerPlayerAudience implements ControlledAudience {
 
   @Override
   public void openBook(final @NotNull Book book) {
-    if (book.pages().size() > WrittenBookContent.MAX_PAGES) {
-      throw new IllegalArgumentException("Book provided had " + book.pages().size() + " pages, but is only allowed a maximum of " + WrittenBookContent.MAX_PAGES);
+    if (book.pages().size() > WritableBookContent.MAX_PAGES) {
+      throw new IllegalArgumentException("Book provided had " + book.pages().size() + " pages, but is only allowed a maximum of " + WritableBookContent.MAX_PAGES);
     }
     final WrittenBookContent content = new WrittenBookContent(
       Filterable.passThrough(validateField(this.adventure$plain(book.title()), WrittenBookContent.TITLE_MAX_LENGTH, "title")),
