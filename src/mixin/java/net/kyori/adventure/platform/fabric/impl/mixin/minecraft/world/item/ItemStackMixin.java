@@ -23,13 +23,19 @@
  */
 package net.kyori.adventure.platform.fabric.impl.mixin.minecraft.world.item;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.UnaryOperator;
 import net.kyori.adventure.key.Key;
-import net.kyori.adventure.nbt.api.BinaryTagHolder;
+import net.kyori.adventure.platform.fabric.impl.nbt.CodecableDataComponentValue;
+import net.kyori.adventure.text.event.DataComponentValue;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.event.HoverEventSource;
+import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -41,13 +47,32 @@ public abstract class ItemStackMixin implements HoverEventSource<HoverEvent.Show
   // @formatter:off
   @Shadow public abstract int shadow$getCount();
   @Shadow public abstract Item shadow$getItem();
+  @Shadow public abstract DataComponentPatch shadow$getComponentsPatch();
   // @formatter:on
 
   @Override
   public @NotNull HoverEvent<HoverEvent.ShowItem> asHoverEvent(final @NotNull UnaryOperator<HoverEvent.ShowItem> op) {
     final Key itemType = BuiltInRegistries.ITEM.getKey(this.shadow$getItem());
-    final CompoundTag nbt = /*this.shadow$getTag() */ null; // todo: how to represent item components
-    final HoverEvent.ShowItem item = HoverEvent.ShowItem.showItem(itemType, this.shadow$getCount(), nbt == null ? null : BinaryTagHolder.binaryTagHolder(nbt.toString()));
+    final Map<Key, DataComponentValue> components;
+    final DataComponentPatch patch = this.shadow$getComponentsPatch();
+    if (patch.isEmpty()) {
+      components = Collections.emptyMap();
+    } else {
+      components = new HashMap<>();
+      for (final Map.Entry<DataComponentType<?>, Optional<?>> entry : patch.entrySet()) {
+        if (entry.getKey().isTransient()) continue;
+
+        final Key componentKey = BuiltInRegistries.DATA_COMPONENT_TYPE.getKey(entry.getKey());
+        if (entry.getValue().isEmpty()) {
+          components.put(componentKey, DataComponentValue.removed());
+        } else {
+          @SuppressWarnings({"rawtypes", "unchecked"}) final CodecableDataComponentValue<?> holder = new CodecableDataComponentValue(entry.getValue().orElse(null), entry.getKey().codecOrThrow());
+          components.put(componentKey, holder);
+        }
+      }
+    }
+
+    final HoverEvent.ShowItem item = HoverEvent.ShowItem.showItem(itemType, this.shadow$getCount(), components);
     return HoverEvent.showItem(op.apply(item));
   }
 
