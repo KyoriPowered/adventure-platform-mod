@@ -30,6 +30,7 @@ import com.mojang.serialization.JsonOps;
 import java.util.List;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.fabric.FabricAudiences;
+import net.kyori.adventure.platform.fabric.impl.AdventureCommon;
 import net.kyori.adventure.platform.fabric.impl.nbt.FabricDataComponentValue;
 import net.kyori.adventure.text.event.DataComponentValue;
 import net.kyori.adventure.text.event.DataComponentValueConverterRegistry;
@@ -42,7 +43,7 @@ import org.jetbrains.annotations.NotNull;
 
 @AutoService(DataComponentValueConverterRegistry.Provider.class)
 public final class DataComponentValueConverterProvider implements DataComponentValueConverterRegistry.Provider {
-  private static final Key ID = Key.key("adventure", "platform/fabric");
+  private static final Key ID = AdventureCommon.res("platform/fabric");
 
   @Override
   public @NotNull Key id() {

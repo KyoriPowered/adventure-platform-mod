@@ -28,8 +28,8 @@ import java.util.Set;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
@@ -44,9 +44,10 @@ import org.jetbrains.annotations.NotNull;
  */
 public record ServerboundRegisteredArgumentTypesPacket(Set<ResourceLocation> known) implements CustomPacketPayload {
   public static final CustomPacketPayload.Type<ServerboundRegisteredArgumentTypesPacket> TYPE = new CustomPacketPayload.Type<>(AdventureCommon.res("registered_args"));
-  private static final StreamCodec<RegistryFriendlyByteBuf, ServerboundRegisteredArgumentTypesPacket> CODEC = StreamCodec.of(
-    ServerboundRegisteredArgumentTypesPacket::encode,
-    ServerboundRegisteredArgumentTypesPacket::of
+  private static final StreamCodec<RegistryFriendlyByteBuf, ServerboundRegisteredArgumentTypesPacket> CODEC = StreamCodec.composite(
+    ByteBufCodecs.collection(HashSet::new, AdventureByteBufCodecs.RESOURCE_LOCATION),
+    ServerboundRegisteredArgumentTypesPacket::known,
+    ServerboundRegisteredArgumentTypesPacket::new
   );
 
   public static void register() {
@@ -60,22 +61,6 @@ public record ServerboundRegisteredArgumentTypesPacket(Set<ResourceLocation> kno
 
   public static ServerboundRegisteredArgumentTypesPacket of(final Set<ResourceLocation> idents) {
     return new ServerboundRegisteredArgumentTypesPacket(Set.copyOf(idents));
-  }
-
-  public static ServerboundRegisteredArgumentTypesPacket of(final @NotNull FriendlyByteBuf buf) {
-    final int length = buf.readVarInt();
-    final Set<ResourceLocation> items = new HashSet<>();
-    for (int i = 0; i < length; ++i) {
-      items.add(buf.readResourceLocation());
-    }
-    return of(items);
-  }
-
-  private static void encode(final FriendlyByteBuf buffer, final ServerboundRegisteredArgumentTypesPacket pkt) {
-    buffer.writeVarInt(pkt.known.size());
-    for (final ResourceLocation id : pkt.known) {
-      buffer.writeResourceLocation(id);
-    }
   }
 
   /**

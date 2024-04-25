@@ -176,7 +176,7 @@ public class AdventureCommon implements ModInitializer {
     return flattenerBuilder.build();
   }
 
-  static ResourceLocation res(final @NotNull String value) {
+  public static ResourceLocation res(final @NotNull String value) {
     return new ResourceLocation(Adventure.NAMESPACE, value);
   }
 

@@ -27,8 +27,8 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
@@ -38,30 +38,14 @@ import static net.kyori.adventure.platform.fabric.impl.AdventureCommon.res;
 
 public record ClientboundArgumentTypeMappingsPacket(Int2ObjectMap<ResourceLocation> mappings) implements CustomPacketPayload {
   public static final CustomPacketPayload.Type<ClientboundArgumentTypeMappingsPacket> TYPE = new Type<>(res("registered_arg_mappings"));
-  private static final StreamCodec<RegistryFriendlyByteBuf, ClientboundArgumentTypeMappingsPacket> CODEC = StreamCodec.of(
-    ClientboundArgumentTypeMappingsPacket::encode,
-    ClientboundArgumentTypeMappingsPacket::decode
+  private static final StreamCodec<RegistryFriendlyByteBuf, ClientboundArgumentTypeMappingsPacket> CODEC = StreamCodec.composite(
+    ByteBufCodecs.map(Int2ObjectArrayMap::new, ByteBufCodecs.VAR_INT, AdventureByteBufCodecs.RESOURCE_LOCATION),
+    ClientboundArgumentTypeMappingsPacket::mappings,
+    ClientboundArgumentTypeMappingsPacket::new
   );
 
   public static void register() {
     PayloadTypeRegistry.playS2C().register(ClientboundArgumentTypeMappingsPacket.TYPE, ClientboundArgumentTypeMappingsPacket.CODEC);
-  }
-
-  public static ClientboundArgumentTypeMappingsPacket decode(final FriendlyByteBuf buffer) {
-    final Int2ObjectMap<ResourceLocation> map = buffer.readMap(
-      Int2ObjectArrayMap::new,
-      FriendlyByteBuf::readVarInt,
-      FriendlyByteBuf::readResourceLocation
-    );
-    return new ClientboundArgumentTypeMappingsPacket(map);
-  }
-
-  private static void encode(final FriendlyByteBuf buf, final ClientboundArgumentTypeMappingsPacket pkt) {
-    buf.writeMap(
-      pkt.mappings,
-      FriendlyByteBuf::writeVarInt,
-      FriendlyByteBuf::writeResourceLocation
-    );
   }
 
   public void sendTo(final PacketSender responder) {
