@@ -27,7 +27,6 @@ import io.netty.buffer.ByteBuf;
 import net.kyori.adventure.key.Key;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
 
 public final class AdventureByteBufCodecs {
   private AdventureByteBufCodecs() {
@@ -35,7 +34,4 @@ public final class AdventureByteBufCodecs {
 
   public static final StreamCodec<ByteBuf, Key> KEY = ByteBufCodecs.STRING_UTF8
     .map(Key::key, Key::asString);
-
-  public static final StreamCodec<ByteBuf, ResourceLocation> RESOURCE_LOCATION = ByteBufCodecs.STRING_UTF8
-    .map(ResourceLocation::new, ResourceLocation::asString);
 }

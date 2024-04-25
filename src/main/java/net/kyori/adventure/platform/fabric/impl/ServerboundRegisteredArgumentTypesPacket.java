@@ -45,7 +45,7 @@ import org.jetbrains.annotations.NotNull;
 public record ServerboundRegisteredArgumentTypesPacket(Set<ResourceLocation> known) implements CustomPacketPayload {
   public static final CustomPacketPayload.Type<ServerboundRegisteredArgumentTypesPacket> TYPE = new CustomPacketPayload.Type<>(AdventureCommon.res("registered_args"));
   private static final StreamCodec<RegistryFriendlyByteBuf, ServerboundRegisteredArgumentTypesPacket> CODEC = StreamCodec.composite(
-    ByteBufCodecs.collection(HashSet::new, AdventureByteBufCodecs.RESOURCE_LOCATION),
+    ByteBufCodecs.collection(HashSet::new, ResourceLocation.STREAM_CODEC),
     ServerboundRegisteredArgumentTypesPacket::known,
     ServerboundRegisteredArgumentTypesPacket::new
   );

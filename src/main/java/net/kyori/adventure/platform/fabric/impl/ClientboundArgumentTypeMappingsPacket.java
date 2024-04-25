@@ -39,7 +39,7 @@ import static net.kyori.adventure.platform.fabric.impl.AdventureCommon.res;
 public record ClientboundArgumentTypeMappingsPacket(Int2ObjectMap<ResourceLocation> mappings) implements CustomPacketPayload {
   public static final CustomPacketPayload.Type<ClientboundArgumentTypeMappingsPacket> TYPE = new Type<>(res("registered_arg_mappings"));
   private static final StreamCodec<RegistryFriendlyByteBuf, ClientboundArgumentTypeMappingsPacket> CODEC = StreamCodec.composite(
-    ByteBufCodecs.map(Int2ObjectArrayMap::new, ByteBufCodecs.VAR_INT, AdventureByteBufCodecs.RESOURCE_LOCATION),
+    ByteBufCodecs.map(Int2ObjectArrayMap::new, ByteBufCodecs.VAR_INT, ResourceLocation.STREAM_CODEC),
     ClientboundArgumentTypeMappingsPacket::mappings,
     ClientboundArgumentTypeMappingsPacket::new
   );
