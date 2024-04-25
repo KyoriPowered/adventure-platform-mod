@@ -37,7 +37,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import org.jetbrains.annotations.NotNull;
 
 @AutoService(DataComponentValueConverterRegistry.Provider.class)
-public class DataComponentValueConverterProvider implements DataComponentValueConverterRegistry.Provider {
+public final class DataComponentValueConverterProvider implements DataComponentValueConverterRegistry.Provider {
   private static final Key ID = Key.key("adventure", "platform/fabric");
 
   @Override

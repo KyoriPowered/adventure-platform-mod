@@ -32,7 +32,7 @@ import net.minecraft.SharedConstants;
 import org.jetbrains.annotations.NotNull;
 
 @AutoService(GsonComponentSerializer.Provider.class)
-public class GsonComponentSerializerProviderImpl implements GsonComponentSerializer.Provider {
+public final class GsonComponentSerializerProviderImpl implements GsonComponentSerializer.Provider {
   @Override
   public @NotNull GsonComponentSerializer gson() {
     return GsonComponentSerializer.builder()
