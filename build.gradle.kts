@@ -44,8 +44,7 @@ indraSpotlessLicenser {
 }
 
 spotless {
-  //ratchetFrom("origin/mc/${libs.versions.minecraft.get().splitToSequence('.').take(2).joinToString(".")}")
-  ratchetFrom("origin/mc/1.20")
+  ratchetFrom("origin/mc/${libs.versions.minecraft.get().splitToSequence('.').take(2).joinToString(".")}")
 
   java {
     importOrderFile(rootProject.file(".spotless/kyori.importorder"))
@@ -271,9 +270,14 @@ tasks {
     val client = sourceSets.getByName("client")
     source(client.allJava)
     classpath += client.output
+    val advVersion = libs.versions.adventure.get()
+    if (!advVersion.contains("SNAPSHOT")) {
+      (options as? StandardJavadocDocletOptions)?.links(
+        "https://jd.advntr.dev/api/${advVersion}",
+        "https://jd.advntr.dev/key/${advVersion}",
+      )
+    }
     (options as? StandardJavadocDocletOptions)?.links(
-      "https://jd.advntr.dev/api/${libs.versions.adventure.get()}",
-      "https://jd.advntr.dev/key/${libs.versions.adventure.get()}",
       "https://jd.advntr.dev/platform/api/${libs.versions.adventurePlatform.get()}",
     )
   }
