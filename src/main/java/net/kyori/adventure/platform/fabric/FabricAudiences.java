@@ -33,7 +33,7 @@ import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.fabric.impl.AdventureCommon;
 import net.kyori.adventure.platform.fabric.impl.NonWrappingComponentSerializer;
 import net.kyori.adventure.platform.fabric.impl.WrappedComponent;
-import net.kyori.adventure.platform.fabric.impl.nbt.CodecableDataComponentValue;
+import net.kyori.adventure.platform.fabric.impl.nbt.FabricDataComponentValue;
 import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
@@ -199,7 +199,7 @@ public interface FabricAudiences {
    * @since 5.13.0
    */
   static @NotNull <T> DataComponentValue dataComponentValue(final @NotNull DataComponentType<T> type, final @NotNull T value) {
-    return new CodecableDataComponentValue<>(value, type.codecOrThrow());
+    return new FabricDataComponentValue.Present<>(value, type.codecOrThrow());
   }
 
   /**

@@ -33,19 +33,23 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.TagParser;
 import org.jetbrains.annotations.NotNull;
 
-public record CodecableDataComponentValue<T>(@NotNull T value, @NotNull Codec<T> codec) implements DataComponentValue.TagSerializable {
-  private static final net.kyori.adventure.util.Codec<Tag, String, CommandSyntaxException, RuntimeException> SNBT_CODEC = net.kyori.adventure.util.Codec.codec(
+public sealed interface FabricDataComponentValue extends DataComponentValue {
+  net.kyori.adventure.util.Codec<Tag, String, CommandSyntaxException, RuntimeException> SNBT_CODEC = net.kyori.adventure.util.Codec.codec(
     s -> new TagParser(new StringReader(s)).readValue(),
     Tag::toString
   );
 
-  @Override
-  public @NotNull BinaryTagHolder asBinaryTag() {
-    return BinaryTagHolder.encode(
-      this.codec.encodeStart(NbtOps.INSTANCE, this.value).getOrThrow(IllegalArgumentException::new),
-      SNBT_CODEC
-    );
+  record Present<T>(@NotNull T value, @NotNull Codec<T> codec) implements FabricDataComponentValue, DataComponentValue.TagSerializable {
+    @Override
+    public @NotNull BinaryTagHolder asBinaryTag() {
+      return BinaryTagHolder.encode(
+        this.codec.encodeStart(NbtOps.INSTANCE, this.value).getOrThrow(IllegalArgumentException::new),
+        SNBT_CODEC
+      );
+    }
   }
 
-  // todo: handle removed values somehow?
+  enum Removed implements FabricDataComponentValue, DataComponentValue.Removed {
+    INSTANCE;
+  }
 }

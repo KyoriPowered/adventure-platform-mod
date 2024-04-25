@@ -25,15 +25,19 @@ package net.kyori.adventure.platform.fabric.impl.service;
 
 import com.google.auto.service.AutoService;
 import com.google.gson.JsonElement;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.JsonOps;
 import java.util.List;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.fabric.FabricAudiences;
-import net.kyori.adventure.platform.fabric.impl.nbt.CodecableDataComponentValue;
+import net.kyori.adventure.platform.fabric.impl.nbt.FabricDataComponentValue;
+import net.kyori.adventure.text.event.DataComponentValue;
 import net.kyori.adventure.text.event.DataComponentValueConverterRegistry;
 import net.kyori.adventure.text.serializer.gson.GsonDataComponentValue;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import org.jetbrains.annotations.NotNull;
 
 @AutoService(DataComponentValueConverterRegistry.Provider.class)
@@ -50,21 +54,47 @@ public final class DataComponentValueConverterProvider implements DataComponentV
   public @NotNull Iterable<DataComponentValueConverterRegistry.Conversion<?, ?>> conversions() {
     return List.of(
       DataComponentValueConverterRegistry.Conversion.convert(
-        CodecableDataComponentValue.class,
+        FabricDataComponentValue.Present.class,
         GsonDataComponentValue.class,
         (k, codec) -> GsonDataComponentValue.gsonDataComponentValue((JsonElement) codec.codec().encodeStart(JsonOps.INSTANCE, codec.value()).getOrThrow())
       ),
       DataComponentValueConverterRegistry.Conversion.convert(
         GsonDataComponentValue.class,
-        CodecableDataComponentValue.class,
+        FabricDataComponentValue.class,
         (k, gson) -> {
-          final DataComponentType<?> type = BuiltInRegistries.DATA_COMPONENT_TYPE.get(FabricAudiences.toNative(k));
-          if (type == null) {
-            throw new IllegalArgumentException("Unknown data component type " + k);
-          }
-          return new CodecableDataComponentValue(type.codecOrThrow().parse(JsonOps.INSTANCE, gson.element()).getOrThrow(RuntimeException::new), type.codecOrThrow());
+          final DataComponentType<?> type = resolveComponentType(k);
+          return new FabricDataComponentValue.Present(type.codecOrThrow().parse(JsonOps.INSTANCE, gson.element()).getOrThrow(RuntimeException::new), type.codecOrThrow());
         }
+      ),
+      DataComponentValueConverterRegistry.Conversion.convert(
+        DataComponentValue.TagSerializable.class,
+        FabricDataComponentValue.class,
+        (k, tagSerializable) -> {
+          final DataComponentType<?> type = resolveComponentType(k);
+          final Tag decodedSnbt;
+          try {
+            decodedSnbt = tagSerializable.asBinaryTag().get(FabricDataComponentValue.SNBT_CODEC);
+          } catch (final CommandSyntaxException ex) {
+            throw new IllegalArgumentException("Unable to parse SNBT value", ex);
+          }
+
+          return new FabricDataComponentValue.Present(type.codecOrThrow().parse(NbtOps.INSTANCE, decodedSnbt).getOrThrow(RuntimeException::new), type.codecOrThrow());
+        }
+      ),
+      DataComponentValueConverterRegistry.Conversion.convert(
+        DataComponentValue.Removed.class,
+        FabricDataComponentValue.class,
+        (k, $) -> FabricDataComponentValue.Removed.INSTANCE
       )
     );
+  }
+
+  private static DataComponentType<?> resolveComponentType(final Key key) {
+    final DataComponentType<?> type = BuiltInRegistries.DATA_COMPONENT_TYPE.get(FabricAudiences.toNative(key));
+    if (type == null) {
+      throw new IllegalArgumentException("Unknown data component type " + key.asString());
+    }
+
+    return type;
   }
 }
