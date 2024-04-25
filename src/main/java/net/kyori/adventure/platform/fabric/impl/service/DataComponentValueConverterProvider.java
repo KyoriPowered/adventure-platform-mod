@@ -52,7 +52,7 @@ public final class DataComponentValueConverterProvider implements DataComponentV
       DataComponentValueConverterRegistry.Conversion.convert(
         CodecableDataComponentValue.class,
         GsonDataComponentValue.class,
-        (k, codec) -> GsonDataComponentValue.gsonDatacomponentValue((JsonElement) codec.codec().encodeStart(JsonOps.INSTANCE, codec.value()).getOrThrow())
+        (k, codec) -> GsonDataComponentValue.gsonDataComponentValue((JsonElement) codec.codec().encodeStart(JsonOps.INSTANCE, codec.value()).getOrThrow())
       ),
       DataComponentValueConverterRegistry.Conversion.convert(
         GsonDataComponentValue.class,
