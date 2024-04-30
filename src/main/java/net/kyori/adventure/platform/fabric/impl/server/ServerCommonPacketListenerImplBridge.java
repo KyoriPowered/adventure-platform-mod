@@ -25,6 +25,7 @@ package net.kyori.adventure.platform.fabric.impl.server;
 
 import java.util.UUID;
 import net.kyori.adventure.resource.ResourcePackCallback;
+import net.minecraft.network.Connection;
 import org.jetbrains.annotations.NotNull;
 
 public interface ServerCommonPacketListenerImplBridge {
@@ -32,4 +33,6 @@ public interface ServerCommonPacketListenerImplBridge {
   record PackCallbackState(@NotNull FabricServerAudiencesImpl controller, @NotNull ResourcePackCallback cb) {}
 
   void adventure$bridge$registerPackCallback(final @NotNull UUID id, final @NotNull FabricServerAudiencesImpl controller, final @NotNull ResourcePackCallback cb);
+
+  Connection adventure$connection();
 }
