@@ -39,7 +39,7 @@ public abstract class ServerConfigurationPacketListenerImplMixin extends ServerC
   private Function<ByteBuf, RegistryFriendlyByteBuf> adventure$injectPointers(final Function<ByteBuf, RegistryFriendlyByteBuf> original) {
     return buf -> {
       final RegistryFriendlyByteBuf wrapped = original.apply(buf);
-      if (this.connection.getPacketListener() instanceof ServerGamePacketListenerImpl game) {
+      if (this.adventure$connection().getPacketListener() instanceof ServerGamePacketListenerImpl game) {
         ((FriendlyByteBufBridge) wrapped).adventure$data(game.player);
       }
       return wrapped;

@@ -54,6 +54,11 @@ public abstract class ServerCommonPacketListenerImplMixin implements ServerCommo
   // @formatter:on
 
   @Override
+  public Connection adventure$connection() {
+    return this.connection;
+  }
+
+  @Override
   public void adventure$bridge$registerPackCallback(final @NotNull UUID id, final @NotNull FabricServerAudiencesImpl controller, final @NotNull ResourcePackCallback cb) {
     if (this.adventure$activeCallbacks.put(id, new PackCallbackState(controller, cb)) != null) {
       ADVENTURE$LOGGER.warn("Duplicate in-flight callbacks detected for pack {} on player {}", id, this.shadow$playerProfile());
