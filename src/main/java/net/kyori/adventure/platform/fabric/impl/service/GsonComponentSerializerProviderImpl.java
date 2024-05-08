@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-fabric, licensed under the MIT License.
  *
- * Copyright (c) 2020-2023 KyoriPowered
+ * Copyright (c) 2020-2024 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,14 +25,14 @@ package net.kyori.adventure.platform.fabric.impl.service;
 
 import com.google.auto.service.AutoService;
 import java.util.function.Consumer;
-import net.kyori.adventure.platform.fabric.impl.NBTLegacyHoverEventSerializer;
+import net.kyori.adventure.platform.fabric.impl.nbt.NBTLegacyHoverEventSerializer;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.text.serializer.json.JSONOptions;
 import net.minecraft.SharedConstants;
 import org.jetbrains.annotations.NotNull;
 
 @AutoService(GsonComponentSerializer.Provider.class)
-public class GsonComponentSerializerProviderImpl implements GsonComponentSerializer.Provider {
+public final class GsonComponentSerializerProviderImpl implements GsonComponentSerializer.Provider {
   @Override
   public @NotNull GsonComponentSerializer gson() {
     return GsonComponentSerializer.builder()

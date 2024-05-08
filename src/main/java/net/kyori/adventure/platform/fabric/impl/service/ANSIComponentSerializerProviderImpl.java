@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-fabric, licensed under the MIT License.
  *
- * Copyright (c) 2020-2023 KyoriPowered
+ * Copyright (c) 2020-2024 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,7 +30,7 @@ import net.kyori.adventure.text.serializer.ansi.ANSIComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 
 @AutoService(ANSIComponentSerializer.Provider.class)
-public class ANSIComponentSerializerProviderImpl implements ANSIComponentSerializer.Provider {
+public final class ANSIComponentSerializerProviderImpl implements ANSIComponentSerializer.Provider {
   @Override
   public @NotNull ANSIComponentSerializer ansi() {
     return ANSIComponentSerializer.builder().flattener(AdventureCommon.FLATTENER).build();

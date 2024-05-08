@@ -32,7 +32,7 @@ repositories {
 }
 
 indra {
-  javaVersions().target(17)
+  javaVersions().target(21)
 }
 
 indraSonatype {
@@ -205,7 +205,7 @@ loom {
 
     configureEach {
       vmArgs(
-        "-Dmixin.debug.countInjections=true",
+        // "-Dmixin.debug.countInjections=true",
         // "-Dmixin.debug.strict=true", // Breaks FAPI :(
       )
     }
@@ -236,7 +236,9 @@ loom {
 
 dependencies {
   "testmodRuntimeOnly"(permissionsApiCompat.output)
-  "modPermissionsApiCompat"(libs.fabric.permissionsApi)
+  "modPermissionsApiCompat"(libs.fabric.permissionsApi) {
+    isTransitive = false
+  }
 
   // Testmod-specific dependencies
   "modTestmod"(libs.fabric.api)
@@ -268,9 +270,14 @@ tasks {
     val client = sourceSets.getByName("client")
     source(client.allJava)
     classpath += client.output
+    val advVersion = libs.versions.adventure.get()
+    if (!advVersion.contains("SNAPSHOT")) {
+      (options as? StandardJavadocDocletOptions)?.links(
+        "https://jd.advntr.dev/api/${advVersion}",
+        "https://jd.advntr.dev/key/${advVersion}",
+      )
+    }
     (options as? StandardJavadocDocletOptions)?.links(
-      "https://jd.advntr.dev/api/${libs.versions.adventure.get()}",
-      "https://jd.advntr.dev/key/${libs.versions.adventure.get()}",
       "https://jd.advntr.dev/platform/api/${libs.versions.adventurePlatform.get()}",
     )
   }

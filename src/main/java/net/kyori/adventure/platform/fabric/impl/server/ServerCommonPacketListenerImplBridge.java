@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-fabric, licensed under the MIT License.
  *
- * Copyright (c) 2023 KyoriPowered
+ * Copyright (c) 2023-2024 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@ package net.kyori.adventure.platform.fabric.impl.server;
 
 import java.util.UUID;
 import net.kyori.adventure.resource.ResourcePackCallback;
+import net.minecraft.network.Connection;
 import org.jetbrains.annotations.NotNull;
 
 public interface ServerCommonPacketListenerImplBridge {
@@ -32,4 +33,6 @@ public interface ServerCommonPacketListenerImplBridge {
   record PackCallbackState(@NotNull FabricServerAudiencesImpl controller, @NotNull ResourcePackCallback cb) {}
 
   void adventure$bridge$registerPackCallback(final @NotNull UUID id, final @NotNull FabricServerAudiencesImpl controller, final @NotNull ResourcePackCallback cb);
+
+  Connection adventure$connection();
 }

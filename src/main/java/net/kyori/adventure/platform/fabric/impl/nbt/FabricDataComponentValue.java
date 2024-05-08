@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-fabric, licensed under the MIT License.
  *
- * Copyright (c) 2020-2024 KyoriPowered
+ * Copyright (c) 2024 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,22 +21,35 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.adventure.platform.fabric.impl.mixin.minecraft.network.chat;
+package net.kyori.adventure.platform.fabric.impl.nbt;
 
-import net.kyori.adventure.platform.fabric.impl.NonWrappingComponentSerializer;
-import net.minecraft.network.chat.ClickEvent;
+import com.mojang.brigadier.StringReader;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.serialization.Codec;
+import net.kyori.adventure.nbt.api.BinaryTagHolder;
+import net.kyori.adventure.text.event.DataComponentValue;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.TagParser;
 import org.jetbrains.annotations.NotNull;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
 
-@Mixin(ClickEvent.Action.class)
-abstract class ClickEvent_ActionMixin {
-  @Redirect(method = "filterForSerialization", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/chat/ClickEvent$Action;isAllowedFromServer()Z"))
-  private static boolean adventure$redirectIsAllowedFromServer(final ClickEvent.@NotNull Action action) {
-    if (NonWrappingComponentSerializer.bypassIsAllowedFromServer()) {
-      return true;
+public sealed interface FabricDataComponentValue extends DataComponentValue {
+  net.kyori.adventure.util.Codec<Tag, String, CommandSyntaxException, RuntimeException> SNBT_CODEC = net.kyori.adventure.util.Codec.codec(
+    s -> new TagParser(new StringReader(s)).readValue(),
+    Tag::toString
+  );
+
+  record Present<T>(@NotNull T value, @NotNull Codec<T> codec) implements FabricDataComponentValue, DataComponentValue.TagSerializable {
+    @Override
+    public @NotNull BinaryTagHolder asBinaryTag() {
+      return BinaryTagHolder.encode(
+        this.codec.encodeStart(NbtOps.INSTANCE, this.value).getOrThrow(IllegalArgumentException::new),
+        SNBT_CODEC
+      );
     }
-    return action.isAllowedFromServer();
+  }
+
+  enum Removed implements FabricDataComponentValue, DataComponentValue.Removed {
+    INSTANCE;
   }
 }

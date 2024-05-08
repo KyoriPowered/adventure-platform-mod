@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-fabric, licensed under the MIT License.
  *
- * Copyright (c) 2020-2022 KyoriPowered
+ * Copyright (c) 2020-2024 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -42,7 +42,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(BossHealthOverlay.class)
 public class BossHealthOverlayMixin implements BossHealthOverlayBridge {
   // @formatter:off
-  @Shadow @Final private Map<UUID, LerpingBossEvent> events;
+  @Shadow @Final Map<UUID, LerpingBossEvent> events;
   // @formatter:on
 
   private final Map<FabricClientAudiencesImpl, ClientBossBarListener> adventure$listener = new MapMaker().weakKeys().makeMap();

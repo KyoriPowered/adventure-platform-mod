@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-fabric, licensed under the MIT License.
  *
- * Copyright (c) 2020-2023 KyoriPowered
+ * Copyright (c) 2020-2024 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,15 +33,17 @@ import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.fabric.impl.AdventureCommon;
 import net.kyori.adventure.platform.fabric.impl.NonWrappingComponentSerializer;
 import net.kyori.adventure.platform.fabric.impl.WrappedComponent;
+import net.kyori.adventure.platform.fabric.impl.nbt.FabricDataComponentValue;
 import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
+import net.kyori.adventure.text.event.DataComponentValue;
 import net.kyori.adventure.text.flattener.ComponentFlattener;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
 import net.kyori.adventure.text.serializer.ComponentSerializer;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.util.ComponentMessageThrowable;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -78,7 +80,7 @@ public interface FabricAudiences {
       partition = ((WrappedComponent) input).partition();
       renderer = ((WrappedComponent) input).renderer();
     } else {
-      final Component original = GsonComponentSerializer.gson().deserializeFromTree(net.minecraft.network.chat.Component.Serializer.toJsonTree(input));
+      final Component original = NonWrappingComponentSerializer.INSTANCE.deserialize(input);
       modified = modifier.apply(original);
       partition = null;
       renderer = null;
@@ -183,6 +185,21 @@ public interface FabricAudiences {
    */
   static @NotNull Identity identity(final @NotNull GameProfile profile) {
     return (Identity) profile;
+  }
+
+  /**
+   * Get a wrapped value for a certain data component.
+   *
+   * <p>The data component value must not be a {@link DataComponentType#isTransient() transient} one.</p>
+   *
+   * @param type the component type
+   * @param value the value to wrap
+   * @param <T> the value type
+   * @return the wrapped value
+   * @since 5.13.0
+   */
+  static @NotNull <T> DataComponentValue dataComponentValue(final @NotNull DataComponentType<T> type, final @NotNull T value) {
+    return new FabricDataComponentValue.Present<>(value, type.codecOrThrow());
   }
 
   /**
