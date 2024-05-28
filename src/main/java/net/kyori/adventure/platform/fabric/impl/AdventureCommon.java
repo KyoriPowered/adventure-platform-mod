@@ -177,7 +177,7 @@ public class AdventureCommon implements ModInitializer {
   }
 
   public static ResourceLocation res(final @NotNull String value) {
-    return new ResourceLocation(Adventure.NAMESPACE, value);
+    return ResourceLocation.fromNamespaceAndPath(Adventure.NAMESPACE, value);
   }
 
   @Override

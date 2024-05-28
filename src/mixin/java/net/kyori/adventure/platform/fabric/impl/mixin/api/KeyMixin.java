@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-fabric, licensed under the MIT License.
  *
- * Copyright (c) 2020-2022 KyoriPowered
+ * Copyright (c) 2020-2024 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -47,7 +47,7 @@ public interface KeyMixin {
   @SuppressWarnings("overwrite")
   static @NotNull Key key(final String namespace, final String value) {
     try {
-      return new ResourceLocation(namespace, value);
+      return ResourceLocation.fromNamespaceAndPath(namespace, value);
     } catch (final ResourceLocationException ex) {
       throw InvalidKeyExceptionAccess.newInvalidKeyException(namespace, value, ex.getMessage());
     }

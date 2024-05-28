@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-fabric, licensed under the MIT License.
  *
- * Copyright (c) 2020-2023 KyoriPowered
+ * Copyright (c) 2020-2024 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -52,6 +52,7 @@ import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.loader.api.FabricLoader;
+import net.kyori.adventure.Adventure;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.chat.ChatType;
@@ -126,7 +127,7 @@ public class AdventureTester implements ModInitializer {
   private static final ChatType ADVENTURE_BROADCAST = net.kyori.adventure.chat.ChatType.chatType(advKey("broadcast"));
 
   private static ResourceLocation advKey(final String location) {
-    return new ResourceLocation("adventure", location);
+    return ResourceLocation.fromNamespaceAndPath(Adventure.NAMESPACE, location);
   }
 
   public @NotNull FabricServerAudiences adventure() {
