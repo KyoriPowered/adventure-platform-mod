@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-fabric, licensed under the MIT License.
  *
- * Copyright (c) 2020-2022 KyoriPowered
+ * Copyright (c) 2020-2024 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,6 +24,7 @@
 package net.kyori.adventure.platform.fabric.impl.client;
 
 import java.util.function.Function;
+import net.kyori.adventure.platform.fabric.impl.NonWrappingComponentSerializer;
 import net.kyori.adventure.platform.fabric.impl.SidedProxy;
 import net.kyori.adventure.platform.fabric.impl.WrappedComponent;
 import net.kyori.adventure.pointer.Pointered;
@@ -47,7 +48,8 @@ public class ClientProxy implements SidedProxy {
   public @NotNull WrappedComponent createWrappedComponent(
     final @NotNull Component wrapped,
     final @Nullable Function<Pointered, ?> partition,
-    final @Nullable ComponentRenderer<Pointered> renderer
+    final @Nullable ComponentRenderer<Pointered> renderer,
+    final @Nullable NonWrappingComponentSerializer nonWrappingSerializer
   ) {
     return new ClientWrappedComponent(wrapped, partition, renderer);
   }

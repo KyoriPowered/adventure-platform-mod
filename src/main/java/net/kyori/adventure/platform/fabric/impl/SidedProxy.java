@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-fabric, licensed under the MIT License.
  *
- * Copyright (c) 2020-2022 KyoriPowered
+ * Copyright (c) 2020-2024 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,6 +37,7 @@ public interface SidedProxy {
   @NotNull WrappedComponent createWrappedComponent(
     final @NotNull Component wrapped,
     final @Nullable Function<Pointered, ?> partition,
-    final @Nullable ComponentRenderer<Pointered> renderer
+    final @Nullable ComponentRenderer<Pointered> renderer,
+    final @Nullable NonWrappingComponentSerializer nonWrappingSerializer
   );
 }

@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-fabric, licensed under the MIT License.
  *
- * Copyright (c) 2020-2023 KyoriPowered
+ * Copyright (c) 2020-2024 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -38,6 +38,7 @@ import net.kyori.adventure.platform.fabric.FabricServerAudiences;
 import net.kyori.adventure.platform.fabric.impl.AdventureCommandSourceStackInternal;
 import net.kyori.adventure.platform.fabric.impl.AdventureCommon;
 import net.kyori.adventure.platform.fabric.impl.FabricAudiencesInternal;
+import net.kyori.adventure.platform.fabric.impl.NonWrappingComponentSerializer;
 import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.flattener.ComponentFlattener;
@@ -76,12 +77,14 @@ public final class FabricServerAudiencesImpl implements FabricServerAudiences, F
   }
 
   private final MinecraftServer server;
+  private final NonWrappingComponentSerializer nonWrappingSerializer;
   private final Function<Pointered, ?> partition;
   private final ComponentRenderer<Pointered> renderer;
   final ServerBossBarListener bossBars;
 
   public FabricServerAudiencesImpl(final MinecraftServer server, final Function<Pointered, ?> partition, final ComponentRenderer<Pointered> renderer) {
     this.server = server;
+    this.nonWrappingSerializer = new NonWrappingComponentSerializer(this::registryAccess);
     this.partition = partition;
     this.renderer = renderer;
     this.bossBars = new ServerBossBarListener(this);
@@ -179,7 +182,12 @@ public final class FabricServerAudiencesImpl implements FabricServerAudiences, F
   public net.minecraft.network.chat.@NotNull Component toNative(final @NotNull Component adventure) {
     if (adventure == Component.empty()) return net.minecraft.network.chat.Component.empty();
 
-    return AdventureCommon.SIDE_PROXY.createWrappedComponent(requireNonNull(adventure, "adventure"), this.partition, this.renderer);
+    return AdventureCommon.SIDE_PROXY.createWrappedComponent(requireNonNull(adventure, "adventure"), this.partition, this.renderer, this.nonWrappingSerializer);
+  }
+
+  @Override
+  public @NotNull Component toAdventure(final net.minecraft.network.chat.@NotNull Component vanilla) {
+    return this.nonWrappingSerializer.deserialize(vanilla);
   }
 
   public ServerBossBarListener bossBars() {
