@@ -87,11 +87,13 @@ sourceSets {
   main {
     java.srcDirs(
       "src/accessor/java",
-      "src/mixin/java"
+      "src/mixin/java",
+      "src/client/java"
     )
     resources.srcDirs(
       "src/accessor/resources/",
-      "src/mixin/resources/"
+      "src/mixin/resources/",
+      "src/client/resources/"
     )
   }
 }
