@@ -30,15 +30,15 @@ import java.util.Objects;
 import java.util.Set;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
-import net.kyori.adventure.platform.fabric.FabricServerAudiences;
+import net.kyori.adventure.platform.modcommon.MinecraftServerAudiences;
 import net.kyori.adventure.platform.fabric.PlayerLocales;
-import net.kyori.adventure.platform.fabric.impl.ControlledAudience;
-import net.kyori.adventure.platform.fabric.impl.FabricAudiencesInternal;
+import net.kyori.adventure.platform.fabric.impl.server.FabricServerPlayerAudience;
+import net.kyori.adventure.platform.modcommon.impl.ControlledAudience;
+import net.kyori.adventure.platform.modcommon.impl.MinecraftAudiencesInternal;
 import net.kyori.adventure.platform.fabric.impl.LocaleHolderBridge;
 import net.kyori.adventure.platform.fabric.impl.mixin.minecraft.world.entity.player.PlayerMixin;
-import net.kyori.adventure.platform.fabric.impl.server.FabricServerAudiencesImpl;
-import net.kyori.adventure.platform.fabric.impl.server.RenderableAudience;
-import net.kyori.adventure.platform.fabric.impl.server.ServerPlayerAudience;
+import net.kyori.adventure.platform.modcommon.impl.server.MinecraftServerAudiencesImpl;
+import net.kyori.adventure.platform.modcommon.impl.server.RenderableAudience;
 import net.kyori.adventure.platform.fabric.impl.server.ServerPlayerBridge;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundTabListPacket;
@@ -68,7 +68,7 @@ public abstract class ServerPlayerMixin extends PlayerMixin implements Forwardin
 
   private Audience adventure$backing;
   private Locale adventure$locale;
-  private final Map<FabricServerAudiencesImpl, Audience> adventure$renderers = new MapMaker().weakKeys().makeMap();
+  private final Map<MinecraftServerAudiencesImpl, Audience> adventure$renderers = new MapMaker().weakKeys().makeMap();
   private Component adventure$tabListHeader = Component.empty();
   private Component adventure$tabListFooter = Component.empty();
   private Set<ResourceLocation> adventure$arguments = Set.of();
@@ -79,7 +79,7 @@ public abstract class ServerPlayerMixin extends PlayerMixin implements Forwardin
 
   @Inject(method = "<init>", at = @At("TAIL"))
   private void adventure$init(final CallbackInfo ci) {
-    this.adventure$backing = FabricServerAudiences.of(this.server).audience(this);
+    this.adventure$backing = MinecraftServerAudiences.of(this.server).audience(this);
   }
 
   @Override
@@ -88,8 +88,8 @@ public abstract class ServerPlayerMixin extends PlayerMixin implements Forwardin
   }
 
   @Override
-  public Audience renderUsing(final FabricServerAudiencesImpl controller) {
-    return this.adventure$renderers.computeIfAbsent(controller, ctrl -> new ServerPlayerAudience((ServerPlayer) (Object) this, ctrl));
+  public Audience renderUsing(final MinecraftServerAudiencesImpl controller) {
+    return this.adventure$renderers.computeIfAbsent(controller, ctrl -> new FabricServerPlayerAudience((ServerPlayer) (Object) this, ctrl));
   }
 
   @Override
@@ -98,8 +98,8 @@ public abstract class ServerPlayerMixin extends PlayerMixin implements Forwardin
   }
 
   @Override
-  public @NotNull FabricAudiencesInternal controller() {
-    return (FabricAudiencesInternal) FabricServerAudiences.of(this.server);
+  public @NotNull MinecraftAudiencesInternal controller() {
+    return (MinecraftAudiencesInternal) MinecraftServerAudiences.of(this.server);
   }
 
   // Tab list
@@ -137,12 +137,12 @@ public abstract class ServerPlayerMixin extends PlayerMixin implements Forwardin
 
   @Inject(method = "restoreFrom", at = @At("RETURN"))
   private void copyData(final ServerPlayer old, final boolean alive, final CallbackInfo ci) {
-    FabricServerAudiencesImpl.forEachInstance(controller -> controller.bossBars().replacePlayer(old, (ServerPlayer) (Object) this));
+    MinecraftServerAudiencesImpl.forEachInstance(controller -> controller.bossBars().replacePlayer(old, (ServerPlayer) (Object) this));
   }
 
   @Inject(method = "disconnect", at = @At("RETURN"))
   private void adventure$removeBossBarsOnDisconnect(final CallbackInfo ci) {
-    FabricServerAudiencesImpl.forEachInstance(controller -> controller.bossBars().unsubscribeFromAll((ServerPlayer) (Object) this));
+    MinecraftServerAudiencesImpl.forEachInstance(controller -> controller.bossBars().unsubscribeFromAll((ServerPlayer) (Object) this));
   }
 
   // Known argument type tracking

@@ -1,6 +1,6 @@
 {
   "package": "net.kyori.adventure.platform.fabric.impl.mixin",
-  "parent": "adventure-platform-fabric.parent.mixins.json",
+  "parent": "adventure-platform-mod-shared.parent.mixins.json",
   "mixins": [
     "api.KeyMixin",
     "api.SignedMessageMixin",

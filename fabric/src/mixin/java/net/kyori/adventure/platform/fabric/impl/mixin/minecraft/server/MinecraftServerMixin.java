@@ -29,13 +29,13 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.permission.PermissionChecker;
-import net.kyori.adventure.platform.fabric.FabricServerAudiences;
-import net.kyori.adventure.platform.fabric.impl.ControlledAudience;
-import net.kyori.adventure.platform.fabric.impl.FabricAudiencesInternal;
-import net.kyori.adventure.platform.fabric.impl.server.FabricServerAudiencesImpl;
-import net.kyori.adventure.platform.fabric.impl.server.MinecraftServerBridge;
-import net.kyori.adventure.platform.fabric.impl.server.PlainAudience;
-import net.kyori.adventure.platform.fabric.impl.server.RenderableAudience;
+import net.kyori.adventure.platform.modcommon.MinecraftServerAudiences;
+import net.kyori.adventure.platform.modcommon.impl.ControlledAudience;
+import net.kyori.adventure.platform.modcommon.impl.MinecraftAudiencesInternal;
+import net.kyori.adventure.platform.modcommon.impl.server.MinecraftServerAudiencesImpl;
+import net.kyori.adventure.platform.modcommon.impl.server.MinecraftServerBridge;
+import net.kyori.adventure.platform.modcommon.impl.server.PlainAudience;
+import net.kyori.adventure.platform.modcommon.impl.server.RenderableAudience;
 import net.kyori.adventure.pointer.Pointers;
 import net.kyori.adventure.util.TriState;
 import net.minecraft.core.LayeredRegistryAccess;
@@ -59,13 +59,13 @@ public abstract class MinecraftServerMixin implements MinecraftServerBridge, Ren
   @Shadow
   public abstract LayeredRegistryAccess<RegistryLayer> registries();
 
-  private final FabricServerAudiencesImpl adventure$globalProvider = new FabricServerAudiencesImpl.Builder((MinecraftServer) (Object) this).build();
-  private final Map<FabricAudiencesInternal, Audience> adventure$renderers = new MapMaker().weakKeys().makeMap();
+  private final MinecraftServerAudiencesImpl adventure$globalProvider = new MinecraftServerAudiencesImpl.Builder((MinecraftServer) (Object) this).build();
+  private final Map<MinecraftAudiencesInternal, Audience> adventure$renderers = new MapMaker().weakKeys().makeMap();
   private final Audience adventure$backing = this.renderUsing(this.adventure$globalProvider);
   private volatile Pointers adventure$pointers;
 
   @Override
-  public FabricServerAudiences adventure$globalProvider() {
+  public MinecraftServerAudiences adventure$globalProvider() {
     return this.adventure$globalProvider;
   }
 
@@ -75,7 +75,7 @@ public abstract class MinecraftServerMixin implements MinecraftServerBridge, Ren
   }
 
   @Override
-  public Audience renderUsing(final FabricServerAudiencesImpl controller) {
+  public Audience renderUsing(final MinecraftServerAudiencesImpl controller) {
     return this.adventure$renderers.computeIfAbsent(controller, ctrl -> new PlainAudience(ctrl, this, LOGGER::info));
   }
 
@@ -95,7 +95,7 @@ public abstract class MinecraftServerMixin implements MinecraftServerBridge, Ren
   }
 
   @Override
-  public @NotNull FabricAudiencesInternal controller() {
+  public @NotNull MinecraftAudiencesInternal controller() {
     return this.adventure$globalProvider;
   }
 

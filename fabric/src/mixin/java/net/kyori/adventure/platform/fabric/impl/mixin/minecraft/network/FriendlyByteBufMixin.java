@@ -23,7 +23,7 @@
  */
 package net.kyori.adventure.platform.fabric.impl.mixin.minecraft.network;
 
-import net.kyori.adventure.platform.fabric.impl.server.FriendlyByteBufBridge;
+import net.kyori.adventure.platform.modcommon.impl.server.FriendlyByteBufBridge;
 import net.kyori.adventure.pointer.Pointered;
 import net.minecraft.network.FriendlyByteBuf;
 import org.jetbrains.annotations.Nullable;

@@ -25,7 +25,7 @@ package net.kyori.adventure.platform.fabric.impl.mixin.brigadier.exceptions;
 
 import com.mojang.brigadier.Message;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.kyori.adventure.platform.fabric.FabricAudiences;
+import net.kyori.adventure.platform.modcommon.MinecraftAudiences;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.util.ComponentMessageThrowable;
 import net.minecraft.network.chat.ComponentUtils;
@@ -43,6 +43,6 @@ abstract class CommandSyntaxExceptionMixin implements ComponentMessageThrowable 
   public @NotNull Component componentMessage() {
     final net.minecraft.network.chat.Component minecraft = ComponentUtils.fromMessage(this.shadow$getRawMessage());
 
-    return FabricAudiences.nonWrappingSerializer().deserialize(minecraft);
+    return MinecraftAudiences.nonWrappingSerializer().deserialize(minecraft);
   }
 }

@@ -24,7 +24,7 @@
 package net.kyori.adventure.platform.test.fabric.widget;
 
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
-import net.kyori.adventure.platform.fabric.FabricClientAudiences;
+import net.kyori.adventure.platform.fabric.MinecraftClientAudiences;
 import net.kyori.adventure.text.Component;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
@@ -50,7 +50,7 @@ public final class Widgets {
   }
 
   public static Button button(final Component label, final Button.OnPress clickAction, final @Nullable Tooltip tooltip) {
-    final net.minecraft.network.chat.Component mcComponent = FabricClientAudiences.of().toNative(label);
+    final net.minecraft.network.chat.Component mcComponent = MinecraftClientAudiences.of().toNative(label);
     final int textWidth = Minecraft.getInstance().font.width(mcComponent);
     // x, y, width, height, label, clickAction, tooltipAction
     return Button.builder(mcComponent, clickAction)
@@ -81,7 +81,7 @@ public final class Widgets {
    * @return a new checkbox
    */
   public static Checkbox checkbox(final Component label, final boolean initialState, final BooleanConsumer whenPressed) {
-    final net.minecraft.network.chat.Component mcComponent = FabricClientAudiences.of().toNative(label);
+    final net.minecraft.network.chat.Component mcComponent = MinecraftClientAudiences.of().toNative(label);
     return Checkbox.builder(mcComponent, Minecraft.getInstance().font)
       .selected(initialState)
       .onValueChange((checkbox, bl) -> whenPressed.accept(bl))

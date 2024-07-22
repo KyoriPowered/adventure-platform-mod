@@ -59,9 +59,9 @@ import net.kyori.adventure.chat.ChatType;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.key.Key;
-import net.kyori.adventure.platform.fabric.AdventureCommandSourceStack;
-import net.kyori.adventure.platform.fabric.FabricClientAudiences;
-import net.kyori.adventure.platform.fabric.FabricServerAudiences;
+import net.kyori.adventure.platform.modcommon.AdventureCommandSourceStack;
+import net.kyori.adventure.platform.fabric.MinecraftClientAudiences;
+import net.kyori.adventure.platform.modcommon.MinecraftServerAudiences;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
@@ -122,7 +122,7 @@ public class AdventureTester implements ModInitializer {
 
   private final Map<UUID, BossBar> greetingBars = new HashMap<>();
   private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-  private @Nullable FabricServerAudiences platform;
+  private @Nullable MinecraftServerAudiences platform;
 
   private static final ChatType ADVENTURE_BROADCAST = net.kyori.adventure.chat.ChatType.chatType(advKey("broadcast"));
 
@@ -130,7 +130,7 @@ public class AdventureTester implements ModInitializer {
     return ResourceLocation.fromNamespaceAndPath(Adventure.NAMESPACE, location);
   }
 
-  public @NotNull FabricServerAudiences adventure() {
+  public @NotNull MinecraftServerAudiences adventure() {
     return requireNonNull(this.platform, "Tried to access Fabric platform without a running server");
   }
 
@@ -146,7 +146,7 @@ public class AdventureTester implements ModInitializer {
     LOGGER.info(Component.text("Setting up mod! {} is a cool mode"), Component.translatable("gameMode.adventure", NamedTextColor.BLUE));
 
     // Set up platform
-    ServerLifecycleEvents.SERVER_STARTING.register(server -> this.platform = FabricServerAudiences.of(server));
+    ServerLifecycleEvents.SERVER_STARTING.register(server -> this.platform = MinecraftServerAudiences.of(server));
     ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
       this.platform = null;
       this.greetingBars.clear();
@@ -292,7 +292,7 @@ public class AdventureTester implements ModInitializer {
             .clickEvent(openFile(path.toString()))
             .build();
 
-          ctx.getSource().getClient().gui.getChat().addMessage(FabricClientAudiences.of().toNative(message), null, kyoriMessage);
+          ctx.getSource().getClient().gui.getChat().addMessage(MinecraftClientAudiences.of().toNative(message), null, kyoriMessage);
           // ctx.getSource().getPlayer().sendMessage(message); // Works as well!
 
           return Command.SINGLE_SUCCESS;

@@ -25,9 +25,9 @@ package net.kyori.adventure.platform.fabric.impl.client;
 
 import java.util.function.Function;
 import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.platform.fabric.FabricClientAudiences;
-import net.kyori.adventure.platform.fabric.impl.AdventureCommon;
-import net.kyori.adventure.platform.fabric.impl.FabricAudiencesInternal;
+import net.kyori.adventure.platform.fabric.MinecraftClientAudiences;
+import net.kyori.adventure.platform.modcommon.impl.MinecraftAudiencesInternal;
+import net.kyori.adventure.platform.modcommon.impl.AdventureCommon;
 import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.text.flattener.ComponentFlattener;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
@@ -42,8 +42,8 @@ import org.jetbrains.annotations.Nullable;
 
 import static java.util.Objects.requireNonNull;
 
-public class FabricClientAudiencesImpl implements FabricClientAudiences, FabricAudiencesInternal {
-  public static final FabricClientAudiences INSTANCE = new Builder().build();
+public class FabricClientAudiencesImpl implements MinecraftClientAudiences, MinecraftAudiencesInternal {
+  public static final MinecraftClientAudiences INSTANCE = new Builder().build();
   private final Function<Pointered, ?> partition;
   private final ComponentRenderer<Pointered> renderer;
   private final ClientAudience audience;
@@ -84,7 +84,7 @@ public class FabricClientAudiencesImpl implements FabricClientAudiences, FabricA
     return level == null ? RegistryLayer.createRegistryAccess().compositeAccess() : level.registryAccess();
   }
 
-  public static final class Builder implements FabricClientAudiences.Builder {
+  public static final class Builder implements MinecraftClientAudiences.Builder {
     private Function<Pointered, ?> partition;
     private ComponentRenderer<Pointered> renderer;
 
@@ -93,19 +93,19 @@ public class FabricClientAudiencesImpl implements FabricClientAudiences, FabricA
     }
 
     @Override
-    public FabricClientAudiences.@NotNull Builder componentRenderer(final @NotNull ComponentRenderer<Pointered> componentRenderer) {
+    public MinecraftClientAudiences.@NotNull Builder componentRenderer(final @NotNull ComponentRenderer<Pointered> componentRenderer) {
       this.renderer = requireNonNull(componentRenderer, "componentRenderer");
       return this;
     }
 
     @Override
-    public FabricClientAudiences.@NotNull Builder partition(final @NotNull Function<Pointered, ?> partitionFunction) {
+    public MinecraftClientAudiences.@NotNull Builder partition(final @NotNull Function<Pointered, ?> partitionFunction) {
       this.partition = requireNonNull(partitionFunction, "partitionFunction");
       return this;
     }
 
     @Override
-    public @NotNull FabricClientAudiences build() {
+    public @NotNull MinecraftClientAudiences build() {
       return new FabricClientAudiencesImpl(this.partition, this.renderer);
     }
   }

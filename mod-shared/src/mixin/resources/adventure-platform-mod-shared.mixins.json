@@ -1,0 +1,6 @@
+{
+  "package": "net.kyori.adventure.platform.modcommon.impl.mixin",
+  "parent": "adventure-platform-mod-shared.parent.mixins.json",
+  "mixins": [
+  ]
+}

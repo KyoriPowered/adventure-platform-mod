@@ -27,9 +27,9 @@ import com.mojang.authlib.GameProfile;
 import java.util.Locale;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
-import net.kyori.adventure.platform.fabric.FabricClientAudiences;
-import net.kyori.adventure.platform.fabric.impl.ControlledAudience;
-import net.kyori.adventure.platform.fabric.impl.FabricAudiencesInternal;
+import net.kyori.adventure.platform.fabric.MinecraftClientAudiences;
+import net.kyori.adventure.platform.modcommon.impl.ControlledAudience;
+import net.kyori.adventure.platform.modcommon.impl.MinecraftAudiencesInternal;
 import net.kyori.adventure.platform.fabric.impl.LocaleHolderBridge;
 import net.kyori.adventure.pointer.Pointers;
 import net.kyori.adventure.sound.Sound;
@@ -51,7 +51,7 @@ public abstract class LocalPlayerMixin extends Player implements ForwardingAudie
 
   // TODO: Do we want to enforce synchronization with the client thread?
 
-  private final Audience adventure$default = FabricClientAudiences.of().audience();
+  private final Audience adventure$default = MinecraftClientAudiences.of().audience();
 
   private LocalPlayerMixin(final Level level, final BlockPos blockPos, final float f, final GameProfile gameProfile) {
     super(level, blockPos, f, gameProfile);
@@ -68,8 +68,8 @@ public abstract class LocalPlayerMixin extends Player implements ForwardingAudie
   }
 
   @Override
-  public @NotNull FabricAudiencesInternal controller() {
-    return (FabricAudiencesInternal) FabricClientAudiences.of();
+  public @NotNull MinecraftAudiencesInternal controller() {
+    return (MinecraftAudiencesInternal) MinecraftClientAudiences.of();
   }
 
   @Override

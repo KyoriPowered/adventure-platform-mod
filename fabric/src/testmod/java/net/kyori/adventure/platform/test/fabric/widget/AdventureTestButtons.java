@@ -26,7 +26,7 @@ package net.kyori.adventure.platform.test.fabric.widget;
 import java.util.List;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.bossbar.BossBar;
-import net.kyori.adventure.platform.fabric.FabricClientAudiences;
+import net.kyori.adventure.platform.fabric.MinecraftClientAudiences;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -57,6 +57,6 @@ public final class AdventureTestButtons {
   }
 
   private static Audience clientAudience() {
-    return FabricClientAudiences.of().audience();
+    return MinecraftClientAudiences.of().audience();
   }
 }

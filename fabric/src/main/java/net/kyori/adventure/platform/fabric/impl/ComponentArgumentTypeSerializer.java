@@ -25,7 +25,7 @@ package net.kyori.adventure.platform.fabric.impl;
 
 import com.google.gson.JsonObject;
 import net.kyori.adventure.platform.fabric.ComponentArgumentType;
-import net.kyori.adventure.platform.fabric.FabricAudiences;
+import net.kyori.adventure.platform.modcommon.MinecraftAudiences;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.network.FriendlyByteBuf;
@@ -40,7 +40,7 @@ public final class ComponentArgumentTypeSerializer implements ArgumentTypeInfo<C
 
   @Override
   public void serializeToNetwork(final Template type, final FriendlyByteBuf buffer) {
-    buffer.writeResourceLocation(FabricAudiences.toNative(type.format.id()));
+    buffer.writeResourceLocation(MinecraftAudiences.toNative(type.format.id()));
   }
 
   @Override

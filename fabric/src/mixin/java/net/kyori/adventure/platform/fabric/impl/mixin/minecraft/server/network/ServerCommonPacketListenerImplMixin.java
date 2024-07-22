@@ -27,9 +27,9 @@ import com.mojang.authlib.GameProfile;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import net.kyori.adventure.platform.fabric.impl.GameEnums;
-import net.kyori.adventure.platform.fabric.impl.server.FabricServerAudiencesImpl;
-import net.kyori.adventure.platform.fabric.impl.server.ServerCommonPacketListenerImplBridge;
+import net.kyori.adventure.platform.modcommon.impl.GameEnums;
+import net.kyori.adventure.platform.modcommon.impl.server.MinecraftServerAudiencesImpl;
+import net.kyori.adventure.platform.modcommon.impl.server.ServerCommonPacketListenerImplBridge;
 import net.kyori.adventure.resource.ResourcePackCallback;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import net.minecraft.network.Connection;
@@ -59,7 +59,7 @@ public abstract class ServerCommonPacketListenerImplMixin implements ServerCommo
   }
 
   @Override
-  public void adventure$bridge$registerPackCallback(final @NotNull UUID id, final @NotNull FabricServerAudiencesImpl controller, final @NotNull ResourcePackCallback cb) {
+  public void adventure$bridge$registerPackCallback(final @NotNull UUID id, final @NotNull MinecraftServerAudiencesImpl controller, final @NotNull ResourcePackCallback cb) {
     if (this.adventure$activeCallbacks.put(id, new PackCallbackState(controller, cb)) != null) {
       ADVENTURE$LOGGER.warn("Duplicate in-flight callbacks detected for pack {} on player {}", id, this.shadow$playerProfile());
     }

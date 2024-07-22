@@ -34,13 +34,13 @@ import net.kyori.adventure.chat.SignedMessage;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.key.Key;
-import net.kyori.adventure.platform.fabric.FabricAudiences;
-import net.kyori.adventure.platform.fabric.impl.AdventureCommon;
-import net.kyori.adventure.platform.fabric.impl.ControlledAudience;
-import net.kyori.adventure.platform.fabric.impl.FabricAudiencesInternal;
-import net.kyori.adventure.platform.fabric.impl.GameEnums;
+import net.kyori.adventure.platform.modcommon.MinecraftAudiences;
+import net.kyori.adventure.platform.modcommon.impl.ControlledAudience;
+import net.kyori.adventure.platform.modcommon.impl.MinecraftAudiencesInternal;
+import net.kyori.adventure.platform.modcommon.impl.AdventureCommon;
+import net.kyori.adventure.platform.modcommon.impl.GameEnums;
 import net.kyori.adventure.platform.fabric.impl.PointerProviderBridge;
-import net.kyori.adventure.platform.fabric.impl.accessor.minecraft.world.level.LevelAccess;
+import net.kyori.adventure.platform.modcommon.impl.accessor.minecraft.world.level.LevelAccess;
 import net.kyori.adventure.platform.fabric.impl.client.mixin.minecraft.resources.sounds.AbstractSoundInstanceAccess;
 import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.pointer.Pointers;
@@ -79,7 +79,7 @@ public class ClientAudience implements ControlledAudience {
   }
 
   @Override
-  public @NotNull FabricAudiencesInternal controller() {
+  public @NotNull MinecraftAudiencesInternal controller() {
     return this.controller;
   }
 
@@ -228,7 +228,7 @@ public class ClientAudience implements ControlledAudience {
       this.playSound(sound, player.getX(), player.getY(), player.getZ());
     } else {
       // not in-game
-      this.client.getSoundManager().play(new SimpleSoundInstance(FabricAudiences.toNative(sound.name()), GameEnums.SOUND_SOURCE.toMinecraft(sound.source()),
+      this.client.getSoundManager().play(new SimpleSoundInstance(MinecraftAudiences.toNative(sound.name()), GameEnums.SOUND_SOURCE.toMinecraft(sound.source()),
         sound.volume(), sound.pitch(), RandomSource.create(this.seed(sound)), false, 0, SoundInstance.Attenuation.NONE, 0, 0, 0, true));
     }
   }
@@ -254,7 +254,7 @@ public class ClientAudience implements ControlledAudience {
       this.seed(sound)
     );
     // Then apply the ResourceLocation of our real sound event
-    ((AbstractSoundInstanceAccess) mcSound).setLocation(FabricAudiences.toNative(sound.name()));
+    ((AbstractSoundInstanceAccess) mcSound).setLocation(MinecraftAudiences.toNative(sound.name()));
 
     this.client.getSoundManager().play(mcSound);
   }
@@ -262,7 +262,7 @@ public class ClientAudience implements ControlledAudience {
   @Override
   public void playSound(final @NotNull Sound sound, final double x, final double y, final double z) {
     this.client.getSoundManager().play(new SimpleSoundInstance(
-      FabricAudiences.toNative(sound.name()),
+      MinecraftAudiences.toNative(sound.name()),
       GameEnums.SOUND_SOURCE.toMinecraft(sound.source()),
       sound.volume(),
       sound.pitch(),
@@ -280,7 +280,7 @@ public class ClientAudience implements ControlledAudience {
   @Override
   public void stopSound(final @NotNull SoundStop stop) {
     final @Nullable Key sound = stop.sound();
-    final @Nullable ResourceLocation soundIdent = sound == null ? null : FabricAudiences.toNative(sound);
+    final @Nullable ResourceLocation soundIdent = sound == null ? null : MinecraftAudiences.toNative(sound);
     final Sound.@Nullable Source source = stop.source();
     final @Nullable SoundSource category = source == null ? null : GameEnums.SOUND_SOURCE.toMinecraft(source);
     this.client.getSoundManager().stop(soundIdent, category);

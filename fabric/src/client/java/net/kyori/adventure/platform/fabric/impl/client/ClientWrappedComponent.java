@@ -24,8 +24,8 @@
 package net.kyori.adventure.platform.fabric.impl.client;
 
 import java.util.function.Function;
-import net.kyori.adventure.platform.fabric.FabricClientAudiences;
-import net.kyori.adventure.platform.fabric.impl.WrappedComponent;
+import net.kyori.adventure.platform.fabric.MinecraftClientAudiences;
+import net.kyori.adventure.platform.modcommon.impl.WrappedComponent;
 import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
@@ -39,7 +39,7 @@ public final class ClientWrappedComponent extends WrappedComponent {
   @Override
   protected net.minecraft.network.chat.Component deepConvertedLocalized() {
     net.minecraft.network.chat.Component converted = this.converted;
-    final Pointered target = FabricClientAudiences.of().audience();
+    final Pointered target = MinecraftClientAudiences.of().audience();
     final Object data = this.partition() == null ? null : this.partition().apply(target);
     if (converted == null || this.deepConvertedLocalized != data) {
       converted = this.converted = this.rendered(target).deepConverted();

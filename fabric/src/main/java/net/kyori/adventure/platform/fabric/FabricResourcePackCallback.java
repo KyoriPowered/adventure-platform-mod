@@ -25,8 +25,8 @@ package net.kyori.adventure.platform.fabric;
 
 import java.util.UUID;
 import net.kyori.adventure.identity.Identity;
-import net.kyori.adventure.platform.fabric.impl.ControlledAudience;
-import net.kyori.adventure.platform.fabric.impl.server.FabricServerAudiencesImpl;
+import net.kyori.adventure.platform.modcommon.impl.ControlledAudience;
+import net.kyori.adventure.platform.modcommon.impl.server.MinecraftServerAudiencesImpl;
 import net.kyori.adventure.resource.ResourcePackCallback;
 import net.kyori.adventure.resource.ResourcePackStatus;
 import net.kyori.adventure.text.Component;
@@ -83,7 +83,7 @@ public final class FabricResourcePackCallback {
         } else {
           final @Nullable UUID id = audience.get(Identity.UUID).orElse(null);
           if (id == null) return; // not a player?
-          if (!(controlled.controller() instanceof FabricServerAudiencesImpl server)) return;
+          if (!(controlled.controller() instanceof MinecraftServerAudiencesImpl server)) return;
 
           final ServerPlayer ply = server.server().getPlayerList().getPlayer(id);
           if (ply == null) return;

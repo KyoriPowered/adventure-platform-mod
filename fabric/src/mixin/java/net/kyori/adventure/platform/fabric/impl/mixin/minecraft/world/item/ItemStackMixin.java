@@ -29,7 +29,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.UnaryOperator;
 import net.kyori.adventure.key.Key;
-import net.kyori.adventure.platform.fabric.impl.nbt.FabricDataComponentValue;
+import net.kyori.adventure.platform.modcommon.impl.nbt.FabricDataComponentValue;
 import net.kyori.adventure.text.event.DataComponentValue;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.event.HoverEventSource;

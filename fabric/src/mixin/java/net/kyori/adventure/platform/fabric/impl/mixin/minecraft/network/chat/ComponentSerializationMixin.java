@@ -27,7 +27,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.serialization.Codec;
 import io.netty.buffer.ByteBuf;
-import net.kyori.adventure.platform.fabric.impl.ComponentCodecs;
+import net.kyori.adventure.platform.modcommon.impl.ComponentCodecs;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.network.codec.StreamCodec;

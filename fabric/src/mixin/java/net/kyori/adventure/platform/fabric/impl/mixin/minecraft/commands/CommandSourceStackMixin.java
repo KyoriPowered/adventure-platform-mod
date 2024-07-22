@@ -28,10 +28,9 @@ import java.util.function.Supplier;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.identity.Identified;
 import net.kyori.adventure.identity.Identity;
-import net.kyori.adventure.platform.fabric.AdventureCommandSourceStack;
-import net.kyori.adventure.platform.fabric.FabricServerAudiences;
-import net.kyori.adventure.platform.fabric.impl.AdventureCommandSourceStackInternal;
-import net.kyori.adventure.platform.fabric.impl.server.FabricServerAudiencesImpl;
+import net.kyori.adventure.platform.modcommon.AdventureCommandSourceStack;
+import net.kyori.adventure.platform.modcommon.MinecraftServerAudiences;
+import net.kyori.adventure.platform.modcommon.impl.AdventureCommandSourceStackInternal;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minecraft.commands.CommandSource;
@@ -60,7 +59,7 @@ public abstract class CommandSourceStackMixin implements AdventureCommandSourceS
 
   private boolean adventure$assigned = false;
   private Audience adventure$out;
-  private FabricServerAudiences adventure$controller;
+  private MinecraftServerAudiences adventure$controller;
 
   @Override
   public void sendSuccess(final @NotNull Component text, final boolean sendToOps) {
@@ -86,7 +85,7 @@ public abstract class CommandSourceStackMixin implements AdventureCommandSourceS
       if (this.server == null) {
         throw new IllegalStateException("Cannot use adventure operations without an available server!");
       }
-      this.adventure$controller = FabricServerAudiences.of(this.server);
+      this.adventure$controller = MinecraftServerAudiences.of(this.server);
       this.adventure$out = this.adventure$controller.audience(this.source);
     }
     return this.adventure$out;
@@ -102,7 +101,7 @@ public abstract class CommandSourceStackMixin implements AdventureCommandSourceS
   }
 
   @Override
-  public AdventureCommandSourceStack adventure$audience(final Audience wrapped, final FabricServerAudiencesImpl controller) {
+  public AdventureCommandSourceStack adventure$audience(final Audience wrapped, final MinecraftServerAudiences controller) {
     if (this.adventure$assigned && !Objects.equals(controller, this.adventure$controller)) {
       throw new IllegalStateException("This command source has been attached to a specific renderer already!");
       // TODO: return a new instance

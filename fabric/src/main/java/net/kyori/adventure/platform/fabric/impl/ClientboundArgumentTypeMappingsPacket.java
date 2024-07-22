@@ -34,7 +34,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
-import static net.kyori.adventure.platform.fabric.impl.AdventureCommon.res;
+import static net.kyori.adventure.platform.modcommon.impl.AdventureCommon.res;
 
 public record ClientboundArgumentTypeMappingsPacket(Int2ObjectMap<ResourceLocation> mappings) implements CustomPacketPayload {
   public static final CustomPacketPayload.Type<ClientboundArgumentTypeMappingsPacket> TYPE = new Type<>(res("registered_arg_mappings"));

@@ -26,7 +26,7 @@
  * on Minecraft using the Fabric mod loader.
  *
  * <p>There are both server- and clientside entry points for Adventure,
- * in {@link net.kyori.adventure.platform.fabric.FabricServerAudiences}
+ * in {@link net.kyori.adventure.platform.modcommon.MinecraftServerAudiences}
  * and {@code FabricClientAudiences}</p>
  */
 package net.kyori.adventure.platform.fabric;

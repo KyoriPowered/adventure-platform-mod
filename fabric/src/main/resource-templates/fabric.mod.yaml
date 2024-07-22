@@ -1,7 +1,7 @@
 schemaVersion: 1
-id: "${project.rootProject.name.toLowerCase()}"
+id: "${project.name.toLowerCase()}"
 version: "${project.version}"
-name: "${project.rootProject.name}"
+name: "${project.name}"
 authors: [ "kashike","zml", "Luck", "Electroid" ]
 contact:
   homepage: "https://github.com/KyoriPowered/adventure-platform-fabric"
@@ -12,10 +12,10 @@ icon: assets/adventure-platform-fabric/logo.png
 
 entrypoints:
   main:
-    - "net.kyori.adventure.platform.fabric.impl.AdventureCommon"
+    - "net.kyori.adventure.platform.fabric.impl.AdventureFabricCommon"
     - "net.kyori.adventure.platform.fabric.impl.compat.permissions.PermissionsApiIntegration"
   client:
-    - "net.kyori.adventure.platform.fabric.impl.client.AdventureClient"
+    - "net.kyori.adventure.platform.fabric.impl.client.AdventureFabricClient"
   adventure-internal:sidedproxy/client:
     - "net.kyori.adventure.platform.fabric.impl.client.ClientProxy"
   adventure-internal:sidedproxy/server:
@@ -23,13 +23,15 @@ entrypoints:
 mixins:
   - "adventure-platform-fabric.accessor.mixins.json"
   - "adventure-platform-fabric.mixins.json"
+  - "adventure-platform-mod-shared.accessor.mixins.json"
+  - "adventure-platform-mod-shared.mixins.json"
   - { environment: "client", "config": "adventure-platform-fabric.client.mixins.json" }
 custom:
   modmenu:api: true
   modmenu:
     badges: [ "library" ]
   loom:injected_interfaces:
-    net/minecraft/class_2168: [ net/kyori/adventure/platform/fabric/AdventureCommandSourceStack ] # net/minecraft/commands/CommandSourceStack
+    net/minecraft/class_2168: [ net/kyori/adventure/platform/modcommon/AdventureCommandSourceStack ] # net/minecraft/commands/CommandSourceStack
     net/minecraft/class_1297: [ net/kyori/adventure/sound/Sound<%= '$' %>Emitter, net/kyori/adventure/platform/fabric/EntityHoverEventSource ] # net/minecraft/world/entity/Entity
     # com/mojang/authlib/GameProfile: [ net/kyori/adventure/identity/Identity ] # We can't inject into libs unfortunately
     net/minecraft/server/MinecraftServer: [ net/kyori/adventure/audience/Audience ]

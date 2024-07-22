@@ -24,8 +24,8 @@
 package net.kyori.adventure.platform.fabric.impl.mixin.minecraft.network.chat;
 
 import com.google.gson.JsonElement;
-import net.kyori.adventure.platform.fabric.impl.NonWrappingComponentSerializer;
-import net.kyori.adventure.platform.fabric.impl.WrappedComponent;
+import net.kyori.adventure.platform.modcommon.impl.NonWrappingComponentSerializer;
+import net.kyori.adventure.platform.modcommon.impl.WrappedComponent;
 import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.minecraft.core.HolderLookup;

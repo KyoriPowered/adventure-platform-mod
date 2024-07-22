@@ -24,7 +24,7 @@
 package net.kyori.adventure.platform.fabric.impl.mixin.minecraft.resources;
 
 import com.mojang.serialization.DynamicOps;
-import net.kyori.adventure.platform.fabric.impl.DelegatingOpsBridge;
+import net.kyori.adventure.platform.modcommon.impl.DelegatingOpsBridge;
 import net.minecraft.resources.DelegatingOps;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;

@@ -1,0 +1,8 @@
+{
+  "parent": "adventure-platform-mod-shared.parent.mixins.json",
+  "package": "net.kyori.adventure.platform.modcommon.impl.accessor",
+  "mixins": [
+    "minecraft.network.ServerGamePacketListenerImplAccess",
+    "minecraft.world.level.LevelAccess"
+  ]
+}

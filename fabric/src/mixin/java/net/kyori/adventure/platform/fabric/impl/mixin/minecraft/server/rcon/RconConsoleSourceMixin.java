@@ -29,12 +29,12 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.permission.PermissionChecker;
-import net.kyori.adventure.platform.fabric.FabricServerAudiences;
-import net.kyori.adventure.platform.fabric.impl.ControlledAudience;
-import net.kyori.adventure.platform.fabric.impl.FabricAudiencesInternal;
-import net.kyori.adventure.platform.fabric.impl.server.FabricServerAudiencesImpl;
-import net.kyori.adventure.platform.fabric.impl.server.PlainAudience;
-import net.kyori.adventure.platform.fabric.impl.server.RenderableAudience;
+import net.kyori.adventure.platform.modcommon.MinecraftServerAudiences;
+import net.kyori.adventure.platform.modcommon.impl.ControlledAudience;
+import net.kyori.adventure.platform.modcommon.impl.MinecraftAudiencesInternal;
+import net.kyori.adventure.platform.modcommon.impl.server.MinecraftServerAudiencesImpl;
+import net.kyori.adventure.platform.modcommon.impl.server.PlainAudience;
+import net.kyori.adventure.platform.modcommon.impl.server.RenderableAudience;
 import net.kyori.adventure.pointer.Pointers;
 import net.kyori.adventure.util.TriState;
 import net.minecraft.server.MinecraftServer;
@@ -52,16 +52,16 @@ public abstract class RconConsoleSourceMixin implements RenderableAudience, Forw
   // @formatter:off
 
   private volatile Pointers adventure$pointers;
-  private final Map<FabricAudiencesInternal, Audience> adventure$renderers = new MapMaker().weakKeys().makeMap();
+  private final Map<MinecraftAudiencesInternal, Audience> adventure$renderers = new MapMaker().weakKeys().makeMap();
 
   @Override
-  public Audience renderUsing(final FabricServerAudiencesImpl controller) {
+  public Audience renderUsing(final MinecraftServerAudiencesImpl controller) {
     return this.adventure$renderers.computeIfAbsent(controller, ctrl -> new PlainAudience(ctrl, this, this.buffer::append));
   }
 
   @Override
   public @NotNull Audience audience() {
-    return FabricServerAudiences.of(this.server).audience((RconConsoleSource) (Object) this);
+    return MinecraftServerAudiences.of(this.server).audience((RconConsoleSource) (Object) this);
   }
 
   @Override
@@ -80,7 +80,7 @@ public abstract class RconConsoleSourceMixin implements RenderableAudience, Forw
   }
 
   @Override
-  public @NotNull FabricAudiencesInternal controller() {
-    return (FabricAudiencesInternal) FabricServerAudiences.of(this.server);
+  public @NotNull MinecraftAudiencesInternal controller() {
+    return (MinecraftAudiencesInternal) MinecraftServerAudiences.of(this.server);
   }
 }

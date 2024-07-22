@@ -25,7 +25,7 @@ package net.kyori.adventure.platform.fabric.impl.mixin.minecraft.server.network;
 
 import io.netty.buffer.ByteBuf;
 import java.util.function.Function;
-import net.kyori.adventure.platform.fabric.impl.server.FriendlyByteBufBridge;
+import net.kyori.adventure.platform.modcommon.impl.server.FriendlyByteBufBridge;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.server.network.ServerConfigurationPacketListenerImpl;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;

@@ -23,7 +23,7 @@
  */
 package net.kyori.adventure.platform.test.fabric.mixin.minecraft.client.gui.screens;
 
-import net.kyori.adventure.platform.fabric.FabricClientAudiences;
+import net.kyori.adventure.platform.fabric.MinecraftClientAudiences;
 import net.kyori.adventure.text.format.TextColor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
@@ -43,7 +43,7 @@ abstract class TitleScreenMixin extends Screen {
 
   @Inject(method = "createNormalMenuOptions(II)V", at = @At("HEAD"))
   void addMenuOptions(final int y, final int rowHeight, final CallbackInfo ci) {
-    final Component nativeText = FabricClientAudiences.of().toNative(
+    final Component nativeText = MinecraftClientAudiences.of().toNative(
       net.kyori.adventure.text.Component.translatable("menu.singleplayer", TextColor.color(0x9A40D2))
     );
     this.addRenderableWidget(

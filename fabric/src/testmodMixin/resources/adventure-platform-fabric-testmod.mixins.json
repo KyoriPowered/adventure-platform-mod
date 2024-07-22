@@ -1,5 +1,5 @@
 {
-  "parent": "adventure-platform-fabric.parent.mixins.json",
+  "parent": "adventure-platform-mod-shared.parent.mixins.json",
   "package": "net.kyori.adventure.platform.test.fabric.mixin",
   "client": [
     "minecraft.client.gui.screens.ChatScreenMixin",

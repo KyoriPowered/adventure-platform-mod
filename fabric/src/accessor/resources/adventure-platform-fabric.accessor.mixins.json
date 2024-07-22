@@ -1,13 +1,11 @@
 {
-  "parent": "adventure-platform-fabric.parent.mixins.json",
+  "parent": "adventure-platform-mod-shared.parent.mixins.json",
   "package": "net.kyori.adventure.platform.fabric.impl.accessor",
   "mixins": [
     "api.key.InvalidKeyExceptionAccess",
     "brigadier.builder.RequiredArgumentBuilderAccess",
     "minecraft.network.ConnectionAccess",
     "minecraft.network.ServerCommonPacketListenerImplAccess",
-    "minecraft.network.ServerGamePacketListenerImplAccess",
     "minecraft.commands.ParserUtilsAccess",
-    "minecraft.world.level.LevelAccess"
   ]
 }
