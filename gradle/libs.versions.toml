@@ -62,11 +62,12 @@ zCheckstyle = { module = "com.puppycrawl.tools:checkstyle", version.ref = "check
 [plugins]
 configurateTransformations = "ca.stellardrift.configurate-transformations:6.1.0"
 eclipseApt = "com.diffplug.eclipse.apt:4.0.1"
-loom = "fabric-loom:1.7.3"
+loom = "xyz.jpenilla.quiet-architectury-loom:1.7.292"
 ideaExt = "org.jetbrains.gradle.plugin.idea-ext:1.1.8"
 indra = { id = "net.kyori.indra", version.ref = "indra" }
 indra-licenseHeader = { id = "net.kyori.indra.licenser.spotless", version.ref = "indra" }
 indra-checkstyle = { id = "net.kyori.indra.checkstyle", version.ref = "indra" }
+indra-publishing = { id = "net.kyori.indra.publishing", version.ref = "indra" }
 indra-crossdoc = { id = "net.kyori.indra.crossdoc", version.ref = "indra" }
 indra-sonatype = { id = "net.kyori.indra.publishing.sonatype", version.ref = "indra" }
 nexusPublish = { id = "io.github.gradle-nexus.publish-plugin", version = "2.0.0" }
