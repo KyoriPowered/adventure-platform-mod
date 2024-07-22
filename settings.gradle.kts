@@ -43,6 +43,9 @@ dependencyResolutionManagement {
     maven(url = "https://maven.parchmentmc.org/") {
       name = "parchment"
     }
+    maven(url= "https://maven.neoforged.net/") {
+      name = "neoforge"
+    }
   }
 }
 

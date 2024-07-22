@@ -1,0 +1,32 @@
+plugins {
+  id("xyz.jpenilla.quiet-architectury-loom")
+}
+
+dependencies {
+  modImplementation(libs.fabric.loader)
+
+  annotationProcessor(libs.autoService)
+  annotationProcessor(libs.contractValidator)
+  compileOnlyApi(libs.autoService.annotations)
+
+  [
+    libs.adventure.key,
+    libs.adventure.api,
+    libs.adventure.textLoggerSlf4j,
+    libs.adventure.textMinimessage,
+    libs.adventure.textSerializerPlain
+  ].each {
+    api(it) {
+      exclude group: "org.slf4j", module: "slf4j-api"
+    }
+  }
+
+  [
+    libs.adventure.platform.api,
+    libs.adventure.textSerializerGson
+  ].each {
+    api(it) {
+      exclude group: "com.google.code.gson"
+    }
+  }
+}

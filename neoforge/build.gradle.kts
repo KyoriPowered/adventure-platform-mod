@@ -1,11 +1,6 @@
-import ca.stellardrift.build.configurate.ConfigFormats
-import ca.stellardrift.build.configurate.transformations.convertFormat
 import net.fabricmc.loom.api.RemapConfigurationSettings
-import net.fabricmc.loom.task.GenerateSourcesTask
 import net.fabricmc.loom.task.RemapJarTask
 import org.gradle.configurationcache.extensions.capitalized
-import org.jetbrains.gradle.ext.settings
-import org.jetbrains.gradle.ext.taskTriggers
 
 plugins {
   alias(libs.plugins.eclipseApt)
@@ -56,19 +51,11 @@ dependencies {
     libs.adventure.platform.api,
     libs.adventure.textSerializerGson
   ).forEach {
-   modApi(it) {
-     exclude("com.google.code.gson")
-   }
-   include(it)
+    modApi(it) {
+      exclude("com.google.code.gson")
+    }
+    include(it)
   }
-  sequenceOf<(Any) -> Dependency?>(
-    ::modImplementation, ::modApi, ::modCompileOnly
-  ).forEach { it(platform(libs.fabric.api.bom)) }
-  modApi(libs.fabric.api.base)
-  modImplementation(libs.fabric.api.networking)
-  modImplementation(libs.fabric.api.command)
-  // Only used for prod test
-  modCompileOnly(libs.fabric.api.lifecycle)
 
   // Transitive deps
   include(libs.examination.api)
@@ -78,9 +65,6 @@ dependencies {
   include(libs.option)
   modCompileOnly(libs.jetbrainsAnnotations)
 
-  modImplementation(libs.fabric.loader)
-
-  testImplementation(libs.fabric.loader.junit)
   testImplementation(platform(libs.junit.bom))
   testImplementation(libs.junit.api)
   testImplementation(libs.junit.params)
@@ -90,6 +74,8 @@ dependencies {
   checkstyle(libs.stylecheck)
 
   implementation(project(":adventure-platform-mod-shared", "namedElements"))
+
+  neoForge("net.neoforged:neoforge:21.0.114-beta")
 }
 
 configurations {
@@ -110,14 +96,12 @@ sourceSets {
   }
 }
 
-loom.splitEnvironmentSourceSets()
+// loom.splitEnvironmentSourceSets() // not supported with (neo)forge
 
 // create a secondary set, with a configuration name matching the source set name
 // this configuration is available at compile- and runtime, and not published
 fun createSecondarySet(name: String, action: Action<SourceSet> = Action { }): SourceSet {
   val set = sourceSets.create(name) {
-    compileClasspath += sourceSets.named("client").get().compileClasspath
-    runtimeClasspath += sourceSets.named("client").get().runtimeClasspath
     action(this)
   }
 
@@ -138,10 +122,6 @@ fun createSecondarySet(name: String, action: Action<SourceSet> = Action { }): So
     publishingMode = RemapConfigurationSettings.PublishingMode.NONE
   }
 
-  dependencies {
-    set.implementationConfigurationName(sourceSets.named("client").map { it.output })
-  }
-
   return set
 }
 
@@ -153,16 +133,10 @@ val testmod = createSecondarySet("testmod") {
 
 val permissionsApiCompat = createSecondarySet("permissionsApiCompat")
 
-configurations.named("clientAnnotationProcessor") {
-  extendsFrom(configurations.annotationProcessor.get())
-}
-
 sourceSets {
   test {
     compileClasspath += main.get().compileClasspath
     runtimeClasspath += main.get().runtimeClasspath
-    compileClasspath += getByName("client").compileClasspath
-    runtimeClasspath += getByName("client").runtimeClasspath
   }
 }
 
@@ -187,36 +161,24 @@ loom {
   }
 
   mods {
-    register("adventure-platform-fabric") {
+    register("adventure-platform-neoforge") {
       sourceSet(sourceSets.main.get())
-      sourceSet(sourceSets.named("client").get())
       sourceSet(permissionsApiCompat)
     }
-    register("adventure-platform-fabric-testmod") {
+    register("adventure-platform-neoforge-testmod") {
       sourceSet(testmod)
     }
   }
 
   mixin {
-    add(sourceSets.main.get(), "adventure-platform-fabric-refmap.json")
-    add(sourceSets.named("client").get(), "adventure-platform-fabric-client-refmap.json")
-    add(testmod, "adventure-platform-fabric-testmod-refmap.json")
+    useLegacyMixinAp = true
+    add(sourceSets.main.get(), "adventure-platform-neoforge-refmap.json")
+    add(testmod, "adventure-platform-neoforge-testmod-refmap.json")
   }
 
   decompilerOptions.named("vineflower") {
     options.put("win", "0")
   }
-}
-
-
-dependencies {
-  "testmodRuntimeOnly"(permissionsApiCompat.output)
-  "modPermissionsApiCompat"(libs.fabric.permissionsApi) {
-    isTransitive = false
-  }
-
-  // Testmod-specific dependencies
-  "modTestmod"(libs.fabric.api)
 }
 
 // Create a remapped testmod jar
@@ -260,57 +222,6 @@ tasks {
   sourcesJar {
     from(permissionsApiCompat.allSource)
   }
-}
-
-// Convert yaml files to josn
-val generatedResourcesDir = project.layout.buildDirectory.dir("generated-resources").get().asFile
-fun createProcessResourceTemplates(name: String, set: SourceSet): TaskProvider<out Task> {
-  val destinationDir = generatedResourcesDir.resolve(name)
-  val task = tasks.register(name, Sync::class.java) {
-    this.destinationDir = destinationDir
-    from("src/${set.name}/resource-templates")
-
-    inputs.property("version", project.version)
-
-    // Convert data files yaml -> json
-    filesMatching(
-        sequenceOf(
-            "fabric.mod",
-            "data/**/*",
-            "assets/**/*"
-        ).flatMap { base -> sequenceOf("$base.yml", "$base.yaml") }
-            .toList()
-    ) {
-        convertFormat(ConfigFormats.YAML, ConfigFormats.JSON)
-        if (this.name.startsWith("fabric.mod")) {
-            expand("project" to project)
-        }
-        this.name = this.name.substringBeforeLast('.') + ".json"
-    }
-    // Convert pack meta, without changing extension
-    filesMatching("pack.mcmeta") { convertFormat(ConfigFormats.YAML, ConfigFormats.JSON) }
-  }
-
-  tasks.named(set.processResourcesTaskName) {
-    dependsOn(name)
-  }
-  set.resources.srcDir(task.map { it.outputs })
-
-  // Have templates ready for IDEs
-  eclipse.synchronizationTasks(task)
-  rootProject.idea.project.settings.taskTriggers {
-    afterSync(task)
-  }
-  idea.module.generatedSourceDirs.add(destinationDir)
-
-  return task
-}
-
-val generateTemplates = createProcessResourceTemplates("generateTemplates", sourceSets.main.get())
-val generateTestmodTemplates = createProcessResourceTemplates("generateTestmodTemplates", testmod)
-
-tasks.withType(GenerateSourcesTask::class).configureEach {
-  dependsOn(generateTemplates)
 }
 
 // Workaround for both loom and indra doing publication logic in an afterEvaluate :(
