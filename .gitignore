@@ -3,6 +3,7 @@
 /build/
 /run/
 /*/build/
+/*/*/build/
 /*/run/
 /*/logs/
 

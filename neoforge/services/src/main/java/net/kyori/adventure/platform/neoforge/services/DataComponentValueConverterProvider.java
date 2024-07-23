@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-fabric, licensed under the MIT License.
  *
- * Copyright (c) 2020-2024 KyoriPowered
+ * Copyright (c) 2024 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,23 +21,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.adventure.platform.modcommon.impl.service;
+package net.kyori.adventure.platform.neoforge.services;
 
 import com.google.auto.service.AutoService;
-import java.util.function.Consumer;
-import net.kyori.adventure.platform.modcommon.impl.AdventureCommon;
-import net.kyori.adventure.text.serializer.ansi.ANSIComponentSerializer;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.text.event.DataComponentValueConverterRegistry;
 import org.jetbrains.annotations.NotNull;
 
-@AutoService(ANSIComponentSerializer.Provider.class)
-public final class ANSIComponentSerializerProviderImpl implements ANSIComponentSerializer.Provider {
+@AutoService(DataComponentValueConverterRegistry.Provider.class)
+public final class DataComponentValueConverterProvider implements DataComponentValueConverterRegistry.Provider {
+  public static DataComponentValueConverterRegistry.Provider DELEGATE;
+
   @Override
-  public @NotNull ANSIComponentSerializer ansi() {
-    return ANSIComponentSerializer.builder().flattener(AdventureCommon.FLATTENER.get()).build();
+  public @NotNull Key id() {
+    return DELEGATE.id();
   }
 
   @Override
-  public @NotNull Consumer<ANSIComponentSerializer.Builder> builder() {
-    return builder -> builder.flattener(AdventureCommon.FLATTENER.get());
+  public @NotNull Iterable<DataComponentValueConverterRegistry.Conversion<?, ?>> conversions() {
+    return DELEGATE.conversions();
   }
 }

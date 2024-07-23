@@ -1,5 +1,6 @@
 package net.kyori.adventure.platform.modcommon.impl;
 
+import com.google.common.base.Suppliers;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.mojang.logging.LogUtils;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import net.kyori.adventure.Adventure;
@@ -37,7 +39,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 public class AdventureCommon {
-  public static final ComponentFlattener FLATTENER;
+  public static final Supplier<ComponentFlattener> FLATTENER;
   public static final PlatformHooks HOOKS;
   public static final ScheduledExecutorService SCHEDULER;
   private static final Logger LOGGER = LogUtils.getLogger();
@@ -52,7 +54,7 @@ public class AdventureCommon {
       .build());
     final var platformHooks = discoverHooks();
     HOOKS = platformHooks;
-    FLATTENER = createFlattener(platformHooks);
+    FLATTENER = Suppliers.memoize(() -> createFlattener(platformHooks));
   }
 
   public static Pointers pointers(final Player player) {

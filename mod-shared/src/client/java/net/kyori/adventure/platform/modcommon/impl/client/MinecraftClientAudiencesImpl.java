@@ -61,7 +61,7 @@ public class MinecraftClientAudiencesImpl implements MinecraftClientAudiences, M
 
   @Override
   public @NotNull ComponentFlattener flattener() {
-    return AdventureCommon.FLATTENER;
+    return AdventureCommon.FLATTENER.get();
   }
 
   @Override

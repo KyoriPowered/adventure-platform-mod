@@ -21,23 +21,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.adventure.platform.modcommon.impl.service;
+package net.kyori.adventure.platform.neoforge.services;
 
 import com.google.auto.service.AutoService;
 import java.util.function.Consumer;
-import net.kyori.adventure.platform.modcommon.impl.AdventureCommon;
-import net.kyori.adventure.text.serializer.ansi.ANSIComponentSerializer;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 
-@AutoService(ANSIComponentSerializer.Provider.class)
-public final class ANSIComponentSerializerProviderImpl implements ANSIComponentSerializer.Provider {
+@AutoService(PlainTextComponentSerializer.Provider.class)
+public final class PlainTextComponentSerializerProviderImpl implements PlainTextComponentSerializer.Provider {
+  public static PlainTextComponentSerializer.Provider DELEGATE;
+
   @Override
-  public @NotNull ANSIComponentSerializer ansi() {
-    return ANSIComponentSerializer.builder().flattener(AdventureCommon.FLATTENER.get()).build();
+  public @NotNull PlainTextComponentSerializer plainTextSimple() {
+    return DELEGATE.plainTextSimple();
   }
 
   @Override
-  public @NotNull Consumer<ANSIComponentSerializer.Builder> builder() {
-    return builder -> builder.flattener(AdventureCommon.FLATTENER.get());
+  public @NotNull Consumer<PlainTextComponentSerializer.Builder> plainText() {
+    return DELEGATE.plainText();
   }
 }

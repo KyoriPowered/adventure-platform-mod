@@ -36,6 +36,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.platform.modcommon.AdventureCommandSourceStack;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickCallback;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -96,7 +97,7 @@ public final class ClickCallbackRegistry {
           final @Nullable CallbackRegistration reg = this.registrations.getIfPresent(callbackId);
 
           if (reg == null) {
-            // ctx.getSource().sendFailure(FAILURE_MESSAGE); TODO
+            ((AdventureCommandSourceStack) ctx.getSource()).sendFailure(FAILURE_MESSAGE);
             return 0; // unsuccessful
           }
 
@@ -124,9 +125,9 @@ public final class ClickCallbackRegistry {
             this.registrations.invalidate(callbackId);
           }
           if (allowUse) {
-            // TODO reg.callback().accept(ctx.getSource()); // pass the CommandSourceStack to the callback action
+            reg.callback().accept((Audience) ctx.getSource()); // pass the CommandSourceStack to the callback action
           } else {
-            // TODO ctx.getSource().sendFailure(FAILURE_MESSAGE);
+            ((AdventureCommandSourceStack) ctx.getSource()).sendFailure(FAILURE_MESSAGE);
           }
           return Command.SINGLE_SUCCESS;
         })));

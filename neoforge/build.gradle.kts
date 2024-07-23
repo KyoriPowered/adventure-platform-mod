@@ -76,6 +76,9 @@ dependencies {
 
   checkstyle(libs.stylecheck)
 
+  implementation(project(":adventure-platform-neoforge:adventure-platform-neoforge-services"))
+  include(project(":adventure-platform-neoforge:adventure-platform-neoforge-services"))
+
   implementation(project(":adventure-platform-mod-shared", "namedElements"))
   include(project(":adventure-platform-mod-shared", "namedElements"))
   forgeRuntimeLibrary(project(":adventure-platform-mod-shared", "namedElements"))

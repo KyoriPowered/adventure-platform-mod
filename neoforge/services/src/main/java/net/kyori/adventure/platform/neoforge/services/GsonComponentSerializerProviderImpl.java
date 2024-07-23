@@ -21,23 +21,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.adventure.platform.modcommon.impl.service;
+package net.kyori.adventure.platform.neoforge.services;
 
 import com.google.auto.service.AutoService;
 import java.util.function.Consumer;
-import net.kyori.adventure.platform.modcommon.impl.AdventureCommon;
-import net.kyori.adventure.text.serializer.ansi.ANSIComponentSerializer;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 
-@AutoService(ANSIComponentSerializer.Provider.class)
-public final class ANSIComponentSerializerProviderImpl implements ANSIComponentSerializer.Provider {
+@AutoService(GsonComponentSerializer.Provider.class)
+public final class GsonComponentSerializerProviderImpl implements GsonComponentSerializer.Provider {
+  public static GsonComponentSerializer.Provider DELEGATE;
+
   @Override
-  public @NotNull ANSIComponentSerializer ansi() {
-    return ANSIComponentSerializer.builder().flattener(AdventureCommon.FLATTENER.get()).build();
+  public @NotNull GsonComponentSerializer gson() {
+    return DELEGATE.gson();
   }
 
   @Override
-  public @NotNull Consumer<ANSIComponentSerializer.Builder> builder() {
-    return builder -> builder.flattener(AdventureCommon.FLATTENER.get());
+  public @NotNull GsonComponentSerializer gsonLegacy() {
+    return DELEGATE.gsonLegacy();
+  }
+
+  @Override
+  public @NotNull Consumer<GsonComponentSerializer.Builder> builder() {
+    return DELEGATE.builder();
   }
 }

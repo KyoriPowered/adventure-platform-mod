@@ -21,23 +21,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.adventure.platform.modcommon.impl.service;
+package net.kyori.adventure.platform.neoforge.services;
 
 import com.google.auto.service.AutoService;
-import java.util.function.Consumer;
-import net.kyori.adventure.platform.modcommon.impl.AdventureCommon;
-import net.kyori.adventure.text.serializer.ansi.ANSIComponentSerializer;
+import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
+import net.kyori.adventure.text.logger.slf4j.ComponentLoggerProvider;
 import org.jetbrains.annotations.NotNull;
 
-@AutoService(ANSIComponentSerializer.Provider.class)
-public final class ANSIComponentSerializerProviderImpl implements ANSIComponentSerializer.Provider {
-  @Override
-  public @NotNull ANSIComponentSerializer ansi() {
-    return ANSIComponentSerializer.builder().flattener(AdventureCommon.FLATTENER.get()).build();
-  }
+@AutoService(net.kyori.adventure.text.logger.slf4j.ComponentLoggerProvider.class)
+public final class ComponentLoggerProviderImpl implements net.kyori.adventure.text.logger.slf4j.ComponentLoggerProvider {
+  public static ComponentLoggerProvider DELEGATE;
 
   @Override
-  public @NotNull Consumer<ANSIComponentSerializer.Builder> builder() {
-    return builder -> builder.flattener(AdventureCommon.FLATTENER.get());
+  public @NotNull ComponentLogger logger(final @NotNull LoggerHelper helper, final @NotNull String name) {
+    return DELEGATE.logger(helper, name);
   }
 }
