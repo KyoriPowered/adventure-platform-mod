@@ -23,11 +23,16 @@
  */
 package net.kyori.adventure.platform.fabric.impl.mixin.minecraft.server.level;
 
+import java.util.Locale;
+import java.util.Objects;
 import java.util.Set;
 import net.kyori.adventure.platform.fabric.impl.server.ServerPlayerBridge;
+import net.kyori.adventure.platform.modcommon.impl.AdventureCommon;
+import net.kyori.adventure.platform.modcommon.impl.LocaleHolderBridge;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundTabListPacket;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ClientInformation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import org.jetbrains.annotations.Nullable;
@@ -43,6 +48,18 @@ public abstract class ServerPlayerMixin implements ServerPlayerBridge {
   private Component adventure$tabListHeader = Component.empty();
   private Component adventure$tabListFooter = Component.empty();
   private Set<ResourceLocation> adventure$arguments = Set.of();
+
+  // Locale tracking
+
+  @Inject(method = "updateOptions", at = @At("HEAD"))
+  private void adventure$handleLocaleUpdate(final ClientInformation information, final CallbackInfo ci) {
+    final String language = information.language();
+    final @Nullable Locale locale = LocaleHolderBridge.toLocale(language);
+    if (!Objects.equals(((LocaleHolderBridge) this).adventure$locale(), locale)) {
+      ((LocaleHolderBridge) this).adventure$locale(locale);
+      AdventureCommon.HOOKS.onLocaleChange((ServerPlayer) (Object) this, locale);
+    }
+  }
 
   // Tab list
 

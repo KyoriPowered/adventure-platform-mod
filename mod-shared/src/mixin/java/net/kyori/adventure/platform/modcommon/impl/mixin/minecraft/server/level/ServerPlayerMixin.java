@@ -26,11 +26,9 @@ package net.kyori.adventure.platform.modcommon.impl.mixin.minecraft.server.level
 import com.google.common.collect.MapMaker;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.platform.modcommon.MinecraftServerAudiences;
-import net.kyori.adventure.platform.modcommon.impl.AdventureCommon;
 import net.kyori.adventure.platform.modcommon.impl.ControlledAudience;
 import net.kyori.adventure.platform.modcommon.impl.LocaleHolderBridge;
 import net.kyori.adventure.platform.modcommon.impl.MinecraftAudiencesInternal;
@@ -39,14 +37,12 @@ import net.kyori.adventure.platform.modcommon.impl.server.MinecraftServerAudienc
 import net.kyori.adventure.platform.modcommon.impl.server.RenderableAudience;
 import net.kyori.adventure.platform.modcommon.impl.server.ServerPlayerAudience;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.level.ClientInformation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -90,21 +86,13 @@ public abstract class ServerPlayerMixin extends PlayerMixin implements Forwardin
   }
 
   @Override
-  public @NotNull MinecraftAudiencesInternal controller() {
-    return (MinecraftAudiencesInternal) MinecraftServerAudiences.of(this.server);
+  public void adventure$locale(final Locale locale) {
+    this.adventure$locale = locale;
   }
 
-
-  // Locale tracking
-
-  @Inject(method = "updateOptions", at = @At("HEAD"))
-  private void adventure$handleLocaleUpdate(final ClientInformation information, final CallbackInfo ci) {
-    final String language = information.language();
-    final @Nullable Locale locale = LocaleHolderBridge.toLocale(language);
-    if (!Objects.equals(this.adventure$locale, locale)) {
-      this.adventure$locale = locale;
-      AdventureCommon.HOOKS.onLocaleChange((ServerPlayer) (Object) this, locale);
-    }
+  @Override
+  public @NotNull MinecraftAudiencesInternal controller() {
+    return (MinecraftAudiencesInternal) MinecraftServerAudiences.of(this.server);
   }
 
   // Player tracking for boss bars and rendering

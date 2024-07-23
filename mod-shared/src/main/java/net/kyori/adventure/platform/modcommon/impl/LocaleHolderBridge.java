@@ -48,4 +48,7 @@ public interface LocaleHolderBridge {
   }
 
   @NotNull Locale adventure$locale();
+
+  default void adventure$locale(Locale locale) {
+  }
 }
