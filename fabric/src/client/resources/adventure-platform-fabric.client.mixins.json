@@ -1,10 +1,4 @@
 {
   "parent": "adventure-platform-mod-shared.parent.mixins.json",
-  "package": "net.kyori.adventure.platform.fabric.impl.client.mixin",
-  "client": [
-    "minecraft.MinecraftMixin",
-    "minecraft.OptionsMixin",
-    "minecraft.player.LocalPlayerMixin",
-    "minecraft.resources.server.DownloadedPackSourceMixin"
-  ]
+  "package": "net.kyori.adventure.platform.fabric.impl.client.mixin"
 }

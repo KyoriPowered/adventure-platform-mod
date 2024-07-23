@@ -1,0 +1,7 @@
+{
+  "package": "net.kyori.adventure.platform.neoforge.impl.mixin",
+  "parent": "adventure-platform-mod-shared.parent.mixins.json",
+  "mixins": [
+    "minecraft.server.players.PlayerListMixin"
+  ]
+}

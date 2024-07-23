@@ -41,7 +41,6 @@ import net.kyori.adventure.platform.modcommon.impl.MinecraftAudiencesInternal;
 import net.kyori.adventure.platform.modcommon.impl.AdventureCommon;
 import net.kyori.adventure.platform.modcommon.impl.GameEnums;
 import net.kyori.adventure.platform.modcommon.impl.accessor.minecraft.world.level.LevelAccess;
-import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.pointer.Pointers;
 import net.kyori.adventure.resource.ResourcePackInfo;
 import net.kyori.adventure.resource.ResourcePackRequest;
@@ -127,7 +126,9 @@ public class ClientAudience implements ControlledAudience {
   @Override
   @Deprecated
   public void sendMessage(final Identity source, final @NotNull Component message, final @NotNull MessageType type) {
-    if (this.client.isBlocked(source.uuid())) return;
+    if (this.client.isBlocked(source.uuid())) {
+      return;
+    }
 
     final ChatVisiblity visibility = this.client.options.chatVisibility().get();
     if (type == MessageType.CHAT) {
@@ -341,7 +342,7 @@ public class ClientAudience implements ControlledAudience {
   public @NotNull Pointers pointers() {
     final @Nullable LocalPlayer clientPlayer = this.client.player;
     if (clientPlayer != null) {
-      return AdventureCommon.HOOKS.pointers(clientPlayer);
+      return AdventureCommon.pointers(clientPlayer);
     } else {
       return Pointers.empty();
       // TODO return ((Pointered) this.client).pointers();

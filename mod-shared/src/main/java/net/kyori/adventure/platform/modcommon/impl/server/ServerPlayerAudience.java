@@ -31,18 +31,19 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import net.kyori.adventure.audience.MessageType;
+import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.chat.ChatType;
 import net.kyori.adventure.chat.SignedMessage;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.modcommon.MinecraftAudiences;
+import net.kyori.adventure.platform.modcommon.impl.AdventureCommon;
+import net.kyori.adventure.platform.modcommon.impl.ControlledAudience;
+import net.kyori.adventure.platform.modcommon.impl.GameEnums;
 import net.kyori.adventure.platform.modcommon.impl.MinecraftAudiencesInternal;
 import net.kyori.adventure.platform.modcommon.impl.accessor.minecraft.network.ServerGamePacketListenerImplAccess;
 import net.kyori.adventure.platform.modcommon.impl.accessor.minecraft.world.level.LevelAccess;
-import net.kyori.adventure.platform.modcommon.impl.ControlledAudience;
-import net.kyori.adventure.platform.modcommon.impl.AdventureCommon;
-import net.kyori.adventure.platform.modcommon.impl.GameEnums;
 import net.kyori.adventure.pointer.Pointers;
 import net.kyori.adventure.resource.ResourcePackCallback;
 import net.kyori.adventure.resource.ResourcePackInfo;
@@ -162,6 +163,21 @@ public class ServerPlayerAudience implements ControlledAudience {
   @Override
   public void sendActionBar(final @NotNull Component message) {
     this.player.sendSystemMessage(this.controller.toNative(message), true);
+  }
+
+  @Override
+  public void showBossBar(final @NotNull BossBar bar) {
+    MinecraftServerAudiencesImpl.forEachInstance(controller -> {
+      if (controller != this.controller) {
+        controller.bossBars().unsubscribe(this.player, bar);
+      }
+    });
+    this.controller.bossBars().subscribe(this.player, bar);
+  }
+
+  @Override
+  public void hideBossBar(final @NotNull BossBar bar) {
+    MinecraftServerAudiencesImpl.forEachInstance(controller -> controller.bossBars().unsubscribe(this.player, bar));
   }
 
   private long seed(final @NotNull Sound sound) {
@@ -398,7 +414,7 @@ public class ServerPlayerAudience implements ControlledAudience {
 
   @Override
   public @NotNull Pointers pointers() {
-    return AdventureCommon.HOOKS.pointers(this.player);
+    return AdventureCommon.pointers(this.player);
   }
 
   @Override

@@ -33,10 +33,10 @@ custom:
     badges: [ "library" ]
   loom:injected_interfaces:
     net/minecraft/class_2168: [ net/kyori/adventure/platform/modcommon/AdventureCommandSourceStack ] # net/minecraft/commands/CommandSourceStack
-    net/minecraft/class_1297: [ net/kyori/adventure/sound/Sound<%= '$' %>Emitter, net/kyori/adventure/platform/fabric/EntityHoverEventSource ] # net/minecraft/world/entity/Entity
+    net/minecraft/class_1297: [ net/kyori/adventure/sound/Sound<%= '$' %>Emitter, net/kyori/adventure/platform/modcommon/EntityHoverEventSource ] # net/minecraft/world/entity/Entity
     # com/mojang/authlib/GameProfile: [ net/kyori/adventure/identity/Identity ] # We can't inject into libs unfortunately
     net/minecraft/server/MinecraftServer: [ net/kyori/adventure/audience/Audience ]
-    net/minecraft/class_1657: [ net/kyori/adventure/platform/fabric/IdentifiedAtRuntime ] # net/minecraft/world/entity/player/Player
+    net/minecraft/class_1657: [ net/kyori/adventure/platform/modcommon/IdentifiedAtRuntime ] # net/minecraft/world/entity/player/Player
     net/minecraft/class_3350: [ net/kyori/adventure/audience/Audience ] # net/minecraft/server/rcon/RconConsoleSource
     net/minecraft/class_3222: [ net/kyori/adventure/audience/Audience ] # net/minecraft/server/level/ServerPlayer
     net/minecraft/class_746: [ net/kyori/adventure/audience/Audience ] # net/minecraft/client/player/LocalPlayer

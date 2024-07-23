@@ -30,39 +30,29 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Locale;
-import java.util.function.Function;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.loader.api.FabricLoader;
-import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.platform.fabric.CollectPointersCallback;
 import net.kyori.adventure.platform.fabric.ComponentArgumentType;
 import net.kyori.adventure.platform.fabric.KeyArgumentType;
 import net.kyori.adventure.platform.fabric.PlayerLocales;
-import net.kyori.adventure.platform.modcommon.impl.server.MinecraftServerAudiencesImpl;
-import net.kyori.adventure.platform.fabric.impl.server.ServerBossEventBridge;
 import net.kyori.adventure.platform.fabric.impl.server.ServerPlayerBridge;
 import net.kyori.adventure.platform.modcommon.impl.AdventureCommon;
 import net.kyori.adventure.platform.modcommon.impl.ClickCallbackRegistry;
-import net.kyori.adventure.platform.modcommon.impl.NonWrappingComponentSerializer;
+import net.kyori.adventure.platform.modcommon.impl.LocaleHolderBridge;
 import net.kyori.adventure.platform.modcommon.impl.PlatformHooks;
 import net.kyori.adventure.platform.modcommon.impl.SidedProxy;
-import net.kyori.adventure.platform.modcommon.impl.WrappedComponent;
+import net.kyori.adventure.platform.modcommon.impl.server.MinecraftServerAudiencesImpl;
 import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.pointer.Pointers;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.flattener.ComponentFlattener;
-import net.kyori.adventure.text.renderer.ComponentRenderer;
 import net.minecraft.commands.arguments.ComponentArgument;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.commands.synchronization.SingletonArgumentInfo;
-import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Player;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.spongepowered.asm.mixin.MixinEnvironment;
@@ -176,18 +166,8 @@ public class AdventureFabricCommon implements ModInitializer {
   public static final class FabricHooks implements PlatformHooks {
 
     @Override
-    public void contributeFlattenerElements(final ComponentFlattener.@NotNull Builder flattenerBuilder) {
-      AdventureFabricCommon.SIDE_PROXY.contributeFlattenerElements(flattenerBuilder);
-    }
-
-    @Override
-    public @NotNull WrappedComponent createWrappedComponent(
-      @NotNull final Component wrapped,
-      @Nullable final Function<Pointered, ?> partition,
-      @Nullable final ComponentRenderer<Pointered> renderer,
-      final @Nullable NonWrappingComponentSerializer nonWrappingComponentSerializer
-    ) {
-      return AdventureFabricCommon.SIDE_PROXY.createWrappedComponent(wrapped, partition, renderer, nonWrappingComponentSerializer);
+    public SidedProxy sidedProxy() {
+      return AdventureFabricCommon.SIDE_PROXY;
     }
 
     @Override
@@ -200,18 +180,13 @@ public class AdventureFabricCommon implements ModInitializer {
     }
 
     @Override
-    public Pointers pointers(final Player player) {
-      return player instanceof PointerProviderBridge ? ((PointerProviderBridge) player).adventure$pointers() : Pointers.empty();
+    public void collectPointers(final Pointered pointered, final Pointers.Builder builder) {
+      CollectPointersCallback.EVENT.invoker().registerPointers(pointered, builder);
     }
 
     @Override
-    public Pointered pointered(final Player player) {
-      return player instanceof Pointered ? (Pointered) player : Audience.empty();
-    }
-
-    @Override
-    public void replaceBossBarSubscriber(final ServerBossEvent bar, final ServerPlayer old, final ServerPlayer newPlayer) {
-      ((ServerBossEventBridge) bar).adventure$replaceSubscriber(old, newPlayer);
+    public void onLocaleChange(final ServerPlayer player, final Locale newLocale) {
+      PlayerLocales.CHANGED_EVENT.invoker().onLocaleChanged(player, newLocale);
     }
   }
 }

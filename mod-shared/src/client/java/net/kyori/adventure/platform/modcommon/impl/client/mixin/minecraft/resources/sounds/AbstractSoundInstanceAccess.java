@@ -26,11 +26,12 @@ package net.kyori.adventure.platform.modcommon.impl.client.mixin.minecraft.resou
 import net.minecraft.client.resources.sounds.AbstractSoundInstance;
 import net.minecraft.resources.ResourceLocation;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(AbstractSoundInstance.class)
 public interface AbstractSoundInstanceAccess {
   // @formatter:off
-  @Accessor void setLocation(final ResourceLocation loc);
+  @Accessor @Mutable void setLocation(final ResourceLocation loc);
   // @formatter:on
 }

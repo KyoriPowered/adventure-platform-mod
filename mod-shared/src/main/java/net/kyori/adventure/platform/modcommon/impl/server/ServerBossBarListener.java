@@ -27,7 +27,6 @@ import java.util.Iterator;
 import java.util.Map;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.platform.modcommon.impl.AbstractBossBarListener;
-import net.kyori.adventure.platform.modcommon.impl.AdventureCommon;
 import net.kyori.adventure.platform.modcommon.impl.MinecraftAudiencesInternal;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundBossEventPacket;
@@ -89,7 +88,7 @@ public class ServerBossBarListener extends AbstractBossBarListener<ServerBossEve
    */
   public void replacePlayer(final ServerPlayer old, final ServerPlayer newPlayer) {
     for (final ServerBossEvent bar : this.bars.values()) {
-      AdventureCommon.HOOKS.replaceBossBarSubscriber(bar, old, newPlayer);
+      ((ServerBossEventBridge) bar).adventure$replaceSubscriber(old, newPlayer);
     }
   }
 

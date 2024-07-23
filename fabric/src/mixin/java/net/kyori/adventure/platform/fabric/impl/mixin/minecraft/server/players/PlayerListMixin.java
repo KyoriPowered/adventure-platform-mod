@@ -58,5 +58,4 @@ public class PlayerListMixin {
     this.players = new CopyOnWriteArrayList<>();
     this.playersByUUID = new ConcurrentHashMap<>();
   }
-
 }

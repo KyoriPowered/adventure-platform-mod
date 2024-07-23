@@ -14,6 +14,7 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import net.kyori.adventure.Adventure;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.chat.ChatType;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.platform.modcommon.MinecraftAudiences;
@@ -30,6 +31,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.locale.Language;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -51,6 +53,14 @@ public class AdventureCommon {
     final var platformHooks = discoverHooks();
     HOOKS = platformHooks;
     FLATTENER = createFlattener(platformHooks);
+  }
+
+  public static Pointers pointers(final Player player) {
+    return player instanceof PointerProviderBridge ? ((PointerProviderBridge) player).adventure$pointers() : Pointers.empty();
+  }
+
+  public static Pointered pointered(final Player player) {
+    return player instanceof Pointered ? (Pointered) player : Audience.empty();
   }
 
   public static ResourceLocation res(final @NotNull String value) {
