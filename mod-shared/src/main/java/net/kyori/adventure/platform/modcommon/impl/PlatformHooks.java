@@ -2,6 +2,8 @@ package net.kyori.adventure.platform.modcommon.impl;
 
 import java.util.Locale;
 import java.util.function.Function;
+import net.kyori.adventure.identity.Identity;
+import net.kyori.adventure.platform.modcommon.impl.server.MinecraftServerAudiencesImpl;
 import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.pointer.Pointers;
 import net.kyori.adventure.text.flattener.ComponentFlattener;
@@ -35,8 +37,14 @@ public interface PlatformHooks extends SidedProxy {
   void updateTabList(final ServerPlayer player, final @Nullable Component header, final @Nullable Component footer);
 
   default void collectPointers(Pointered pointered, Pointers.Builder builder) {
+    if (pointered instanceof LocaleHolderBridge holder) {
+      builder.withDynamic(Identity.LOCALE, holder::adventure$locale);
+    }
   }
 
   default void onLocaleChange(ServerPlayer player, Locale newLocale) {
+    MinecraftServerAudiencesImpl.forEachInstance(instance -> {
+      instance.bossBars().refreshTitles(player);
+    });
   }
 }

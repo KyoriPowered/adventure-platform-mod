@@ -39,7 +39,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 public class AdventureCommon {
-  public static final Supplier<ComponentFlattener> FLATTENER;
+  public static final ComponentFlattener FLATTENER;
   public static final PlatformHooks HOOKS;
   public static final ScheduledExecutorService SCHEDULER;
   private static final Logger LOGGER = LogUtils.getLogger();
@@ -54,7 +54,7 @@ public class AdventureCommon {
       .build());
     final var platformHooks = discoverHooks();
     HOOKS = platformHooks;
-    FLATTENER = Suppliers.memoize(() -> createFlattener(platformHooks));
+    FLATTENER = createFlattener(platformHooks);
   }
 
   public static Pointers pointers(final Player player) {

@@ -41,6 +41,7 @@ import net.kyori.adventure.platform.modcommon.impl.MinecraftAudiencesInternal;
 import net.kyori.adventure.platform.modcommon.impl.AdventureCommon;
 import net.kyori.adventure.platform.modcommon.impl.GameEnums;
 import net.kyori.adventure.platform.modcommon.impl.accessor.minecraft.world.level.LevelAccess;
+import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.pointer.Pointers;
 import net.kyori.adventure.resource.ResourcePackInfo;
 import net.kyori.adventure.resource.ResourcePackRequest;
@@ -344,8 +345,7 @@ public class ClientAudience implements ControlledAudience {
     if (clientPlayer != null) {
       return AdventureCommon.pointers(clientPlayer);
     } else {
-      return Pointers.empty();
-      // TODO return ((Pointered) this.client).pointers();
+      return ((Pointered) this.client).pointers();
     }
   }
 }

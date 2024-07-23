@@ -35,7 +35,6 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.loader.api.FabricLoader;
-import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.platform.fabric.CollectPointersCallback;
 import net.kyori.adventure.platform.fabric.ComponentArgumentType;
 import net.kyori.adventure.platform.fabric.KeyArgumentType;
@@ -43,10 +42,8 @@ import net.kyori.adventure.platform.fabric.PlayerLocales;
 import net.kyori.adventure.platform.fabric.impl.server.ServerPlayerBridge;
 import net.kyori.adventure.platform.modcommon.impl.AdventureCommon;
 import net.kyori.adventure.platform.modcommon.impl.ClickCallbackRegistry;
-import net.kyori.adventure.platform.modcommon.impl.LocaleHolderBridge;
 import net.kyori.adventure.platform.modcommon.impl.PlatformHooks;
 import net.kyori.adventure.platform.modcommon.impl.SidedProxy;
-import net.kyori.adventure.platform.modcommon.impl.server.MinecraftServerAudiencesImpl;
 import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.pointer.Pointers;
 import net.minecraft.commands.arguments.ComponentArgument;
@@ -95,18 +92,6 @@ public class AdventureFabricCommon implements ModInitializer {
   @Override
   public void onInitialize() {
     this.setupCustomArgumentTypes();
-
-    PlayerLocales.CHANGED_EVENT.register((player, locale) -> {
-      MinecraftServerAudiencesImpl.forEachInstance(instance -> {
-        instance.bossBars().refreshTitles(player);
-      });
-    });
-
-    CollectPointersCallback.EVENT.register((pointered, builder) -> {
-      if (pointered instanceof LocaleHolderBridge holder) {
-        builder.withDynamic(Identity.LOCALE, holder::adventure$locale);
-      }
-    });
 
     CommandRegistrationCallback.EVENT.register((dispatcher, registries, env) -> {
       ClickCallbackRegistry.INSTANCE.registerToDispatcher(dispatcher);
@@ -181,11 +166,13 @@ public class AdventureFabricCommon implements ModInitializer {
 
     @Override
     public void collectPointers(final Pointered pointered, final Pointers.Builder builder) {
+      PlatformHooks.super.collectPointers(pointered, builder);
       CollectPointersCallback.EVENT.invoker().registerPointers(pointered, builder);
     }
 
     @Override
     public void onLocaleChange(final ServerPlayer player, final Locale newLocale) {
+      PlatformHooks.super.onLocaleChange(player, newLocale);
       PlayerLocales.CHANGED_EVENT.invoker().onLocaleChanged(player, newLocale);
     }
   }

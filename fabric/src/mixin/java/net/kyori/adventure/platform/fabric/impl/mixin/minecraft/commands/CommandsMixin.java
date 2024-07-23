@@ -94,6 +94,7 @@ public abstract class CommandsMixin {
    * @param itr original rootCommandSource.getChildren() iterator
    * @return the filtered iterator
    */
+  // TODO - move to common
   @ModifyVariable(method = "fillUsableCommands", at = @At("STORE"), ordinal = 0, require = 0)
   private Iterator<CommandNode<CommandSourceStack>> adventure$filterHiddenCommands(final Iterator<CommandNode<CommandSourceStack>> itr) {
     return Iterators.filter(itr, node -> !(node.getRequirement() instanceof HiddenRequirement<CommandSourceStack>));

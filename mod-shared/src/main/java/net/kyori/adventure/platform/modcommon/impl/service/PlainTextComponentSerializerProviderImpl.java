@@ -33,11 +33,11 @@ import org.jetbrains.annotations.NotNull;
 public final class PlainTextComponentSerializerProviderImpl implements PlainTextComponentSerializer.Provider {
   @Override
   public @NotNull PlainTextComponentSerializer plainTextSimple() {
-    return PlainTextComponentSerializer.builder().flattener(AdventureCommon.FLATTENER.get()).build();
+    return PlainTextComponentSerializer.builder().flattener(AdventureCommon.FLATTENER).build();
   }
 
   @Override
   public @NotNull Consumer<PlainTextComponentSerializer.Builder> plainText() {
-    return builder -> builder.flattener(AdventureCommon.FLATTENER.get());
+    return builder -> builder.flattener(AdventureCommon.FLATTENER);
   }
 }

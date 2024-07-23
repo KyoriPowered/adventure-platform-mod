@@ -170,7 +170,7 @@ public final class MinecraftServerAudiencesImpl implements MinecraftServerAudien
 
   @Override
   public @NotNull ComponentFlattener flattener() {
-    return AdventureCommon.FLATTENER.get();
+    return AdventureCommon.FLATTENER;
   }
 
   @Override

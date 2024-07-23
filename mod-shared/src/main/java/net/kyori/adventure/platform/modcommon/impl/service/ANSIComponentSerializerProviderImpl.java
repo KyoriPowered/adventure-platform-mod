@@ -33,11 +33,11 @@ import org.jetbrains.annotations.NotNull;
 public final class ANSIComponentSerializerProviderImpl implements ANSIComponentSerializer.Provider {
   @Override
   public @NotNull ANSIComponentSerializer ansi() {
-    return ANSIComponentSerializer.builder().flattener(AdventureCommon.FLATTENER.get()).build();
+    return ANSIComponentSerializer.builder().flattener(AdventureCommon.FLATTENER).build();
   }
 
   @Override
   public @NotNull Consumer<ANSIComponentSerializer.Builder> builder() {
-    return builder -> builder.flattener(AdventureCommon.FLATTENER.get());
+    return builder -> builder.flattener(AdventureCommon.FLATTENER);
   }
 }
