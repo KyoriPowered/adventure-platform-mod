@@ -9,7 +9,7 @@ license="MIT"
 
 [[mods]]
 modId="adventure_platform_neoforge"
-version="0.0.1"
+version="$version"
 displayName="adventure-platform-neoforge"
 
 # A URL for the "homepage" for this mod, displayed in the mod UI
@@ -22,10 +22,10 @@ displayName="adventure-platform-neoforge"
 #credits="" #optional
 
 # A text field displayed in the mod UI
-authors="authors" #optional
+authors="kashike, zml, Luck, Electroid, and jmp" #optional
 
 # The description text for the mod (multi line!) (#mandatory)
-description="description"
+description="Integration between the adventure library and Minecraft: Java Edition, using the NeoForge modding system"
 
 [[mixins]]
 config="adventure-platform-mod-shared.accessor.mixins.json"

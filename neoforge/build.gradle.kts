@@ -145,6 +145,13 @@ tasks {
     //   "https://jd.advntr.dev/platform/api/${libs.versions.adventurePlatform.get()}",
     // )
   }
+  processResources {
+    val props = mapOf("version" to project.version)
+    inputs.properties(props)
+    filesMatching("META-INF/neoforge.mods.toml") {
+      expand(props)
+    }
+  }
 }
 
 // Workaround for both loom and indra doing publication logic in an afterEvaluate :(
