@@ -1,3 +1,26 @@
+/*
+ * This file is part of adventure-platform-mod, licensed under the MIT License.
+ *
+ * Copyright (c) 2024 KyoriPowered
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package net.kyori.adventure.platform.neoforge.impl;
 
 import com.google.auto.service.AutoService;
@@ -7,12 +30,12 @@ import net.kyori.adventure.platform.modcommon.impl.PlatformHooks;
 import net.kyori.adventure.platform.modcommon.impl.SidedProxy;
 import net.kyori.adventure.platform.modcommon.impl.client.ClientProxy;
 import net.kyori.adventure.platform.modcommon.impl.server.DedicatedServerProxy;
-import net.kyori.adventure.platform.neoforge.services.ANSIComponentSerializerProviderImpl;
-import net.kyori.adventure.platform.neoforge.services.ClickCallbackProviderImpl;
-import net.kyori.adventure.platform.neoforge.services.ComponentLoggerProviderImpl;
-import net.kyori.adventure.platform.neoforge.services.DataComponentValueConverterProvider;
-import net.kyori.adventure.platform.neoforge.services.GsonComponentSerializerProviderImpl;
-import net.kyori.adventure.platform.neoforge.services.PlainTextComponentSerializerProviderImpl;
+import net.kyori.adventure.platform.neoforge.impl.services.ANSIComponentSerializerProviderImpl;
+import net.kyori.adventure.platform.neoforge.impl.services.ClickCallbackProviderImpl;
+import net.kyori.adventure.platform.neoforge.impl.services.ComponentLoggerProviderImpl;
+import net.kyori.adventure.platform.neoforge.impl.services.DataComponentValueConverterProvider;
+import net.kyori.adventure.platform.neoforge.impl.services.GsonComponentSerializerProviderImpl;
+import net.kyori.adventure.platform.neoforge.impl.services.PlainTextComponentSerializerProviderImpl;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.common.Mod;
@@ -22,6 +45,7 @@ import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import org.jetbrains.annotations.Nullable;
 
 @Mod("adventure_platform_neoforge")
+@SuppressWarnings("checkstyle:HideUtilityClassConstructor")
 public class AdventureNeoforgeCommon {
   public static SidedProxy SIDE_PROXY;
 

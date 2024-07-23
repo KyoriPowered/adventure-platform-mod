@@ -1,5 +1,5 @@
 /*
- * This file is part of adventure-platform-fabric, licensed under the MIT License.
+ * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
  * Copyright (c) 2024 KyoriPowered
  *
@@ -30,8 +30,8 @@ import com.mojang.serialization.JsonOps;
 import java.util.List;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.modcommon.MinecraftAudiences;
-import net.kyori.adventure.platform.modcommon.impl.nbt.FabricDataComponentValue;
 import net.kyori.adventure.platform.modcommon.impl.AdventureCommon;
+import net.kyori.adventure.platform.modcommon.impl.nbt.FabricDataComponentValue;
 import net.kyori.adventure.text.event.DataComponentValue;
 import net.kyori.adventure.text.event.DataComponentValueConverterRegistry;
 import net.kyori.adventure.text.serializer.gson.GsonDataComponentValue;

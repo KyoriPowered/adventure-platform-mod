@@ -89,7 +89,9 @@ dependencies {
 
   checkstyle(libs.stylecheck)
 
+  // TODO - fabric repack
   implementation(project(":adventure-platform-mod-shared"))
+  include(project(":adventure-platform-mod-shared"))
 }
 
 configurations {

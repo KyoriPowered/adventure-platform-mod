@@ -1,7 +1,7 @@
 /*
- * This file is part of adventure-platform-fabric, licensed under the MIT License.
+ * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
- * Copyright (c) 2023-2024 KyoriPowered
+ * Copyright (c) 2020-2024 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,20 +21,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.adventure.platform.neoforge.services;
+package net.kyori.adventure.platform.neoforge.impl.services;
 
 import com.google.auto.service.AutoService;
-import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.text.event.ClickCallback;
-import net.kyori.adventure.text.event.ClickEvent;
+import java.util.function.Consumer;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 
-@AutoService(ClickCallback.Provider.class)
-public final class ClickCallbackProviderImpl implements ClickCallback.Provider {
-  public static ClickCallback.Provider DELEGATE;
+@AutoService(GsonComponentSerializer.Provider.class)
+public final class GsonComponentSerializerProviderImpl implements GsonComponentSerializer.Provider {
+  public static GsonComponentSerializer.Provider DELEGATE;
 
   @Override
-  public @NotNull ClickEvent create(final @NotNull ClickCallback<Audience> callback, final ClickCallback.@NotNull Options options) {
-    return DELEGATE.create(callback, options);
+  public @NotNull GsonComponentSerializer gson() {
+    return DELEGATE.gson();
+  }
+
+  @Override
+  public @NotNull GsonComponentSerializer gsonLegacy() {
+    return DELEGATE.gsonLegacy();
+  }
+
+  @Override
+  public @NotNull Consumer<GsonComponentSerializer.Builder> builder() {
+    return DELEGATE.builder();
   }
 }

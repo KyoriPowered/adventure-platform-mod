@@ -1,7 +1,7 @@
 /*
- * This file is part of adventure-platform-fabric, licensed under the MIT License.
+ * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
- * Copyright (c) 2024 KyoriPowered
+ * Copyright (c) 2020-2024 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,24 +21,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.adventure.platform.neoforge.services;
+package net.kyori.adventure.platform.neoforge.impl.services;
 
 import com.google.auto.service.AutoService;
-import net.kyori.adventure.key.Key;
-import net.kyori.adventure.text.event.DataComponentValueConverterRegistry;
+import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
+import net.kyori.adventure.text.logger.slf4j.ComponentLoggerProvider;
 import org.jetbrains.annotations.NotNull;
 
-@AutoService(DataComponentValueConverterRegistry.Provider.class)
-public final class DataComponentValueConverterProvider implements DataComponentValueConverterRegistry.Provider {
-  public static DataComponentValueConverterRegistry.Provider DELEGATE;
+@AutoService(net.kyori.adventure.text.logger.slf4j.ComponentLoggerProvider.class)
+public final class ComponentLoggerProviderImpl implements net.kyori.adventure.text.logger.slf4j.ComponentLoggerProvider {
+  public static ComponentLoggerProvider DELEGATE;
 
   @Override
-  public @NotNull Key id() {
-    return DELEGATE.id();
-  }
-
-  @Override
-  public @NotNull Iterable<DataComponentValueConverterRegistry.Conversion<?, ?>> conversions() {
-    return DELEGATE.conversions();
+  public @NotNull ComponentLogger logger(final @NotNull LoggerHelper helper, final @NotNull String name) {
+    return DELEGATE.logger(helper, name);
   }
 }

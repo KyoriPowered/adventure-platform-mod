@@ -1,5 +1,5 @@
 /*
- * This file is part of adventure-platform-fabric, licensed under the MIT License.
+ * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
  * Copyright (c) 2020-2024 KyoriPowered
  *
@@ -27,8 +27,8 @@ import java.util.function.Consumer;
 import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.chat.ChatType;
 import net.kyori.adventure.identity.Identity;
-import net.kyori.adventure.platform.modcommon.impl.ControlledAudience;
 import net.kyori.adventure.platform.modcommon.impl.AdventureCommon;
+import net.kyori.adventure.platform.modcommon.impl.ControlledAudience;
 import net.kyori.adventure.platform.modcommon.impl.MinecraftAudiencesInternal;
 import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.pointer.Pointers;

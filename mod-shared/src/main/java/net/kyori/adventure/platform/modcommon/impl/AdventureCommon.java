@@ -1,6 +1,28 @@
+/*
+ * This file is part of adventure-platform-mod, licensed under the MIT License.
+ *
+ * Copyright (c) 2024 KyoriPowered
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package net.kyori.adventure.platform.modcommon.impl;
 
-import com.google.common.base.Suppliers;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.mojang.logging.LogUtils;
 import java.util.List;
@@ -12,7 +34,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import net.kyori.adventure.Adventure;
@@ -38,7 +59,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
-public class AdventureCommon {
+public final class AdventureCommon {
   public static final ComponentFlattener FLATTENER;
   public static final PlatformHooks HOOKS;
   public static final ScheduledExecutorService SCHEDULER;
@@ -55,6 +76,9 @@ public class AdventureCommon {
     final var platformHooks = discoverHooks();
     HOOKS = platformHooks;
     FLATTENER = createFlattener(platformHooks);
+  }
+
+  private AdventureCommon() {
   }
 
   public static Pointers pointers(final Player player) {
@@ -100,7 +124,9 @@ public class AdventureCommon {
       int lastIdx = 0;
       while (matcher.find()) {
         // append prior
-        if (lastIdx < matcher.start()) consumer.accept(Component.text(translated.substring(lastIdx, matcher.start())));
+        if (lastIdx < matcher.start()) {
+          consumer.accept(Component.text(translated.substring(lastIdx, matcher.start())));
+        }
         lastIdx = matcher.end();
 
         final @Nullable String argIdx = matcher.group(1);
@@ -168,7 +194,6 @@ public class AdventureCommon {
   @FunctionalInterface
   interface FPointered extends Pointered {
     @Override
-    @NotNull
-    Pointers pointers();
+    @NotNull Pointers pointers();
   }
 }

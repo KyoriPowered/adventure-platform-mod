@@ -1,5 +1,6 @@
 plugins {
   id 'java-library'
+  alias(libs.plugins.indra.checkstyle)
 }
 
 dependencies {
@@ -20,4 +21,6 @@ dependencies {
       exclude group: "org.slf4j", module: "slf4j-api"
     }
   }
+
+  checkstyle(libs.stylecheck)
 }

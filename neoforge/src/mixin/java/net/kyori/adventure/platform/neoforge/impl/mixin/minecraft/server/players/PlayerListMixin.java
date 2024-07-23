@@ -1,5 +1,5 @@
 /*
- * This file is part of adventure-platform-fabric, licensed under the MIT License.
+ * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
  * Copyright (c) 2020-2024 KyoriPowered
  *
@@ -53,7 +53,6 @@ public class PlayerListMixin {
   @Shadow @Final @Mutable private Map<UUID, ServerPlayer> playersByUUID;
   @Shadow @Final @Mutable private List<ServerPlayer> playersView;
   // @formatter:on
-
 
   @Inject(method = "<init>", at = @At("RETURN"), require = 0)
   private void adventure$replacePlayerLists(final MinecraftServer server, final LayeredRegistryAccess<RegistryAccess> tracker, final PlayerDataStorage handler, final int i,

@@ -1,5 +1,5 @@
 /*
- * This file is part of adventure-platform-fabric, licensed under the MIT License.
+ * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
  * Copyright (c) 2020-2024 KyoriPowered
  *
@@ -129,7 +129,6 @@ public interface MinecraftClientAudiences extends MinecraftAudiences {
      * @return the built provider
      * @since 4.0.0
      */
-    @NotNull
-    MinecraftClientAudiences build();
+    @NotNull MinecraftClientAudiences build();
   }
 }

@@ -4,6 +4,7 @@ import net.neoforged.moddevgradle.internal.RunGameTask
 plugins {
   // Apply the plugin. You can find the latest version at https://projects.neoforged.net/neoforged/ModDevGradle
   id 'net.neoforged.moddev'
+  alias(libs.plugins.indra.checkstyle)
 }
 
 neoForge {
@@ -46,4 +47,5 @@ tasks.withType(RunGameTask).configureEach {
 dependencies {
   implementation(project(":adventure-platform-neoforge"))
   jarJar(project(":adventure-platform-neoforge"))
+  checkstyle(libs.stylecheck)
 }

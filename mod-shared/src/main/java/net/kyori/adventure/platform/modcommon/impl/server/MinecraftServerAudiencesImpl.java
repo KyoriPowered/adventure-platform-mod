@@ -1,5 +1,5 @@
 /*
- * This file is part of adventure-platform-fabric, licensed under the MIT License.
+ * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
  * Copyright (c) 2020-2024 KyoriPowered
  *
@@ -36,9 +36,9 @@ import net.kyori.adventure.platform.modcommon.AdventureCommandSourceStack;
 import net.kyori.adventure.platform.modcommon.MinecraftAudiences;
 import net.kyori.adventure.platform.modcommon.MinecraftServerAudiences;
 import net.kyori.adventure.platform.modcommon.impl.AdventureCommandSourceStackInternal;
+import net.kyori.adventure.platform.modcommon.impl.AdventureCommon;
 import net.kyori.adventure.platform.modcommon.impl.MinecraftAudiencesInternal;
 import net.kyori.adventure.platform.modcommon.impl.NonWrappingComponentSerializer;
-import net.kyori.adventure.platform.modcommon.impl.AdventureCommon;
 import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.flattener.ComponentFlattener;
@@ -180,7 +180,9 @@ public final class MinecraftServerAudiencesImpl implements MinecraftServerAudien
 
   @Override
   public net.minecraft.network.chat.@NotNull Component toNative(final @NotNull Component adventure) {
-    if (adventure == Component.empty()) return net.minecraft.network.chat.Component.empty();
+    if (adventure == Component.empty()) {
+      return net.minecraft.network.chat.Component.empty();
+    }
 
     return AdventureCommon.HOOKS.createWrappedComponent(requireNonNull(adventure, "adventure"), this.partition, this.renderer, this.nonWrappingSerializer);
   }

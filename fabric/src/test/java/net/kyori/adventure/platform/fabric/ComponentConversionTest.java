@@ -1,5 +1,5 @@
 /*
- * This file is part of adventure-platform-fabric, licensed under the MIT License.
+ * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
  * Copyright (c) 2023-2024 KyoriPowered
  *
@@ -36,8 +36,8 @@ import java.util.Locale;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import net.kyori.adventure.key.Key;
-import net.kyori.adventure.platform.modcommon.impl.WrappedComponent;
 import net.kyori.adventure.platform.modcommon.impl.AdventureCommon;
+import net.kyori.adventure.platform.modcommon.impl.WrappedComponent;
 import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;

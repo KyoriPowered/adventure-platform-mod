@@ -1,5 +1,5 @@
 /*
- * This file is part of adventure-platform-fabric, licensed under the MIT License.
+ * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
  * Copyright (c) 2020-2024 KyoriPowered
  *
@@ -34,13 +34,13 @@ import net.kyori.adventure.chat.SignedMessage;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.key.Key;
-import net.kyori.adventure.platform.modcommon.impl.client.mixin.minecraft.resources.sounds.AbstractSoundInstanceAccess;
 import net.kyori.adventure.platform.modcommon.MinecraftAudiences;
-import net.kyori.adventure.platform.modcommon.impl.ControlledAudience;
-import net.kyori.adventure.platform.modcommon.impl.MinecraftAudiencesInternal;
 import net.kyori.adventure.platform.modcommon.impl.AdventureCommon;
+import net.kyori.adventure.platform.modcommon.impl.ControlledAudience;
 import net.kyori.adventure.platform.modcommon.impl.GameEnums;
+import net.kyori.adventure.platform.modcommon.impl.MinecraftAudiencesInternal;
 import net.kyori.adventure.platform.modcommon.impl.accessor.minecraft.world.level.LevelAccess;
+import net.kyori.adventure.platform.modcommon.impl.client.mixin.minecraft.resources.sounds.AbstractSoundInstanceAccess;
 import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.pointer.Pointers;
 import net.kyori.adventure.resource.ResourcePackInfo;

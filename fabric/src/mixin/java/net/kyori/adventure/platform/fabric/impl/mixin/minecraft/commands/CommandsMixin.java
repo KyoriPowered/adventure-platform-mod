@@ -1,5 +1,5 @@
 /*
- * This file is part of adventure-platform-fabric, licensed under the MIT License.
+ * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
  * Copyright (c) 2022-2024 KyoriPowered
  *
@@ -33,10 +33,10 @@ import com.mojang.brigadier.tree.CommandNode;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import net.kyori.adventure.platform.modcommon.impl.HiddenRequirement;
 import net.kyori.adventure.platform.fabric.impl.ServerArgumentType;
 import net.kyori.adventure.platform.fabric.impl.ServerArgumentTypes;
 import net.kyori.adventure.platform.fabric.impl.accessor.brigadier.builder.RequiredArgumentBuilderAccess;
+import net.kyori.adventure.platform.modcommon.impl.HiddenRequirement;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;

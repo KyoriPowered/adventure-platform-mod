@@ -1,5 +1,5 @@
 /*
- * This file is part of adventure-platform-fabric, licensed under the MIT License.
+ * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
  * Copyright (c) 2020-2024 KyoriPowered
  *
@@ -32,8 +32,7 @@ import static java.util.Objects.requireNonNull;
  * Accessor for our listener stored in the client HUD.
  */
 public interface BossHealthOverlayBridge {
-  @NotNull
-  ClientBossBarListener adventure$listener(final @NotNull MinecraftClientAudiencesImpl controller);
+  @NotNull ClientBossBarListener adventure$listener(final @NotNull MinecraftClientAudiencesImpl controller);
 
   static @NotNull ClientBossBarListener listener(final @NotNull BossHealthOverlay hud, final @NotNull MinecraftClientAudiencesImpl controller) {
     return ((BossHealthOverlayBridge) requireNonNull(hud, "hud")).adventure$listener(controller);

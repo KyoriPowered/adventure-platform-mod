@@ -1,5 +1,6 @@
 plugins {
   id 'net.neoforged.moddev'
+  alias(libs.plugins.indra.checkstyle)
 }
 
 neoForge {
@@ -42,6 +43,8 @@ dependencies {
       exclude group: "com.google.code.gson"
     }
   }
+
+  checkstyle(libs.stylecheck)
 }
 
 sourceSets {
