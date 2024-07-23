@@ -89,15 +89,28 @@ dependencies {
 
   checkstyle(libs.stylecheck)
 
-  // TODO - fabric repack
-  implementation(project(":adventure-platform-mod-shared"))
-  include(project(":adventure-platform-mod-shared"))
+  localRuntime(project(":adventure-platform-mod-shared"))
+  compileOnly(project(":adventure-platform-mod-shared"))
+  testImplementation(project(":adventure-platform-mod-shared"))
+  api(project(":adventure-platform-fabric:adventure-platform-mod-shared-fabric-repack", configuration = "namedElements"))
+  include(project(":adventure-platform-fabric:adventure-platform-mod-shared-fabric-repack"))
 }
 
 configurations {
-  runtimeClasspath { extendsFrom(vineflowerDecompilerClasspath.get()) }
+  runtimeClasspath {
+    extendsFrom(vineflowerDecompilerClasspath.get())
+    exclude("net.kyori", "adventure-platform-mod-shared-fabric-repack")
+  }
+  compileClasspath {
+    exclude("net.kyori", "adventure-platform-mod-shared-fabric-repack")
+  }
+  testRuntimeClasspath {
+    exclude("net.kyori", "adventure-platform-mod-shared-fabric-repack")
+  }
+  testCompileClasspath {
+    exclude("net.kyori", "adventure-platform-mod-shared-fabric-repack")
+  }
 }
-
 
 sourceSets {
   main {

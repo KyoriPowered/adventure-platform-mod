@@ -55,6 +55,9 @@ setOf("fabric", "neoforge", "mod-shared").forEach {
   findProject(":$it")?.name = "adventure-platform-$it"
 }
 
+include(":adventure-platform-fabric:mod-shared-repack")
+findProject(":adventure-platform-fabric:mod-shared-repack")?.name = "adventure-platform-mod-shared-fabric-repack"
+
 include(":adventure-platform-neoforge:services")
 findProject(":adventure-platform-neoforge:services")?.name = "adventure-platform-neoforge-services"
 
