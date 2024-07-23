@@ -55,6 +55,7 @@ public abstract class ServerPlayerMixin extends PlayerMixin implements Forwardin
   // @formatter:off
   @Shadow @Final public MinecraftServer server;
   @Shadow public ServerGamePacketListenerImpl connection;
+  @Shadow private String language;
   // @formatter:on
 
   private Audience adventure$backing;
@@ -65,8 +66,18 @@ public abstract class ServerPlayerMixin extends PlayerMixin implements Forwardin
     super(entityType, level);
   }
 
-  @Inject(method = "<init>", at = @At("TAIL"))
+  @Inject(
+    method = "<init>",
+    at = @At(
+      target = "Lnet/minecraft/server/level/ServerPlayer;updateOptions(Lnet/minecraft/server/level/ClientInformation;)V",
+      value = "INVOKE",
+      shift = At.Shift.AFTER
+    )
+  )
   private void adventure$init(final CallbackInfo ci) {
+    // This is just setting it to the default en_us, to avoid event calls if it doesn't change (this is the reason for our target not being TAIL)
+    this.adventure$locale = LocaleHolderBridge.toLocale(this.language);
+
     this.adventure$backing = MinecraftServerAudiences.of(this.server).audience(this);
   }
 
