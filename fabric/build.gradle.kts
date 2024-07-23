@@ -193,6 +193,7 @@ loom {
       sourceSet(sourceSets.main.get())
       sourceSet(sourceSets.named("client").get())
       sourceSet(permissionsApiCompat)
+      sourceSet("main", project(":adventure-platform-mod-shared"))
     }
     register("adventure-platform-fabric-testmod") {
       sourceSet(testmod)

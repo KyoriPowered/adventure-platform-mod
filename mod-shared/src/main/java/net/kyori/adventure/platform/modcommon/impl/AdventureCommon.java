@@ -50,6 +50,7 @@ import net.kyori.adventure.text.flattener.ComponentFlattener;
 import net.kyori.adventure.translation.GlobalTranslator;
 import net.kyori.adventure.translation.TranslationRegistry;
 import net.kyori.adventure.translation.Translator;
+import net.kyori.adventure.util.Services;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.locale.Language;
@@ -94,8 +95,7 @@ public final class AdventureCommon {
   }
 
   static PlatformHooks discoverHooks() {
-    return ServiceLoader.load(PlatformHooks.class)
-      .findFirst()
+    return Services.service(PlatformHooks.class)
       .orElseThrow(() -> new IllegalStateException("No platform-specific hooks found for adventure platform"));
   }
 
