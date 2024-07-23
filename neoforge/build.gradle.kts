@@ -1,19 +1,39 @@
-import net.fabricmc.loom.api.RemapConfigurationSettings
-import net.fabricmc.loom.build.nesting.NestableJarGenerationTask
-import net.fabricmc.loom.task.RemapJarTask
-import org.gradle.configurationcache.extensions.capitalized
-
 plugins {
   alias(libs.plugins.eclipseApt)
-  alias(libs.plugins.loom)
   alias(libs.plugins.configurateTransformations)
   alias(libs.plugins.indra)
   alias(libs.plugins.indra.publishing)
   alias(libs.plugins.indra.licenseHeader)
   alias(libs.plugins.indra.checkstyle)
   alias(libs.plugins.indra.crossdoc)
-  alias(libs.plugins.ideaExt)
+  // TODO alias(libs.plugins.ideaExt)
   id("com.diffplug.spotless")
+  id("net.neoforged.moddev")
+}
+
+neoForge {
+  // We currently only support NeoForge versions later than 21.0.x
+  // See https://projects.neoforged.net/neoforged/neoforge for the latest updates
+  version = "21.0.114-beta"
+
+  // Validate AT files and raise errors when they have invalid targets
+  // This option is false by default, but turning it on is recommended
+  validateAccessTransformers = true
+
+  runs {
+    register("client") {
+      client()
+    }
+    register("server") {
+      server()
+    }
+  }
+
+  mods {
+    register("adventure-platform-neoforge") {
+      sourceSet(sourceSets.main.get())
+    }
+  }
 }
 
 spotless {
@@ -29,10 +49,7 @@ spotless {
   }
 }
 
-val testmodInclude: Configuration by configurations.creating
-
 dependencies {
-  vineflowerDecompilerClasspath(libs.vineflower)
   annotationProcessor(libs.autoService)
   annotationProcessor(libs.contractValidator)
   compileOnlyApi(libs.autoService.annotations)
@@ -44,29 +61,29 @@ dependencies {
     libs.adventure.textSerializerPlain,
     libs.adventure.textSerializerAnsi
   ).forEach {
-    modApi(it) {
+    api(it) {
       exclude("org.slf4j", "slf4j-api")
     }
-    include(it)
+    jarJar(it)
   }
 
   sequenceOf(
     libs.adventure.platform.api,
     libs.adventure.textSerializerGson
   ).forEach {
-    modApi(it) {
+    api(it) {
       exclude("com.google.code.gson")
     }
-    include(it)
+    jarJar(it)
   }
 
   // Transitive deps
-  include(libs.examination.api)
-  include(libs.examination.string)
-  include(libs.adventure.textSerializerJson)
-  include(libs.ansi)
-  include(libs.option)
-  modCompileOnly(libs.jetbrainsAnnotations)
+  jarJar(libs.examination.api)
+  jarJar(libs.examination.string)
+  jarJar(libs.adventure.textSerializerJson)
+  jarJar(libs.ansi)
+  jarJar(libs.option)
+  compileOnly(libs.jetbrainsAnnotations)
 
   testImplementation(platform(libs.junit.bom))
   testImplementation(libs.junit.api)
@@ -77,22 +94,11 @@ dependencies {
   checkstyle(libs.stylecheck)
 
   implementation(project(":adventure-platform-neoforge:adventure-platform-neoforge-services"))
-  include(project(":adventure-platform-neoforge:adventure-platform-neoforge-services"))
+  jarJar(project(":adventure-platform-neoforge:adventure-platform-neoforge-services"))
 
-  implementation(project(":adventure-platform-mod-shared", "namedElements"))
-  include(project(":adventure-platform-mod-shared", "namedElements"))
-  forgeRuntimeLibrary(project(":adventure-platform-mod-shared", "namedElements"))
-  testmodInclude(project(":adventure-platform-neoforge")) {
-    isTransitive = false
-  }
-
-  neoForge("net.neoforged:neoforge:21.0.114-beta")
+  api(project(":adventure-platform-mod-shared"))
+  jarJar(project(":adventure-platform-mod-shared"))
 }
-
-configurations {
-  runtimeClasspath { extendsFrom(vineflowerDecompilerClasspath.get()) }
-}
-
 
 sourceSets {
   main {
@@ -107,105 +113,6 @@ sourceSets {
       "src/client/resources/"
     )
   }
-}
-
-// loom.splitEnvironmentSourceSets() // not supported with (neo)forge
-
-// create a secondary set, with a configuration name matching the source set name
-// this configuration is available at compile- and runtime, and not published
-fun createSecondarySet(name: String, action: Action<SourceSet> = Action { }): SourceSet {
-  val set = sourceSets.create(name) {
-    action(this)
-  }
-
-  val setConfig = configurations.create(name)
-
-  configurations.named(set.compileClasspathConfigurationName) {
-    extendsFrom(setConfig)
-  }
-  configurations.named(set.runtimeClasspathConfigurationName) {
-    extendsFrom(setConfig)
-  }
-
-  loom.addRemapConfiguration("mod${name.capitalized()}") {
-    sourceSet = set
-    targetConfigurationName = name
-    onCompileClasspath = true
-    onRuntimeClasspath = true
-    publishingMode = RemapConfigurationSettings.PublishingMode.NONE
-  }
-
-  return set
-}
-
-// The testmod is not split, not worth the effort
-val testmod: SourceSet = createSecondarySet("testmod") {
-  java.srcDirs("src/testmodMixin/java")
-  resources.srcDirs("src/testmodMixin/resources")
-  compileClasspath += sourceSets.main.get().compileClasspath
-  runtimeClasspath += sourceSets.main.get().runtimeClasspath
-}
-
-/*
-sourceSets {
-  test {
-    compileClasspath += main.get().compileClasspath
-    runtimeClasspath += main.get().runtimeClasspath
-  }
-}
- */
-
-loom {
-  runs {
-    register("testmodClient") {
-      source("testmod")
-      client()
-    }
-    register("testmodServer") {
-      source("testmod")
-      server()
-    }
-
-    configureEach {
-      isIdeConfigGenerated = true
-      vmArgs(
-        "-Dmixin.debug=true"
-        // "-Dmixin.debug.countInjections=true",
-        // "-Dmixin.debug.strict=true", // Breaks FAPI :(
-      )
-    }
-  }
-
-  /*
-  mixin {
-    useLegacyMixinAp = true
-    add(sourceSets.main.get(), "adventure-platform-neoforge-refmap.json")
-    add(testmod, "adventure-platform-neoforge-testmod-refmap.json")
-  }
-   */
-
-  decompilerOptions.named("vineflower") {
-    options.put("win", "0")
-  }
-}
-
-// Create a remapped testmod jar
-val testmodDevJar = tasks.register("testmodJar", Jar::class) {
-  from(testmod.output)
-  archiveClassifier = "testmod-dev"
-}
-val prepareTestmodInclude = tasks.register("prepareTestmodInclude", NestableJarGenerationTask::class) {
-  from(testmodInclude)
-  outputDirectory.set(layout.buildDirectory.dir("tmp/$name"))
-}
-val remapTestmodJar = tasks.register("remapTestmodJar", RemapJarTask::class) {
-  inputFile = testmodDevJar.flatMap { it.archiveFile }
-  nestedJars.setFrom(prepareTestmodInclude.flatMap { it.outputDirectory }.map { fileTree(it) })
-  classpath.from(testmod.runtimeClasspath)
-  archiveClassifier = "testmod"
-}
-tasks.build {
-  dependsOn(remapTestmodJar)
 }
 
 tasks {

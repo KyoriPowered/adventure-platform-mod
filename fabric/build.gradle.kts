@@ -16,7 +16,7 @@ plugins {
   alias(libs.plugins.indra.licenseHeader)
   alias(libs.plugins.indra.checkstyle)
   alias(libs.plugins.indra.crossdoc)
-  alias(libs.plugins.ideaExt)
+  // TODO alias(libs.plugins.ideaExt)
   id("com.diffplug.spotless")
 }
 
@@ -89,7 +89,7 @@ dependencies {
 
   checkstyle(libs.stylecheck)
 
-  implementation(project(":adventure-platform-mod-shared", "namedElements"))
+  implementation(project(":adventure-platform-mod-shared"))
 }
 
 configurations {
@@ -298,10 +298,12 @@ fun createProcessResourceTemplates(name: String, set: SourceSet): TaskProvider<o
 
   // Have templates ready for IDEs
   eclipse.synchronizationTasks(task)
+  /* TODO
   rootProject.idea.project.settings.taskTriggers {
     afterSync(task)
   }
   idea.module.generatedSourceDirs.add(destinationDir)
+   */
 
   return task
 }

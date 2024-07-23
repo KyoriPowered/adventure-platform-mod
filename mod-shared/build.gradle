@@ -1,10 +1,22 @@
 plugins {
-  id("xyz.jpenilla.quiet-architectury-loom")
+  id 'net.neoforged.moddev'
+}
+
+neoForge {
+  // Look for versions on https://projects.neoforged.net/neoforged/neoform
+  neoFormVersion = "1.21-20240613.152323"
+
+  parchment {
+    // Get versions from https://parchmentmc.org/docs/getting-started
+    // Omit the "v"-prefix in mappingsVersion
+    minecraftVersion = "1.21"
+    mappingsVersion = "2024.07.07"
+  }
 }
 
 dependencies {
-  modImplementation(libs.fabric.loader)
-
+  compileOnly("net.fabricmc:sponge-mixin:0.13.4+mixin.0.8.5")
+  compileOnly("io.github.llamalad7:mixinextras-common:0.4.0")
   annotationProcessor(libs.autoService)
   annotationProcessor(libs.contractValidator)
   compileOnlyApi(libs.autoService.annotations)

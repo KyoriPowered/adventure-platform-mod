@@ -24,6 +24,7 @@ pluginManagement {
 plugins {
   id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
   id("xyz.jpenilla.quiet-architectury-loom") version "1.7.292"
+  id("net.neoforged.moddev.repositories") version "1.0.11"
 }
 
 rootProject.name = "adventure-platform-mod-parent"
@@ -53,5 +54,9 @@ setOf("fabric", "neoforge", "mod-shared").forEach {
   include(it)
   findProject(":$it")?.name = "adventure-platform-$it"
 }
+
 include(":adventure-platform-neoforge:services")
 findProject(":adventure-platform-neoforge:services")?.name = "adventure-platform-neoforge-services"
+
+include(":adventure-platform-neoforge:tester")
+findProject(":adventure-platform-neoforge:tester")?.name = "adventure-platform-neoforge-tester"
