@@ -1,3 +1,5 @@
+import net.neoforged.moddevgradle.internal.RunGameTask
+
 plugins {
   alias(libs.plugins.eclipseApt)
   alias(libs.plugins.configurateTransformations)
@@ -23,9 +25,11 @@ neoForge {
   runs {
     register("client") {
       client()
+      mods.set(emptySet())
     }
     register("server") {
       server()
+      mods.set(emptySet())
     }
   }
 
@@ -33,6 +37,15 @@ neoForge {
     register("adventure-platform-neoforge") {
       sourceSet(sourceSets.main.get())
     }
+  }
+}
+
+tasks.withType<RunGameTask>().configureEach {
+  dependsOn(tasks.jar)
+  doFirst {
+    val jar = file("run/mods/main.jar")
+    jar.parentFile.mkdirs()
+    tasks.jar.get().archiveFile.get().asFile.copyTo(jar, true)
   }
 }
 
@@ -93,10 +106,10 @@ dependencies {
 
   checkstyle(libs.stylecheck)
 
-  implementation(project(":adventure-platform-neoforge:adventure-platform-neoforge-services"))
+  compileOnly(project(":adventure-platform-neoforge:adventure-platform-neoforge-services"))
   jarJar(project(":adventure-platform-neoforge:adventure-platform-neoforge-services"))
 
-  api(project(":adventure-platform-mod-shared"))
+  compileOnlyApi(project(":adventure-platform-mod-shared"))
   jarJar(project(":adventure-platform-mod-shared"))
 }
 

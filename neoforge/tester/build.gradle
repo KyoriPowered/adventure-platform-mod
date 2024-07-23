@@ -1,3 +1,6 @@
+import java.nio.file.Files
+import net.neoforged.moddevgradle.internal.RunGameTask
+
 plugins {
   // Apply the plugin. You can find the latest version at https://projects.neoforged.net/neoforged/ModDevGradle
   id 'net.neoforged.moddev'
@@ -15,9 +18,11 @@ neoForge {
   runs {
     client {
       client()
+      mods.set(new HashSet())
     }
     server {
       server()
+      mods.set(new HashSet())
     }
   }
 
@@ -25,6 +30,16 @@ neoForge {
     'adventure-platform-neoforge-tester' {
       sourceSet sourceSets.main
     }
+  }
+}
+
+tasks.withType(RunGameTask).configureEach {
+  dependsOn(tasks.jar)
+  doFirst {
+    def jar = file("run/mods/main.jar")
+    jar.parentFile.mkdirs()
+    if (jar.exists()) jar.delete()
+    Files.copy(tasks.jar.archiveFile.get().asFile.toPath(), jar.toPath())
   }
 }
 
