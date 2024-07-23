@@ -21,11 +21,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.adventure.platform.fabric.impl.client;
+package net.kyori.adventure.platform.modcommon.impl.client;
 
 import java.util.function.Function;
 import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.platform.fabric.MinecraftClientAudiences;
+import net.kyori.adventure.platform.modcommon.MinecraftClientAudiences;
 import net.kyori.adventure.platform.modcommon.impl.MinecraftAudiencesInternal;
 import net.kyori.adventure.platform.modcommon.impl.AdventureCommon;
 import net.kyori.adventure.pointer.Pointered;
@@ -42,13 +42,13 @@ import org.jetbrains.annotations.Nullable;
 
 import static java.util.Objects.requireNonNull;
 
-public class FabricClientAudiencesImpl implements MinecraftClientAudiences, MinecraftAudiencesInternal {
+public class MinecraftClientAudiencesImpl implements MinecraftClientAudiences, MinecraftAudiencesInternal {
   public static final MinecraftClientAudiences INSTANCE = new Builder().build();
   private final Function<Pointered, ?> partition;
   private final ComponentRenderer<Pointered> renderer;
   private final ClientAudience audience;
 
-  public FabricClientAudiencesImpl(final Function<Pointered, ?> partition, final ComponentRenderer<Pointered> renderer) {
+  public MinecraftClientAudiencesImpl(final Function<Pointered, ?> partition, final ComponentRenderer<Pointered> renderer) {
     this.partition = partition;
     this.renderer = renderer;
     this.audience = new ClientAudience(Minecraft.getInstance(), this);
@@ -106,7 +106,7 @@ public class FabricClientAudiencesImpl implements MinecraftClientAudiences, Mine
 
     @Override
     public @NotNull MinecraftClientAudiences build() {
-      return new FabricClientAudiencesImpl(this.partition, this.renderer);
+      return new MinecraftClientAudiencesImpl(this.partition, this.renderer);
     }
   }
 }

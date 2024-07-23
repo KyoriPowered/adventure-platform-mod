@@ -21,16 +21,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.adventure.platform.fabric.impl.accessor.minecraft.network;
+package net.kyori.adventure.platform.modcommon.impl.client;
 
-import io.netty.channel.Channel;
-import net.minecraft.network.Connection;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Accessor;
+import net.minecraft.client.gui.components.BossHealthOverlay;
+import org.jetbrains.annotations.NotNull;
 
-@Mixin(Connection.class)
-public interface ConnectionAccess {
-  // @formatter:off
-  @Accessor("channel") Channel accessor$channel();
-  // @formatter:on
+import static java.util.Objects.requireNonNull;
+
+/**
+ * Accessor for our listener stored in the client HUD.
+ */
+public interface BossHealthOverlayBridge {
+  @NotNull
+  ClientBossBarListener adventure$listener(final @NotNull MinecraftClientAudiencesImpl controller);
+
+  static @NotNull ClientBossBarListener listener(final @NotNull BossHealthOverlay hud, final @NotNull MinecraftClientAudiencesImpl controller) {
+    return ((BossHealthOverlayBridge) requireNonNull(hud, "hud")).adventure$listener(controller);
+  }
 }

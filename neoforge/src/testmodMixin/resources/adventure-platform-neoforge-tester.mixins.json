@@ -1,0 +1,7 @@
+{
+  "parent": "adventure-platform-mod-shared.parent.mixins.json",
+  "package": "net.kyori.adventure.platform.tester.neoforge.mixin",
+  "client": [
+    "TitleScreenMixin"
+  ]
+}

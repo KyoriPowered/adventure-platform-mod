@@ -46,3 +46,7 @@ sourceSets {
     )
   }
 }
+
+tasks.jar {
+  manifest.attributes("FMLModType": "GAMELIBRARY")
+}

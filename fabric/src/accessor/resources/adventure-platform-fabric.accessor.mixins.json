@@ -4,8 +4,6 @@
   "mixins": [
     "api.key.InvalidKeyExceptionAccess",
     "brigadier.builder.RequiredArgumentBuilderAccess",
-    "minecraft.network.ConnectionAccess",
-    "minecraft.network.ServerCommonPacketListenerImplAccess",
-    "minecraft.commands.ParserUtilsAccess",
+    "minecraft.commands.ParserUtilsAccess"
   ]
 }

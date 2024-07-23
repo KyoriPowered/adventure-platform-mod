@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.adventure.platform.fabric.impl.client;
+package net.kyori.adventure.platform.modcommon.impl.client;
 
 import java.net.MalformedURLException;
 import java.time.Duration;
@@ -34,14 +34,13 @@ import net.kyori.adventure.chat.SignedMessage;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.platform.modcommon.impl.client.mixin.minecraft.resources.sounds.AbstractSoundInstanceAccess;
 import net.kyori.adventure.platform.modcommon.MinecraftAudiences;
 import net.kyori.adventure.platform.modcommon.impl.ControlledAudience;
 import net.kyori.adventure.platform.modcommon.impl.MinecraftAudiencesInternal;
 import net.kyori.adventure.platform.modcommon.impl.AdventureCommon;
 import net.kyori.adventure.platform.modcommon.impl.GameEnums;
-import net.kyori.adventure.platform.fabric.impl.PointerProviderBridge;
 import net.kyori.adventure.platform.modcommon.impl.accessor.minecraft.world.level.LevelAccess;
-import net.kyori.adventure.platform.fabric.impl.client.mixin.minecraft.resources.sounds.AbstractSoundInstanceAccess;
 import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.pointer.Pointers;
 import net.kyori.adventure.resource.ResourcePackInfo;
@@ -71,9 +70,9 @@ import org.jetbrains.annotations.Nullable;
 
 public class ClientAudience implements ControlledAudience {
   private final Minecraft client;
-  private final FabricClientAudiencesImpl controller;
+  private final MinecraftClientAudiencesImpl controller;
 
-  public ClientAudience(final Minecraft client, final FabricClientAudiencesImpl renderer) {
+  public ClientAudience(final Minecraft client, final MinecraftClientAudiencesImpl renderer) {
     this.client = client;
     this.controller = renderer;
   }
@@ -103,7 +102,7 @@ public class ClientAudience implements ControlledAudience {
     final net.minecraft.network.chat.ChatType.Bound bound = this.toMc(boundChatType);
     final Component message = Objects.requireNonNullElse(signedMessage.unsignedContent(), Component.text(signedMessage.message()));
 
-    this.client.gui.getChat().addMessage(bound.decorate(this.controller.toNative(message)), (MessageSignature) signedMessage.signature(), this.tag(signedMessage));
+    this.client.gui.getChat().addMessage(bound.decorate(this.controller.toNative(message)), (MessageSignature) (Object) signedMessage.signature(), this.tag(signedMessage));
   }
 
   private GuiMessageTag tag(final SignedMessage message) {
@@ -122,7 +121,7 @@ public class ClientAudience implements ControlledAudience {
 
   @Override
   public void deleteMessage(final SignedMessage.@NotNull Signature signature) {
-    this.client.gui.getChat().deleteMessage((MessageSignature) signature);
+    this.client.gui.getChat().deleteMessage((MessageSignature) (Object) signature);
   }
 
   @Override
@@ -214,7 +213,7 @@ public class ClientAudience implements ControlledAudience {
     } else {
       final @Nullable LocalPlayer player = this.client.player;
       if (player != null) {
-        return ((LevelAccess) player).accessor$threadSafeRandom().nextLong();
+        return ((LevelAccess) player.level()).accessor$threadSafeRandom().nextLong();
       } else {
         return 0l;
       }
@@ -342,9 +341,10 @@ public class ClientAudience implements ControlledAudience {
   public @NotNull Pointers pointers() {
     final @Nullable LocalPlayer clientPlayer = this.client.player;
     if (clientPlayer != null) {
-      return ((PointerProviderBridge) clientPlayer).adventure$pointers();
+      return AdventureCommon.HOOKS.pointers(clientPlayer);
     } else {
-      return ((Pointered) this.client).pointers();
+      return Pointers.empty();
+      // TODO return ((Pointered) this.client).pointers();
     }
   }
 }

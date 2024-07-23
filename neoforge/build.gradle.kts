@@ -1,4 +1,5 @@
 import net.fabricmc.loom.api.RemapConfigurationSettings
+import net.fabricmc.loom.build.nesting.NestableJarGenerationTask
 import net.fabricmc.loom.task.RemapJarTask
 import org.gradle.configurationcache.extensions.capitalized
 
@@ -27,6 +28,8 @@ spotless {
     removeUnusedImports()
   }
 }
+
+val testmodInclude: Configuration by configurations.creating
 
 dependencies {
   vineflowerDecompilerClasspath(libs.vineflower)
@@ -74,6 +77,11 @@ dependencies {
   checkstyle(libs.stylecheck)
 
   implementation(project(":adventure-platform-mod-shared", "namedElements"))
+  include(project(":adventure-platform-mod-shared", "namedElements"))
+  forgeRuntimeLibrary(project(":adventure-platform-mod-shared", "namedElements"))
+  testmodInclude(project(":adventure-platform-neoforge")) {
+    isTransitive = false
+  }
 
   neoForge("net.neoforged:neoforge:21.0.114-beta")
 }
@@ -128,19 +136,21 @@ fun createSecondarySet(name: String, action: Action<SourceSet> = Action { }): So
 }
 
 // The testmod is not split, not worth the effort
-val testmod = createSecondarySet("testmod") {
+val testmod: SourceSet = createSecondarySet("testmod") {
   java.srcDirs("src/testmodMixin/java")
   resources.srcDirs("src/testmodMixin/resources")
+  compileClasspath += sourceSets.main.get().compileClasspath
+  runtimeClasspath += sourceSets.main.get().runtimeClasspath
 }
 
-val permissionsApiCompat = createSecondarySet("permissionsApiCompat")
-
+/*
 sourceSets {
   test {
     compileClasspath += main.get().compileClasspath
     runtimeClasspath += main.get().runtimeClasspath
   }
 }
+ */
 
 loom {
   runs {
@@ -156,27 +166,20 @@ loom {
     configureEach {
       isIdeConfigGenerated = true
       vmArgs(
+        "-Dmixin.debug=true"
         // "-Dmixin.debug.countInjections=true",
         // "-Dmixin.debug.strict=true", // Breaks FAPI :(
       )
     }
   }
 
-  mods {
-    register("adventure-platform-neoforge") {
-      sourceSet(sourceSets.main.get())
-      sourceSet(permissionsApiCompat)
-    }
-    register("adventure-platform-neoforge-testmod") {
-      sourceSet(testmod)
-    }
-  }
-
+  /*
   mixin {
     useLegacyMixinAp = true
     add(sourceSets.main.get(), "adventure-platform-neoforge-refmap.json")
     add(testmod, "adventure-platform-neoforge-testmod-refmap.json")
   }
+   */
 
   decompilerOptions.named("vineflower") {
     options.put("win", "0")
@@ -188,10 +191,13 @@ val testmodDevJar = tasks.register("testmodJar", Jar::class) {
   from(testmod.output)
   archiveClassifier = "testmod-dev"
 }
-
+val prepareTestmodInclude = tasks.register("prepareTestmodInclude", NestableJarGenerationTask::class) {
+  from(testmodInclude)
+  outputDirectory.set(layout.buildDirectory.dir("tmp/$name"))
+}
 val remapTestmodJar = tasks.register("remapTestmodJar", RemapJarTask::class) {
   inputFile = testmodDevJar.flatMap { it.archiveFile }
-  addNestedDependencies = false
+  nestedJars.setFrom(prepareTestmodInclude.flatMap { it.outputDirectory }.map { fileTree(it) })
   classpath.from(testmod.runtimeClasspath)
   archiveClassifier = "testmod"
 }
@@ -201,28 +207,20 @@ tasks.build {
 
 tasks {
   javadoc {
-    exclude("net/kyori/adventure/platform/fabric/impl/**")
-    val client = sourceSets.getByName("client")
-    source(client.allJava)
-    classpath += client.output
-    val advVersion = libs.versions.adventure.get()
-    if (!advVersion.contains("SNAPSHOT")) {
-      (options as? StandardJavadocDocletOptions)?.links(
-        "https://jd.advntr.dev/api/${advVersion}",
-        "https://jd.advntr.dev/key/${advVersion}",
-      )
-    }
-    (options as? StandardJavadocDocletOptions)?.links(
-      "https://jd.advntr.dev/platform/api/${libs.versions.adventurePlatform.get()}",
-    )
-  }
-
-  jar {
-    from(permissionsApiCompat.output)
-  }
-
-  sourcesJar {
-    from(permissionsApiCompat.allSource)
+    // exclude("net/kyori/adventure/platform/fabric/impl/**")
+    // val client = sourceSets.getByName("client")
+    // source(client.allJava)
+    // classpath += client.output
+    // val advVersion = libs.versions.adventure.get()
+    // if (!advVersion.contains("SNAPSHOT")) {
+    //   (options as? StandardJavadocDocletOptions)?.links(
+    //     "https://jd.advntr.dev/api/${advVersion}",
+    //     "https://jd.advntr.dev/key/${advVersion}",
+    //   )
+    // }
+    // (options as? StandardJavadocDocletOptions)?.links(
+    //   "https://jd.advntr.dev/platform/api/${libs.versions.adventurePlatform.get()}",
+    // )
   }
 }
 

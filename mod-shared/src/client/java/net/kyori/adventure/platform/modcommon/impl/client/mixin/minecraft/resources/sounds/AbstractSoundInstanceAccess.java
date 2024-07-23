@@ -21,20 +21,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.adventure.platform.fabric.impl.client;
+package net.kyori.adventure.platform.modcommon.impl.client.mixin.minecraft.resources.sounds;
 
-import net.minecraft.client.gui.components.BossHealthOverlay;
-import org.jetbrains.annotations.NotNull;
+import net.minecraft.client.resources.sounds.AbstractSoundInstance;
+import net.minecraft.resources.ResourceLocation;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Accessor;
 
-import static java.util.Objects.requireNonNull;
-
-/**
- * Accessor for our listener stored in the client HUD.
- */
-public interface BossHealthOverlayBridge {
-  @NotNull ClientBossBarListener adventure$listener(final @NotNull FabricClientAudiencesImpl controller);
-
-  static @NotNull ClientBossBarListener listener(final @NotNull BossHealthOverlay hud, final @NotNull FabricClientAudiencesImpl controller) {
-    return ((BossHealthOverlayBridge) requireNonNull(hud, "hud")).adventure$listener(controller);
-  }
+@Mixin(AbstractSoundInstance.class)
+public interface AbstractSoundInstanceAccess {
+  // @formatter:off
+  @Accessor void setLocation(final ResourceLocation loc);
+  // @formatter:on
 }

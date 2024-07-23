@@ -1,0 +1,56 @@
+modLoader="javafml"
+
+loaderVersion="[4,)"
+
+license="MIT"
+
+# A URL to refer people to when problems occur with this mod
+#issueTrackerURL="https://change.me.to.your.issue.tracker.example.invalid/" #optional
+
+[[mods]]
+modId="adventure_platform_neoforge"
+version="0.0.1"
+displayName="adventure-platform-neoforge"
+
+# A URL for the "homepage" for this mod, displayed in the mod UI
+#displayURL="https://change.me.to.your.mods.homepage.example.invalid/" #optional
+
+# A file name (in the root of the mod JAR) containing a logo for display
+#logoFile="examplemod.png" #optional
+
+# A text field displayed in the mod UI
+#credits="" #optional
+
+# A text field displayed in the mod UI
+authors="authors" #optional
+
+# The description text for the mod (multi line!) (#mandatory)
+description="description"
+
+[[mixins]]
+config="adventure-platform-mod-shared.accessor.mixins.json"
+
+[[mixins]]
+config="adventure-platform-mod-shared.mixins.json"
+
+[[mixins]]
+config="adventure-platform-mod-shared.client.mixins.json"
+
+# The [[accessTransformers]] block allows you to declare where your AT file is.
+# If this block is omitted, a fallback attempt will be made to load an AT from META-INF/accesstransformer.cfg
+#[[accessTransformers]]
+#file="META-INF/accesstransformer.cfg"
+
+[[dependencies.adventure_platform_neoforge]]
+modId="neoforge"
+type="required"
+versionRange="[21.0.0-beta,)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.adventure_platform_neoforge]]
+modId="minecraft"
+type="required"
+versionRange="[1.21,1.21.1)"
+ordering="NONE"
+side="BOTH"

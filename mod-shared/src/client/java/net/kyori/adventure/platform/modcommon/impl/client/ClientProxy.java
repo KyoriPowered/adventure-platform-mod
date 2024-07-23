@@ -21,30 +21,36 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.adventure.platform.fabric.impl.client;
+package net.kyori.adventure.platform.modcommon.impl.client;
 
 import java.util.function.Function;
-import net.kyori.adventure.platform.fabric.MinecraftClientAudiences;
+import net.kyori.adventure.platform.modcommon.impl.NonWrappingComponentSerializer;
+import net.kyori.adventure.platform.modcommon.impl.SidedProxy;
 import net.kyori.adventure.platform.modcommon.impl.WrappedComponent;
 import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.KeybindComponent;
+import net.kyori.adventure.text.flattener.ComponentFlattener;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
+import net.minecraft.client.KeyMapping;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public final class ClientWrappedComponent extends WrappedComponent {
-  public ClientWrappedComponent(final Component wrapped, final @Nullable Function<Pointered, ?> partition, final @Nullable ComponentRenderer<Pointered> renderer) {
-    super(wrapped, partition, renderer, null);
+public class ClientProxy implements SidedProxy {
+  @Override
+  public void contributeFlattenerElements(
+    final ComponentFlattener.@NotNull Builder flattenerBuilder
+  ) {
+    flattenerBuilder.mapper(KeybindComponent.class, keybind -> KeyMapping.createNameSupplier(keybind.keybind()).get().getString());
   }
 
   @Override
-  protected net.minecraft.network.chat.Component deepConvertedLocalized() {
-    net.minecraft.network.chat.Component converted = this.converted;
-    final Pointered target = MinecraftClientAudiences.of().audience();
-    final Object data = this.partition() == null ? null : this.partition().apply(target);
-    if (converted == null || this.deepConvertedLocalized != data) {
-      converted = this.converted = this.rendered(target).deepConverted();
-      this.deepConvertedLocalized = data;
-    }
-    return converted;
+  public @NotNull WrappedComponent createWrappedComponent(
+    final @NotNull Component wrapped,
+    final @Nullable Function<Pointered, ?> partition,
+    final @Nullable ComponentRenderer<Pointered> renderer,
+    final @Nullable NonWrappingComponentSerializer nonWrappingSerializer
+  ) {
+    return new ClientWrappedComponent(wrapped, partition, renderer);
   }
 }

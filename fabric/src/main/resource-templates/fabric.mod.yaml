@@ -17,15 +17,16 @@ entrypoints:
   client:
     - "net.kyori.adventure.platform.fabric.impl.client.AdventureFabricClient"
   adventure-internal:sidedproxy/client:
-    - "net.kyori.adventure.platform.fabric.impl.client.ClientProxy"
+    - "net.kyori.adventure.platform.modcommon.impl.client.ClientProxy"
   adventure-internal:sidedproxy/server:
-    - "net.kyori.adventure.platform.fabric.impl.server.DedicatedServerProxy"
+    - "net.kyori.adventure.platform.modcommon.impl.server.DedicatedServerProxy"
 mixins:
   - "adventure-platform-fabric.accessor.mixins.json"
   - "adventure-platform-fabric.mixins.json"
   - "adventure-platform-mod-shared.accessor.mixins.json"
   - "adventure-platform-mod-shared.mixins.json"
   - { environment: "client", "config": "adventure-platform-fabric.client.mixins.json" }
+  - { environment: "client", "config": "adventure-platform-mod-shared.client.mixins.json" }
 custom:
   modmenu:api: true
   modmenu:

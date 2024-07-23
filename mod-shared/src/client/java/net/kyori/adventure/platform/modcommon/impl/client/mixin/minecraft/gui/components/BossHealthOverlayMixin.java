@@ -21,14 +21,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.adventure.platform.fabric.impl.client.mixin.minecraft.gui.components;
+package net.kyori.adventure.platform.modcommon.impl.client.mixin.minecraft.gui.components;
 
 import com.google.common.collect.MapMaker;
 import java.util.Map;
 import java.util.UUID;
-import net.kyori.adventure.platform.fabric.impl.client.BossHealthOverlayBridge;
-import net.kyori.adventure.platform.fabric.impl.client.ClientBossBarListener;
-import net.kyori.adventure.platform.fabric.impl.client.FabricClientAudiencesImpl;
+import net.kyori.adventure.platform.modcommon.impl.client.BossHealthOverlayBridge;
+import net.kyori.adventure.platform.modcommon.impl.client.ClientBossBarListener;
+import net.kyori.adventure.platform.modcommon.impl.client.MinecraftClientAudiencesImpl;
 import net.minecraft.client.gui.components.BossHealthOverlay;
 import net.minecraft.client.gui.components.LerpingBossEvent;
 import org.jetbrains.annotations.NotNull;
@@ -45,10 +45,10 @@ public class BossHealthOverlayMixin implements BossHealthOverlayBridge {
   @Shadow @Final Map<UUID, LerpingBossEvent> events;
   // @formatter:on
 
-  private final Map<FabricClientAudiencesImpl, ClientBossBarListener> adventure$listener = new MapMaker().weakKeys().makeMap();
+  private final Map<MinecraftClientAudiencesImpl, ClientBossBarListener> adventure$listener = new MapMaker().weakKeys().makeMap();
 
   @Override
-  public @NotNull ClientBossBarListener adventure$listener(final @NotNull FabricClientAudiencesImpl controller) {
+  public @NotNull ClientBossBarListener adventure$listener(final @NotNull MinecraftClientAudiencesImpl controller) {
     return this.adventure$listener.computeIfAbsent(controller, ctrl -> new ClientBossBarListener(ctrl, this.events));
   }
 

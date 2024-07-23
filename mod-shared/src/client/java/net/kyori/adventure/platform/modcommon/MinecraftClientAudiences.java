@@ -21,12 +21,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.adventure.platform.fabric;
+package net.kyori.adventure.platform.modcommon;
 
 import java.util.function.Function;
 import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.platform.fabric.impl.client.FabricClientAudiencesImpl;
-import net.kyori.adventure.platform.modcommon.MinecraftAudiences;
+import net.kyori.adventure.platform.modcommon.impl.client.MinecraftClientAudiencesImpl;
 import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
 import org.jetbrains.annotations.NotNull;
@@ -45,7 +44,7 @@ public interface MinecraftClientAudiences extends MinecraftAudiences {
    * @since 4.0.0
    */
   static @NotNull MinecraftClientAudiences of() {
-    return FabricClientAudiencesImpl.INSTANCE;
+    return MinecraftClientAudiencesImpl.INSTANCE;
   }
 
   /**
@@ -55,7 +54,7 @@ public interface MinecraftClientAudiences extends MinecraftAudiences {
    * @since 4.0.0
    */
   static MinecraftClientAudiences.@NotNull Builder builder() {
-    return new FabricClientAudiencesImpl.Builder();
+    return new MinecraftClientAudiencesImpl.Builder();
   }
 
   /**

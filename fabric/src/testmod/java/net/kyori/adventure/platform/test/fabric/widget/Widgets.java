@@ -24,7 +24,7 @@
 package net.kyori.adventure.platform.test.fabric.widget;
 
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
-import net.kyori.adventure.platform.fabric.MinecraftClientAudiences;
+import net.kyori.adventure.platform.modcommon.MinecraftClientAudiences;
 import net.kyori.adventure.text.Component;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;

@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.adventure.platform.fabric.impl.client;
+package net.kyori.adventure.platform.modcommon.impl.server;
 
 import java.util.function.Function;
 import net.kyori.adventure.platform.modcommon.impl.NonWrappingComponentSerializer;
@@ -29,19 +29,15 @@ import net.kyori.adventure.platform.modcommon.impl.SidedProxy;
 import net.kyori.adventure.platform.modcommon.impl.WrappedComponent;
 import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.KeybindComponent;
 import net.kyori.adventure.text.flattener.ComponentFlattener;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
-import net.minecraft.client.KeyMapping;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class ClientProxy implements SidedProxy {
+public class DedicatedServerProxy implements SidedProxy {
   @Override
-  public void contributeFlattenerElements(
-    final ComponentFlattener.@NotNull Builder flattenerBuilder
-  ) {
-    flattenerBuilder.mapper(KeybindComponent.class, keybind -> KeyMapping.createNameSupplier(keybind.keybind()).get().getString());
+  public void contributeFlattenerElements(final ComponentFlattener.@NotNull Builder flattenerBuilder) {
+    // no-op
   }
 
   @Override
@@ -51,6 +47,6 @@ public class ClientProxy implements SidedProxy {
     final @Nullable ComponentRenderer<Pointered> renderer,
     final @Nullable NonWrappingComponentSerializer nonWrappingSerializer
   ) {
-    return new ClientWrappedComponent(wrapped, partition, renderer);
+    return new WrappedComponent(wrapped, partition, renderer, nonWrappingSerializer);
   }
 }

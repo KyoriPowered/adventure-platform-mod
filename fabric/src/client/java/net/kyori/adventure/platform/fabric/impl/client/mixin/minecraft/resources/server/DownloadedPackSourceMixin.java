@@ -23,7 +23,7 @@
  */
 package net.kyori.adventure.platform.fabric.impl.client.mixin.minecraft.resources.server;
 
-import net.kyori.adventure.platform.fabric.impl.client.ListeningPackFeedbackWrapper;
+import net.kyori.adventure.platform.modcommon.impl.client.ListeningPackFeedbackWrapper;
 import net.minecraft.client.resources.server.DownloadedPackSource;
 import net.minecraft.client.resources.server.PackLoadFeedback;
 import net.minecraft.client.resources.server.ServerPackManager;

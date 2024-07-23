@@ -36,6 +36,7 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.loader.api.FabricLoader;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.platform.fabric.CollectPointersCallback;
 import net.kyori.adventure.platform.fabric.ComponentArgumentType;
@@ -201,6 +202,11 @@ public class AdventureFabricCommon implements ModInitializer {
     @Override
     public Pointers pointers(final Player player) {
       return player instanceof PointerProviderBridge ? ((PointerProviderBridge) player).adventure$pointers() : Pointers.empty();
+    }
+
+    @Override
+    public Pointered pointered(final Player player) {
+      return player instanceof Pointered ? (Pointered) player : Audience.empty();
     }
 
     @Override
