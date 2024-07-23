@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.adventure.platform.fabric.impl.mixin.minecraft.network.chat;
+package net.kyori.adventure.platform.modcommon.impl.mixin.minecraft.network.chat;
 
 import java.time.Instant;
 import java.util.stream.Stream;
@@ -79,12 +79,12 @@ public abstract class PlayerChatMessageMixin implements SignedMessage {
 
   @Override
   public @Nullable Signature signature() {
-    return this.shadow$signature();
+    return (Signature) (Object) this.shadow$signature();
   }
 
   @Override
   public @Nullable Component unsignedContent() {
-    return ComponentLike.unbox(this.shadow$unsignedContent());
+    return ComponentLike.unbox((ComponentLike) this.shadow$unsignedContent());
   }
 
   @Override

@@ -27,9 +27,11 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
+import net.kyori.adventure.chat.SignedMessage;
 import net.kyori.adventure.identity.Identified;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.key.Keyed;
 import net.kyori.adventure.platform.modcommon.impl.AdventureCommon;
 import net.kyori.adventure.platform.modcommon.impl.NonWrappingComponentSerializer;
 import net.kyori.adventure.platform.modcommon.impl.WrappedComponent;
@@ -39,14 +41,21 @@ import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.event.DataComponentValue;
+import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.event.HoverEventSource;
 import net.kyori.adventure.text.flattener.ComponentFlattener;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
 import net.kyori.adventure.text.serializer.ComponentSerializer;
 import net.kyori.adventure.util.ComponentMessageThrowable;
 import net.minecraft.core.component.DataComponentType;
+import net.minecraft.network.chat.MessageSignature;
+import net.minecraft.network.chat.PlayerChatMessage;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -57,7 +66,10 @@ import static java.util.Objects.requireNonNull;
  * Common operations in both the client and server environments.
  *
  * <p>See {@link MinecraftServerAudiences} for logical server-specific operations,
- * and {@code FabricClientAudiences} for logical client-specific operations</p>
+ * and {@code MinecraftClientAudiences} for logical client-specific operations</p>
+ *
+ * <p>In development environments with interface injection, many of the utility methods
+ * in this class are redundant.</p>
  *
  * @since 4.0.0
  */
@@ -91,12 +103,12 @@ public interface MinecraftAudiences {
   /**
    * Convert a MC {@link ResourceLocation} instance to a text Key.
    *
+   * <p>{@link ResourceLocation} implements {@link Key} at runtime, so this is effectively a cast.</p>
+   *
    * @param loc The Identifier to convert
    * @return The equivalent data as a Key
    * @since 4.0.0
-   * @deprecated ResourceLocation directly implements key, and all Keys are ResourceLocations since Loader 0.14.0
    */
-  @Deprecated(forRemoval = true, since = "5.3.0")
   @Contract("null -> null; !null -> !null")
   static Key toAdventure(final ResourceLocation loc) {
     if (loc == null) {
@@ -108,8 +120,8 @@ public interface MinecraftAudiences {
   /**
    * Convert a Kyori {@link Key} instance to a MC ResourceLocation.
    *
-   * <p>All {@link Key} instances created in a Fabric environment with this
-   * mod are implemented by {@link ResourceLocation}, as long as loader 0.14 is present,
+   * <p>All {@link Key} instances created in an environment with this
+   * mod are implemented by {@link ResourceLocation},
    * so this is effectively a cast.</p>
    *
    * @param key The Key to convert
@@ -131,9 +143,7 @@ public interface MinecraftAudiences {
    * @param entity the entity to convert
    * @return the entity as a sound emitter
    * @since 4.0.0
-   * @deprecated for removal, we can use loom interface injection instead
    */
-  @Deprecated(forRemoval = true, since = "5.3.0")
   static Sound.@NotNull Emitter asEmitter(final @NotNull Entity entity) {
     return (Sound.Emitter) entity;
   }
@@ -169,9 +179,7 @@ public interface MinecraftAudiences {
    * @param player the player to identify
    * @return an identified representation of the player
    * @since 4.0.0
-   * @deprecated for removal, use interface injection instead
    */
-  @Deprecated(forRemoval = true, since = "5.3.0")
   static @NotNull Identified identified(final @NotNull Player player) {
     return (Identified) player;
   }
@@ -185,6 +193,33 @@ public interface MinecraftAudiences {
    */
   static @NotNull Identity identity(final @NotNull GameProfile profile) {
     return (Identity) profile;
+  }
+
+  @SuppressWarnings("unchecked")
+  static @NotNull HoverEvent<HoverEvent.ShowEntity> asHoverEvent(final @NotNull Entity entity) {
+    return ((HoverEventSource<HoverEvent.ShowEntity>) entity).asHoverEvent();
+  }
+
+  @SuppressWarnings("unchecked")
+  static @NotNull HoverEvent<HoverEvent.ShowItem> asHoverEvent(final @NotNull ItemStack stack) {
+    return ((HoverEventSource<HoverEvent.ShowItem>) (Object) stack).asHoverEvent();
+  }
+
+  static Sound.@NotNull Type asSoundType(final @NotNull SoundEvent soundEvent) {
+    return (Sound.Type) soundEvent;
+  }
+
+  static @NotNull Key key(final @NotNull ResourceKey<?> resourceKey) {
+    return ((Keyed) resourceKey).key();
+  }
+
+  @SuppressWarnings("DataFlowIssue")
+  static SignedMessage.@NotNull Signature asAdventure(final @NotNull MessageSignature signature) {
+    return (SignedMessage.Signature) (Object) signature;
+  }
+
+  static @NotNull SignedMessage asAdventure(final @NotNull PlayerChatMessage message) {
+    return (SignedMessage) (Object) message;
   }
 
   /**
@@ -235,9 +270,7 @@ public interface MinecraftAudiences {
    * @param vanilla the native component
    * @return adventure component
    * @since 4.0.0
-   * @deprecated Use {@link ComponentLike#asComponent()} instead, implemented on {@link net.minecraft.network.chat.Component}
    */
-  @Deprecated(forRemoval = true)
   default @NotNull Component toAdventure(final net.minecraft.network.chat.@NotNull Component vanilla) {
     return ((ComponentLike) vanilla).asComponent();
   }

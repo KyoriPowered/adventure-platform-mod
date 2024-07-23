@@ -21,25 +21,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.adventure.platform.fabric.impl.mixin.minecraft.sounds;
+package net.kyori.adventure.platform.modcommon.impl.mixin.minecraft.resources;
 
 import net.kyori.adventure.key.Key;
-import net.kyori.adventure.sound.Sound;
+import net.kyori.adventure.key.Keyed;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundEvent;
 import org.jetbrains.annotations.NotNull;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
-@Mixin(SoundEvent.class)
-public class SoundEventMixin implements Sound.Type {
+@Mixin(ResourceKey.class)
+public abstract class ResourceKeyMixin implements Keyed {
   // @formatter:off
-  @Shadow @Final private ResourceLocation location;
+  @Shadow public abstract ResourceLocation shadow$location();
   // @formatter:on
 
   @Override
   public @NotNull Key key() {
-    return this.location;
+    return (Key) (Object) this.shadow$location();
   }
 }

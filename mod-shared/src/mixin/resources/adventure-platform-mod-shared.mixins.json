@@ -13,7 +13,9 @@
     "minecraft.network.chat.ComponentMixin$SerializerMixin",
     "minecraft.network.chat.ComponentSerializationMixin",
     "minecraft.network.chat.MessageSignatureMixin",
+    "minecraft.network.chat.PlayerChatMessageMixin",
     "minecraft.resources.DelegatingOpsMixin",
+    "minecraft.resources.ResourceKeyMixin",
     "minecraft.resources.ResourceLocationMixin",
     "minecraft.server.MinecraftServerMixin",
     "minecraft.server.level.ServerBossEventMixin",
@@ -21,6 +23,7 @@
     "minecraft.server.network.ServerCommonPacketListenerImplMixin",
     "minecraft.server.network.ServerConfigurationPacketListenerImplMixin",
     "minecraft.server.rcon.RconConsoleSourceMixin",
+    "minecraft.sounds.SoundEventMixin",
     "minecraft.world.entity.EntityMixin",
     "minecraft.world.entity.player.PlayerMixin",
     "minecraft.world.item.ItemStackMixin"

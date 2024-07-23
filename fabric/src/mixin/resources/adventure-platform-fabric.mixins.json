@@ -5,12 +5,9 @@
     "minecraft.commands.CommandsMixin",
     "minecraft.commands.synchronization.ArgumentTypeInfosMixin",
     "minecraft.commands.synchronization.ArgumentUtilsMixin",
-    "minecraft.network.chat.PlayerChatMessageMixin",
     "minecraft.network.protocol.game.ClientboundCommandsPacketMixin",
     "minecraft.network.protocol.game.ClientboundCommandsPacketMixin$ArgumentNodeStubMixin",
-    "minecraft.resources.ResourceKeyMixin",
     "minecraft.server.level.ServerPlayerMixin",
-    "minecraft.server.players.PlayerListMixin",
-    "minecraft.sounds.SoundEventMixin"
+    "minecraft.server.players.PlayerListMixin"
   ]
 }
