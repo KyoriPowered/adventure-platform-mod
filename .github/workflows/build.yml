@@ -73,7 +73,7 @@ jobs:
           # eula=true
           echo "eula=true" > testserver/eula.txt
           # copy artifact into mods folder
-          cp build/libs/adventure-platform-fabric-$VERSION.jar testserver/mods/adventure-platform-fabric.jar
+          cp fabric/build/libs/adventure-platform-fabric-$VERSION.jar testserver/mods/adventure-platform-fabric.jar
           # copy API
           API_URL=$(curl https://api.modrinth.com/v2/project/fabric-api/version | jq ". | map(select(.version_number == \"$API_VERSION\")) | .[0].files[0].url" -r)
           echo "Downloading Fabric API from $API_URL"
