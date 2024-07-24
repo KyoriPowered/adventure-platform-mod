@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.adventure.platform.fabric;
+package net.kyori.adventure.platform.modcommon;
 
 import java.util.UUID;
 import net.kyori.adventure.identity.Identity;
@@ -39,15 +39,15 @@ import org.jetbrains.annotations.Nullable;
 import static java.util.Objects.requireNonNull;
 
 /**
- * Resource pack callbacks for the Fabric environment.
+ * Resource pack callbacks for the modded environment.
  *
- * @since 5.11.0
+ * @since 6.0.0
  */
-public final class FabricResourcePackCallback {
+public final class ModResourcePackCallbacks {
   private static final ComponentLogger LOGGER = ComponentLogger.logger();
   private static final Component DEFAULT_KICK_MESSAGE = Component.translatable("multiplayer.requiredTexturePrompt.disconnect"); // vanilla translation
 
-  private FabricResourcePackCallback() {
+  private ModResourcePackCallbacks() {
   }
 
   /**

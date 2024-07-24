@@ -3,6 +3,7 @@
   "package": "net.kyori.adventure.platform.modcommon.impl.accessor",
   "mixins": [
     "api.key.InvalidKeyExceptionAccess",
+    "minecraft.commands.ParserUtilsAccess",
     "minecraft.network.ServerGamePacketListenerImplAccess",
     "minecraft.world.level.LevelAccess"
   ]

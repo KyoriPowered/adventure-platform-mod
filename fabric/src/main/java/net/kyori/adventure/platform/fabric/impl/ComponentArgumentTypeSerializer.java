@@ -24,7 +24,7 @@
 package net.kyori.adventure.platform.fabric.impl;
 
 import com.google.gson.JsonObject;
-import net.kyori.adventure.platform.fabric.ComponentArgumentType;
+import net.kyori.adventure.platform.modcommon.ComponentArgumentType;
 import net.kyori.adventure.platform.modcommon.MinecraftAudiences;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;

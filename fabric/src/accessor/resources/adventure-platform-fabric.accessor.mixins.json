@@ -2,7 +2,6 @@
   "parent": "adventure-platform-mod-shared.parent.mixins.json",
   "package": "net.kyori.adventure.platform.fabric.impl.accessor",
   "mixins": [
-    "brigadier.builder.RequiredArgumentBuilderAccess",
-    "minecraft.commands.ParserUtilsAccess"
+    "brigadier.builder.RequiredArgumentBuilderAccess"
   ]
 }

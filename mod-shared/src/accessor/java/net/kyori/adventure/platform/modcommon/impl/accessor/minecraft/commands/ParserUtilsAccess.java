@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.adventure.platform.fabric.impl.accessor.minecraft.commands;
+package net.kyori.adventure.platform.modcommon.impl.accessor.minecraft.commands;
 
 import com.google.gson.stream.JsonReader;
 import net.minecraft.commands.ParserUtils;

@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.adventure.platform.fabric;
+package net.kyori.adventure.platform.modcommon;
 
 import com.google.gson.stream.JsonReader;
 import com.mojang.brigadier.StringReader;
@@ -32,7 +32,7 @@ import java.util.Collection;
 import java.util.List;
 import net.kyori.adventure.Adventure;
 import net.kyori.adventure.key.Key;
-import net.kyori.adventure.platform.fabric.impl.accessor.minecraft.commands.ParserUtilsAccess;
+import net.kyori.adventure.platform.modcommon.impl.accessor.minecraft.commands.ParserUtilsAccess;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
@@ -45,8 +45,9 @@ import static java.util.Objects.requireNonNull;
 /**
  * An argument that takes JSON-format text.
  *
- * <p>For this argument type to fully function, adventure-platform-fabric must also be present on the client. Clients
- * without the mod will receive fallback types existing in the base game.</p>
+ * <p>For this argument type to function, adventure-platform must also be present on the client.
+ * In the Fabric environment, clients without adventure-platform will receive fallback argument types with limited
+ * functionality, in other environments clients without the mod are expected to error on join.</p>
  *
  * @since 4.0.0
  */
@@ -149,7 +150,7 @@ public final class ComponentArgumentType implements ArgumentType<Component> {
   /**
    * The result of reading a component.
    *
-   * @param parsed the parsed component
+   * @param parsed        the parsed component
    * @param charsConsumed the number of characters consumed from the input string
    */
   record ReadResult(Component parsed, int charsConsumed) {}
@@ -165,7 +166,6 @@ public final class ComponentArgumentType implements ArgumentType<Component> {
       "\"Hello world!\"",
       "[\"Message\", {\"text\": \"example\", \"color\": \"#aabbcc\"}]"
     ) {
-
       @Override
       ReadResult parse(final String allInput) throws Exception {
         try (final JsonReader json = new JsonReader(new java.io.StringReader(allInput))) {

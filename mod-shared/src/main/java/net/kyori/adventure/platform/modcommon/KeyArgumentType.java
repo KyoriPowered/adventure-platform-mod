@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.adventure.platform.fabric;
+package net.kyori.adventure.platform.modcommon;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
@@ -34,8 +34,9 @@ import org.jetbrains.annotations.NotNull;
 /**
  * An argument that will be decoded as a Key.
  *
- * <p>For this argument type to fully function, adventure-platform-fabric must also be present on the client. Clients
- * without the mod will receive fallback types existing in the base game.</p>
+ * <p>For this argument type to function, adventure-platform must also be present on the client.
+ * In the Fabric environment, clients without adventure-platform will receive fallback argument types with limited
+ * functionality, in other environments clients without the mod are expected to error on join.</p>
  *
  * @since 4.0.0
  */
@@ -69,6 +70,6 @@ public final class KeyArgumentType implements ArgumentType<Key> {
 
   @Override
   public @NotNull Key parse(final @NotNull StringReader reader) throws CommandSyntaxException {
-    return ResourceLocation.read(reader);
+    return MinecraftAudiences.toAdventure(ResourceLocation.read(reader));
   }
 }
