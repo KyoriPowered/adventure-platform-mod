@@ -13,17 +13,13 @@ pluginManagement {
       name = "Fabric"
       url = uri("https://maven.fabricmc.net")
     }
-    maven(url = "https://repo.jpenilla.xyz/snapshots/") {
-      name = "jmpSnapshots"
-      mavenContent { snapshotsOnly() }
-    }
     gradlePluginPortal()
   }
 }
 
 plugins {
   id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
-  id("quiet-fabric-loom") version "1.7.292"
+  id("fabric-loom") version "1.7.2"
   id("net.neoforged.moddev.repositories") version "1.0.11"
 }
 

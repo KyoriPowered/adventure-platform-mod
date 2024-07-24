@@ -71,7 +71,7 @@ subprojects {
 
 allprojects {
   // Loom-specific
-  plugins.withId('quiet-fabric-loom') {
+  plugins.withId('fabric-loom') {
     dependencies {
       println "Minecraft dep: ${libs.minecraft.get()} (in project ${project.name})"
       minecraft(libs.minecraft)
