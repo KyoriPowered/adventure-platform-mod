@@ -31,7 +31,7 @@ import java.util.List;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.modcommon.MinecraftAudiences;
 import net.kyori.adventure.platform.modcommon.impl.AdventureCommon;
-import net.kyori.adventure.platform.modcommon.impl.nbt.FabricDataComponentValue;
+import net.kyori.adventure.platform.modcommon.impl.nbt.ModDataComponentValue;
 import net.kyori.adventure.text.event.DataComponentValue;
 import net.kyori.adventure.text.event.DataComponentValueConverterRegistry;
 import net.kyori.adventure.text.serializer.gson.GsonDataComponentValue;
@@ -43,7 +43,7 @@ import org.jetbrains.annotations.NotNull;
 
 @AutoService(DataComponentValueConverterRegistry.Provider.class)
 public final class DataComponentValueConverterProvider implements DataComponentValueConverterRegistry.Provider {
-  private static final Key ID = (Key) (Object) AdventureCommon.res("platform/fabric");
+  private static final Key ID = (Key) (Object) AdventureCommon.res("platform/mod");
 
   @Override
   public @NotNull Key id() {
@@ -55,37 +55,37 @@ public final class DataComponentValueConverterProvider implements DataComponentV
   public @NotNull Iterable<DataComponentValueConverterRegistry.Conversion<?, ?>> conversions() {
     return List.of(
       DataComponentValueConverterRegistry.Conversion.convert(
-        FabricDataComponentValue.Present.class,
+        ModDataComponentValue.Present.class,
         GsonDataComponentValue.class,
         (k, codec) -> GsonDataComponentValue.gsonDataComponentValue((JsonElement) codec.codec().encodeStart(JsonOps.INSTANCE, codec.value()).getOrThrow())
       ),
       DataComponentValueConverterRegistry.Conversion.convert(
         GsonDataComponentValue.class,
-        FabricDataComponentValue.class,
+        ModDataComponentValue.class,
         (k, gson) -> {
           final DataComponentType<?> type = resolveComponentType(k);
-          return new FabricDataComponentValue.Present(type.codecOrThrow().parse(JsonOps.INSTANCE, gson.element()).getOrThrow(RuntimeException::new), type.codecOrThrow());
+          return new ModDataComponentValue.Present(type.codecOrThrow().parse(JsonOps.INSTANCE, gson.element()).getOrThrow(RuntimeException::new), type.codecOrThrow());
         }
       ),
       DataComponentValueConverterRegistry.Conversion.convert(
         DataComponentValue.TagSerializable.class,
-        FabricDataComponentValue.class,
+        ModDataComponentValue.class,
         (k, tagSerializable) -> {
           final DataComponentType<?> type = resolveComponentType(k);
           final Tag decodedSnbt;
           try {
-            decodedSnbt = tagSerializable.asBinaryTag().get(FabricDataComponentValue.SNBT_CODEC);
+            decodedSnbt = tagSerializable.asBinaryTag().get(ModDataComponentValue.SNBT_CODEC);
           } catch (final CommandSyntaxException ex) {
             throw new IllegalArgumentException("Unable to parse SNBT value", ex);
           }
 
-          return new FabricDataComponentValue.Present(type.codecOrThrow().parse(NbtOps.INSTANCE, decodedSnbt).getOrThrow(RuntimeException::new), type.codecOrThrow());
+          return new ModDataComponentValue.Present(type.codecOrThrow().parse(NbtOps.INSTANCE, decodedSnbt).getOrThrow(RuntimeException::new), type.codecOrThrow());
         }
       ),
       DataComponentValueConverterRegistry.Conversion.convert(
         DataComponentValue.Removed.class,
-        FabricDataComponentValue.class,
-        (k, $) -> FabricDataComponentValue.Removed.INSTANCE
+        ModDataComponentValue.class,
+        (k, $) -> ModDataComponentValue.Removed.INSTANCE
       )
     );
   }

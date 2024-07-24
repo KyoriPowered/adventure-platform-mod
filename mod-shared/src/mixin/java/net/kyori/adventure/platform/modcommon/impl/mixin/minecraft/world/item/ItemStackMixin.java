@@ -29,7 +29,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.UnaryOperator;
 import net.kyori.adventure.key.Key;
-import net.kyori.adventure.platform.modcommon.impl.nbt.FabricDataComponentValue;
+import net.kyori.adventure.platform.modcommon.impl.nbt.ModDataComponentValue;
 import net.kyori.adventure.text.event.DataComponentValue;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.event.HoverEventSource;
@@ -64,9 +64,9 @@ public abstract class ItemStackMixin implements HoverEventSource<HoverEvent.Show
 
         final Key componentKey = (Key) (Object) BuiltInRegistries.DATA_COMPONENT_TYPE.getKey(entry.getKey());
         if (entry.getValue().isEmpty()) {
-          components.put(componentKey, FabricDataComponentValue.Removed.INSTANCE);
+          components.put(componentKey, ModDataComponentValue.Removed.INSTANCE);
         } else {
-          @SuppressWarnings({"rawtypes", "unchecked"}) final FabricDataComponentValue.Present<?> holder = new FabricDataComponentValue.Present(entry.getValue().orElse(null), entry.getKey().codecOrThrow());
+          @SuppressWarnings({"rawtypes", "unchecked"}) final ModDataComponentValue.Present<?> holder = new ModDataComponentValue.Present(entry.getValue().orElse(null), entry.getKey().codecOrThrow());
           components.put(componentKey, holder);
         }
       }

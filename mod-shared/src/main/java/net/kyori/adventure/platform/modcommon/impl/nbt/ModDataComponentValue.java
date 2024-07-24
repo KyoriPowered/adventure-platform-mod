@@ -33,13 +33,13 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.TagParser;
 import org.jetbrains.annotations.NotNull;
 
-public sealed interface FabricDataComponentValue extends DataComponentValue {
+public sealed interface ModDataComponentValue extends DataComponentValue {
   net.kyori.adventure.util.Codec<Tag, String, CommandSyntaxException, RuntimeException> SNBT_CODEC = net.kyori.adventure.util.Codec.codec(
     s -> new TagParser(new StringReader(s)).readValue(),
     Tag::toString
   );
 
-  record Present<T>(@NotNull T value, @NotNull Codec<T> codec) implements FabricDataComponentValue, DataComponentValue.TagSerializable {
+  record Present<T>(@NotNull T value, @NotNull Codec<T> codec) implements ModDataComponentValue, DataComponentValue.TagSerializable {
     @Override
     public @NotNull BinaryTagHolder asBinaryTag() {
       return BinaryTagHolder.encode(
@@ -49,7 +49,7 @@ public sealed interface FabricDataComponentValue extends DataComponentValue {
     }
   }
 
-  enum Removed implements FabricDataComponentValue, DataComponentValue.Removed {
+  enum Removed implements ModDataComponentValue, DataComponentValue.Removed {
     INSTANCE;
   }
 }

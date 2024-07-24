@@ -69,7 +69,7 @@ public final class AdventureCommon {
   static {
     // Daemon thread executor for scheduled tasks
     SCHEDULER = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder()
-      .setNameFormat("adventure-platform-fabric-scheduler-%d")
+      .setNameFormat("adventure-platform-mod-scheduler-%d")
       .setDaemon(true)
       .setUncaughtExceptionHandler((thread, ex) -> LOGGER.error("An uncaught exception occurred in scheduler thread '{}':", thread.getName(), ex))
       .build());

@@ -35,7 +35,7 @@ import net.kyori.adventure.key.Keyed;
 import net.kyori.adventure.platform.modcommon.impl.AdventureCommon;
 import net.kyori.adventure.platform.modcommon.impl.NonWrappingComponentSerializer;
 import net.kyori.adventure.platform.modcommon.impl.WrappedComponent;
-import net.kyori.adventure.platform.modcommon.impl.nbt.FabricDataComponentValue;
+import net.kyori.adventure.platform.modcommon.impl.nbt.ModDataComponentValue;
 import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
@@ -195,29 +195,71 @@ public interface MinecraftAudiences {
     return (Identity) profile;
   }
 
+  /**
+   * Returns a {@link HoverEvent} that displays the provided {@link Entity}.
+   *
+   * @param entity the entity
+   * @return hover event
+   * @since 6.0.0
+   */
   @SuppressWarnings("unchecked")
   static @NotNull HoverEvent<HoverEvent.ShowEntity> asHoverEvent(final @NotNull Entity entity) {
     return ((HoverEventSource<HoverEvent.ShowEntity>) entity).asHoverEvent();
   }
 
+  /**
+   * Returns a {@link HoverEvent} that displays the provided {@link ItemStack}.
+   *
+   * @param stack the item stack
+   * @return hover event
+   * @since 6.0.0
+   */
   @SuppressWarnings("unchecked")
   static @NotNull HoverEvent<HoverEvent.ShowItem> asHoverEvent(final @NotNull ItemStack stack) {
     return ((HoverEventSource<HoverEvent.ShowItem>) (Object) stack).asHoverEvent();
   }
 
+  /**
+   * Returns an adventure {@link Sound.Type} for the provided {@link SoundEvent}.
+   *
+   * @param soundEvent sound event
+   * @return sound type
+   * @since 6.0.0
+   */
   static Sound.@NotNull Type asSoundType(final @NotNull SoundEvent soundEvent) {
     return (Sound.Type) soundEvent;
   }
 
+  /**
+   * Returns the Kyori {@link Key} representation of the {@link ResourceKey}'s {@link ResourceKey#location() location}.
+   *
+   * @param resourceKey resource key
+   * @return key
+   * @since 6.0.0
+   */
   static @NotNull Key key(final @NotNull ResourceKey<?> resourceKey) {
     return ((Keyed) resourceKey).key();
   }
 
+  /**
+   * Returns an adventure view of the provided {@link MessageSignature}.
+   *
+   * @param signature message signature
+   * @return adventure message signature
+   * @since 6.0.0
+   */
   @SuppressWarnings("DataFlowIssue")
   static SignedMessage.@NotNull Signature asAdventure(final @NotNull MessageSignature signature) {
     return (SignedMessage.Signature) (Object) signature;
   }
 
+  /**
+   * Returns an adventure {@link SignedMessage} view of the provided {@link PlayerChatMessage}.
+   *
+   * @param message player chat message
+   * @return signed message
+   * @since 6.0.0
+   */
   static @NotNull SignedMessage asAdventure(final @NotNull PlayerChatMessage message) {
     return (SignedMessage) (Object) message;
   }
@@ -234,7 +276,7 @@ public interface MinecraftAudiences {
    * @since 5.13.0
    */
   static @NotNull <T> DataComponentValue dataComponentValue(final @NotNull DataComponentType<T> type, final @NotNull T value) {
-    return new FabricDataComponentValue.Present<>(value, type.codecOrThrow());
+    return new ModDataComponentValue.Present<>(value, type.codecOrThrow());
   }
 
   /**
