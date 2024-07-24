@@ -85,7 +85,7 @@ public interface FabricAudiences {
       partition = null;
       renderer = null;
     }
-    return AdventureCommon.SIDE_PROXY.createWrappedComponent(modified, partition, renderer);
+    return AdventureCommon.SIDE_PROXY.createWrappedComponent(modified, partition, renderer, null);
   }
 
   /**

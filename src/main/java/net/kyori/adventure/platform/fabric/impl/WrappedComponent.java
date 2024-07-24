@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-fabric, licensed under the MIT License.
  *
- * Copyright (c) 2020-2023 KyoriPowered
+ * Copyright (c) 2020-2024 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,6 +32,7 @@ import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.pointer.Pointers;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
+import net.kyori.adventure.text.serializer.ComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentContents;
@@ -49,13 +50,20 @@ public class WrappedComponent implements Component {
   private final net.kyori.adventure.text.Component wrapped;
   private final @Nullable Function<Pointered, ?> partition;
   private final @Nullable ComponentRenderer<Pointered> renderer;
+  private final @Nullable NonWrappingComponentSerializer nonWrappingSerializer;
   private @Nullable Object lastData;
   private @Nullable WrappedComponent lastRendered;
 
-  public WrappedComponent(final net.kyori.adventure.text.Component wrapped, final @Nullable Function<Pointered, ?> partition, final @Nullable ComponentRenderer<Pointered> renderer) {
+  public WrappedComponent(
+    final net.kyori.adventure.text.Component wrapped,
+    final @Nullable Function<Pointered, ?> partition,
+    final @Nullable ComponentRenderer<Pointered> renderer,
+    final @Nullable NonWrappingComponentSerializer nonWrappingComponentSerializer
+  ) {
     this.wrapped = wrapped;
     this.partition = partition;
     this.renderer = renderer;
+    this.nonWrappingSerializer = nonWrappingComponentSerializer;
   }
 
   /**
@@ -86,13 +94,17 @@ public class WrappedComponent implements Component {
       return this.lastRendered;
     }
     this.lastData = data;
-    return this.lastRendered = this.renderer == null ? this : AdventureCommon.SIDE_PROXY.createWrappedComponent(this.renderer.render(this.wrapped, ptr), null, null);
+    return this.lastRendered = this.renderer == null ? this : AdventureCommon.SIDE_PROXY.createWrappedComponent(this.renderer.render(this.wrapped, ptr), null, null, this.nonWrappingSerializer);
   }
 
   public Component deepConverted() {
     Component converted = this.converted;
     if (converted == null || this.deepConvertedLocalized != null) {
-      converted = this.converted = FabricAudiences.nonWrappingSerializer().serialize(this.wrapped);
+      ComponentSerializer<net.kyori.adventure.text.Component, net.kyori.adventure.text.Component, Component> serializer = this.nonWrappingSerializer;
+      if (serializer == null) {
+        serializer = FabricAudiences.nonWrappingSerializer();
+      }
+      converted = this.converted = serializer.serialize(this.wrapped);
       this.deepConvertedLocalized = null;
     }
     return converted;

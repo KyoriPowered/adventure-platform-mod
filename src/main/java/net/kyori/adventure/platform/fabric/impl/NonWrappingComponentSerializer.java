@@ -47,7 +47,7 @@ public final class NonWrappingComponentSerializer implements ComponentSerializer
     this(Suppliers.ofInstance(RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY)));
   }
 
-  private NonWrappingComponentSerializer(final @NotNull Supplier<HolderLookup.@NotNull Provider> provider) {
+  public NonWrappingComponentSerializer(final @NotNull Supplier<HolderLookup.@NotNull Provider> provider) {
     this.holderProvider = provider;
   }
 

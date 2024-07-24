@@ -134,6 +134,6 @@ class ComponentConversionTest extends BootstrappedTest {
 
   private WrappedComponent toNativeWrapped(final Component component) {
     final Function<Pointered, Locale> partition = AdventureCommon.localePartition();
-    return new WrappedComponent(component, partition, GlobalTranslator.renderer().mapContext(partition));
+    return new WrappedComponent(component, partition, GlobalTranslator.renderer().mapContext(partition), null);
   }
 }
