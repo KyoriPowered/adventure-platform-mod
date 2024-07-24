@@ -18,6 +18,10 @@ neoForge {
   // See https://projects.neoforged.net/neoforged/neoforge for the latest updates
   version = "21.0.114-beta"
 
+  parchment {
+    parchmentArtifact = "org.parchmentmc.data:parchment-${libs.versions.parchment.get()}@zip"
+  }
+
   // Validate AT files and raise errors when they have invalid targets
   // This option is false by default, but turning it on is recommended
   validateAccessTransformers = true

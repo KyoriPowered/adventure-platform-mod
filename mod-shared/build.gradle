@@ -8,10 +8,7 @@ neoForge {
   neoFormVersion = "1.21-20240613.152323"
 
   parchment {
-    // Get versions from https://parchmentmc.org/docs/getting-started
-    // Omit the "v"-prefix in mappingsVersion
-    minecraftVersion = "1.21"
-    mappingsVersion = "2024.07.07"
+    parchmentArtifact = "org.parchmentmc.data:parchment-${libs.versions.parchment.get()}@zip"
   }
 }
 
