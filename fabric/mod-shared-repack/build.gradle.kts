@@ -8,6 +8,12 @@ dependencies {
   compileOnly(libs.fabric.loader)
 }
 
+loom {
+  mixin {
+    useLegacyMixinAp = false
+  }
+}
+
 tasks {
   val common = project(":adventure-platform-mod-shared")
   jar {
