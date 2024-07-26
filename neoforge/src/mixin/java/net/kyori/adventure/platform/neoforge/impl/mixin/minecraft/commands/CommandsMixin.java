@@ -34,12 +34,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(Commands.class)
 abstract class CommandsMixin {
   @Inject(method = "sendCommands", at = @At("HEAD"))
-  void injectSendStart(ServerPlayer player, CallbackInfo ci) {
+  void injectSendStart(final ServerPlayer player, final CallbackInfo ci) {
     HiddenRequirementHelper.SENDING.set(true);
   }
 
   @Inject(method = "sendCommands", at = @At("TAIL"))
-  void injectSendEnd(ServerPlayer player, CallbackInfo ci) {
+  void injectSendEnd(final ServerPlayer player, final CallbackInfo ci) {
     HiddenRequirementHelper.SENDING.set(false);
   }
 }
