@@ -71,8 +71,7 @@ public abstract class PlayerMixin extends LivingEntity implements IdentifiedAtRu
         final Pointers.Builder builder = Pointers.builder()
           .withDynamic(Identity.NAME, () -> this.shadow$getGameProfile().getName())
           .withDynamic(Identity.UUID, this::getUUID)
-          // Hope this isn't a registry-aware component :)
-          .withDynamic(Identity.DISPLAY_NAME, () -> NonWrappingComponentSerializer.INSTANCE.deserialize(this.getDisplayName()));
+          .withDynamic(Identity.DISPLAY_NAME, () -> new NonWrappingComponentSerializer(this.level()::registryAccess).deserialize(this.getDisplayName()));
 
         // add any extra data
         if (this instanceof Pointered p) {
