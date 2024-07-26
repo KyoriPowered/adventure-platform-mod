@@ -1,6 +1,6 @@
 plugins {
   id 'net.neoforged.moddev'
-  id 'platform-conventions'
+  id 'standard-conventions'
 }
 
 neoForge {

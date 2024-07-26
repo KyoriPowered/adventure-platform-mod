@@ -8,19 +8,13 @@ import org.jetbrains.gradle.ext.settings
 import org.jetbrains.gradle.ext.taskTriggers
 
 plugins {
-  alias(libs.plugins.eclipseApt)
   alias(libs.plugins.loom)
   alias(libs.plugins.configurateTransformations)
   alias(libs.plugins.indra.publishing)
-  alias(libs.plugins.indra.licenseHeader)
   alias(libs.plugins.indra.crossdoc)
   alias(libs.plugins.ideaExt)
   id("com.diffplug.spotless")
-  id("platform-conventions")
-}
-
-configurations.include {
-  extendsFrom(configurations.jarInJar.get())
+  id("standard-conventions")
 }
 
 dependencies {
@@ -46,6 +40,9 @@ dependencies {
 }
 
 configurations {
+  include {
+    extendsFrom(configurations.jarInJar.get())
+  }
   runtimeClasspath {
     extendsFrom(vineflowerDecompilerClasspath.get())
     exclude("net.kyori", "adventure-platform-mod-shared-fabric-repack")

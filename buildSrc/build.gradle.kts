@@ -12,4 +12,5 @@ dependencies {
   implementation(files(libs.javaClass.superclass.protectionDomain.codeSource.location))
   implementation(libs.build.indra.crossdoc)
   implementation(libs.build.indra)
+  implementation(libs.build.indra.spotless)
 }

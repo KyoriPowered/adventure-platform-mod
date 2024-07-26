@@ -1,15 +1,13 @@
 import net.neoforged.moddevgradle.internal.RunGameTask
 
 plugins {
-  alias(libs.plugins.eclipseApt)
   alias(libs.plugins.configurateTransformations)
   alias(libs.plugins.indra.publishing)
-  alias(libs.plugins.indra.licenseHeader)
   alias(libs.plugins.indra.crossdoc)
   alias(libs.plugins.ideaExt)
   id("com.diffplug.spotless")
   id("net.neoforged.moddev")
-  id("platform-conventions")
+  id("standard-conventions")
 }
 
 neoForge {

@@ -2,9 +2,7 @@ import net.fabricmc.loom.task.RunGameTask
 
 plugins {
   id 'java'
-  alias(libs.plugins.indra) apply false // needed for Gradle dependency resolution
-  alias(libs.plugins.indra.licenseHeader) apply false // needed for Gradle dependency resolution
-  alias(libs.plugins.indra.publishing) apply false // needed for Gradle dependency resolution
+  alias(libs.plugins.eclipseApt)
   alias(libs.plugins.indra.sonatype)
   alias(libs.plugins.nexusPublish)
   alias(libs.plugins.ideaExt)
@@ -23,6 +21,7 @@ allprojects {
   apply plugin: "net.kyori.indra"
   apply plugin: "net.kyori.indra.checkstyle"
   apply plugin: "net.kyori.indra.licenser.spotless"
+  apply plugin: "com.diffplug.eclipse.apt"
 
   indraSpotlessLicenser {
     licenseHeaderFile(rootProject.file("LICENSE_HEADER"))
