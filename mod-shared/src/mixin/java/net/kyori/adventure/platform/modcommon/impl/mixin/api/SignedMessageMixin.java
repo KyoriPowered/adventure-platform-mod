@@ -38,7 +38,7 @@ public interface SignedMessageMixin {
    * @author zml
    * @param bytes input
    * @return the signature
-   * @since 5.4.0
+   * @since 6.0.0
    * @reason To replace the Adventure signature implementation with the Minecraft one.
    */
   @Contract(value = "_ -> new", pure = true)

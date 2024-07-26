@@ -33,7 +33,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Access the client's player as an {@link net.kyori.adventure.audience.Audience}.
  *
- * @since 4.0.0
+ * @since 6.0.0
  */
 public interface MinecraftClientAudiences extends MinecraftAudiences {
 
@@ -41,7 +41,7 @@ public interface MinecraftClientAudiences extends MinecraftAudiences {
    * Get the common instance, that will render using the global translation registry.
    *
    * @return the audience provider
-   * @since 4.0.0
+   * @since 6.0.0
    */
   static @NotNull MinecraftClientAudiences of() {
     return MinecraftClientAudiencesImpl.INSTANCE;
@@ -51,7 +51,7 @@ public interface MinecraftClientAudiences extends MinecraftAudiences {
    * Create a builder for an audience provider that might use custom locales.
    *
    * @return the builder
-   * @since 4.0.0
+   * @since 6.0.0
    */
   static MinecraftClientAudiences.@NotNull Builder builder() {
     return new MinecraftClientAudiencesImpl.Builder();
@@ -63,14 +63,14 @@ public interface MinecraftClientAudiences extends MinecraftAudiences {
    * <p>When not in-game, most operations will no-op</p>
    *
    * @return player audience
-   * @since 4.0.0
+   * @since 6.0.0
    */
   @NotNull Audience audience();
 
   /**
    * Build a {@link MinecraftClientAudiences} instance.
    *
-   * @since 4.0.0
+   * @since 6.0.0
    */
   interface Builder {
     /**
@@ -79,7 +79,7 @@ public interface MinecraftClientAudiences extends MinecraftAudiences {
      * @param componentRenderer a component renderer
      * @return this builder
      * @see #componentRenderer(Function, ComponentRenderer)
-     * @since 4.0.0
+     * @since 6.0.0
      */
     @NotNull Builder componentRenderer(final @NotNull ComponentRenderer<Pointered> componentRenderer);
 
@@ -103,7 +103,7 @@ public interface MinecraftClientAudiences extends MinecraftAudiences {
      * @param partitionFunction the partition function to apply
      * @return this builder
      * @see #componentRenderer(Function, ComponentRenderer)
-     * @since 4.0.0
+     * @since 6.0.0
      */
     @NotNull Builder partition(final @NotNull Function<Pointered, ?> partitionFunction);
 
@@ -116,7 +116,7 @@ public interface MinecraftClientAudiences extends MinecraftAudiences {
      * @param componentRenderer a component renderer
      * @param <T> the type used in the partition function
      * @return this builder
-     * @since 4.0.0
+     * @since 6.0.0
      */
     default <T> @NotNull Builder componentRenderer(final @NotNull Function<Pointered, T> partition, final @NotNull ComponentRenderer<T> componentRenderer) {
       return this.partition(partition)
@@ -127,7 +127,7 @@ public interface MinecraftClientAudiences extends MinecraftAudiences {
      * Builds the provider.
      *
      * @return the built provider
-     * @since 4.0.0
+     * @since 6.0.0
      */
     @NotNull MinecraftClientAudiences build();
   }
