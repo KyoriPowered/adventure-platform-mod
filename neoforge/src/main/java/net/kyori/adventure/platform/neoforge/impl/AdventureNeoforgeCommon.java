@@ -24,8 +24,10 @@
 package net.kyori.adventure.platform.neoforge.impl;
 
 import com.google.auto.service.AutoService;
+import java.util.Objects;
 import net.kyori.adventure.platform.modcommon.impl.AdventureCommon;
 import net.kyori.adventure.platform.modcommon.impl.ClickCallbackRegistry;
+import net.kyori.adventure.platform.modcommon.impl.LocaleHolderBridge;
 import net.kyori.adventure.platform.modcommon.impl.PlatformHooks;
 import net.kyori.adventure.platform.modcommon.impl.SidedProxy;
 import net.kyori.adventure.platform.modcommon.impl.client.ClientProxy;
@@ -42,6 +44,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.event.entity.player.ClientInformationUpdatedEvent;
 import org.jetbrains.annotations.Nullable;
 
 @Mod("adventure_platform_neoforge")
@@ -71,6 +74,11 @@ public class AdventureNeoforgeCommon {
   }
 
   public AdventureNeoforgeCommon() {
+    NeoForge.EVENT_BUS.addListener((ClientInformationUpdatedEvent e) -> {
+      if (!Objects.equals(e.getOldInformation().language(), e.getUpdatedInformation().language())) {
+        AdventureCommon.HOOKS.onLocaleChange(e.getEntity(), LocaleHolderBridge.toLocale(e.getUpdatedInformation().language()));
+      }
+    });
     NeoForge.EVENT_BUS.addListener((RegisterCommandsEvent e) -> {
       ClickCallbackRegistry.INSTANCE.registerToDispatcher(e.getDispatcher());
     });
