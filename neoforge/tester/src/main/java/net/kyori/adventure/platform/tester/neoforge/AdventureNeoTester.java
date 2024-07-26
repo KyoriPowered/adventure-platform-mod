@@ -50,7 +50,6 @@ import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.modcommon.MinecraftServerAudiences;
 import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -134,7 +133,7 @@ public class AdventureNeoTester {
       e.getDispatcher().register(literal("adventure")
         .then(literal("about").executes(ctx -> {
           // Interface injection, this lets us access the default platform instance
-          ((Audience) ctx.getSource()).sendMessage(translatable("adventure.test.welcome", COLOR_RESPONSE, (ComponentLike) ctx.getSource().getDisplayName()));
+          ((Audience) ctx.getSource()).sendMessage(translatable("adventure.test.welcome", COLOR_RESPONSE, this.platform.toAdventure(ctx.getSource().getDisplayName())));
           // Or the old-fashioned way, for
           this.adventure().audience(ctx.getSource()).sendMessage(translatable("adventure.test.description", color(0xc022cc)));
           return 1;
@@ -174,7 +173,7 @@ public class AdventureNeoTester {
         .then(literal("baron").executes(ctx -> {
           final ServerPlayer player = ctx.getSource().getPlayerOrException();
           final BossBar greeting = this.greetingBars.computeIfAbsent(player.getUUID(), id -> {
-            return BossBar.bossBar(translatable("adventure.test.greeting", NamedTextColor.GOLD, (ComponentLike) player.getDisplayName()),
+            return BossBar.bossBar(translatable("adventure.test.greeting", NamedTextColor.GOLD, this.platform.toAdventure(player.getDisplayName())),
               1, BossBar.Color.YELLOW, BossBar.Overlay.PROGRESS);
           });
 

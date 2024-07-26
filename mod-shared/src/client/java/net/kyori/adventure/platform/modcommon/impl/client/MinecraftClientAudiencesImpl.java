@@ -28,6 +28,7 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.platform.modcommon.MinecraftClientAudiences;
 import net.kyori.adventure.platform.modcommon.impl.AdventureCommon;
 import net.kyori.adventure.platform.modcommon.impl.MinecraftAudiencesInternal;
+import net.kyori.adventure.platform.modcommon.impl.NonWrappingComponentSerializer;
 import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.text.flattener.ComponentFlattener;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
@@ -72,6 +73,11 @@ public class MinecraftClientAudiencesImpl implements MinecraftClientAudiences, M
   @Override
   public @NotNull Component toNative(final net.kyori.adventure.text.@NotNull Component adventure) {
     return new ClientWrappedComponent(requireNonNull(adventure, "adventure"), this.partition, this.renderer);
+  }
+
+  @Override
+  public net.kyori.adventure.text.@NotNull Component toAdventure(final @NotNull Component vanilla) {
+    return NonWrappingComponentSerializer.INSTANCE.deserialize(vanilla);
   }
 
   public Function<Pointered, ?> partition() {

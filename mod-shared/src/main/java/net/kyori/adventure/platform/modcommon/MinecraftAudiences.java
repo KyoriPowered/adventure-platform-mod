@@ -40,7 +40,6 @@ import net.kyori.adventure.platform.modcommon.impl.nbt.ModDataComponentValue;
 import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.event.DataComponentValue;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.event.HoverEventSource;
@@ -314,7 +313,5 @@ public interface MinecraftAudiences {
    * @return adventure component
    * @since 6.0.0
    */
-  default @NotNull Component toAdventure(final net.minecraft.network.chat.@NotNull Component vanilla) {
-    return ((ComponentLike) vanilla).asComponent();
-  }
+  @NotNull Component toAdventure(final net.minecraft.network.chat.@NotNull Component vanilla);
 }

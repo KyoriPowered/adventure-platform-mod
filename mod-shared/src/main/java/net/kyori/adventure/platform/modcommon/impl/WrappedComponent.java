@@ -41,7 +41,6 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.contents.PlainTextContents;
 import net.minecraft.util.FormattedCharSequence;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class WrappedComponent implements Component {
@@ -171,10 +170,5 @@ public class WrappedComponent implements Component {
   @Override
   public <T> Optional<T> visit(final ContentConsumer<T> visitor) {
     return this.deepConverted().visit(visitor);
-  }
-
-  // @Override TODO
-  public net.kyori.adventure.text.@NotNull Component asComponent() {
-    return this.wrapped;
   }
 }

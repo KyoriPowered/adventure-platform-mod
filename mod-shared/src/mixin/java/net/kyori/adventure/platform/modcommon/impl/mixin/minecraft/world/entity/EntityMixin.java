@@ -26,8 +26,8 @@ package net.kyori.adventure.platform.modcommon.impl.mixin.minecraft.world.entity
 import java.util.function.UnaryOperator;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.modcommon.EntityHoverEventSource;
+import net.kyori.adventure.platform.modcommon.impl.NonWrappingComponentSerializer;
 import net.kyori.adventure.sound.Sound;
-import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.event.HoverEvent.ShowEntity;
 import net.minecraft.core.registries.Registries;
@@ -54,7 +54,9 @@ public abstract class EntityMixin implements Sound.Emitter, EntityHoverEventSour
       .registryOrThrow(Registries.ENTITY_TYPE)
       .getKey(this.shadow$getType());
 
-    final ShowEntity data = HoverEvent.ShowEntity.showEntity(entityType, this.getUUID(), ((ComponentLike) this.getName()).asComponent());
+    // Hope this isn't a registry-aware component :)
+    // TODO: Should we move from a Mixin to a context-injecting conversion method on *Audiences?
+    final ShowEntity data = HoverEvent.ShowEntity.showEntity(entityType, this.getUUID(), NonWrappingComponentSerializer.INSTANCE.deserialize(this.getName()));
     return HoverEvent.showEntity(op.apply(data));
   }
 }

@@ -27,10 +27,10 @@ import com.mojang.authlib.GameProfile;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.platform.modcommon.IdentifiedAtRuntime;
 import net.kyori.adventure.platform.modcommon.impl.AdventureCommon;
+import net.kyori.adventure.platform.modcommon.impl.NonWrappingComponentSerializer;
 import net.kyori.adventure.platform.modcommon.impl.PointerProviderBridge;
 import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.pointer.Pointers;
-import net.kyori.adventure.text.ComponentLike;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -71,7 +71,8 @@ public abstract class PlayerMixin extends LivingEntity implements IdentifiedAtRu
         final Pointers.Builder builder = Pointers.builder()
           .withDynamic(Identity.NAME, () -> this.shadow$getGameProfile().getName())
           .withDynamic(Identity.UUID, this::getUUID)
-          .withDynamic(Identity.DISPLAY_NAME, () -> ((ComponentLike) this.getDisplayName()).asComponent());
+          // Hope this isn't a registry-aware component :)
+          .withDynamic(Identity.DISPLAY_NAME, () -> NonWrappingComponentSerializer.INSTANCE.deserialize(this.getDisplayName()));
 
         // add any extra data
         if (this instanceof Pointered p) {

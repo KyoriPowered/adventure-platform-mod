@@ -27,8 +27,8 @@ import java.time.Instant;
 import java.util.stream.Stream;
 import net.kyori.adventure.chat.SignedMessage;
 import net.kyori.adventure.identity.Identity;
+import net.kyori.adventure.platform.modcommon.impl.NonWrappingComponentSerializer;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.ComponentLike;
 import net.kyori.examination.ExaminableProperty;
 import net.minecraft.network.chat.FilterMask;
 import net.minecraft.network.chat.MessageSignature;
@@ -84,7 +84,9 @@ public abstract class PlayerChatMessageMixin implements SignedMessage {
 
   @Override
   public @Nullable Component unsignedContent() {
-    return ComponentLike.unbox((ComponentLike) this.shadow$unsignedContent());
+    // Hope this isn't a registry-aware component :)
+    // TODO: Should we move from a Mixin to a context-injecting conversion method on *Audiences?
+    return NonWrappingComponentSerializer.INSTANCE.deserializeOrNull(this.shadow$unsignedContent());
   }
 
   @Override

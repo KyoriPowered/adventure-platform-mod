@@ -24,13 +24,10 @@
 package net.kyori.adventure.platform.modcommon.impl.mixin.minecraft.network.chat;
 
 import com.google.gson.JsonElement;
-import net.kyori.adventure.platform.modcommon.impl.NonWrappingComponentSerializer;
 import net.kyori.adventure.platform.modcommon.impl.WrappedComponent;
-import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -38,11 +35,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Component.class)
-public interface ComponentMixin extends ComponentLike {
-  @Override
-  default net.kyori.adventure.text.@NotNull Component asComponent() {
-    return NonWrappingComponentSerializer.INSTANCE.deserialize((Component) this);
-  }
+public interface ComponentMixin {
 
   // Hook into the codec?
 
