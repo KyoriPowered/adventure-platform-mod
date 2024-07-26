@@ -1,6 +1,0 @@
-scream:
-  sounds:
-    - "adventure:scream"
-  x-source: "https://freesound.org/people/jacksonacademyashmore/sounds/402861/"
-  subtitle: "eeee"
-  pitch: 1.5

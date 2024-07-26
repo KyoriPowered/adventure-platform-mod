@@ -72,12 +72,14 @@ vineflower = { module = "org.vineflower:vineflower", version.ref = "vineflower" 
 build-indra = { module = "net.kyori:indra-common", version.ref = "indra" }
 build-indra-crossdoc = { module = "net.kyori:indra-crossdoc", version.ref = "indra" }
 build-indra-spotless = { module = "net.kyori:indra-licenser-spotless", version.ref = "indra" }
+build-configurate-transformations = { module = "ca.stellardrift:gradle-plugin-configurate", version = "6.1.0" }
+build-idea-ext = { module = "gradle.plugin.org.jetbrains.gradle.plugin.idea-ext:gradle-idea-ext", version = "1.1.8" }
 
 # For Renovate, do not use directly
 zCheckstyle = { module = "com.puppycrawl.tools:checkstyle", version.ref = "checkstyle" }
 
 [plugins]
-configurateTransformations = "ca.stellardrift.configurate-transformations:6.1.0"
+configurateTransformations = { id = "ca.stellardrift.configurate-transformations" }
 eclipseApt = "com.diffplug.eclipse.apt:4.0.1"
 loom = "fabric-loom:1.7.2"
 # ModDevGradle settings plugin is putting another version on the classpath, so we can't specify a version :(
