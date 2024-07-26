@@ -156,20 +156,20 @@ public class AdventureTester implements ModInitializer {
       dispatcher.register(literal("adventure")
         .then(literal("about").executes(ctx -> {
           // Interface injection, this lets us access the default platform instance
-          ctx.getSource().sendMessage(translatable("adventure.test.welcome", COLOR_RESPONSE, ctx.getSource().getDisplayName()));
+          ctx.getSource().sendMessage(translatable("adventure.test.welcome", COLOR_RESPONSE, this.platform.toAdventure(ctx.getSource().getDisplayName())));
           // Or the old-fashioned way, for
           this.adventure().audience(ctx.getSource()).sendMessage(translatable("adventure.test.description", color(0xc022cc)));
           return 1;
         }))
         .then(literal("echo").then(argument(ARG_TEXT, miniMessage()).executes(ctx -> {
           final Component result = component(ctx, ARG_TEXT);
-          ctx.getSource().sendMessage(result, ChatType.SAY_COMMAND.bind(ctx.getSource().getDisplayName()));
+          ctx.getSource().sendMessage(result, ChatType.SAY_COMMAND.bind(this.platform.toAdventure(ctx.getSource().getDisplayName())));
           ctx.getSource().sendMessage(text("And a second time!", NamedTextColor.DARK_PURPLE));
           return 1;
         })))
         .then(literal("eval").then(argument(ARG_TEXT, miniMessage()).executes(ctx -> {
           final Component result = component(ctx, ARG_TEXT);
-          ctx.getSource().sendMessage(ComponentUtils.updateForEntity(ctx.getSource(), this.platform.toNative(result), ctx.getSource().getEntity(), 0));
+          ctx.getSource().sendMessage(this.platform.toAdventure(ComponentUtils.updateForEntity(ctx.getSource(), this.platform.toNative(result), ctx.getSource().getEntity(), 0)));
           return Command.SINGLE_SUCCESS;
         })))
         .then(literal("countdown").then(argument(ARG_SECONDS, integer()).executes(ctx -> { // multiple boss bars!
@@ -189,7 +189,7 @@ public class AdventureTester implements ModInitializer {
           final Component message = component(ctx, ARG_TEXT);
           final Audience destination = Audience.audience(targets);
 
-          destination.sendMessage(message, ADVENTURE_BROADCAST.bind(ctx.getSource().getDisplayName()));
+          destination.sendMessage(message, ADVENTURE_BROADCAST.bind(this.platform.toAdventure(ctx.getSource().getDisplayName())));
           source.sendMessage(text(b -> {
             b.content("You have sent \"");
             b.append(message).append(text("\" to ")).append(this.listPlayers(targets));
@@ -227,7 +227,7 @@ public class AdventureTester implements ModInitializer {
           ctx.getSource().sendSuccess(Component.text()
             .color(COLOR_RESPONSE)
             .content("Successfully set entity ")
-            .append(oldDisplayName)
+            .append(this.platform.toAdventure(oldDisplayName))
             .append(text("'s display name to "))
             .append(title)
             .build(), false);
@@ -242,7 +242,7 @@ public class AdventureTester implements ModInitializer {
         .then(literal("baron").executes(ctx -> {
           final ServerPlayer player = ctx.getSource().getPlayerOrException();
           final BossBar greeting = this.greetingBars.computeIfAbsent(player.getUUID(), id -> {
-            return BossBar.bossBar(translatable("adventure.test.greeting", NamedTextColor.GOLD, player.getDisplayName()),
+            return BossBar.bossBar(translatable("adventure.test.greeting", NamedTextColor.GOLD, this.platform.toAdventure(player.getDisplayName())),
               1, BossBar.Color.YELLOW, BossBar.Overlay.PROGRESS);
           });
 
