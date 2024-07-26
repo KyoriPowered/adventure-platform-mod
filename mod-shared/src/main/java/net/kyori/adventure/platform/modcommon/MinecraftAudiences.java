@@ -92,13 +92,17 @@ public interface MinecraftAudiences {
       modified = requireNonNull(modifier).apply(((WrappedComponent) input).wrapped());
       partition = ((WrappedComponent) input).partition();
       renderer = ((WrappedComponent) input).renderer();
+      return AdventureCommon.HOOKS.createWrappedComponent(
+        modified,
+        partition,
+        renderer,
+        new NonWrappingComponentSerializer(((MinecraftAudiencesInternal) this)::registryAccess)
+      );
     } else {
       final Component original = this.toAdventure(input);
       modified = modifier.apply(original);
-      partition = null;
-      renderer = null;
+      return this.toNative(modified);
     }
-    return AdventureCommon.HOOKS.createWrappedComponent(modified, partition, renderer, new NonWrappingComponentSerializer(((MinecraftAudiencesInternal) this)::registryAccess));
   }
 
   /**
