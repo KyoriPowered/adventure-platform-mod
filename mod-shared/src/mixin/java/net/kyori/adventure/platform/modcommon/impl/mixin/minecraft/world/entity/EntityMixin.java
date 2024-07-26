@@ -54,9 +54,11 @@ public abstract class EntityMixin implements Sound.Emitter, EntityHoverEventSour
       .registryOrThrow(Registries.ENTITY_TYPE)
       .getKey(this.shadow$getType());
 
-    // Hope this isn't a registry-aware component :)
-    // TODO: Should we move from a Mixin to a context-injecting conversion method on *Audiences?
-    final ShowEntity data = HoverEvent.ShowEntity.showEntity(entityType, this.getUUID(), NonWrappingComponentSerializer.INSTANCE.deserialize(this.getName()));
+    final ShowEntity data = HoverEvent.ShowEntity.showEntity(
+      entityType,
+      this.getUUID(),
+      new NonWrappingComponentSerializer(this.level::registryAccess).deserialize(this.getName())
+    );
     return HoverEvent.showEntity(op.apply(data));
   }
 }
