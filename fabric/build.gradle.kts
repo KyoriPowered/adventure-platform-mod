@@ -148,6 +148,7 @@ loom {
     }
     register("adventure-platform-fabric-testmod") {
       sourceSet(testmod)
+      sourceSet("main", project(":test-resources"))
     }
   }
 
@@ -165,6 +166,7 @@ loom {
 
 dependencies {
   "testmodRuntimeOnly"(permissionsApiCompat.output)
+  "testmodRuntimeOnly"(project.project(":test-resources").sourceSets.main.get().output)
   "modPermissionsApiCompat"(libs.fabric.permissionsApi) {
     isTransitive = false
   }
