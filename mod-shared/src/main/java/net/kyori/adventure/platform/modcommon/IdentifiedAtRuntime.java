@@ -33,7 +33,7 @@ import org.jetbrains.annotations.NotNull;
  *
  * <p>The default implementation is required due to interface injection.</p>
  *
- * @since 5.11.0
+ * @since 6.0.0
  */
 public interface IdentifiedAtRuntime extends Identified {
   @Override

@@ -54,7 +54,7 @@ public final class ModResourcePackCallbacks {
    * Kick a resource pack receiver if they do not accept a resource pack.
    *
    * @return the kicking callback
-   * @since 5.11.0
+   * @since 6.0.0
    */
   public static @NotNull ResourcePackCallback kickIfNotApplied() {
     return kickIfNotApplied(DEFAULT_KICK_MESSAGE);
@@ -65,7 +65,7 @@ public final class ModResourcePackCallbacks {
    *
    * @param kickMessage the message to kick the player with
    * @return the kicking callback
-   * @since 5.11.0
+   * @since 6.0.0
    */
   public static @NotNull ResourcePackCallback kickIfNotApplied(final @NotNull Component kickMessage) {
     requireNonNull(kickMessage, "kickMessage");

@@ -38,7 +38,7 @@ import static java.util.Objects.requireNonNull;
 /**
  * Provides {@link Audience} instances for a specific server instance.
  *
- * @since 4.0.0
+ * @since 6.0.0
  */
 public interface MinecraftServerAudiences extends AudienceProvider, MinecraftAudiences {
   /**
@@ -48,7 +48,7 @@ public interface MinecraftServerAudiences extends AudienceProvider, MinecraftAud
    *
    * @param server server instance to work with
    * @return common audience provider
-   * @since 4.0.0
+   * @since 6.0.0
    */
   static @NotNull MinecraftServerAudiences of(final @NotNull MinecraftServer server) {
     return ((MinecraftServerBridge) server).adventure$globalProvider();
@@ -59,7 +59,7 @@ public interface MinecraftServerAudiences extends AudienceProvider, MinecraftAud
    *
    * @param server the server
    * @return audience provider builder
-   * @since 4.0.0
+   * @since 6.0.0
    */
   static MinecraftServerAudiences.@NotNull Builder builder(final @NotNull MinecraftServer server) {
     return new MinecraftServerAudiencesImpl.Builder(requireNonNull(server, "server"));
@@ -73,7 +73,7 @@ public interface MinecraftServerAudiences extends AudienceProvider, MinecraftAud
    *
    * @param source source to send to.
    * @return the audience
-   * @since 4.0.0
+   * @since 6.0.0
    */
   @NotNull AdventureCommandSourceStack audience(@NotNull CommandSourceStack source);
 
@@ -85,7 +85,7 @@ public interface MinecraftServerAudiences extends AudienceProvider, MinecraftAud
    *
    * @param source source to send to
    * @return an audience for the source
-   * @since 4.0.0
+   * @since 6.0.0
    */
   @NotNull Audience audience(@NotNull CommandSource source);
 
@@ -94,14 +94,14 @@ public interface MinecraftServerAudiences extends AudienceProvider, MinecraftAud
    *
    * @param players Players to send to.
    * @return a new audience
-   * @since 4.0.0
+   * @since 6.0.0
    */
   @NotNull Audience audience(@NotNull Iterable<ServerPlayer> players);
 
   /**
    * Builder for {@link MinecraftServerAudiences} with custom attributes.
    *
-   * @since 4.0.0
+   * @since 6.0.0
    */
   interface Builder extends AudienceProvider.Builder<MinecraftServerAudiences, MinecraftServerAudiences.Builder> {
   }

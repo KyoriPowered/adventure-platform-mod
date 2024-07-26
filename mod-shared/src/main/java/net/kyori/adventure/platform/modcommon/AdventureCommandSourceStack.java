@@ -34,7 +34,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * An interface applied to {@link net.minecraft.commands.CommandSourceStack} to allow sending {@link Component Components}.
  *
- * @since 4.0.0
+ * @since 6.0.0
  */
 public interface AdventureCommandSourceStack extends ForwardingAudience.Single, Identified {
   @Override
@@ -52,7 +52,7 @@ public interface AdventureCommandSourceStack extends ForwardingAudience.Single, 
    *
    * @param text The text to send
    * @param sendToOps If this message should be sent to all ops listening
-   * @since 4.0.0
+   * @since 6.0.0
    */
   default void sendSuccess(final @NotNull Component text, final boolean sendToOps) {
     // Implemented by Mixin
@@ -63,7 +63,7 @@ public interface AdventureCommandSourceStack extends ForwardingAudience.Single, 
    *
    * @param text A supplier providing the message to send
    * @param sendToOps If this message should be sent to all ops listening
-   * @since 5.10.0
+   * @since 6.0.0
    */
   default void sendLazySuccess(final @NotNull Supplier<Component> text, final boolean sendToOps) {
     // Implemented by Mixin
@@ -73,7 +73,7 @@ public interface AdventureCommandSourceStack extends ForwardingAudience.Single, 
    * Send an error message to the command source.
    *
    * @param text The error
-   * @since 4.0.0
+   * @since 6.0.0
    */
   default void sendFailure(final @NotNull Component text) {
     // Implemented by Mixin

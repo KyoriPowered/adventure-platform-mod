@@ -49,7 +49,7 @@ import static java.util.Objects.requireNonNull;
  * In the Fabric environment, clients without adventure-platform will receive fallback argument types with limited
  * functionality, in other environments clients without the mod are expected to error on join.</p>
  *
- * @since 4.0.0
+ * @since 6.0.0
  */
 public final class ComponentArgumentType implements ArgumentType<Component> {
   private static final ComponentArgumentType JSON_INSTANCE = new ComponentArgumentType(Format.JSON);
@@ -59,7 +59,7 @@ public final class ComponentArgumentType implements ArgumentType<Component> {
    * Get the argument type for component arguments.
    *
    * @return argument type instance
-   * @since 4.0.0
+   * @since 6.0.0
    * @deprecated use {@link #json()} or {@link #miniMessage()} instead.
    */
   @Deprecated(forRemoval = true, since = "5.1.0")
@@ -73,7 +73,7 @@ public final class ComponentArgumentType implements ArgumentType<Component> {
    * @param ctx Context to get from
    * @param key argument key
    * @return parsed component
-   * @since 4.0.0
+   * @since 6.0.0
    */
   public static @NotNull Component component(final @NotNull CommandContext<?> ctx, final @NotNull String key) {
     return ctx.getArgument(key, Component.class);
@@ -83,7 +83,7 @@ public final class ComponentArgumentType implements ArgumentType<Component> {
    * Get the argument type for component arguments in JSON format.
    *
    * @return argument type instance
-   * @since 5.1.0
+   * @since 6.0.0
    */
   public static @NotNull ComponentArgumentType json() {
     return JSON_INSTANCE;
@@ -93,7 +93,7 @@ public final class ComponentArgumentType implements ArgumentType<Component> {
    * Get the argument type for component arguments in MiniMessage format.
    *
    * @return argument type instance
-   * @since 5.1.0
+   * @since 6.0.0
    */
   public static @NotNull ComponentArgumentType miniMessage() {
     return MINIMESSAGE_INSTANCE;
@@ -104,7 +104,7 @@ public final class ComponentArgumentType implements ArgumentType<Component> {
    *
    * @param format the format to use when parsing component text
    * @return an argument type
-   * @since 5.1.0
+   * @since 6.0.0
    */
   public static @NotNull ComponentArgumentType component(final @NotNull Format format) {
     return switch (format) {
@@ -141,7 +141,7 @@ public final class ComponentArgumentType implements ArgumentType<Component> {
    * Get the format used for this argument.
    *
    * @return the format used for this argument
-   * @since 4.1.0
+   * @since 6.0.0
    */
   public @NotNull Format format() {
     return this.format;
@@ -158,7 +158,7 @@ public final class ComponentArgumentType implements ArgumentType<Component> {
   /**
    * Supported text formats for registering components.
    *
-   * @since 5.1.0
+   * @since 6.0.0
    */
   public enum Format {
     JSON(
@@ -203,7 +203,7 @@ public final class ComponentArgumentType implements ArgumentType<Component> {
      * Get a unique identifier for this format.
      *
      * @return a unique identifier for this format
-     * @since 5.1.0
+     * @since 6.0.0
      */
     public Key id() {
       return this.id;
@@ -213,7 +213,7 @@ public final class ComponentArgumentType implements ArgumentType<Component> {
      * Get examples of this format in use.
      *
      * @return examples of this format in use, as an unmodifiable list
-     * @since 5.1.0
+     * @since 6.0.0
      */
     public List<String> examples() {
       return this.examples;

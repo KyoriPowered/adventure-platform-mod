@@ -31,7 +31,7 @@ public interface RenderableAudience extends Audience {
   /**
    * Refresh this audience, to update any actively displayed rendered content.
    *
-   * @since 4.0.0
+   * @since 6.0.0 4.0.0
    */
   void refresh();
 }

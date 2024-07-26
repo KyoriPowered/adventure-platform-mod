@@ -32,7 +32,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * An interface providing default implementations of HoverEventSource methods.
  *
- * @since 5.4.0
+ * @since 6.0.0
  */
 public interface EntityHoverEventSource extends HoverEventSource<ShowEntity> {
 

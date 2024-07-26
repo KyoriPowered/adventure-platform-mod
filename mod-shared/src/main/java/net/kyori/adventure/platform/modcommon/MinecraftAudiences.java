@@ -71,7 +71,7 @@ import static java.util.Objects.requireNonNull;
  * <p>In development environments with interface injection, many of the utility methods
  * in this class are redundant.</p>
  *
- * @since 4.0.0
+ * @since 6.0.0
  */
 public interface MinecraftAudiences {
 
@@ -81,7 +81,7 @@ public interface MinecraftAudiences {
    * @param input source component
    * @param modifier operator to transform the component
    * @return new component
-   * @since 4.0.0
+   * @since 6.0.0
    */
   static net.minecraft.network.chat.@NotNull Component update(final net.minecraft.network.chat.@NotNull Component input, final UnaryOperator<Component> modifier) {
     final Component modified;
@@ -107,7 +107,7 @@ public interface MinecraftAudiences {
    *
    * @param loc The Identifier to convert
    * @return The equivalent data as a Key
-   * @since 4.0.0
+   * @since 6.0.0
    */
   @Contract("null -> null; !null -> !null")
   static Key toAdventure(final ResourceLocation loc) {
@@ -126,7 +126,7 @@ public interface MinecraftAudiences {
    *
    * @param key The Key to convert
    * @return The equivalent data as an Identifier
-   * @since 4.0.0
+   * @since 6.0.0
    */
   @Contract("null -> null; !null -> !null")
   static ResourceLocation toNative(final Key key) {
@@ -142,7 +142,7 @@ public interface MinecraftAudiences {
    *
    * @param entity the entity to convert
    * @return the entity as a sound emitter
-   * @since 4.0.0
+   * @since 6.0.0
    */
   static Sound.@NotNull Emitter asEmitter(final @NotNull Entity entity) {
     return (Sound.Emitter) entity;
@@ -153,7 +153,7 @@ public interface MinecraftAudiences {
    *
    * @param ex the exception to cast
    * @return a converted command exception
-   * @since 5.3.0
+   * @since 6.0.0
    */
   static @NotNull ComponentMessageThrowable asComponentThrowable(final @NotNull CommandSyntaxException ex) {
     return (ComponentMessageThrowable) ex;
@@ -167,7 +167,7 @@ public interface MinecraftAudiences {
    * instances suitable for passing around the game.</p>
    *
    * @return a serializer instance
-   * @since 4.0.0
+   * @since 6.0.0
    */
   static @NotNull ComponentSerializer<Component, Component, net.minecraft.network.chat.Component> nonWrappingSerializer() {
     return NonWrappingComponentSerializer.INSTANCE;
@@ -178,7 +178,7 @@ public interface MinecraftAudiences {
    *
    * @param player the player to identify
    * @return an identified representation of the player
-   * @since 4.0.0
+   * @since 6.0.0
    */
   static @NotNull Identified identified(final @NotNull Player player) {
     return (Identified) player;
@@ -189,7 +189,7 @@ public interface MinecraftAudiences {
    *
    * @param profile the profile to represent
    * @return an identity of the game profile
-   * @since 4.0.0
+   * @since 6.0.0
    */
   static @NotNull Identity identity(final @NotNull GameProfile profile) {
     return (Identity) profile;
@@ -273,7 +273,7 @@ public interface MinecraftAudiences {
    * @param value the value to wrap
    * @param <T> the value type
    * @return the wrapped value
-   * @since 5.13.0
+   * @since 6.0.0
    */
   static @NotNull <T> DataComponentValue dataComponentValue(final @NotNull DataComponentType<T> type, final @NotNull T value) {
     return new ModDataComponentValue.Present<>(value, type.codecOrThrow());
@@ -283,7 +283,7 @@ public interface MinecraftAudiences {
    * Return a component flattener that can use game data to resolve extra information about components.
    *
    * @return the flattener
-   * @since 4.0.0
+   * @since 6.0.0
    */
   @NotNull ComponentFlattener flattener();
 
@@ -291,7 +291,7 @@ public interface MinecraftAudiences {
    * Active renderer to render components.
    *
    * @return Shared renderer
-   * @since 4.0.0
+   * @since 6.0.0
    */
   @NotNull ComponentRenderer<Pointered> renderer();
 
@@ -302,7 +302,7 @@ public interface MinecraftAudiences {
    *
    * @param adventure adventure input
    * @return native representation
-   * @since 4.0.0
+   * @since 6.0.0
    */
   net.minecraft.network.chat.@NotNull Component toNative(final @NotNull Component adventure);
 
@@ -311,7 +311,7 @@ public interface MinecraftAudiences {
    *
    * @param vanilla the native component
    * @return adventure component
-   * @since 4.0.0
+   * @since 6.0.0
    */
   default @NotNull Component toAdventure(final net.minecraft.network.chat.@NotNull Component vanilla) {
     return ((ComponentLike) vanilla).asComponent();

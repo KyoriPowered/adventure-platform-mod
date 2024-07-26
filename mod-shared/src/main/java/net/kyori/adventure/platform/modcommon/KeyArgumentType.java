@@ -38,7 +38,7 @@ import org.jetbrains.annotations.NotNull;
  * In the Fabric environment, clients without adventure-platform will receive fallback argument types with limited
  * functionality, in other environments clients without the mod are expected to error on join.</p>
  *
- * @since 4.0.0
+ * @since 6.0.0
  */
 public final class KeyArgumentType implements ArgumentType<Key> {
   private static final KeyArgumentType INSTANCE = new KeyArgumentType();
@@ -47,7 +47,7 @@ public final class KeyArgumentType implements ArgumentType<Key> {
    * Get an argument type instance for {@link Key}s.
    *
    * @return key argument type
-   * @since 4.0.0
+   * @since 6.0.0
    */
   public static @NotNull KeyArgumentType key() {
     return INSTANCE;
@@ -59,7 +59,7 @@ public final class KeyArgumentType implements ArgumentType<Key> {
    * @param ctx context to get the value from
    * @param id id the argument was taken from
    * @return provided argument
-   * @since 4.0.0
+   * @since 6.0.0
    */
   public static @NotNull Key key(final @NotNull CommandContext<?> ctx, final @NotNull String id) {
     return ctx.getArgument(id, Key.class);
