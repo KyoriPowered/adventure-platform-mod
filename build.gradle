@@ -14,7 +14,7 @@ indraSonatype {
 
 allprojects {
   // subprojects would not configure second layer subprojects
-  if (this == rootProject) {
+  if (project == rootProject) {
     return
   }
 
