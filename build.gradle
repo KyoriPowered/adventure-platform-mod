@@ -22,6 +22,7 @@ allprojects {
   apply plugin: "net.kyori.indra.checkstyle"
   apply plugin: "net.kyori.indra.licenser.spotless"
   apply plugin: "com.diffplug.eclipse.apt"
+  apply plugin: "org.jetbrains.gradle.plugin.idea-ext"
 
   indraSpotlessLicenser {
     licenseHeaderFile(rootProject.file("LICENSE_HEADER"))

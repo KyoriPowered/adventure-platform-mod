@@ -2,12 +2,8 @@ import net.neoforged.moddevgradle.internal.RunGameTask
 
 plugins {
   alias(libs.plugins.configurateTransformations)
-  alias(libs.plugins.indra.publishing)
-  alias(libs.plugins.indra.crossdoc)
-  alias(libs.plugins.ideaExt)
-  id("com.diffplug.spotless")
   id("net.neoforged.moddev")
-  id("standard-conventions")
+  id("publishing-conventions")
 }
 
 neoForge {
@@ -75,34 +71,11 @@ sourceSets {
 }
 
 tasks {
-  javadoc {
-    // exclude("net/kyori/adventure/platform/fabric/impl/**")
-    // val client = sourceSets.getByName("client")
-    // source(client.allJava)
-    // classpath += client.output
-    // val advVersion = libs.versions.adventure.get()
-    // if (!advVersion.contains("SNAPSHOT")) {
-    //   (options as? StandardJavadocDocletOptions)?.links(
-    //     "https://jd.advntr.dev/api/${advVersion}",
-    //     "https://jd.advntr.dev/key/${advVersion}",
-    //   )
-    // }
-    // (options as? StandardJavadocDocletOptions)?.links(
-    //   "https://jd.advntr.dev/platform/api/${libs.versions.adventurePlatform.get()}",
-    // )
-  }
   processResources {
     val props = mapOf("version" to project.version)
     inputs.properties(props)
     filesMatching("META-INF/neoforge.mods.toml") {
       expand(props)
     }
-  }
-}
-
-indraCrossdoc {
-  baseUrl().set(providers.gradleProperty("javadocPublishRoot"))
-  nameBasedDocumentationUrlProvider {
-    projectNamePrefix = "adventure-platform-"
   }
 }
