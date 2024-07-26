@@ -13,8 +13,8 @@ neoForge {
 }
 
 dependencies {
-  compileOnly("net.fabricmc:sponge-mixin:0.13.4+mixin.0.8.5")
-  compileOnly("io.github.llamalad7:mixinextras-common:0.4.0")
+  compileOnly(libs.mixin)
+  compileOnly(libs.mixinExtras)
   annotationProcessor(libs.autoService)
   annotationProcessor(libs.contractValidator)
   compileOnlyApi(libs.autoService.annotations)

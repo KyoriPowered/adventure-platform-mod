@@ -16,7 +16,7 @@ plugins {
   alias(libs.plugins.indra.licenseHeader)
   alias(libs.plugins.indra.checkstyle)
   alias(libs.plugins.indra.crossdoc)
-  // TODO alias(libs.plugins.ideaExt)
+  alias(libs.plugins.ideaExt)
   id("com.diffplug.spotless")
 }
 
@@ -314,12 +314,10 @@ fun createProcessResourceTemplates(name: String, set: SourceSet): TaskProvider<o
 
   // Have templates ready for IDEs
   eclipse.synchronizationTasks(task)
-  /* TODO
   rootProject.idea.project.settings.taskTriggers {
     afterSync(task)
   }
   idea.module.generatedSourceDirs.add(destinationDir)
-   */
 
   return task
 }

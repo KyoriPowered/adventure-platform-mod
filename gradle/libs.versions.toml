@@ -16,6 +16,7 @@ minecraft = "1.21"
 parchment = "1.20.6:2024.06.02"
 vineflower = "1.10.1"
 spotless = "6.25.0"
+neoforge = "21.0.114-beta"
 
 [libraries]
 adventure-api = { module = "net.kyori:adventure-api", version.ref = "adventure" }
@@ -31,6 +32,14 @@ adventure-textSerializerAnsi = { module = "net.kyori:adventure-text-serializer-a
 ansi = { module = "net.kyori:ansi", version.ref = "ansi" }
 examination-api = { module = "net.kyori:examination-api", version.ref = "examination" }
 examination-string = { module = "net.kyori:examination-string", version.ref = "examination" }
+jetbrainsAnnotations = "org.jetbrains:annotations:24.1.0"
+option = { module = "net.kyori:option", version = "1.0.0" }
+
+# mod-shared
+mixin = "net.fabricmc:sponge-mixin:0.13.4+mixin.0.8.5"
+mixinExtras = "io.github.llamalad7:mixinextras-common:0.4.0"
+
+# fabric
 fabric-loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabricLoader"}
 fabric-loader-junit = { module = "net.fabricmc:fabric-loader-junit", version.ref = "fabricLoader"}
 fabric-api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabricApi" }
@@ -40,9 +49,11 @@ fabric-api-networking = { module = "net.fabricmc.fabric-api:fabric-networking-ap
 fabric-api-command = { module = "net.fabricmc.fabric-api:fabric-command-api-v2" }
 fabric-api-lifecycle = { module = "net.fabricmc.fabric-api:fabric-lifecycle-events-v1" }
 fabric-permissionsApi = { module = "me.lucko:fabric-permissions-api", version = "0.3.1" }
-jetbrainsAnnotations = "org.jetbrains:annotations:24.1.0"
 minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
-option = { module = "net.kyori:option", version = "1.0.0" }
+
+# neoforge
+# For Renovate, do not use directly
+zNeoforge = { module = "net.neoforged:neoforge", version.ref = "neoforge" }
 
 # build
 autoService = { module = "com.google.auto.service:auto-service", version.ref = "autoService" }
@@ -63,7 +74,8 @@ zCheckstyle = { module = "com.puppycrawl.tools:checkstyle", version.ref = "check
 configurateTransformations = "ca.stellardrift.configurate-transformations:6.1.0"
 eclipseApt = "com.diffplug.eclipse.apt:4.0.1"
 loom = "fabric-loom:1.7.2"
-ideaExt = "org.jetbrains.gradle.plugin.idea-ext:1.1.8"
+# ModDevGradle settings plugin is putting another version on the classpath, so we can't specify a version :(
+ideaExt = { id = "org.jetbrains.gradle.plugin.idea-ext" }
 indra = { id = "net.kyori.indra", version.ref = "indra" }
 indra-licenseHeader = { id = "net.kyori.indra.licenser.spotless", version.ref = "indra" }
 indra-checkstyle = { id = "net.kyori.indra.checkstyle", version.ref = "indra" }

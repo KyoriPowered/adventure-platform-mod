@@ -8,7 +8,7 @@ plugins {
   alias(libs.plugins.indra.checkstyle) apply false // needed for Gradle dependency resolution
   alias(libs.plugins.indra.sonatype)
   alias(libs.plugins.nexusPublish)
-  // TODO alias(libs.plugins.ideaExt)
+  alias(libs.plugins.ideaExt)
 }
 
 indraSonatype {
@@ -73,7 +73,6 @@ allprojects {
   // Loom-specific
   plugins.withId('fabric-loom') {
     dependencies {
-      println "Minecraft dep: ${libs.minecraft.get()} (in project ${project.name})"
       minecraft(libs.minecraft)
       mappings(loom.layered {
         officialMojangMappings()

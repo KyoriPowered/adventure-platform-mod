@@ -8,32 +8,28 @@ plugins {
   alias(libs.plugins.indra.licenseHeader)
   alias(libs.plugins.indra.checkstyle)
   alias(libs.plugins.indra.crossdoc)
-  // TODO alias(libs.plugins.ideaExt)
+  alias(libs.plugins.ideaExt)
   id("com.diffplug.spotless")
   id("net.neoforged.moddev")
 }
 
 neoForge {
-  // We currently only support NeoForge versions later than 21.0.x
-  // See https://projects.neoforged.net/neoforged/neoforge for the latest updates
-  version = "21.0.114-beta"
+  version = libs.versions.neoforge
 
   parchment {
     parchmentArtifact = "org.parchmentmc.data:parchment-${libs.versions.parchment.get()}@zip"
   }
 
-  // Validate AT files and raise errors when they have invalid targets
-  // This option is false by default, but turning it on is recommended
   validateAccessTransformers = true
 
   runs {
     register("client") {
       client()
-      mods.set(emptySet())
+      mods.set(emptySet()) // Work around classpath issues by using the production jar for dev runs
     }
     register("server") {
       server()
-      mods.set(emptySet())
+      mods.set(emptySet()) // Work around classpath issues by using the production jar for dev runs
     }
   }
 
@@ -44,6 +40,7 @@ neoForge {
   }
 }
 
+// Work around classpath issues by using the production jar for dev runs
 tasks.withType<RunGameTask>().configureEach {
   dependsOn(tasks.jar)
   doFirst {
