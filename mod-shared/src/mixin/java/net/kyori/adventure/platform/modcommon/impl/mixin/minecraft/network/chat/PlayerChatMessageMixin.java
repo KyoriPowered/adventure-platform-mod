@@ -101,7 +101,7 @@ public abstract class PlayerChatMessageMixin implements SignedMessage, PlayerCha
     if (unsignedContent == null) {
       return null;
     }
-    return controller.toAdventure(unsignedContent);
+    return controller.asAdventure(unsignedContent);
   }
 
   @Inject(

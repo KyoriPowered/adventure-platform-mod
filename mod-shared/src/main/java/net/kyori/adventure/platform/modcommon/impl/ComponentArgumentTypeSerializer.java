@@ -21,9 +21,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.adventure.platform.fabric.impl;
+package net.kyori.adventure.platform.modcommon.impl;
 
 import com.google.gson.JsonObject;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.modcommon.ComponentArgumentType;
 import net.kyori.adventure.platform.modcommon.MinecraftAudiences;
 import net.minecraft.commands.CommandBuildContext;
@@ -46,7 +47,7 @@ public final class ComponentArgumentTypeSerializer implements ArgumentTypeInfo<C
   @Override
   public Template deserializeFromNetwork(final FriendlyByteBuf buffer) {
     final ResourceLocation id = buffer.readResourceLocation();
-    final ComponentArgumentType.Format format = ComponentArgumentType.Format.INDEX.value(id);
+    final ComponentArgumentType.Format format = ComponentArgumentType.Format.INDEX.value((Key) (Object) id);
     if (format == null) {
       throw new IllegalArgumentException("Unknown Adventure component format: " + id);
     }

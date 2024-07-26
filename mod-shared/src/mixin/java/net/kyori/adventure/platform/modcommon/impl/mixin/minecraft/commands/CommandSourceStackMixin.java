@@ -63,12 +63,14 @@ public abstract class CommandSourceStackMixin implements AdventureCommandSourceS
 
   @Override
   public void sendSuccess(final @NotNull Component text, final boolean sendToOps) {
+    this.audience(); // Populate controller if needed
     this.shadow$sendSuccess(() -> this.adventure$controller.toNative(text), sendToOps);
   }
 
   @Override
   public void sendLazySuccess(final @NotNull Supplier<Component> text, final boolean sendToOps) {
     requireNonNull(text, "text");
+    this.audience(); // Populate controller if needed
     this.shadow$sendSuccess(() -> this.adventure$controller.toNative(text.get()), sendToOps);
   }
 

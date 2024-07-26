@@ -32,12 +32,6 @@ import net.kyori.adventure.platform.modcommon.impl.PlatformHooks;
 import net.kyori.adventure.platform.modcommon.impl.SidedProxy;
 import net.kyori.adventure.platform.modcommon.impl.client.ClientProxy;
 import net.kyori.adventure.platform.modcommon.impl.server.DedicatedServerProxy;
-import net.kyori.adventure.platform.neoforge.impl.services.ANSIComponentSerializerProviderImpl;
-import net.kyori.adventure.platform.neoforge.impl.services.ClickCallbackProviderImpl;
-import net.kyori.adventure.platform.neoforge.impl.services.ComponentLoggerProviderImpl;
-import net.kyori.adventure.platform.neoforge.impl.services.DataComponentValueConverterProvider;
-import net.kyori.adventure.platform.neoforge.impl.services.GsonComponentSerializerProviderImpl;
-import net.kyori.adventure.platform.neoforge.impl.services.PlainTextComponentSerializerProviderImpl;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.common.Mod;
@@ -58,19 +52,6 @@ public class AdventureNeoforgeCommon {
     } else {
       SIDE_PROXY = new ClientProxy();
     }
-
-    /*
-    hack around service loader issues:
-     adventure tries to load services using the api's class loader, which is not on a module layer able to see the game/mods.
-     to work around this, we jij delegating service providers and manually populate them with game-accessing providers.
-     better solution: add something in adventure to switch the lookup loader?
-    */
-    ANSIComponentSerializerProviderImpl.DELEGATE = new net.kyori.adventure.platform.modcommon.impl.service.ANSIComponentSerializerProviderImpl();
-    ClickCallbackProviderImpl.DELEGATE = new net.kyori.adventure.platform.modcommon.impl.service.ClickCallbackProviderImpl();
-    ComponentLoggerProviderImpl.DELEGATE = new net.kyori.adventure.platform.modcommon.impl.service.ComponentLoggerProviderImpl();
-    DataComponentValueConverterProvider.DELEGATE = new net.kyori.adventure.platform.modcommon.impl.service.DataComponentValueConverterProvider();
-    GsonComponentSerializerProviderImpl.DELEGATE = new net.kyori.adventure.platform.modcommon.impl.service.GsonComponentSerializerProviderImpl();
-    PlainTextComponentSerializerProviderImpl.DELEGATE = new net.kyori.adventure.platform.modcommon.impl.service.PlainTextComponentSerializerProviderImpl();
   }
 
   public AdventureNeoforgeCommon() {

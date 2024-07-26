@@ -101,7 +101,7 @@ public class MappedRegistry<Mc, Adv> {
    * @param mcItem The Minecraft element
    * @return The adventure equivalent.
    */
-  public Adv toAdventure(final Mc mcItem) {
+  public Adv asAdventure(final Mc mcItem) {
     return requireNonNull(this.mcToAdventure.get(mcItem), "Invalid enum value presented: " + mcItem);
   }
 

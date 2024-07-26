@@ -47,8 +47,14 @@ import net.kyori.adventure.chat.ChatType;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.platform.modcommon.AdventureCommandSourceStack;
+import net.kyori.adventure.platform.modcommon.ComponentArgumentType;
+import net.kyori.adventure.platform.modcommon.KeyArgumentType;
+import net.kyori.adventure.platform.modcommon.MinecraftAudiences;
 import net.kyori.adventure.platform.modcommon.MinecraftServerAudiences;
+import net.kyori.adventure.platform.modcommon.impl.ComponentArgumentTypeSerializer;
 import net.kyori.adventure.pointer.Pointered;
+import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
@@ -57,28 +63,46 @@ import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.kyori.adventure.translation.GlobalTranslator;
 import net.kyori.adventure.translation.TranslationRegistry;
+import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.commands.synchronization.ArgumentTypeInfo;
+import net.minecraft.commands.synchronization.ArgumentTypeInfos;
+import net.minecraft.commands.synchronization.SingletonArgumentInfo;
+import net.minecraft.commands.synchronization.SuggestionProviders;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import net.neoforged.neoforge.event.server.ServerStoppedEvent;
+import net.neoforged.neoforge.registries.DeferredRegister;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.getInteger;
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
 import static java.util.Objects.requireNonNull;
+import static net.kyori.adventure.platform.modcommon.ComponentArgumentType.component;
+import static net.kyori.adventure.platform.modcommon.ComponentArgumentType.miniMessage;
+import static net.kyori.adventure.platform.modcommon.KeyArgumentType.key;
+import static net.kyori.adventure.sound.Sound.sound;
 import static net.kyori.adventure.text.Component.newline;
 import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.Component.translatable;
 import static net.kyori.adventure.text.format.TextColor.color;
 import static net.minecraft.commands.Commands.argument;
 import static net.minecraft.commands.Commands.literal;
+import static net.minecraft.commands.arguments.EntityArgument.getPlayers;
+import static net.minecraft.commands.arguments.EntityArgument.players;
 
 @Mod("adventure_platform_neoforge_tester")
 public class AdventureNeoTester {
@@ -105,14 +129,27 @@ public class AdventureNeoTester {
   private static final ChatType ADVENTURE_BROADCAST = net.kyori.adventure.chat.ChatType.chatType(advKey("broadcast"));
 
   private static Key advKey(final String location) {
-    return (Key) (Object) ResourceLocation.fromNamespaceAndPath(Adventure.NAMESPACE, location);
+    return MinecraftAudiences.asAdventure(ResourceLocation.fromNamespaceAndPath(Adventure.NAMESPACE, location));
   }
 
   public @NotNull MinecraftServerAudiences adventure() {
     return requireNonNull(this.platform, "Tried to access Fabric platform without a running server");
   }
 
-  public AdventureNeoTester() {
+  // TODO - add registration helper for neo
+  private static final DeferredRegister<ArgumentTypeInfo<?, ?>> COMMAND_ARGUMENT_TYPES = DeferredRegister.create(Registries.COMMAND_ARGUMENT_TYPE, "adventure");
+  private static final Holder<ArgumentTypeInfo<?, ?>> COMPONENT_ARGUMENT_TYPE = COMMAND_ARGUMENT_TYPES.register("component", () -> ArgumentTypeInfos.registerByClass(
+    ComponentArgumentType.class,
+    ComponentArgumentTypeSerializer.INSTANCE
+  ));
+  private static final Holder<ArgumentTypeInfo<?, ?>> KEY_ARGUMENT_TYPE = COMMAND_ARGUMENT_TYPES.register("key", () -> ArgumentTypeInfos.registerByClass(
+    KeyArgumentType.class,
+    SingletonArgumentInfo.contextFree(KeyArgumentType::key)
+  ));
+
+  public AdventureNeoTester(final IEventBus modBus) {
+    COMMAND_ARGUMENT_TYPES.register(modBus);
+
     // Register localizations
     final TranslationRegistry testmodRegistry = TranslationRegistry.create(advKey("testmod_localizations"));
     for (final var lang : List.of(Locale.ENGLISH, Locale.GERMAN)) {
@@ -133,11 +170,22 @@ public class AdventureNeoTester {
       e.getDispatcher().register(literal("adventure")
         .then(literal("about").executes(ctx -> {
           // Interface injection, this lets us access the default platform instance
-          ((Audience) ctx.getSource()).sendMessage(translatable("adventure.test.welcome", COLOR_RESPONSE, this.platform.toAdventure(ctx.getSource().getDisplayName())));
+          this.platform.audience(ctx.getSource()).sendMessage(translatable("adventure.test.welcome", COLOR_RESPONSE, this.platform.asAdventure(ctx.getSource().getDisplayName())));
           // Or the old-fashioned way, for
           this.adventure().audience(ctx.getSource()).sendMessage(translatable("adventure.test.description", color(0xc022cc)));
           return 1;
         }))
+        .then(literal("echo").then(argument(ARG_TEXT, miniMessage()).executes(ctx -> {
+          final Component result = component(ctx, ARG_TEXT);
+          this.platform.audience(ctx.getSource()).sendMessage(result, ChatType.SAY_COMMAND.bind(this.platform.asAdventure(ctx.getSource().getDisplayName())));
+          this.platform.audience(ctx.getSource()).sendMessage(text("And a second time!", NamedTextColor.DARK_PURPLE));
+          return 1;
+        })))
+        .then(literal("eval").then(argument(ARG_TEXT, miniMessage()).executes(ctx -> {
+          final Component result = component(ctx, ARG_TEXT);
+          this.platform.audience(ctx.getSource()).sendMessage(this.platform.asAdventure(ComponentUtils.updateForEntity(ctx.getSource(), this.platform.toNative(result), ctx.getSource().getEntity(), 0)));
+          return Command.SINGLE_SUCCESS;
+        })))
         .then(literal("countdown").then(argument(ARG_SECONDS, integer()).executes(ctx -> { // multiple boss bars!
           final Audience audience = this.adventure().audience(ctx.getSource());
           this.beginCountdown(ctx.getSource().getServer(), text("Countdown"), getInteger(ctx, ARG_SECONDS), audience, BossBar.Color.RED, complete -> {
@@ -147,6 +195,27 @@ public class AdventureNeoTester {
             complete.sendActionBar(text().content("Faster Countdown complete! ").color(COLOR_RESPONSE)
               .append(text('\uE042', Style.style().font(FONT_MEOW).build()))); // private use kitten in font
           });
+          return 1;
+        })))
+        .then(literal("tellall").then(argument(ARG_TARGETS, players()).then(argument(ARG_TEXT, miniMessage()).executes(ctx -> {
+          final Collection<ServerPlayer> targets = getPlayers(ctx, ARG_TARGETS);
+          final AdventureCommandSourceStack source = this.adventure().audience(ctx.getSource());
+          final Component message = component(ctx, ARG_TEXT);
+          final Audience destination = Audience.audience(((Collection) targets));
+
+          destination.sendMessage(message, ADVENTURE_BROADCAST.bind(this.platform.asAdventure(ctx.getSource().getDisplayName())));
+          source.sendMessage(text(b -> {
+            b.content("You have sent \"");
+            b.append(message).append(text("\" to ")).append(this.listPlayers(targets));
+            b.color(COLOR_RESPONSE);
+          }));
+          return 1;
+        }))))
+        .then(literal("sound").then(argument(ARG_SOUND, key()).suggests(SuggestionProviders.AVAILABLE_SOUNDS).executes(ctx -> {
+          final Audience viewer = this.adventure().audience(ctx.getSource());
+          final Key sound = key(ctx, ARG_SOUND);
+          viewer.sendMessage(text(b -> b.content("Playing sound ").append(represent(sound)).color(COLOR_RESPONSE)));
+          viewer.playSound(sound(sound, Sound.Source.MASTER, 1f, 1f));
           return 1;
         })))
         .then(literal("book_callback").executes(ctx -> {
@@ -161,19 +230,33 @@ public class AdventureNeoTester {
           );
           LOGGER.info("{}", callback);
 
-          ((Audience) ctx.getSource()).sendMessage(Component.textOfChildren(text("Click here").clickEvent(callback), text(" to see important information!")));
+          this.platform.audience(ctx.getSource()).sendMessage(Component.textOfChildren(text("Click here").clickEvent(callback), text(" to see important information!")));
           return 1;
         }))
+        .then(literal("rename").then(argument(ARG_TARGET, EntityArgument.entity()).then(argument(ARG_TEXT, miniMessage()).executes(ctx -> {
+          final Entity target = EntityArgument.getEntity(ctx, ARG_TARGET);
+          final Component title = component(ctx, ARG_TEXT);
+          final var oldDisplayName = target.getDisplayName();
+          target.setCustomName(this.adventure().toNative(title));
+          this.platform.audience(ctx.getSource()).sendSuccess(text()
+            .color(COLOR_RESPONSE)
+            .content("Successfully set entity ")
+            .append(this.platform.asAdventure(oldDisplayName))
+            .append(text("'s display name to "))
+            .append(title)
+            .build(), false);
+          return Command.SINGLE_SUCCESS;
+        }))))
         .then(literal("rgb").executes(ctx -> {
           for (final TextColor color : LINE_COLOURS) {
-            ((Audience) ctx.getSource()).sendMessage(LINE.color(color));
+            this.platform.audience(ctx.getSource()).sendMessage(LINE.color(color));
           }
           return Command.SINGLE_SUCCESS;
         }))
         .then(literal("baron").executes(ctx -> {
           final ServerPlayer player = ctx.getSource().getPlayerOrException();
           final BossBar greeting = this.greetingBars.computeIfAbsent(player.getUUID(), id -> {
-            return BossBar.bossBar(translatable("adventure.test.greeting", NamedTextColor.GOLD, this.platform.toAdventure(player.getDisplayName())),
+            return BossBar.bossBar(translatable("adventure.test.greeting", NamedTextColor.GOLD, this.platform.asAdventure(player.getDisplayName())),
               1, BossBar.Color.YELLOW, BossBar.Overlay.PROGRESS);
           });
 
@@ -189,10 +272,15 @@ public class AdventureNeoTester {
         }))
         .then(literal("tablist").executes(ctx -> {
           final Audience target = this.adventure().audience(ctx.getSource());
-          target.sendPlayerListHeader(Component.text("Adventure", COLOR_NAMESPACE));
-          target.sendPlayerListFooter(Component.text("test platform!", COLOR_PATH));
+          target.sendPlayerListHeader(text("Adventure", COLOR_NAMESPACE));
+          target.sendPlayerListFooter(text("test platform!", COLOR_PATH));
           return Command.SINGLE_SUCCESS;
-        })));
+        }))
+        .then(literal("plain").then(argument(ARG_TEXT, miniMessage()).executes(ctx -> {
+          final Component text = component(ctx, ARG_TEXT);
+          ctx.getSource().sendSuccess(() -> net.minecraft.network.chat.Component.literal(PlainTextComponentSerializer.plainText().serialize(text)), false);
+          return Command.SINGLE_SUCCESS;
+        }))));
     });
   }
 

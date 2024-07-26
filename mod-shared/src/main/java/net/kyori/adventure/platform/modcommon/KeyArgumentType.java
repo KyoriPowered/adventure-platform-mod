@@ -70,6 +70,6 @@ public final class KeyArgumentType implements ArgumentType<Key> {
 
   @Override
   public @NotNull Key parse(final @NotNull StringReader reader) throws CommandSyntaxException {
-    return MinecraftAudiences.toAdventure(ResourceLocation.read(reader));
+    return MinecraftAudiences.asAdventure(ResourceLocation.read(reader));
   }
 }

@@ -97,7 +97,7 @@ public interface MinecraftAudiences {
         new NonWrappingComponentSerializer(((MinecraftAudiencesInternal) this)::registryAccess)
       );
     } else {
-      final Component original = this.toAdventure(input);
+      final Component original = this.asAdventure(input);
       modified = modifier.apply(original);
       return this.toNative(modified);
     }
@@ -113,7 +113,7 @@ public interface MinecraftAudiences {
    * @since 6.0.0
    */
   @Contract("null -> null; !null -> !null")
-  static Key toAdventure(final ResourceLocation loc) {
+  static Key asAdventure(final ResourceLocation loc) {
     if (loc == null) {
       return null;
     }
@@ -315,7 +315,7 @@ public interface MinecraftAudiences {
    * @return adventure component
    * @since 6.0.0
    */
-  default @NotNull Component toAdventure(final net.minecraft.network.chat.@NotNull Component vanilla) {
+  default @NotNull Component asAdventure(final net.minecraft.network.chat.@NotNull Component vanilla) {
     return this.nonWrappingSerializer().deserialize(vanilla);
   }
 }

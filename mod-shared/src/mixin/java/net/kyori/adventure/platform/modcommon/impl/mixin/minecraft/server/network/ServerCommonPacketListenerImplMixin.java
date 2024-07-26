@@ -81,7 +81,7 @@ public abstract class ServerCommonPacketListenerImplMixin implements ServerCommo
     if (state != null) { // adventure-tracked
       state.cb().packEventReceived(
         pkt.id(),
-        GameEnums.RESOURCE_PACK_STATUS.toAdventure(pkt.action()),
+        GameEnums.RESOURCE_PACK_STATUS.asAdventure(pkt.action()),
         state.controller().player(this.shadow$playerProfile().getId())
       );
       ci.cancel();
