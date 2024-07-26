@@ -25,7 +25,7 @@ package net.kyori.adventure.platform.modcommon.impl.mixin.brigadier.exceptions;
 
 import com.mojang.brigadier.Message;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.kyori.adventure.platform.modcommon.MinecraftAudiences;
+import net.kyori.adventure.platform.modcommon.impl.NonWrappingComponentSerializer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.util.ComponentMessageThrowable;
 import net.minecraft.network.chat.ComponentUtils;
@@ -43,6 +43,8 @@ abstract class CommandSyntaxExceptionMixin implements ComponentMessageThrowable 
   public @NotNull Component componentMessage() {
     final net.minecraft.network.chat.Component minecraft = ComponentUtils.fromMessage(this.shadow$getRawMessage());
 
-    return MinecraftAudiences.nonWrappingSerializer().deserialize(minecraft);
+    // This will fail for registry-aware components, if this becomes relevant we would need
+    // to find a place to inject context.
+    return NonWrappingComponentSerializer.INSTANCE.deserialize(minecraft);
   }
 }

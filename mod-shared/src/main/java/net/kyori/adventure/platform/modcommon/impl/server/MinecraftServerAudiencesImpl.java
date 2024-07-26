@@ -43,6 +43,7 @@ import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.flattener.ComponentFlattener;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
+import net.kyori.adventure.text.serializer.ComponentSerializer;
 import net.kyori.adventure.translation.GlobalTranslator;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
@@ -169,6 +170,11 @@ public final class MinecraftServerAudiencesImpl implements MinecraftServerAudien
   }
 
   @Override
+  public @NotNull ComponentSerializer<Component, Component, net.minecraft.network.chat.Component> nonWrappingSerializer() {
+    return this.nonWrappingSerializer;
+  }
+
+  @Override
   public @NotNull ComponentFlattener flattener() {
     return AdventureCommon.FLATTENER;
   }
@@ -185,11 +191,6 @@ public final class MinecraftServerAudiencesImpl implements MinecraftServerAudien
     }
 
     return AdventureCommon.HOOKS.createWrappedComponent(requireNonNull(adventure, "adventure"), this.partition, this.renderer, this.nonWrappingSerializer);
-  }
-
-  @Override
-  public @NotNull Component toAdventure(final net.minecraft.network.chat.@NotNull Component vanilla) {
-    return this.nonWrappingSerializer.deserialize(vanilla);
   }
 
   public ServerBossBarListener bossBars() {

@@ -25,6 +25,7 @@ package net.kyori.adventure.platform.modcommon.impl.client;
 
 import java.util.function.Function;
 import net.kyori.adventure.platform.modcommon.MinecraftClientAudiences;
+import net.kyori.adventure.platform.modcommon.impl.NonWrappingComponentSerializer;
 import net.kyori.adventure.platform.modcommon.impl.WrappedComponent;
 import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.text.Component;
@@ -33,7 +34,7 @@ import org.jetbrains.annotations.Nullable;
 
 public final class ClientWrappedComponent extends WrappedComponent {
   public ClientWrappedComponent(final Component wrapped, final @Nullable Function<Pointered, ?> partition, final @Nullable ComponentRenderer<Pointered> renderer) {
-    super(wrapped, partition, renderer, null);
+    super(wrapped, partition, renderer, NonWrappingComponentSerializer.INSTANCE);
   }
 
   @Override

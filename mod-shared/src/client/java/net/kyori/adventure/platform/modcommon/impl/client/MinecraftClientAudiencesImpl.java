@@ -32,6 +32,7 @@ import net.kyori.adventure.platform.modcommon.impl.NonWrappingComponentSerialize
 import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.text.flattener.ComponentFlattener;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
+import net.kyori.adventure.text.serializer.ComponentSerializer;
 import net.kyori.adventure.translation.GlobalTranslator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -61,6 +62,11 @@ public class MinecraftClientAudiencesImpl implements MinecraftClientAudiences, M
   }
 
   @Override
+  public @NotNull ComponentSerializer<net.kyori.adventure.text.Component, net.kyori.adventure.text.Component, Component> nonWrappingSerializer() {
+    return NonWrappingComponentSerializer.INSTANCE;
+  }
+
+  @Override
   public @NotNull ComponentFlattener flattener() {
     return AdventureCommon.FLATTENER;
   }
@@ -73,11 +79,6 @@ public class MinecraftClientAudiencesImpl implements MinecraftClientAudiences, M
   @Override
   public @NotNull Component toNative(final net.kyori.adventure.text.@NotNull Component adventure) {
     return new ClientWrappedComponent(requireNonNull(adventure, "adventure"), this.partition, this.renderer);
-  }
-
-  @Override
-  public net.kyori.adventure.text.@NotNull Component toAdventure(final @NotNull Component vanilla) {
-    return NonWrappingComponentSerializer.INSTANCE.deserialize(vanilla);
   }
 
   public Function<Pointered, ?> partition() {

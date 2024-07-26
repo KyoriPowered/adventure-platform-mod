@@ -170,9 +170,7 @@ public interface MinecraftAudiences {
    * @return a serializer instance
    * @since 6.0.0
    */
-  static @NotNull ComponentSerializer<Component, Component, net.minecraft.network.chat.Component> nonWrappingSerializer() {
-    return NonWrappingComponentSerializer.INSTANCE;
-  }
+  @NotNull ComponentSerializer<Component, Component, net.minecraft.network.chat.Component> nonWrappingSerializer();
 
   /**
    * Get a {@link Player} identified by their profile's {@link java.util.UUID}.
@@ -315,5 +313,7 @@ public interface MinecraftAudiences {
    * @return adventure component
    * @since 6.0.0
    */
-  @NotNull Component toAdventure(final net.minecraft.network.chat.@NotNull Component vanilla);
+  default @NotNull Component toAdventure(final net.minecraft.network.chat.@NotNull Component vanilla) {
+    return this.nonWrappingSerializer().deserialize(vanilla);
+  }
 }

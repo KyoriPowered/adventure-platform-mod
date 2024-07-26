@@ -27,12 +27,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
-import net.kyori.adventure.platform.modcommon.MinecraftAudiences;
 import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.pointer.Pointers;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
-import net.kyori.adventure.text.serializer.ComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentContents;
@@ -40,6 +38,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.contents.PlainTextContents;
 import net.minecraft.util.FormattedCharSequence;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -49,7 +48,7 @@ public class WrappedComponent implements Component {
   private final net.kyori.adventure.text.Component wrapped;
   private final @Nullable Function<Pointered, ?> partition;
   private final @Nullable ComponentRenderer<Pointered> renderer;
-  private final @Nullable NonWrappingComponentSerializer nonWrappingSerializer;
+  private final @NonNull NonWrappingComponentSerializer nonWrappingSerializer;
   private @Nullable Object lastData;
   private @Nullable WrappedComponent lastRendered;
 
@@ -57,7 +56,7 @@ public class WrappedComponent implements Component {
     final net.kyori.adventure.text.Component wrapped,
     final @Nullable Function<Pointered, ?> partition,
     final @Nullable ComponentRenderer<Pointered> renderer,
-    final @Nullable NonWrappingComponentSerializer nonWrappingComponentSerializer
+    final NonWrappingComponentSerializer nonWrappingComponentSerializer
   ) {
     this.wrapped = wrapped;
     this.partition = partition;
@@ -99,11 +98,7 @@ public class WrappedComponent implements Component {
   public Component deepConverted() {
     Component converted = this.converted;
     if (converted == null || this.deepConvertedLocalized != null) {
-      ComponentSerializer<net.kyori.adventure.text.Component, net.kyori.adventure.text.Component, Component> serializer = this.nonWrappingSerializer;
-      if (serializer == null) {
-        serializer = MinecraftAudiences.nonWrappingSerializer();
-      }
-      converted = this.converted = serializer.serialize(this.wrapped);
+      converted = this.converted = this.nonWrappingSerializer.serialize(this.wrapped);
       this.deepConvertedLocalized = null;
     }
     return converted;

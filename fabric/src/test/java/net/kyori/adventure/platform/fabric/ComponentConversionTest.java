@@ -37,6 +37,7 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.modcommon.impl.AdventureCommon;
+import net.kyori.adventure.platform.modcommon.impl.NonWrappingComponentSerializer;
 import net.kyori.adventure.platform.modcommon.impl.WrappedComponent;
 import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.text.Component;
@@ -134,6 +135,6 @@ class ComponentConversionTest extends BootstrappedTest {
 
   private WrappedComponent toNativeWrapped(final Component component) {
     final Function<Pointered, Locale> partition = AdventureCommon.localePartition();
-    return new WrappedComponent(component, partition, GlobalTranslator.renderer().mapContext(partition), null);
+    return new WrappedComponent(component, partition, GlobalTranslator.renderer().mapContext(partition), NonWrappingComponentSerializer.INSTANCE);
   }
 }
