@@ -33,6 +33,7 @@ import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.key.Keyed;
 import net.kyori.adventure.platform.modcommon.impl.AdventureCommon;
+import net.kyori.adventure.platform.modcommon.impl.MinecraftAudiencesInternal;
 import net.kyori.adventure.platform.modcommon.impl.NonWrappingComponentSerializer;
 import net.kyori.adventure.platform.modcommon.impl.WrappedComponent;
 import net.kyori.adventure.platform.modcommon.impl.nbt.ModDataComponentValue;
@@ -83,7 +84,7 @@ public interface MinecraftAudiences {
    * @return new component
    * @since 6.0.0
    */
-  static net.minecraft.network.chat.@NotNull Component update(final net.minecraft.network.chat.@NotNull Component input, final UnaryOperator<Component> modifier) {
+  default net.minecraft.network.chat.@NotNull Component update(final net.minecraft.network.chat.@NotNull Component input, final UnaryOperator<Component> modifier) {
     final Component modified;
     final @Nullable Function<Pointered, ?> partition;
     final @Nullable ComponentRenderer<Pointered> renderer;
@@ -92,12 +93,12 @@ public interface MinecraftAudiences {
       partition = ((WrappedComponent) input).partition();
       renderer = ((WrappedComponent) input).renderer();
     } else {
-      final Component original = NonWrappingComponentSerializer.INSTANCE.deserialize(input);
+      final Component original = this.toAdventure(input);
       modified = modifier.apply(original);
       partition = null;
       renderer = null;
     }
-    return AdventureCommon.HOOKS.createWrappedComponent(modified, partition, renderer, null);
+    return AdventureCommon.HOOKS.createWrappedComponent(modified, partition, renderer, new NonWrappingComponentSerializer(((MinecraftAudiencesInternal) this)::registryAccess));
   }
 
   /**
