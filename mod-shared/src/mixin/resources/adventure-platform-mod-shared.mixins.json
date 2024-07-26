@@ -6,6 +6,7 @@
     "api.SignedMessageMixin",
     "authlib.GameProfileMixin",
     "brigadier.exceptions.CommandSyntaxExceptionMixin",
+    "minecraft.commands.CommandsMixin",
     "minecraft.commands.CommandSourceStackMixin",
     "minecraft.network.FriendlyByteBufMixin",
     "minecraft.network.chat.ClickEvent_ActionMixin",
