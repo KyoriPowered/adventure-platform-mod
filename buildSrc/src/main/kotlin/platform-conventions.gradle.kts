@@ -1,5 +1,6 @@
 plugins {
-  `java-library`
+  id("net.kyori.indra")
+  id("net.kyori.indra.checkstyle")
 }
 
 val jarInJar = configurations.create("jarInJar")
@@ -45,4 +46,6 @@ dependencies {
   testImplementation(libs.junit.params)
   testRuntimeOnly(libs.junit.engine)
   testRuntimeOnly(libs.junit.launcher)
+
+  checkstyle(libs.stylecheck)
 }

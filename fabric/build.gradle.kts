@@ -11,10 +11,8 @@ plugins {
   alias(libs.plugins.eclipseApt)
   alias(libs.plugins.loom)
   alias(libs.plugins.configurateTransformations)
-  alias(libs.plugins.indra)
   alias(libs.plugins.indra.publishing)
   alias(libs.plugins.indra.licenseHeader)
-  alias(libs.plugins.indra.checkstyle)
   alias(libs.plugins.indra.crossdoc)
   alias(libs.plugins.ideaExt)
   id("com.diffplug.spotless")
@@ -39,8 +37,6 @@ dependencies {
   modImplementation(libs.fabric.loader)
 
   testImplementation(libs.fabric.loader.junit)
-
-  checkstyle(libs.stylecheck)
 
   localRuntime(project(":adventure-platform-mod-shared"))
   compileOnly(project(":adventure-platform-mod-shared"))

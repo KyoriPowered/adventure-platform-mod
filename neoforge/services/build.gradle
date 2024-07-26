@@ -1,26 +1,3 @@
 plugins {
-  id 'java-library'
-  alias(libs.plugins.indra.checkstyle)
-}
-
-dependencies {
-  annotationProcessor(libs.autoService)
-  annotationProcessor(libs.contractValidator)
-  compileOnlyApi(libs.autoService.annotations)
-
-  [
-    libs.adventure.key,
-    libs.adventure.api,
-    libs.adventure.textLoggerSlf4j,
-    libs.adventure.textMinimessage,
-    libs.adventure.textSerializerPlain,
-    libs.adventure.textSerializerAnsi,
-    libs.adventure.textSerializerGson
-  ].each {
-    compileOnly(it) {
-      exclude group: "org.slf4j", module: "slf4j-api"
-    }
-  }
-
-  checkstyle(libs.stylecheck)
+  id 'platform-conventions'
 }

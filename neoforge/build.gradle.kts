@@ -3,10 +3,8 @@ import net.neoforged.moddevgradle.internal.RunGameTask
 plugins {
   alias(libs.plugins.eclipseApt)
   alias(libs.plugins.configurateTransformations)
-  alias(libs.plugins.indra)
   alias(libs.plugins.indra.publishing)
   alias(libs.plugins.indra.licenseHeader)
-  alias(libs.plugins.indra.checkstyle)
   alias(libs.plugins.indra.crossdoc)
   alias(libs.plugins.ideaExt)
   id("com.diffplug.spotless")
@@ -56,8 +54,6 @@ configurations.jarJar {
 }
 
 dependencies {
-  checkstyle(libs.stylecheck)
-
   compileOnly(project(":adventure-platform-neoforge:adventure-platform-neoforge-services"))
   jarJar(project(":adventure-platform-neoforge:adventure-platform-neoforge-services"))
 

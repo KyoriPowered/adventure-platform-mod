@@ -1,6 +1,5 @@
 plugins {
   id 'net.neoforged.moddev'
-  alias(libs.plugins.indra.checkstyle)
   id 'platform-conventions'
 }
 
@@ -15,8 +14,6 @@ neoForge {
 dependencies {
   compileOnly(libs.mixin)
   compileOnly(libs.mixinExtras)
-
-  checkstyle(libs.stylecheck)
 }
 
 sourceSets {
