@@ -72,7 +72,7 @@ public final class ClickCallbackRegistry {
    * @param callback the callback to register
    * @param options options
    * @return a new callback handler command
-   * @since 6.0.0 5.7.0
+   * @since 6.0.0
    */
   public String register(final ClickCallback<Audience> callback, final ClickCallback.Options options) {
     final UUID id = UUID.randomUUID();
