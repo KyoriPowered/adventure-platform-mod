@@ -24,10 +24,12 @@
 package net.kyori.adventure.platform.modcommon.impl.mixin.minecraft.network.chat;
 
 import java.time.Instant;
+import java.util.Objects;
 import java.util.stream.Stream;
 import net.kyori.adventure.chat.SignedMessage;
 import net.kyori.adventure.identity.Identity;
-import net.kyori.adventure.platform.modcommon.impl.NonWrappingComponentSerializer;
+import net.kyori.adventure.platform.modcommon.impl.MinecraftAudiencesInternal;
+import net.kyori.adventure.platform.modcommon.impl.PlayerChatMessageBridge;
 import net.kyori.adventure.text.Component;
 import net.kyori.examination.ExaminableProperty;
 import net.minecraft.network.chat.FilterMask;
@@ -43,10 +45,13 @@ import org.spongepowered.asm.mixin.Interface;
 import org.spongepowered.asm.mixin.Intrinsic;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Implements(@Interface(iface = SignedMessage.class, prefix = "signedMessage$"))
 @Mixin(PlayerChatMessage.class)
-public abstract class PlayerChatMessageMixin implements SignedMessage {
+public abstract class PlayerChatMessageMixin implements SignedMessage, PlayerChatMessageBridge {
 
   // @formatter:off
   @Shadow public abstract MessageSignature shadow$signature();
@@ -61,6 +66,8 @@ public abstract class PlayerChatMessageMixin implements SignedMessage {
   @Shadow @Final private net.minecraft.network.chat.@Nullable Component unsignedContent;
   @Shadow @Final private FilterMask filterMask;
   // @formatter:on
+
+  private MinecraftAudiencesInternal adventure$controller;
 
   @Override
   public @NotNull Identity identity() {
@@ -83,10 +90,31 @@ public abstract class PlayerChatMessageMixin implements SignedMessage {
   }
 
   @Override
+  public void adventure$controller(final MinecraftAudiencesInternal controller) {
+    this.adventure$controller = controller;
+  }
+
+  @Override
   public @Nullable Component unsignedContent() {
-    // Hope this isn't a registry-aware component :)
-    // TODO: Should we move from a Mixin to a context-injecting conversion method on *Audiences?
-    return NonWrappingComponentSerializer.INSTANCE.deserializeOrNull(this.shadow$unsignedContent());
+    final MinecraftAudiencesInternal controller = Objects.requireNonNull(this.adventure$controller, "Missing controller");
+    final net.minecraft.network.chat.Component unsignedContent = this.shadow$unsignedContent();
+    if (unsignedContent == null) {
+      return null;
+    }
+    return controller.toAdventure(unsignedContent);
+  }
+
+  @Inject(
+    method = {
+      "withUnsignedContent",
+      "removeUnsignedContent",
+      "filter(Lnet/minecraft/network/chat/FilterMask;)Lnet/minecraft/network/chat/PlayerChatMessage;",
+      "removeSignature"
+    },
+    at = @At(value = "RETURN")
+  )
+  private void injectCopyCreation(final CallbackInfoReturnable<PlayerChatMessage> cir) {
+    ((PlayerChatMessageBridge) (Object) cir.getReturnValue()).adventure$controller(this.adventure$controller);
   }
 
   @Override

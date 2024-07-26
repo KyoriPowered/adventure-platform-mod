@@ -35,6 +35,7 @@ import net.kyori.adventure.key.Keyed;
 import net.kyori.adventure.platform.modcommon.impl.AdventureCommon;
 import net.kyori.adventure.platform.modcommon.impl.MinecraftAudiencesInternal;
 import net.kyori.adventure.platform.modcommon.impl.NonWrappingComponentSerializer;
+import net.kyori.adventure.platform.modcommon.impl.PlayerChatMessageBridge;
 import net.kyori.adventure.platform.modcommon.impl.WrappedComponent;
 import net.kyori.adventure.platform.modcommon.impl.nbt.ModDataComponentValue;
 import net.kyori.adventure.pointer.Pointered;
@@ -260,7 +261,8 @@ public interface MinecraftAudiences {
    * @return signed message
    * @since 6.0.0
    */
-  static @NotNull SignedMessage asAdventure(final @NotNull PlayerChatMessage message) {
+  default @NotNull SignedMessage asAdventure(final @NotNull PlayerChatMessage message) {
+    ((PlayerChatMessageBridge) (Object) message).adventure$controller((MinecraftAudiencesInternal) this);
     return (SignedMessage) (Object) message;
   }
 
