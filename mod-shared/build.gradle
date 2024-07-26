@@ -1,11 +1,11 @@
 plugins {
   id 'net.neoforged.moddev'
   alias(libs.plugins.indra.checkstyle)
+  id 'platform-conventions'
 }
 
 neoForge {
-  // Look for versions on https://projects.neoforged.net/neoforged/neoform
-  neoFormVersion = "1.21-20240613.152323"
+  neoFormVersion = libs.versions.neoform
 
   parchment {
     parchmentArtifact = "org.parchmentmc.data:parchment-${libs.versions.parchment.get()}@zip"
@@ -15,31 +15,6 @@ neoForge {
 dependencies {
   compileOnly(libs.mixin)
   compileOnly(libs.mixinExtras)
-  annotationProcessor(libs.autoService)
-  annotationProcessor(libs.contractValidator)
-  compileOnlyApi(libs.autoService.annotations)
-
-  [
-    libs.adventure.key,
-    libs.adventure.api,
-    libs.adventure.textLoggerSlf4j,
-    libs.adventure.textMinimessage,
-    libs.adventure.textSerializerPlain,
-    libs.adventure.textSerializerAnsi
-  ].each {
-    api(it) {
-      exclude group: "org.slf4j", module: "slf4j-api"
-    }
-  }
-
-  [
-    libs.adventure.platform.api,
-    libs.adventure.textSerializerGson
-  ].each {
-    api(it) {
-      exclude group: "com.google.code.gson"
-    }
-  }
 
   checkstyle(libs.stylecheck)
 }

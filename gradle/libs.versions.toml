@@ -17,6 +17,7 @@ parchment = "1.20.6:2024.06.02"
 vineflower = "1.10.1"
 spotless = "6.25.0"
 neoforge = "21.0.114-beta"
+neoform = "1.21-20240613.152323"
 
 [libraries]
 adventure-api = { module = "net.kyori:adventure-api", version.ref = "adventure" }
@@ -38,6 +39,8 @@ option = { module = "net.kyori:option", version = "1.0.0" }
 # mod-shared
 mixin = "net.fabricmc:sponge-mixin:0.13.4+mixin.0.8.5"
 mixinExtras = "io.github.llamalad7:mixinextras-common:0.4.0"
+# For Renovate, do not use directly
+zNeoform = { module = "net.neoforged:neoform", version.ref = "neoform" }
 
 # fabric
 fabric-loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabricLoader"}

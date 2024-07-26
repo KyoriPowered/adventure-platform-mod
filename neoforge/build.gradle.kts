@@ -11,6 +11,7 @@ plugins {
   alias(libs.plugins.ideaExt)
   id("com.diffplug.spotless")
   id("net.neoforged.moddev")
+  id("platform-conventions")
 }
 
 neoForge {
@@ -50,61 +51,11 @@ tasks.withType<RunGameTask>().configureEach {
   }
 }
 
-spotless {
-  //ratchetFrom("origin/mc/${libs.versions.minecraft.get().splitToSequence('.').take(2).joinToString(".")}")
-  ratchetFrom("origin/mc/1.20")
-
-  java {
-    importOrderFile(rootProject.file(".spotless/kyori.importorder"))
-    trimTrailingWhitespace()
-    endWithNewline()
-    indentWithSpaces(2)
-    removeUnusedImports()
-  }
+configurations.jarJar {
+  extendsFrom(configurations.jarInJar.get())
 }
 
 dependencies {
-  annotationProcessor(libs.autoService)
-  annotationProcessor(libs.contractValidator)
-  compileOnlyApi(libs.autoService.annotations)
-  sequenceOf(
-    libs.adventure.key,
-    libs.adventure.api,
-    libs.adventure.textLoggerSlf4j,
-    libs.adventure.textMinimessage,
-    libs.adventure.textSerializerPlain,
-    libs.adventure.textSerializerAnsi
-  ).forEach {
-    api(it) {
-      exclude("org.slf4j", "slf4j-api")
-    }
-    jarJar(it)
-  }
-
-  sequenceOf(
-    libs.adventure.platform.api,
-    libs.adventure.textSerializerGson
-  ).forEach {
-    api(it) {
-      exclude("com.google.code.gson")
-    }
-    jarJar(it)
-  }
-
-  // Transitive deps
-  jarJar(libs.examination.api)
-  jarJar(libs.examination.string)
-  jarJar(libs.adventure.textSerializerJson)
-  jarJar(libs.ansi)
-  jarJar(libs.option)
-  compileOnly(libs.jetbrainsAnnotations)
-
-  testImplementation(platform(libs.junit.bom))
-  testImplementation(libs.junit.api)
-  testImplementation(libs.junit.params)
-  testRuntimeOnly(libs.junit.engine)
-  testRuntimeOnly(libs.junit.launcher)
-
   checkstyle(libs.stylecheck)
 
   compileOnly(project(":adventure-platform-neoforge:adventure-platform-neoforge-services"))
@@ -152,14 +103,6 @@ tasks {
     filesMatching("META-INF/neoforge.mods.toml") {
       expand(props)
     }
-  }
-}
-
-// Workaround for both loom and indra doing publication logic in an afterEvaluate :(
-indra.includeJavaSoftwareComponentInPublications(false)
-publishing {
-  publications.named("maven", MavenPublication::class) {
-    from(components["java"])
   }
 }
 

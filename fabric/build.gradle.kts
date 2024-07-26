@@ -18,49 +18,15 @@ plugins {
   alias(libs.plugins.indra.crossdoc)
   alias(libs.plugins.ideaExt)
   id("com.diffplug.spotless")
+  id("platform-conventions")
 }
 
-spotless {
-  //ratchetFrom("origin/mc/${libs.versions.minecraft.get().splitToSequence('.').take(2).joinToString(".")}")
-  ratchetFrom("origin/mc/1.20")
-
-  java {
-    importOrderFile(rootProject.file(".spotless/kyori.importorder"))
-    trimTrailingWhitespace()
-    endWithNewline()
-    indentWithSpaces(2)
-    removeUnusedImports()
-  }
+configurations.include {
+  extendsFrom(configurations.jarInJar.get())
 }
 
 dependencies {
   vineflowerDecompilerClasspath(libs.vineflower)
-  annotationProcessor(libs.autoService)
-  annotationProcessor(libs.contractValidator)
-  compileOnlyApi(libs.autoService.annotations)
-  sequenceOf(
-    libs.adventure.key,
-    libs.adventure.api,
-    libs.adventure.textLoggerSlf4j,
-    libs.adventure.textMinimessage,
-    libs.adventure.textSerializerPlain,
-    libs.adventure.textSerializerAnsi
-  ).forEach {
-    modApi(it) {
-      exclude("org.slf4j", "slf4j-api")
-    }
-    include(it)
-  }
-
-  sequenceOf(
-    libs.adventure.platform.api,
-    libs.adventure.textSerializerGson
-  ).forEach {
-   modApi(it) {
-     exclude("com.google.code.gson")
-   }
-   include(it)
-  }
   sequenceOf<(Any) -> Dependency?>(
     ::modImplementation, ::modApi, ::modCompileOnly
   ).forEach { it(platform(libs.fabric.api.bom)) }
@@ -70,22 +36,9 @@ dependencies {
   // Only used for prod test
   modCompileOnly(libs.fabric.api.lifecycle)
 
-  // Transitive deps
-  include(libs.examination.api)
-  include(libs.examination.string)
-  include(libs.adventure.textSerializerJson)
-  include(libs.ansi)
-  include(libs.option)
-  modCompileOnly(libs.jetbrainsAnnotations)
-
   modImplementation(libs.fabric.loader)
 
   testImplementation(libs.fabric.loader.junit)
-  testImplementation(platform(libs.junit.bom))
-  testImplementation(libs.junit.api)
-  testImplementation(libs.junit.params)
-  testRuntimeOnly(libs.junit.engine)
-  testRuntimeOnly(libs.junit.launcher)
 
   checkstyle(libs.stylecheck)
 

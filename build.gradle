@@ -15,13 +15,31 @@ indraSonatype {
   useAlternateSonatypeOSSHost("s01")
 }
 
-subprojects {
+allprojects {
+  // subprojects would not configure second layer subprojects
+  if (this == rootProject) {
+    return
+  }
+
   apply plugin: "net.kyori.indra"
   apply plugin: "net.kyori.indra.checkstyle"
   apply plugin: "net.kyori.indra.licenser.spotless"
 
   indraSpotlessLicenser {
     licenseHeaderFile(rootProject.file("LICENSE_HEADER"))
+  }
+
+  spotless {
+    //ratchetFrom("origin/mc/${libs.versions.minecraft.get().splitToSequence('.').take(2).joinToString(".")}")
+    ratchetFrom("origin/mc/1.20")
+
+    java {
+      importOrderFile(rootProject.file(".spotless/kyori.importorder"))
+      trimTrailingWhitespace()
+      endWithNewline()
+      indentWithSpaces(2)
+      removeUnusedImports()
+    }
   }
 
   indra {
@@ -67,9 +85,7 @@ subprojects {
       javaLauncher.set(javaToolchains.launcherFor { languageVersion.set(indra.javaVersions().target().map { v -> JavaLanguageVersion.of(v) })})
     }
   }
-}
 
-allprojects {
   // Loom-specific
   plugins.withId('fabric-loom') {
     dependencies {
