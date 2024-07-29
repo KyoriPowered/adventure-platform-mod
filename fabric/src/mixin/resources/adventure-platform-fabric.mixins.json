@@ -2,6 +2,8 @@
   "package": "net.kyori.adventure.platform.fabric.impl.mixin",
   "parent": "adventure-platform-mod-shared.parent.mixins.json",
   "mixins": [
+    "api.KeyMixin",
+    "api.SignedMessageMixin",
     "minecraft.commands.CommandsMixin",
     "minecraft.commands.synchronization.ArgumentTypeInfosMixin",
     "minecraft.commands.synchronization.ArgumentUtilsMixin",

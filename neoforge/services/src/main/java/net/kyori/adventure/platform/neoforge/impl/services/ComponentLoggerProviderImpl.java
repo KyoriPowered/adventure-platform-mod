@@ -21,29 +21,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.adventure.platform.modcommon.impl.mixin.api;
+package net.kyori.adventure.platform.neoforge.impl.services;
 
-import net.kyori.adventure.chat.SignedMessage;
-import net.minecraft.network.chat.MessageSignature;
-import org.jetbrains.annotations.Contract;
+import com.google.auto.service.AutoService;
+import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
+import net.kyori.adventure.text.logger.slf4j.ComponentLoggerProvider;
 import org.jetbrains.annotations.NotNull;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
 
-@Mixin(value = SignedMessage.class, remap = false)
-public interface SignedMessageMixin {
-  /**
-   * Create a signature.
-   *
-   * @author zml
-   * @param bytes input
-   * @return the signature
-   * @since 6.0.0
-   * @reason To replace the Adventure signature implementation with the Minecraft one.
-   */
-  @Contract(value = "_ -> new", pure = true)
-  @Overwrite
-  static SignedMessage.@NotNull Signature signature(final byte[] bytes) {
-    return (SignedMessage.Signature) (Object) new MessageSignature(bytes);
+@AutoService(net.kyori.adventure.text.logger.slf4j.ComponentLoggerProvider.class)
+public final class ComponentLoggerProviderImpl implements net.kyori.adventure.text.logger.slf4j.ComponentLoggerProvider {
+  public static ComponentLoggerProvider DELEGATE;
+
+  @Override
+  public @NotNull ComponentLogger logger(final @NotNull LoggerHelper helper, final @NotNull String name) {
+    return DELEGATE.logger(helper, name);
   }
 }

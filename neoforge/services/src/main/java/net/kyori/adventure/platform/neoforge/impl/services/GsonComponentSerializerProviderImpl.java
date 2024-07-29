@@ -21,35 +21,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.adventure.platform.modcommon.impl.mixin.api;
+package net.kyori.adventure.platform.neoforge.impl.services;
 
-import net.kyori.adventure.key.InvalidKeyException;
-import net.kyori.adventure.key.Key;
-import net.kyori.adventure.platform.modcommon.impl.accessor.api.key.InvalidKeyExceptionAccess;
-import net.minecraft.ResourceLocationException;
-import net.minecraft.resources.ResourceLocation;
+import com.google.auto.service.AutoService;
+import java.util.function.Consumer;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.jetbrains.annotations.NotNull;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
 
-@Mixin(value = Key.class, remap = false)
-public interface KeyMixin {
-  /**
-   * Creates a key.
-   *
-   * @param namespace the namespace
-   * @param value the value
-   * @return the key
-   * @throws InvalidKeyException if the namespace or value contains an invalid character
-   * @reason implemented by mixin to the Vanilla class
-   */
-  @Overwrite
-  @SuppressWarnings("overwrite")
-  static @NotNull Key key(final String namespace, final String value) {
-    try {
-      return (Key) (Object) ResourceLocation.fromNamespaceAndPath(namespace, value);
-    } catch (final ResourceLocationException ex) {
-      throw InvalidKeyExceptionAccess.newInvalidKeyException(namespace, value, ex.getMessage());
-    }
+@AutoService(GsonComponentSerializer.Provider.class)
+public final class GsonComponentSerializerProviderImpl implements GsonComponentSerializer.Provider {
+  public static GsonComponentSerializer.Provider DELEGATE;
+
+  @Override
+  public @NotNull GsonComponentSerializer gson() {
+    return DELEGATE.gson();
+  }
+
+  @Override
+  public @NotNull GsonComponentSerializer gsonLegacy() {
+    return DELEGATE.gsonLegacy();
+  }
+
+  @Override
+  public @NotNull Consumer<GsonComponentSerializer.Builder> builder() {
+    return DELEGATE.builder();
   }
 }

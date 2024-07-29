@@ -123,21 +123,21 @@ public interface MinecraftAudiences {
   /**
    * Convert a Kyori {@link Key} instance to a MC ResourceLocation.
    *
-   * <p>All {@link Key} instances created in an environment with this
-   * mod are implemented by {@link ResourceLocation},
-   * so this is effectively a cast.</p>
-   *
    * @param key The Key to convert
-   * @return The equivalent data as an Identifier
+   * @return The equivalent data as a resource location
    * @since 6.0.0
    */
+  @SuppressWarnings("ConstantValue")
   @Contract("null -> null; !null -> !null")
   static ResourceLocation toNative(final Key key) {
     if (key == null) {
       return null;
     }
 
-    return (ResourceLocation) (Object) key;
+    if ((Object) key instanceof ResourceLocation loc) {
+      return loc;
+    }
+    return ResourceLocation.fromNamespaceAndPath(key.namespace(), key.value());
   }
 
   /**
@@ -252,6 +252,21 @@ public interface MinecraftAudiences {
   @SuppressWarnings("DataFlowIssue")
   static SignedMessage.@NotNull Signature asAdventure(final @NotNull MessageSignature signature) {
     return (SignedMessage.Signature) (Object) signature;
+  }
+
+  /**
+   * Returns a native view of the provided {@link SignedMessage.Signature}.
+   *
+   * @param signature message signature
+   * @return native message signature
+   * @since 6.0.0
+   */
+  @SuppressWarnings("ConstantValue")
+  static @NotNull MessageSignature toNative(final SignedMessage.@NotNull Signature signature) {
+    if ((Object) signature instanceof MessageSignature nativeSig) {
+      return nativeSig;
+    }
+    return new MessageSignature(signature.bytes());
   }
 
   /**

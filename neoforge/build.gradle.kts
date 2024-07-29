@@ -49,34 +49,14 @@ tasks.withType<RunGameTask>().configureEach {
   }
 }
 
-tasks {
-  // Force adventure libs to be GAMELIBRARY - fixes issues with service loaders and mixins to API
-  val injectMeta = register("injectGameLibraryMeta") {
-    dependsOn(jarJar)
-    doFirst {
-      val dir = jarJar.get().outputDirectory.get().asFile.toPath()
-      for (nestedJar in dir.resolve("META-INF/jarjar").listDirectoryEntries("*.jar")) {
-        FileSystems.newFileSystem(URI.create("jar:" + nestedJar.toUri()), emptyMap<String, Any>()).use { fs ->
-          val manifestPath = fs.rootDirectories.single().resolve("META-INF/MANIFEST.MF")
-          val manifest = manifestPath.inputStream().use { Manifest(it) }
-          if (manifest.mainAttributes.getValue("FMLModType") == null) {
-            manifest.mainAttributes.putValue("FMLModType", "GAMELIBRARY")
-          }
-          manifestPath.outputStream().use { manifest.write(it) }
-        }
-      }
-    }
-  }
-  jar {
-    dependsOn(injectMeta)
-  }
-}
-
 configurations.jarJar {
   extendsFrom(configurations.jarInJar.get())
 }
 
 dependencies {
+  implementation(project(":adventure-platform-neoforge:adventure-platform-neoforge-services"))
+  jarJar(project(":adventure-platform-neoforge:adventure-platform-neoforge-services"))
+
   compileOnlyApi(project(":adventure-platform-mod-shared"))
   jarJar(project(":adventure-platform-mod-shared"))
 }

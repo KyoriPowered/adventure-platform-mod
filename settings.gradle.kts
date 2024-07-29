@@ -57,5 +57,8 @@ findProject(":adventure-platform-fabric:mod-shared-repack")?.name = "adventure-p
 include(":adventure-platform-neoforge:tester")
 findProject(":adventure-platform-neoforge:tester")?.name = "adventure-platform-neoforge-tester"
 
+include(":adventure-platform-neoforge:services")
+findProject(":adventure-platform-neoforge:services")?.name = "adventure-platform-neoforge-services"
+
 include(":test-resources")
 findProject(":test-resources")?.projectDir = file("mod-shared/test-resources")
