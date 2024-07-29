@@ -4,6 +4,8 @@
   "mixins": [
     "api.KeyMixin",
     "api.SignedMessageMixin",
+    "authlib.GameProfileMixin",
+    "brigadier.exceptions.CommandSyntaxExceptionMixin",
     "minecraft.commands.CommandsMixin",
     "minecraft.commands.synchronization.ArgumentTypeInfosMixin",
     "minecraft.commands.synchronization.ArgumentUtilsMixin",

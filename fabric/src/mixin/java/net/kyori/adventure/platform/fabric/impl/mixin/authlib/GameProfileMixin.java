@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
- * Copyright (c) 2022-2024 KyoriPowered
+ * Copyright (c) 2020-2024 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,30 +21,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.adventure.platform.modcommon.impl.mixin.brigadier.exceptions;
+package net.kyori.adventure.platform.fabric.impl.mixin.authlib;
 
-import com.mojang.brigadier.Message;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.kyori.adventure.platform.modcommon.impl.NonWrappingComponentSerializer;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.util.ComponentMessageThrowable;
-import net.minecraft.network.chat.ComponentUtils;
+import com.mojang.authlib.GameProfile;
+import java.util.UUID;
+import net.kyori.adventure.identity.Identity;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
-@Mixin(value = CommandSyntaxException.class, remap = false)
-abstract class CommandSyntaxExceptionMixin implements ComponentMessageThrowable {
+@Mixin(value = GameProfile.class, remap = false)
+public abstract class GameProfileMixin implements Identity {
   // @formatter:off
-  @Shadow public abstract Message shadow$getRawMessage();
+  @Shadow public abstract UUID shadow$getId();
   // @formatter:on
 
   @Override
-  public @NotNull Component componentMessage() {
-    final net.minecraft.network.chat.Component minecraft = ComponentUtils.fromMessage(this.shadow$getRawMessage());
-
-    // This will fail for registry-aware components, if this becomes relevant we would need
-    // to find a place to inject context.
-    return NonWrappingComponentSerializer.INSTANCE.deserialize(minecraft);
+  public @NotNull UUID uuid() {
+    return this.shadow$getId();
   }
 }

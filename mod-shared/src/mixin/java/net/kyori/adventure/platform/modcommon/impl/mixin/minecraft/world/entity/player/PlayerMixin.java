@@ -26,6 +26,7 @@ package net.kyori.adventure.platform.modcommon.impl.mixin.minecraft.world.entity
 import com.mojang.authlib.GameProfile;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.platform.modcommon.IdentifiedAtRuntime;
+import net.kyori.adventure.platform.modcommon.MinecraftAudiences;
 import net.kyori.adventure.platform.modcommon.impl.AdventureCommon;
 import net.kyori.adventure.platform.modcommon.impl.NonWrappingComponentSerializer;
 import net.kyori.adventure.platform.modcommon.impl.PointerProviderBridge;
@@ -56,7 +57,7 @@ public abstract class PlayerMixin extends LivingEntity implements IdentifiedAtRu
 
   @Override
   public @NotNull Identity identity() {
-    return (Identity) this.gameProfile;
+    return MinecraftAudiences.identity(this.gameProfile);
   }
 
   @Override

@@ -2,8 +2,6 @@
   "package": "net.kyori.adventure.platform.modcommon.impl.mixin",
   "parent": "adventure-platform-mod-shared.parent.mixins.json",
   "mixins": [
-    "authlib.GameProfileMixin",
-    "brigadier.exceptions.CommandSyntaxExceptionMixin",
     "minecraft.commands.CommandSourceStackMixin",
     "minecraft.network.FriendlyByteBufMixin",
     "minecraft.network.chat.ClickEvent_ActionMixin",

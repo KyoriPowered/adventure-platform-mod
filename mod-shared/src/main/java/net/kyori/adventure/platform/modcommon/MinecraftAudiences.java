@@ -33,6 +33,7 @@ import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.key.Keyed;
 import net.kyori.adventure.platform.modcommon.impl.AdventureCommon;
+import net.kyori.adventure.platform.modcommon.impl.CommandSyntaxExceptionWrapper;
 import net.kyori.adventure.platform.modcommon.impl.MinecraftAudiencesInternal;
 import net.kyori.adventure.platform.modcommon.impl.NonWrappingComponentSerializer;
 import net.kyori.adventure.platform.modcommon.impl.PlayerChatMessageBridge;
@@ -161,8 +162,11 @@ public interface MinecraftAudiences {
    * @since 6.0.0
    */
   @Contract("null -> null; !null -> !null")
-  static ComponentMessageThrowable asComponentThrowable(final CommandSyntaxException ex) {
-    return (ComponentMessageThrowable) ex;
+  default ComponentMessageThrowable asComponentThrowable(final CommandSyntaxException ex) {
+    if (ex == null) {
+      return null;
+    }
+    return new CommandSyntaxExceptionWrapper(ex, this);
   }
 
   /**
@@ -198,7 +202,13 @@ public interface MinecraftAudiences {
    */
   @Contract("null -> null; !null -> !null")
   static Identity identity(final GameProfile profile) {
-    return (Identity) profile;
+    if (profile == null) {
+      return null;
+    }
+    if (profile instanceof Identity identity) {
+      return identity;
+    }
+    return Identity.identity(profile.getId());
   }
 
   /**
