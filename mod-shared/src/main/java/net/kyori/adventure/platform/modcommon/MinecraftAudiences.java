@@ -113,6 +113,7 @@ public interface MinecraftAudiences {
    * @since 6.0.0
    */
   @Contract("null -> null; !null -> !null")
+  @SuppressWarnings("DataFlowIssue")
   static Key asAdventure(final ResourceLocation loc) {
     if (loc == null) {
       return null;
@@ -127,8 +128,8 @@ public interface MinecraftAudiences {
    * @return The equivalent data as a resource location
    * @since 6.0.0
    */
-  @SuppressWarnings("ConstantValue")
   @Contract("null -> null; !null -> !null")
+  @SuppressWarnings("ConstantValue")
   static ResourceLocation asNative(final Key key) {
     if (key == null) {
       return null;
@@ -147,7 +148,8 @@ public interface MinecraftAudiences {
    * @return the entity as a sound emitter
    * @since 6.0.0
    */
-  static Sound.@NotNull Emitter asEmitter(final @NotNull Entity entity) {
+  @Contract("null -> null; !null -> !null")
+  static Sound.Emitter asEmitter(final Entity entity) {
     return (Sound.Emitter) entity;
   }
 
@@ -158,7 +160,8 @@ public interface MinecraftAudiences {
    * @return a converted command exception
    * @since 6.0.0
    */
-  static @NotNull ComponentMessageThrowable asComponentThrowable(final @NotNull CommandSyntaxException ex) {
+  @Contract("null -> null; !null -> !null")
+  static ComponentMessageThrowable asComponentThrowable(final CommandSyntaxException ex) {
     return (ComponentMessageThrowable) ex;
   }
 
@@ -181,7 +184,8 @@ public interface MinecraftAudiences {
    * @return an identified representation of the player
    * @since 6.0.0
    */
-  static @NotNull Identified identified(final @NotNull Player player) {
+  @Contract("null -> null; !null -> !null")
+  static Identified identified(final Player player) {
     return (Identified) player;
   }
 
@@ -192,7 +196,8 @@ public interface MinecraftAudiences {
    * @return an identity of the game profile
    * @since 6.0.0
    */
-  static @NotNull Identity identity(final @NotNull GameProfile profile) {
+  @Contract("null -> null; !null -> !null")
+  static Identity identity(final GameProfile profile) {
     return (Identity) profile;
   }
 
@@ -227,7 +232,8 @@ public interface MinecraftAudiences {
    * @return sound type
    * @since 6.0.0
    */
-  static Sound.@NotNull Type asSoundType(final @NotNull SoundEvent soundEvent) {
+  @Contract("null -> null; !null -> !null")
+  static Sound.Type asSoundType(final SoundEvent soundEvent) {
     return (Sound.Type) soundEvent;
   }
 
@@ -249,8 +255,9 @@ public interface MinecraftAudiences {
    * @return adventure message signature
    * @since 6.0.0
    */
+  @Contract("null -> null; !null -> !null")
   @SuppressWarnings("DataFlowIssue")
-  static SignedMessage.@NotNull Signature asAdventure(final @NotNull MessageSignature signature) {
+  static SignedMessage.Signature asAdventure(final MessageSignature signature) {
     return (SignedMessage.Signature) (Object) signature;
   }
 
@@ -261,8 +268,12 @@ public interface MinecraftAudiences {
    * @return native message signature
    * @since 6.0.0
    */
+  @Contract("null -> null; !null -> !null")
   @SuppressWarnings("ConstantValue")
-  static @NotNull MessageSignature asNative(final SignedMessage.@NotNull Signature signature) {
+  static MessageSignature asNative(final SignedMessage.Signature signature) {
+    if (signature == null) {
+      return null;
+    }
     if ((Object) signature instanceof MessageSignature nativeSig) {
       return nativeSig;
     }
@@ -276,7 +287,12 @@ public interface MinecraftAudiences {
    * @return signed message
    * @since 6.0.0
    */
-  default @NotNull SignedMessage asAdventure(final @NotNull PlayerChatMessage message) {
+  @Contract("null -> null; !null -> !null")
+  @SuppressWarnings("DataFlowIssue")
+  default SignedMessage asAdventure(final PlayerChatMessage message) {
+    if (message == null) {
+      return null;
+    }
     ((PlayerChatMessageBridge) (Object) message).adventure$controller((MinecraftAudiencesInternal) this);
     return (SignedMessage) (Object) message;
   }
@@ -321,7 +337,8 @@ public interface MinecraftAudiences {
    * @return native representation
    * @since 6.0.0
    */
-  net.minecraft.network.chat.@NotNull Component asNative(final @NotNull Component adventure);
+  @Contract("null -> null; !null -> !null")
+  net.minecraft.network.chat.Component asNative(Component adventure);
 
   /**
    * Get an adventure {@link Component} from a native {@link net.minecraft.network.chat.Component}.
@@ -330,7 +347,8 @@ public interface MinecraftAudiences {
    * @return adventure component
    * @since 6.0.0
    */
-  default @NotNull Component asAdventure(final net.minecraft.network.chat.@NotNull Component vanilla) {
-    return this.nonWrappingSerializer().deserialize(vanilla);
+  @Contract("null -> null; !null -> !null")
+  default Component asAdventure(final net.minecraft.network.chat.Component vanilla) {
+    return this.nonWrappingSerializer().deserializeOrNull(vanilla);
   }
 }

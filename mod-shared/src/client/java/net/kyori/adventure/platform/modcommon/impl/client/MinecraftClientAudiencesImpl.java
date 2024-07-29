@@ -77,7 +77,10 @@ public class MinecraftClientAudiencesImpl implements MinecraftClientAudiences, M
   }
 
   @Override
-  public @NotNull Component asNative(final net.kyori.adventure.text.@NotNull Component adventure) {
+  public Component asNative(final net.kyori.adventure.text.Component adventure) {
+    if (adventure == null) {
+      return null;
+    }
     return new ClientWrappedComponent(requireNonNull(adventure, "adventure"), this.partition, this.renderer);
   }
 

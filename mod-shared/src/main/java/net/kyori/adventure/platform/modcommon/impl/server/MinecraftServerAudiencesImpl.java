@@ -185,7 +185,10 @@ public final class MinecraftServerAudiencesImpl implements MinecraftServerAudien
   }
 
   @Override
-  public net.minecraft.network.chat.@NotNull Component asNative(final @NotNull Component adventure) {
+  public net.minecraft.network.chat.Component asNative(final Component adventure) {
+    if (adventure == null) {
+      return null;
+    }
     if (adventure == Component.empty()) {
       return net.minecraft.network.chat.Component.empty();
     }
