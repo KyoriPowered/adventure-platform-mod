@@ -99,7 +99,7 @@ public interface MinecraftAudiences {
     } else {
       final Component original = this.asAdventure(input);
       modified = modifier.apply(original);
-      return this.toNative(modified);
+      return this.asNative(modified);
     }
   }
 
@@ -129,7 +129,7 @@ public interface MinecraftAudiences {
    */
   @SuppressWarnings("ConstantValue")
   @Contract("null -> null; !null -> !null")
-  static ResourceLocation toNative(final Key key) {
+  static ResourceLocation asNative(final Key key) {
     if (key == null) {
       return null;
     }
@@ -262,7 +262,7 @@ public interface MinecraftAudiences {
    * @since 6.0.0
    */
   @SuppressWarnings("ConstantValue")
-  static @NotNull MessageSignature toNative(final SignedMessage.@NotNull Signature signature) {
+  static @NotNull MessageSignature asNative(final SignedMessage.@NotNull Signature signature) {
     if ((Object) signature instanceof MessageSignature nativeSig) {
       return nativeSig;
     }
@@ -321,7 +321,7 @@ public interface MinecraftAudiences {
    * @return native representation
    * @since 6.0.0
    */
-  net.minecraft.network.chat.@NotNull Component toNative(final @NotNull Component adventure);
+  net.minecraft.network.chat.@NotNull Component asNative(final @NotNull Component adventure);
 
   /**
    * Get an adventure {@link Component} from a native {@link net.minecraft.network.chat.Component}.

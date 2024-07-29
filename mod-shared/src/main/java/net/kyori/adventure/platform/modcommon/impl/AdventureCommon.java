@@ -180,13 +180,13 @@ public final class AdventureCommon {
   ) {
     final Holder<net.minecraft.network.chat.ChatType> type = rendererProvider.registryAccess()
       .registryOrThrow(Registries.CHAT_TYPE)
-      .getHolder(MinecraftAudiences.toNative(bound.type().key()))
+      .getHolder(MinecraftAudiences.asNative(bound.type().key()))
       .orElseThrow(() -> new IllegalArgumentException("Could not resolve chat type for key " + bound.type().key()));
 
     return new net.minecraft.network.chat.ChatType.Bound(
       type,
-      rendererProvider.toNative(bound.name()),
-      Optional.ofNullable(bound.target()).map(rendererProvider::toNative)
+      rendererProvider.asNative(bound.name()),
+      Optional.ofNullable(bound.target()).map(rendererProvider::asNative)
     );
   }
 

@@ -84,7 +84,7 @@ public class ClientAudience implements ControlledAudience {
 
   @Override
   public void sendMessage(final @NotNull Component message) {
-    this.client.gui.getChat().addMessage(this.controller.toNative(message));
+    this.client.gui.getChat().addMessage(this.controller.asNative(message));
   }
 
   private net.minecraft.network.chat.ChatType.Bound toMc(final ChatType.Bound bound) {
@@ -94,7 +94,7 @@ public class ClientAudience implements ControlledAudience {
   @Override
   public void sendMessage(final @NotNull Component message, final ChatType.@NotNull Bound boundChatType) {
     final net.minecraft.network.chat.ChatType.Bound bound = this.toMc(boundChatType);
-    this.client.gui.getChat().addMessage(bound.decorate(this.controller.toNative(message)), null, GuiMessageTag.chatNotSecure());
+    this.client.gui.getChat().addMessage(bound.decorate(this.controller.asNative(message)), null, GuiMessageTag.chatNotSecure());
   }
 
   @Override
@@ -102,7 +102,7 @@ public class ClientAudience implements ControlledAudience {
     final net.minecraft.network.chat.ChatType.Bound bound = this.toMc(boundChatType);
     final Component message = Objects.requireNonNullElse(signedMessage.unsignedContent(), Component.text(signedMessage.message()));
 
-    this.client.gui.getChat().addMessage(bound.decorate(this.controller.toNative(message)), (MessageSignature) (Object) signedMessage.signature(), this.tag(signedMessage));
+    this.client.gui.getChat().addMessage(bound.decorate(this.controller.asNative(message)), (MessageSignature) (Object) signedMessage.signature(), this.tag(signedMessage));
   }
 
   private GuiMessageTag tag(final SignedMessage message) {
@@ -135,25 +135,25 @@ public class ClientAudience implements ControlledAudience {
     if (type == MessageType.CHAT) {
       // Add to chat queue (following delay and such)
       if (visibility == ChatVisiblity.FULL) {
-        this.client.gui.getChat().addMessage(this.controller.toNative(message), null, null);
+        this.client.gui.getChat().addMessage(this.controller.asNative(message), null, null);
       }
     } else {
       // Add immediately as a system message
       if (visibility == ChatVisiblity.FULL || visibility == ChatVisiblity.SYSTEM) {
-        this.client.gui.getChat().addMessage(this.controller.toNative(message));
+        this.client.gui.getChat().addMessage(this.controller.asNative(message));
       }
     }
   }
 
   @Override
   public void sendActionBar(final @NotNull Component message) {
-    this.client.gui.setOverlayMessage(this.controller.toNative(message), false);
+    this.client.gui.setOverlayMessage(this.controller.asNative(message), false);
   }
 
   @Override
   public void showTitle(final @NotNull Title title) {
-    final net.minecraft.network.chat.@Nullable Component titleText = title.title() == Component.empty() ? null : this.controller.toNative(title.title());
-    final net.minecraft.network.chat.@Nullable Component subtitleText = title.subtitle() == Component.empty() ? null : this.controller.toNative(title.subtitle());
+    final net.minecraft.network.chat.@Nullable Component titleText = title.title() == Component.empty() ? null : this.controller.asNative(title.title());
+    final net.minecraft.network.chat.@Nullable Component subtitleText = title.subtitle() == Component.empty() ? null : this.controller.asNative(title.subtitle());
     final Title.@Nullable Times times = title.times();
     this.client.gui.setTitle(titleText);
     this.client.gui.setSubtitle(subtitleText);
@@ -168,9 +168,9 @@ public class ClientAudience implements ControlledAudience {
   public <T> void sendTitlePart(final @NotNull TitlePart<T> part, final @NotNull T value) {
     Objects.requireNonNull(value, "value");
     if (part == TitlePart.TITLE) {
-      this.client.gui.setTitle(this.controller.toNative((Component) value));
+      this.client.gui.setTitle(this.controller.asNative((Component) value));
     } else if (part == TitlePart.SUBTITLE) {
-      this.client.gui.setSubtitle(this.controller.toNative((Component) value));
+      this.client.gui.setSubtitle(this.controller.asNative((Component) value));
     } else if (part == TitlePart.TIMES) {
       final Title.Times times = (Title.Times) value;
       this.client.gui.setTimes(
@@ -229,7 +229,7 @@ public class ClientAudience implements ControlledAudience {
       this.playSound(sound, player.getX(), player.getY(), player.getZ());
     } else {
       // not in-game
-      this.client.getSoundManager().play(new SimpleSoundInstance(MinecraftAudiences.toNative(sound.name()), GameEnums.SOUND_SOURCE.toMinecraft(sound.source()),
+      this.client.getSoundManager().play(new SimpleSoundInstance(MinecraftAudiences.asNative(sound.name()), GameEnums.SOUND_SOURCE.toMinecraft(sound.source()),
         sound.volume(), sound.pitch(), RandomSource.create(this.seed(sound)), false, 0, SoundInstance.Attenuation.NONE, 0, 0, 0, true));
     }
   }
@@ -255,7 +255,7 @@ public class ClientAudience implements ControlledAudience {
       this.seed(sound)
     );
     // Then apply the ResourceLocation of our real sound event
-    ((AbstractSoundInstanceAccess) mcSound).setLocation(MinecraftAudiences.toNative(sound.name()));
+    ((AbstractSoundInstanceAccess) mcSound).setLocation(MinecraftAudiences.asNative(sound.name()));
 
     this.client.getSoundManager().play(mcSound);
   }
@@ -263,7 +263,7 @@ public class ClientAudience implements ControlledAudience {
   @Override
   public void playSound(final @NotNull Sound sound, final double x, final double y, final double z) {
     this.client.getSoundManager().play(new SimpleSoundInstance(
-      MinecraftAudiences.toNative(sound.name()),
+      MinecraftAudiences.asNative(sound.name()),
       GameEnums.SOUND_SOURCE.toMinecraft(sound.source()),
       sound.volume(),
       sound.pitch(),
@@ -281,7 +281,7 @@ public class ClientAudience implements ControlledAudience {
   @Override
   public void stopSound(final @NotNull SoundStop stop) {
     final @Nullable Key sound = stop.sound();
-    final @Nullable ResourceLocation soundIdent = sound == null ? null : MinecraftAudiences.toNative(sound);
+    final @Nullable ResourceLocation soundIdent = sound == null ? null : MinecraftAudiences.asNative(sound);
     final Sound.@Nullable Source source = stop.source();
     final @Nullable SoundSource category = source == null ? null : GameEnums.SOUND_SOURCE.toMinecraft(source);
     this.client.getSoundManager().stop(soundIdent, category);
@@ -289,17 +289,17 @@ public class ClientAudience implements ControlledAudience {
 
   @Override
   public void openBook(final @NotNull Book book) {
-    this.client.setScreen(new BookViewScreen(new BookViewScreen.BookAccess(book.pages().stream().map(this.controller::toNative).toList())));
+    this.client.setScreen(new BookViewScreen(new BookViewScreen.BookAccess(book.pages().stream().map(this.controller::asNative).toList())));
   }
 
   @Override
   public void sendPlayerListHeader(final @NotNull Component header) {
-    this.client.gui.getTabList().setHeader(header == Component.empty() ? null : this.controller.toNative(header));
+    this.client.gui.getTabList().setHeader(header == Component.empty() ? null : this.controller.asNative(header));
   }
 
   @Override
   public void sendPlayerListFooter(final @NotNull Component footer) {
-    this.client.gui.getTabList().setHeader(footer == Component.empty() ? null : this.controller.toNative(footer));
+    this.client.gui.getTabList().setHeader(footer == Component.empty() ? null : this.controller.asNative(footer));
   }
 
   @Override

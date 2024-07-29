@@ -41,7 +41,7 @@ public final class ComponentArgumentTypeSerializer implements ArgumentTypeInfo<C
 
   @Override
   public void serializeToNetwork(final Template type, final FriendlyByteBuf buffer) {
-    buffer.writeResourceLocation(MinecraftAudiences.toNative(type.format.id()));
+    buffer.writeResourceLocation(MinecraftAudiences.asNative(type.format.id()));
   }
 
   @Override

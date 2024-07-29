@@ -43,7 +43,7 @@ public abstract class AbstractBossBarListener<T extends BossEvent> implements Bo
   @Override
   public void bossBarNameChanged(final @NotNull BossBar bar, final @NotNull Component oldName, final @NotNull Component newName) {
     if (!oldName.equals(newName)) {
-      this.minecraft(bar).setName(this.controller.toNative(newName));
+      this.minecraft(bar).setName(this.controller.asNative(newName));
     }
   }
 
@@ -94,7 +94,7 @@ public abstract class AbstractBossBarListener<T extends BossEvent> implements Bo
 
   protected T minecraftCreating(final @NotNull BossBar bar) {
     return this.bars.computeIfAbsent(bar, key -> {
-      final T ret = this.newBar(this.controller.toNative(key.name()),
+      final T ret = this.newBar(this.controller.asNative(key.name()),
         GameEnums.BOSS_BAR_COLOR.toMinecraft(key.color()),
         GameEnums.BOSS_BAR_OVERLAY.toMinecraft(key.overlay()),
         key.progress());

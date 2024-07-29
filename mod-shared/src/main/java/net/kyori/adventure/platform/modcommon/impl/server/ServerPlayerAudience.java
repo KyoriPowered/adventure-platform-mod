@@ -112,7 +112,7 @@ public class ServerPlayerAudience implements ControlledAudience {
 
   @Override
   public void sendMessage(final @NotNull Component message) {
-    this.player.sendSystemMessage(this.controller.toNative(message));
+    this.player.sendSystemMessage(this.controller.asNative(message));
   }
 
   @Override
@@ -125,7 +125,7 @@ public class ServerPlayerAudience implements ControlledAudience {
     };
 
     if (shouldSend) {
-      this.player.sendSystemMessage(this.controller.toNative(text));
+      this.player.sendSystemMessage(this.controller.asNative(text));
     }
   }
 
@@ -136,7 +136,7 @@ public class ServerPlayerAudience implements ControlledAudience {
   @Override
   public void sendMessage(final @NotNull Component message, final ChatType.@NotNull Bound boundChatType) {
     final OutgoingChatMessage outgoing = new OutgoingChatMessage.Disguised(
-        this.controller.toNative(message)
+        this.controller.asNative(message)
     );
     this.player.sendChatMessage(outgoing, false, this.toMc(boundChatType));
   }
@@ -162,7 +162,7 @@ public class ServerPlayerAudience implements ControlledAudience {
 
   @Override
   public void sendActionBar(final @NotNull Component message) {
-    this.player.sendSystemMessage(this.controller.toNative(message), true);
+    this.player.sendSystemMessage(this.controller.asNative(message), true);
   }
 
   @Override
@@ -191,7 +191,7 @@ public class ServerPlayerAudience implements ControlledAudience {
   private Holder<SoundEvent> eventHolder(final @NotNull Sound sound) {
     final var soundEventRegistry = this.controller.registryAccess()
       .registryOrThrow(Registries.SOUND_EVENT);
-    final var soundKey = MinecraftAudiences.toNative(sound.name());
+    final var soundKey = MinecraftAudiences.asNative(sound.name());
 
     final var eventOptional = soundEventRegistry.getHolder(ResourceKey.create(Registries.SOUND_EVENT, soundKey));
     return eventOptional.isPresent() ? eventOptional.get() : Holder.direct(SoundEvent.createVariableRangeEvent(soundKey));
@@ -247,7 +247,7 @@ public class ServerPlayerAudience implements ControlledAudience {
     final @Nullable Key sound = stop.sound();
     final Sound.@Nullable Source src = stop.source();
     final @Nullable SoundSource cat = src == null ? null : GameEnums.SOUND_SOURCE.toMinecraft(src);
-    this.sendPacket(new ClientboundStopSoundPacket(sound == null ? null : MinecraftAudiences.toNative(sound), cat));
+    this.sendPacket(new ClientboundStopSoundPacket(sound == null ? null : MinecraftAudiences.asNative(sound), cat));
   }
 
   @Override
@@ -260,7 +260,7 @@ public class ServerPlayerAudience implements ControlledAudience {
       this.adventure$plain(book.author()),
       0,
       book.pages().stream()
-        .map(this.controller::toNative)
+        .map(this.controller::asNative)
         .map(Filterable::passThrough)
         .toList(),
       true
@@ -298,7 +298,7 @@ public class ServerPlayerAudience implements ControlledAudience {
   @Override
   public void showTitle(final @NotNull Title title) {
     if (title.subtitle() != Component.empty()) {
-      this.sendPacket(new ClientboundSetSubtitleTextPacket(this.controller.toNative(title.subtitle())));
+      this.sendPacket(new ClientboundSetSubtitleTextPacket(this.controller.asNative(title.subtitle())));
     }
 
     final Title.@Nullable Times times = title.times();
@@ -312,7 +312,7 @@ public class ServerPlayerAudience implements ControlledAudience {
     }
 
     if (title.title() != Component.empty()) {
-      this.sendPacket(new ClientboundSetTitleTextPacket(this.controller.toNative(title.title())));
+      this.sendPacket(new ClientboundSetTitleTextPacket(this.controller.asNative(title.title())));
     }
   }
 
@@ -320,9 +320,9 @@ public class ServerPlayerAudience implements ControlledAudience {
   public <T> void sendTitlePart(final @NotNull TitlePart<T> part, final @NotNull T value) {
     Objects.requireNonNull(value, "value");
     if (part == TitlePart.TITLE) {
-      this.sendPacket(new ClientboundSetTitleTextPacket(this.controller.toNative((Component) value)));
+      this.sendPacket(new ClientboundSetTitleTextPacket(this.controller.asNative((Component) value)));
     } else if (part == TitlePart.SUBTITLE) {
-      this.sendPacket(new ClientboundSetSubtitleTextPacket(this.controller.toNative((Component) value)));
+      this.sendPacket(new ClientboundSetSubtitleTextPacket(this.controller.asNative((Component) value)));
     } else if (part == TitlePart.TIMES) {
       final Title.Times times = (Title.Times) value;
       final int fadeIn = ticks(times.fadeIn());
@@ -353,21 +353,21 @@ public class ServerPlayerAudience implements ControlledAudience {
   @Override
   public void sendPlayerListHeader(final @NotNull Component header) {
     requireNonNull(header, "header");
-    AdventureCommon.HOOKS.updateTabList(this.player, this.controller.toNative(header), null);
+    AdventureCommon.HOOKS.updateTabList(this.player, this.controller.asNative(header), null);
   }
 
   @Override
   public void sendPlayerListFooter(final @NotNull Component footer) {
     requireNonNull(footer, "footer");
-    AdventureCommon.HOOKS.updateTabList(this.player, null, this.controller.toNative(footer));
+    AdventureCommon.HOOKS.updateTabList(this.player, null, this.controller.asNative(footer));
   }
 
   @Override
   public void sendPlayerListHeaderAndFooter(final @NotNull Component header, final @NotNull Component footer) {
     AdventureCommon.HOOKS.updateTabList(
       this.player,
-      this.controller.toNative(requireNonNull(header, "header")),
-      this.controller.toNative(requireNonNull(footer, "footer")));
+      this.controller.asNative(requireNonNull(header, "header")),
+      this.controller.asNative(requireNonNull(footer, "footer")));
   }
 
   @Override
@@ -377,7 +377,7 @@ public class ServerPlayerAudience implements ControlledAudience {
       packets.add(new ClientboundResourcePackPopPacket(Optional.empty()));
     }
 
-    final net.minecraft.network.chat.@Nullable Component prompt = this.toNativeNullable(request.prompt());
+    final net.minecraft.network.chat.@Nullable Component prompt = this.asNativeNullable(request.prompt());
     for (final Iterator<ResourcePackInfo> it = request.packs().iterator(); it.hasNext();) {
       final ResourcePackInfo pack = it.next();
       packets.add(new ClientboundResourcePackPushPacket(
@@ -408,8 +408,8 @@ public class ServerPlayerAudience implements ControlledAudience {
     this.sendPacket(new ClientboundResourcePackPopPacket(Optional.empty()));
   }
 
-  private net.minecraft.network.chat.@Nullable Component toNativeNullable(final @Nullable Component comp) {
-    return comp == null ? null : this.controller.toNative(comp);
+  private net.minecraft.network.chat.@Nullable Component asNativeNullable(final @Nullable Component comp) {
+    return comp == null ? null : this.controller.asNative(comp);
   }
 
   @Override

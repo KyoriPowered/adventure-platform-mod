@@ -157,7 +157,7 @@ public final class MinecraftServerAudiencesImpl implements MinecraftServerAudien
   @Override
   public @NotNull Audience world(final @NotNull Key worldId) {
     final @Nullable ServerLevel level = this.server.getLevel(ResourceKey.create(Registries.DIMENSION,
-      MinecraftAudiences.toNative(requireNonNull(worldId, "worldId"))));
+      MinecraftAudiences.asNative(requireNonNull(worldId, "worldId"))));
     if (level != null) {
       return this.audience(level.players());
     }
@@ -185,7 +185,7 @@ public final class MinecraftServerAudiencesImpl implements MinecraftServerAudien
   }
 
   @Override
-  public net.minecraft.network.chat.@NotNull Component toNative(final @NotNull Component adventure) {
+  public net.minecraft.network.chat.@NotNull Component asNative(final @NotNull Component adventure) {
     if (adventure == Component.empty()) {
       return net.minecraft.network.chat.Component.empty();
     }

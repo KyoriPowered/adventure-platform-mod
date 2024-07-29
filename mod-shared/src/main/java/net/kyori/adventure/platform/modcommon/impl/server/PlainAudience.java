@@ -59,7 +59,7 @@ public final class PlainAudience implements ControlledAudience {
 
   @Override
   public void sendMessage(final @NotNull Component message, final ChatType.@NotNull Bound boundChatType) {
-    this.plainOutput.accept(AdventureCommon.chatTypeToNative(boundChatType, this.controller).decorate(this.controller.toNative(message)).getString());
+    this.plainOutput.accept(AdventureCommon.chatTypeToNative(boundChatType, this.controller).decorate(this.controller.asNative(message)).getString());
   }
 
   @Override

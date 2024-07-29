@@ -53,26 +53,26 @@ public final class CommandSourceAudience implements ControlledAudience {
 
   @Override
   public void sendMessage(final @NotNull Component message) {
-    this.output.sendSystemMessage(this.serializer.toNative(message));
+    this.output.sendSystemMessage(this.serializer.asNative(message));
   }
 
   @Override
   public void sendMessage(final @NotNull Component message, final ChatType.@NotNull Bound boundChatType) {
     this.output.sendSystemMessage(AdventureCommon.chatTypeToNative(boundChatType, this.serializer)
-      .decorate(this.serializer.toNative(message)));
+      .decorate(this.serializer.asNative(message)));
   }
 
   @Override
   public void sendMessage(final @NotNull SignedMessage signedMessage, final ChatType.@NotNull Bound boundChatType) {
     final Component message = signedMessage.unsignedContent() != null ? signedMessage.unsignedContent() : Component.text(signedMessage.message());
     this.output.sendSystemMessage(AdventureCommon.chatTypeToNative(boundChatType, this.serializer)
-      .decorate(this.serializer.toNative(message)));
+      .decorate(this.serializer.asNative(message)));
   }
 
   @Override
   @Deprecated
   public void sendMessage(final Identity source, final Component text, final MessageType type) {
-    this.output.sendSystemMessage(this.serializer.toNative(text));
+    this.output.sendSystemMessage(this.serializer.asNative(text));
   }
 
   @Override

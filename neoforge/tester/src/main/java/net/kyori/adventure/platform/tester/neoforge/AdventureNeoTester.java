@@ -183,7 +183,7 @@ public class AdventureNeoTester {
         })))
         .then(literal("eval").then(argument(ARG_TEXT, miniMessage()).executes(ctx -> {
           final Component result = component(ctx, ARG_TEXT);
-          this.platform.audience(ctx.getSource()).sendMessage(this.platform.asAdventure(ComponentUtils.updateForEntity(ctx.getSource(), this.platform.toNative(result), ctx.getSource().getEntity(), 0)));
+          this.platform.audience(ctx.getSource()).sendMessage(this.platform.asAdventure(ComponentUtils.updateForEntity(ctx.getSource(), this.platform.asNative(result), ctx.getSource().getEntity(), 0)));
           return Command.SINGLE_SUCCESS;
         })))
         .then(literal("countdown").then(argument(ARG_SECONDS, integer()).executes(ctx -> { // multiple boss bars!
@@ -237,7 +237,7 @@ public class AdventureNeoTester {
           final Entity target = EntityArgument.getEntity(ctx, ARG_TARGET);
           final Component title = component(ctx, ARG_TEXT);
           final var oldDisplayName = target.getDisplayName();
-          target.setCustomName(this.adventure().toNative(title));
+          target.setCustomName(this.adventure().asNative(title));
           this.platform.audience(ctx.getSource()).sendSuccess(text()
             .color(COLOR_RESPONSE)
             .content("Successfully set entity ")

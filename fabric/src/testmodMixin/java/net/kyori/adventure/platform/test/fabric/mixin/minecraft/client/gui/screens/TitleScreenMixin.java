@@ -43,7 +43,7 @@ abstract class TitleScreenMixin extends Screen {
 
   @Inject(method = "createNormalMenuOptions(II)V", at = @At("HEAD"))
   void addMenuOptions(final int y, final int rowHeight, final CallbackInfo ci) {
-    final Component nativeText = MinecraftClientAudiences.of().toNative(
+    final Component nativeText = MinecraftClientAudiences.of().asNative(
       net.kyori.adventure.text.Component.translatable("menu.singleplayer", TextColor.color(0x9A40D2))
     );
     this.addRenderableWidget(

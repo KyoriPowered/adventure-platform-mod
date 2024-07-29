@@ -91,7 +91,7 @@ public final class DataComponentValueConverterProvider implements DataComponentV
   }
 
   private static DataComponentType<?> resolveComponentType(final Key key) {
-    final DataComponentType<?> type = BuiltInRegistries.DATA_COMPONENT_TYPE.get(MinecraftAudiences.toNative(key));
+    final DataComponentType<?> type = BuiltInRegistries.DATA_COMPONENT_TYPE.get(MinecraftAudiences.asNative(key));
     if (type == null) {
       throw new IllegalArgumentException("Unknown data component type " + key.asString());
     }

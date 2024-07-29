@@ -92,7 +92,7 @@ public final class ModResourcePackCallbacks {
         }
 
         LOGGER.debug("Audience {} did not successfully apply a resource pack with ID {}, kicking with message: {}", kicker.getOwner(), uuid, kickMessage);
-        kicker.disconnect(controlled.controller().toNative(kickMessage));
+        kicker.disconnect(controlled.controller().asNative(kickMessage));
       }
     };
   }

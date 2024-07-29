@@ -83,7 +83,7 @@ class ComponentConversionTest extends BootstrappedTest {
   @TestOnComponents
   void testComponentEqualSerializationWrapped(final Component input) {
     final JsonElement serialized = GsonComponentSerializer.gson().serializeToTree(input);
-    final JsonElement serializedNative = this.componentToJson(this.toNativeWrapped(input));
+    final JsonElement serializedNative = this.componentToJson(this.asNativeWrapped(input));
 
     assertJsonTreesEqual(serializedNative, serialized);
   }
@@ -99,7 +99,7 @@ class ComponentConversionTest extends BootstrappedTest {
   @TestOnComponents
   void testComponentEqualSerializationWrappedAfterDeepConversion(final Component input) {
     final JsonElement serialized = GsonComponentSerializer.gson().serializeToTree(input);
-    final net.minecraft.network.chat.Component mc = this.toNativeWrapped(input);
+    final net.minecraft.network.chat.Component mc = this.asNativeWrapped(input);
     mc.getStyle(); // trigger deep conversion
     final JsonElement serializedNative = this.componentToJson(mc);
 
@@ -109,7 +109,7 @@ class ComponentConversionTest extends BootstrappedTest {
   @TestOnComponents
   void testSerializationEqualWhenWrappedNested(final Component input) {
     final JsonElement serialized = GsonComponentSerializer.gson().serializeToTree(Component.text("Adventure says: ").append(input));
-    final net.minecraft.network.chat.Component mc = net.minecraft.network.chat.Component.literal("Adventure says: ").append(this.toNativeWrapped(input));
+    final net.minecraft.network.chat.Component mc = net.minecraft.network.chat.Component.literal("Adventure says: ").append(this.asNativeWrapped(input));
     final JsonElement serializedNative = this.componentToJson(mc);
 
     assertJsonTreesEqual(serializedNative, serialized);
@@ -133,7 +133,7 @@ class ComponentConversionTest extends BootstrappedTest {
     return writer.toString();
   }
 
-  private WrappedComponent toNativeWrapped(final Component component) {
+  private WrappedComponent asNativeWrapped(final Component component) {
     final Function<Pointered, Locale> partition = AdventureCommon.localePartition();
     return new WrappedComponent(component, partition, GlobalTranslator.renderer().mapContext(partition), NonWrappingComponentSerializer.INSTANCE);
   }

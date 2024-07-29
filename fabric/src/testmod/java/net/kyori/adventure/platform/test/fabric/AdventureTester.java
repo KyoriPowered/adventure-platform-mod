@@ -169,7 +169,7 @@ public class AdventureTester implements ModInitializer {
         })))
         .then(literal("eval").then(argument(ARG_TEXT, miniMessage()).executes(ctx -> {
           final Component result = component(ctx, ARG_TEXT);
-          ctx.getSource().sendMessage(this.platform.asAdventure(ComponentUtils.updateForEntity(ctx.getSource(), this.platform.toNative(result), ctx.getSource().getEntity(), 0)));
+          ctx.getSource().sendMessage(this.platform.asAdventure(ComponentUtils.updateForEntity(ctx.getSource(), this.platform.asNative(result), ctx.getSource().getEntity(), 0)));
           return Command.SINGLE_SUCCESS;
         })))
         .then(literal("countdown").then(argument(ARG_SECONDS, integer()).executes(ctx -> { // multiple boss bars!
@@ -223,7 +223,7 @@ public class AdventureTester implements ModInitializer {
           final Entity target = EntityArgument.getEntity(ctx, ARG_TARGET);
           final Component title = component(ctx, ARG_TEXT);
           final var oldDisplayName = target.getDisplayName();
-          target.setCustomName(this.adventure().toNative(title));
+          target.setCustomName(this.adventure().asNative(title));
           ctx.getSource().sendSuccess(Component.text()
             .color(COLOR_RESPONSE)
             .content("Successfully set entity ")
@@ -292,7 +292,7 @@ public class AdventureTester implements ModInitializer {
             .clickEvent(openFile(path.toString()))
             .build();
 
-          ctx.getSource().getClient().gui.getChat().addMessage(MinecraftClientAudiences.of().toNative(message), null, kyoriMessage);
+          ctx.getSource().getClient().gui.getChat().addMessage(MinecraftClientAudiences.of().asNative(message), null, kyoriMessage);
           // ctx.getSource().getPlayer().sendMessage(message); // Works as well!
 
           return Command.SINGLE_SUCCESS;
