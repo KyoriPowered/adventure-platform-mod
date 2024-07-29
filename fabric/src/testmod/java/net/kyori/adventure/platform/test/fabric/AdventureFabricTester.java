@@ -103,7 +103,7 @@ import static net.minecraft.commands.Commands.literal;
 import static net.minecraft.commands.arguments.EntityArgument.getPlayers;
 import static net.minecraft.commands.arguments.EntityArgument.players;
 
-public class AdventureTester implements ModInitializer {
+public class AdventureFabricTester implements ModInitializer {
   public static final ComponentLogger LOGGER = ComponentLogger.logger();
   private static final Key FONT_MEOW = advKey("meow");
   private static final Key FONT_IOSEVKA = advKey("iosevka");

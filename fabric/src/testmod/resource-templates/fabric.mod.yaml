@@ -12,7 +12,7 @@ license: "MIT"
 
 entrypoints:
   main:
-    - "net.kyori.adventure.platform.test.fabric.AdventureTester"
+    - "net.kyori.adventure.platform.test.fabric.AdventureFabricTester"
 mixins:
   - "adventure-platform-fabric-testmod.mixins.json"
 
