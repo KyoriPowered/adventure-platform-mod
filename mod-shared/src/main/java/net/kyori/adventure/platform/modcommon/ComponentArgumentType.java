@@ -57,18 +57,6 @@ public final class ComponentArgumentType implements ArgumentType<Component> {
   private static final ComponentArgumentType MINIMESSAGE_INSTANCE = new ComponentArgumentType(Format.MINIMESSAGE);
 
   /**
-   * Get the argument type for component arguments.
-   *
-   * @return argument type instance
-   * @since 6.0.0
-   * @deprecated use {@link #json()} or {@link #miniMessage()} instead.
-   */
-  @Deprecated(forRemoval = true, since = "5.1.0")
-  public static @NotNull ComponentArgumentType component() {
-    return JSON_INSTANCE;
-  }
-
-  /**
    * Get the component from the provided context.
    *
    * @param ctx Context to get from
