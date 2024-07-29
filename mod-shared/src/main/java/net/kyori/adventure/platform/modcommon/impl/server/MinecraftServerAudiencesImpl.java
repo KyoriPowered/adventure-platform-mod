@@ -25,6 +25,7 @@ package net.kyori.adventure.platform.modcommon.impl.server;
 
 import com.google.common.collect.Iterables;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.WeakHashMap;
@@ -32,6 +33,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.permission.PermissionChecker;
 import net.kyori.adventure.platform.modcommon.AdventureCommandSourceStack;
 import net.kyori.adventure.platform.modcommon.MinecraftAudiences;
 import net.kyori.adventure.platform.modcommon.MinecraftServerAudiences;
@@ -125,7 +127,19 @@ public final class MinecraftServerAudiencesImpl implements MinecraftServerAudien
 
   @Override
   public @NotNull Audience permission(final @NotNull String permission) {
-    return Audience.empty(); // TODO: permissions api
+    return Audience.audience(
+      Iterables.transform(
+        this.server().getPlayerList().getPlayers(),
+        player -> {
+          final Audience audience = this.audience(player);
+          final Optional<PermissionChecker> permissionChecker = audience.get(PermissionChecker.POINTER);
+          if (permissionChecker.isPresent() && permissionChecker.get().test(permission)) {
+            return audience;
+          }
+          return Audience.empty();
+        }
+      )
+    );
   }
 
   @Override
