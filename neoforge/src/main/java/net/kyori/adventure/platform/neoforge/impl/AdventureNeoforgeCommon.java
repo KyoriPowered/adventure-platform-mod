@@ -24,7 +24,11 @@
 package net.kyori.adventure.platform.neoforge.impl;
 
 import com.google.auto.service.AutoService;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
+import net.kyori.adventure.permission.PermissionChecker;
 import net.kyori.adventure.platform.modcommon.impl.AdventureCommon;
 import net.kyori.adventure.platform.modcommon.impl.ClickCallbackRegistry;
 import net.kyori.adventure.platform.modcommon.impl.LocaleHolderBridge;
@@ -38,6 +42,9 @@ import net.kyori.adventure.platform.neoforge.impl.services.ComponentLoggerProvid
 import net.kyori.adventure.platform.neoforge.impl.services.DataComponentValueConverterProvider;
 import net.kyori.adventure.platform.neoforge.impl.services.GsonComponentSerializerProviderImpl;
 import net.kyori.adventure.platform.neoforge.impl.services.PlainTextComponentSerializerProviderImpl;
+import net.kyori.adventure.pointer.Pointered;
+import net.kyori.adventure.pointer.Pointers;
+import net.kyori.adventure.util.TriState;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.common.Mod;
@@ -45,6 +52,9 @@ import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.player.ClientInformationUpdatedEvent;
+import net.neoforged.neoforge.server.permission.PermissionAPI;
+import net.neoforged.neoforge.server.permission.nodes.PermissionNode;
+import net.neoforged.neoforge.server.permission.nodes.PermissionTypes;
 import org.jetbrains.annotations.Nullable;
 
 @Mod("adventure_platform_neoforge")
@@ -88,6 +98,8 @@ public class AdventureNeoforgeCommon {
 
   @AutoService(PlatformHooks.class)
   public static final class ForgeHooks implements PlatformHooks {
+    private static final Cache<String, PermissionNode<Boolean>> PERMISSION_NODE_CACHE = CacheBuilder.newBuilder().maximumSize(100).build();
+    private static final PermissionNode<Boolean> NULL = new PermissionNode<>("adventure", "null", PermissionTypes.BOOLEAN, (player, playerUUID, context) -> true);
 
     @Override
     public SidedProxy sidedProxy() {
@@ -104,6 +116,31 @@ public class AdventureNeoforgeCommon {
         header == null ? player.getTabListHeader() : header,
         footer == null ? player.getTabListFooter() : footer
       );
+    }
+
+    @Override
+    public void collectPointers(final Pointered pointered, final Pointers.Builder builder) {
+      PlatformHooks.super.collectPointers(pointered, builder);
+      if (pointered instanceof ServerPlayer player) {
+        builder.withStatic(PermissionChecker.POINTER, perm -> this.hasPermission(player, perm));
+      }
+    }
+
+    @SuppressWarnings("unchecked")
+    private TriState hasPermission(final ServerPlayer player, final String permission) {
+      final PermissionNode<Boolean> node;
+      try {
+        node = PERMISSION_NODE_CACHE.get(permission, () -> (PermissionNode<Boolean>) PermissionAPI.getRegisteredNodes().stream()
+          .filter(n -> n.getNodeName().equals(permission) && n.getType() == PermissionTypes.BOOLEAN)
+          .findFirst()
+          .orElse(NULL));
+      } catch (final ExecutionException e) {
+        throw new RuntimeException(e);
+      }
+      if (node == NULL) {
+        return TriState.NOT_SET;
+      }
+      return TriState.byBoolean(PermissionAPI.getPermission(player, node));
     }
   }
 }
