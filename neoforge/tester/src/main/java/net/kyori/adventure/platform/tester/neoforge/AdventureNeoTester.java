@@ -48,11 +48,9 @@ import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.modcommon.AdventureCommandSourceStack;
-import net.kyori.adventure.platform.modcommon.ComponentArgumentType;
-import net.kyori.adventure.platform.modcommon.KeyArgumentType;
 import net.kyori.adventure.platform.modcommon.MinecraftAudiences;
 import net.kyori.adventure.platform.modcommon.MinecraftServerAudiences;
-import net.kyori.adventure.platform.modcommon.impl.ComponentArgumentTypeSerializer;
+import net.kyori.adventure.platform.neoforge.AdventureArgumentTypes;
 import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
@@ -67,24 +65,17 @@ import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.kyori.adventure.translation.GlobalTranslator;
 import net.kyori.adventure.translation.TranslationRegistry;
 import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.commands.synchronization.ArgumentTypeInfo;
-import net.minecraft.commands.synchronization.ArgumentTypeInfos;
-import net.minecraft.commands.synchronization.SingletonArgumentInfo;
 import net.minecraft.commands.synchronization.SuggestionProviders;
-import net.minecraft.core.Holder;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import net.neoforged.neoforge.event.server.ServerStoppedEvent;
-import net.neoforged.neoforge.registries.DeferredRegister;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -136,19 +127,8 @@ public class AdventureNeoTester {
     return requireNonNull(this.platform, "Tried to access Fabric platform without a running server");
   }
 
-  // TODO - add registration helper for neo
-  private static final DeferredRegister<ArgumentTypeInfo<?, ?>> COMMAND_ARGUMENT_TYPES = DeferredRegister.create(Registries.COMMAND_ARGUMENT_TYPE, "adventure");
-  private static final Holder<ArgumentTypeInfo<?, ?>> COMPONENT_ARGUMENT_TYPE = COMMAND_ARGUMENT_TYPES.register("component", () -> ArgumentTypeInfos.registerByClass(
-    ComponentArgumentType.class,
-    ComponentArgumentTypeSerializer.INSTANCE
-  ));
-  private static final Holder<ArgumentTypeInfo<?, ?>> KEY_ARGUMENT_TYPE = COMMAND_ARGUMENT_TYPES.register("key", () -> ArgumentTypeInfos.registerByClass(
-    KeyArgumentType.class,
-    SingletonArgumentInfo.contextFree(KeyArgumentType::key)
-  ));
-
-  public AdventureNeoTester(final IEventBus modBus) {
-    COMMAND_ARGUMENT_TYPES.register(modBus);
+  public AdventureNeoTester() {
+    AdventureArgumentTypes.register();
 
     // Register localizations
     final TranslationRegistry testmodRegistry = TranslationRegistry.create(advKey("testmod_localizations"));

@@ -29,8 +29,11 @@ import com.google.common.cache.CacheBuilder;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import net.kyori.adventure.permission.PermissionChecker;
+import net.kyori.adventure.platform.modcommon.ComponentArgumentType;
+import net.kyori.adventure.platform.modcommon.KeyArgumentType;
 import net.kyori.adventure.platform.modcommon.impl.AdventureCommon;
 import net.kyori.adventure.platform.modcommon.impl.ClickCallbackRegistry;
+import net.kyori.adventure.platform.modcommon.impl.ComponentArgumentTypeSerializer;
 import net.kyori.adventure.platform.modcommon.impl.LocaleHolderBridge;
 import net.kyori.adventure.platform.modcommon.impl.PlatformHooks;
 import net.kyori.adventure.platform.modcommon.impl.SidedProxy;
@@ -45,13 +48,19 @@ import net.kyori.adventure.platform.neoforge.impl.services.PlainTextComponentSer
 import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.pointer.Pointers;
 import net.kyori.adventure.util.TriState;
+import net.minecraft.commands.synchronization.ArgumentTypeInfo;
+import net.minecraft.commands.synchronization.ArgumentTypeInfos;
+import net.minecraft.commands.synchronization.SingletonArgumentInfo;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.player.ClientInformationUpdatedEvent;
+import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.server.permission.PermissionAPI;
 import net.neoforged.neoforge.server.permission.nodes.PermissionNode;
 import net.neoforged.neoforge.server.permission.nodes.PermissionTypes;
@@ -59,8 +68,9 @@ import org.jetbrains.annotations.Nullable;
 
 @Mod("adventure_platform_neoforge")
 @SuppressWarnings("checkstyle:HideUtilityClassConstructor") // Not a utility class, this is our main mod class.
-public class AdventureNeoforgeCommon {
+public final class AdventureNeoforgeCommon {
   public static SidedProxy SIDE_PROXY;
+  private static final DeferredRegister<ArgumentTypeInfo<?, ?>> COMMAND_ARGUMENT_TYPES = DeferredRegister.create(Registries.COMMAND_ARGUMENT_TYPE, "adventure");
 
   static {
     if (FMLLoader.getDist() == Dist.DEDICATED_SERVER) {
@@ -83,7 +93,20 @@ public class AdventureNeoforgeCommon {
     PlainTextComponentSerializerProviderImpl.DELEGATE = new net.kyori.adventure.platform.modcommon.impl.service.PlainTextComponentSerializerProviderImpl();
   }
 
-  public AdventureNeoforgeCommon() {
+  public static void registerArgumentTypes() {
+    COMMAND_ARGUMENT_TYPES.register("component", () -> ArgumentTypeInfos.registerByClass(
+      ComponentArgumentType.class,
+      ComponentArgumentTypeSerializer.INSTANCE
+    ));
+    COMMAND_ARGUMENT_TYPES.register("key", () -> ArgumentTypeInfos.registerByClass(
+      KeyArgumentType.class,
+      SingletonArgumentInfo.contextFree(KeyArgumentType::key)
+    ));
+  }
+
+  public AdventureNeoforgeCommon(final IEventBus bus) {
+    COMMAND_ARGUMENT_TYPES.register(bus);
+
     NeoForge.EVENT_BUS.addListener((ClientInformationUpdatedEvent e) -> {
       if (!Objects.equals(e.getOldInformation().language(), e.getUpdatedInformation().language())) {
         AdventureCommon.HOOKS.onLocaleChange(e.getEntity(), LocaleHolderBridge.toLocale(e.getUpdatedInformation().language()));
