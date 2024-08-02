@@ -28,6 +28,8 @@ import net.kyori.adventure.platform.neoforge.impl.AdventureNeoforgeCommon;
 /**
  * Helper for registering {@link net.kyori.adventure.platform.modcommon.ComponentArgumentType} and
  * {@link net.kyori.adventure.platform.modcommon.KeyArgumentType}.
+ *
+ * @since 6.0.0
  */
 public final class AdventureArgumentTypes {
   private AdventureArgumentTypes() {
@@ -39,6 +41,8 @@ public final class AdventureArgumentTypes {
    * Registers the Adventure {@link com.mojang.brigadier.arguments.ArgumentType}s.
    *
    * <p>This is not done by default as it requires the client to also register the types.</p>
+   *
+   * @since 6.0.0
    */
   public static synchronized void register() {
     if (registered) {

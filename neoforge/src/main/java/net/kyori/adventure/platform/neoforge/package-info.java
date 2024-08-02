@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-fabric, licensed under the MIT License.
  *
- * Copyright (c) 2021 KyoriPowered
+ * Copyright (c) 2024 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,10 +23,10 @@
  */
 /**
  * Implementation of <a href="https://docs.adventure.kyori.net">Adventure</a>
- * on Minecraft using the Fabric mod loader.
+ * on Minecraft using the NeoForge mod loader.
  *
  * <p>There are both server- and clientside entry points for Adventure,
  * in {@link net.kyori.adventure.platform.modcommon.MinecraftServerAudiences}
  * and {@code MinecraftClientAudiences}</p>
  */
-package net.kyori.adventure.platform.fabric;
+package net.kyori.adventure.platform.neoforge;
