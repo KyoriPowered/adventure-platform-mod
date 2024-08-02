@@ -56,7 +56,6 @@ public abstract class ServerPlayerMixin implements ServerPlayerBridge {
     final String language = information.language();
     final @Nullable Locale locale = LocaleHolderBridge.toLocale(language);
     if (!Objects.equals(((LocaleHolderBridge) this).adventure$locale(), locale)) {
-      ((LocaleHolderBridge) this).adventure$locale(locale);
       AdventureCommon.HOOKS.onLocaleChange((ServerPlayer) (Object) this, locale);
     }
   }

@@ -66,6 +66,7 @@ public interface PlatformHooks extends SidedProxy {
   }
 
   default void onLocaleChange(ServerPlayer player, Locale newLocale) {
+    ((LocaleHolderBridge) player).adventure$locale(newLocale);
     MinecraftServerAudiencesImpl.forEachInstance(instance -> {
       instance.bossBars().refreshTitles(player);
     });
