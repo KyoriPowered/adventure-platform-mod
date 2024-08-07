@@ -1,10 +1,4 @@
 import net.neoforged.moddevgradle.internal.RunGameTask
-import java.net.URI
-import java.nio.file.FileSystems
-import java.util.jar.Manifest
-import kotlin.io.path.inputStream
-import kotlin.io.path.listDirectoryEntries
-import kotlin.io.path.outputStream
 
 plugins {
   alias(libs.plugins.configurateTransformations)
