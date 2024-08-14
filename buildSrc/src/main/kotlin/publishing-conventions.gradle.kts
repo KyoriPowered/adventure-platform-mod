@@ -13,6 +13,7 @@ indraCrossdoc {
 
 tasks {
   javadoc {
+    val options = this.options as StandardJavadocDocletOptions
     exclude("net/kyori/adventure/platform/**/impl/**")
     val client = sourceSets.findByName("client")
     client?.let {
@@ -21,12 +22,12 @@ tasks {
     }
     val advVersion = libs.versions.adventure.get()
     if (!advVersion.contains("SNAPSHOT")) {
-      (options as? StandardJavadocDocletOptions)?.links(
+      options.links(
         "https://jd.advntr.dev/api/${advVersion}",
         "https://jd.advntr.dev/key/${advVersion}",
       )
     }
-    (options as? StandardJavadocDocletOptions)?.links(
+    options.links(
       "https://jd.advntr.dev/platform/api/${libs.versions.adventurePlatform.get()}",
     )
   }

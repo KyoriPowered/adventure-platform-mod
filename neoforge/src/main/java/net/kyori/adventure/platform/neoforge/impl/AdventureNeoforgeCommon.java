@@ -28,6 +28,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
+import net.kyori.adventure.Adventure;
 import net.kyori.adventure.permission.PermissionChecker;
 import net.kyori.adventure.platform.modcommon.ComponentArgumentType;
 import net.kyori.adventure.platform.modcommon.KeyArgumentType;
@@ -70,7 +71,7 @@ import org.jetbrains.annotations.Nullable;
 @SuppressWarnings("checkstyle:HideUtilityClassConstructor") // Not a utility class, this is our main mod class.
 public final class AdventureNeoforgeCommon {
   public static SidedProxy SIDE_PROXY;
-  private static final DeferredRegister<ArgumentTypeInfo<?, ?>> COMMAND_ARGUMENT_TYPES = DeferredRegister.create(Registries.COMMAND_ARGUMENT_TYPE, "adventure");
+  private static final DeferredRegister<ArgumentTypeInfo<?, ?>> COMMAND_ARGUMENT_TYPES = DeferredRegister.create(Registries.COMMAND_ARGUMENT_TYPE, Adventure.NAMESPACE);
 
   static {
     if (FMLLoader.getDist() == Dist.DEDICATED_SERVER) {
@@ -122,7 +123,7 @@ public final class AdventureNeoforgeCommon {
   @AutoService(PlatformHooks.class)
   public static final class ForgeHooks implements PlatformHooks {
     private static final Cache<String, PermissionNode<Boolean>> PERMISSION_NODE_CACHE = CacheBuilder.newBuilder().maximumSize(100).build();
-    private static final PermissionNode<Boolean> NULL = new PermissionNode<>("adventure", "null", PermissionTypes.BOOLEAN, (player, playerUUID, context) -> true);
+    private static final PermissionNode<Boolean> NULL = new PermissionNode<>(Adventure.NAMESPACE, "null", PermissionTypes.BOOLEAN, (player, playerUUID, context) -> true);
 
     @Override
     public SidedProxy sidedProxy() {
