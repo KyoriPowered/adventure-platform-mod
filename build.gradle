@@ -73,6 +73,12 @@ allprojects {
           developer {
             id = "Electroid"
           }
+
+          developer {
+            id.set("jmp")
+            name.set("Jason Penilla")
+            url.set("https://github.com/jpenilla")
+          }
         }
       }
     }
