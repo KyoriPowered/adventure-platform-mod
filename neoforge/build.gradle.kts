@@ -1,7 +1,6 @@
 import net.neoforged.moddevgradle.internal.RunGameTask
 
 plugins {
-  alias(libs.plugins.configurateTransformations)
   id("net.neoforged.moddev")
   id("publishing-conventions")
 }
