@@ -40,6 +40,7 @@ import net.kyori.adventure.platform.modcommon.impl.PlatformHooks;
 import net.kyori.adventure.platform.modcommon.impl.SidedProxy;
 import net.kyori.adventure.platform.modcommon.impl.client.ClientProxy;
 import net.kyori.adventure.platform.modcommon.impl.server.DedicatedServerProxy;
+import net.kyori.adventure.platform.neoforge.CollectPointersEvent;
 import net.kyori.adventure.platform.neoforge.impl.services.ANSIComponentSerializerProviderImpl;
 import net.kyori.adventure.platform.neoforge.impl.services.ClickCallbackProviderImpl;
 import net.kyori.adventure.platform.neoforge.impl.services.ComponentLoggerProviderImpl;
@@ -148,6 +149,7 @@ public final class AdventureNeoforgeCommon {
       if (pointered instanceof ServerPlayer player) {
         builder.withStatic(PermissionChecker.POINTER, perm -> this.hasPermission(player, perm));
       }
+      NeoForge.EVENT_BUS.post(new CollectPointersEvent(pointered, builder));
     }
 
     @SuppressWarnings("unchecked")
