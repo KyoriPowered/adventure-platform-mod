@@ -28,6 +28,13 @@ tasks {
     from(zipTree(common.tasks.sourcesJar.flatMap { it.archiveFile }))
   }
   javadocJar {
-    from(zipTree(common.tasks.javadocJar.flatMap { it.archiveFile }))
+    enabled = false
+  }
+}
+
+afterEvaluate {
+  val javaComponent = components["java"] as AdhocComponentWithVariants
+  javaComponent.withVariantsFromConfiguration(configurations["javadocElements"]) {
+    skip()
   }
 }
