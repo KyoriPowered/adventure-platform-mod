@@ -1,6 +1,7 @@
 import net.fabricmc.loom.api.RemapConfigurationSettings
 import net.fabricmc.loom.task.GenerateSourcesTask
 import net.fabricmc.loom.task.RemapJarTask
+import net.fabricmc.loom.task.RunGameTask
 import org.gradle.configurationcache.extensions.capitalized
 
 plugins {
@@ -20,6 +21,11 @@ dependencies {
   // Only used for prod test
   modCompileOnly(libs.fabric.api.lifecycle)
 
+  minecraft(libs.minecraft)
+  mappings(loom.layered {
+    officialMojangMappings()
+    parchment("org.parchmentmc.data:parchment-${libs.versions.parchment.get()}@zip")
+  })
   modImplementation(libs.fabric.loader)
 
   testImplementation(libs.fabric.loader.junit)
@@ -161,8 +167,16 @@ loom {
   decompilerOptions.named("vineflower") {
     options.put("win", "0")
   }
+
+  runtimeOnlyLog4j.set(true)
 }
 
+// Loom -- needs to run late to avoid preset config not applying properly
+afterEvaluate {
+  tasks.withType(RunGameTask::class).configureEach {
+    javaLauncher.set(javaToolchains.launcherFor { languageVersion.set(indra.javaVersions().target().map { v -> JavaLanguageVersion.of(v) })})
+  }
+}
 
 dependencies {
   "testmodRuntimeOnly"(permissionsApiCompat.output)
