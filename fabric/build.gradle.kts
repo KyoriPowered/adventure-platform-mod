@@ -7,7 +7,8 @@ import org.gradle.configurationcache.extensions.capitalized
 plugins {
   alias(libs.plugins.loom)
   alias(libs.plugins.configurateTransformations)
-  id("publishing-conventions")
+  id("standard-conventions")
+  // id("publishing-conventions") // disable until 1.21.2
 }
 
 dependencies {
@@ -225,8 +226,8 @@ tasks.withType(GenerateSourcesTask::class).configureEach {
 
 // Workaround for both loom and indra doing publication logic in an afterEvaluate :(
 indra.includeJavaSoftwareComponentInPublications(false)
-publishing {
+/*publishing {
   publications.named("maven", MavenPublication::class) {
     from(components["java"])
   }
-}
+}*/
