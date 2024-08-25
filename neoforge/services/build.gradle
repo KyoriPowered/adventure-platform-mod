@@ -1,3 +1,7 @@
 plugins {
   id 'publishing-conventions'
 }
+
+tasks.named('copyJavadoc').configure {
+  enabled = false
+}
