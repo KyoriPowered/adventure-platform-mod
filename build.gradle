@@ -1,0 +1,84 @@
+plugins {
+  id 'java'
+  alias(libs.plugins.eclipseApt)
+  alias(libs.plugins.indra.sonatype)
+  alias(libs.plugins.nexusPublish)
+  alias(libs.plugins.ideaExt)
+}
+
+indraSonatype {
+  useAlternateSonatypeOSSHost("s01")
+}
+
+allprojects {
+  // subprojects would not configure second layer subprojects
+  if (project == rootProject) {
+    return
+  }
+
+  apply plugin: "net.kyori.indra"
+  apply plugin: "net.kyori.indra.checkstyle"
+  apply plugin: "net.kyori.indra.licenser.spotless"
+  apply plugin: "com.diffplug.eclipse.apt"
+  apply plugin: "org.jetbrains.gradle.plugin.idea-ext"
+
+  indraSpotlessLicenser {
+    licenseHeaderFile(rootProject.file("LICENSE_HEADER"))
+  }
+
+  spotless {
+    //ratchetFrom("origin/mc/${libs.versions.minecraft.get().splitToSequence('.').take(2).joinToString(".")}")
+    ratchetFrom("origin/mc/1.20")
+
+    java {
+      importOrderFile(rootProject.file(".spotless/kyori.importorder"))
+      trimTrailingWhitespace()
+      endWithNewline()
+      indentWithSpaces(2)
+      removeUnusedImports()
+    }
+  }
+
+  indra {
+    github("KyoriPowered", "adventure-platform-fabric") {
+      ci(true)
+    }
+    javaVersions().target(21)
+    mitLicense()
+    checkstyle(libs.versions.checkstyle.get())
+
+    configurePublications {
+      pom {
+        developers {
+          developer {
+            id = "kashike"
+            timezone = "America/Vancouver"
+          }
+
+          developer {
+            id = "lucko"
+            name = "Luck"
+            url = "https://lucko.me"
+            email = "git@lucko.me"
+          }
+
+          developer {
+            id = "zml"
+            name = "zml"
+            timezone = "America/Vancouver"
+          }
+
+          developer {
+            id = "Electroid"
+          }
+
+          developer {
+            id.set("jmp")
+            name.set("Jason Penilla")
+            url.set("https://github.com/jpenilla")
+          }
+        }
+      }
+    }
+  }
+}

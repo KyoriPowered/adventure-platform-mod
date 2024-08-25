@@ -1,0 +1,36 @@
+plugins {
+  id 'net.neoforged.moddev'
+  id 'publishing-conventions'
+}
+
+neoForge {
+  neoFormVersion = libs.versions.neoform
+
+  parchment {
+    parchmentArtifact = "org.parchmentmc.data:parchment-${libs.versions.parchment.get()}@zip"
+  }
+}
+
+dependencies {
+  compileOnly(libs.mixin)
+  compileOnly(libs.mixinExtras)
+}
+
+sourceSets {
+  main {
+    java.srcDirs(
+      "src/accessor/java",
+      "src/mixin/java",
+      "src/client/java"
+    )
+    resources.srcDirs(
+      "src/accessor/resources/",
+      "src/mixin/resources/",
+      "src/client/resources/"
+    )
+  }
+}
+
+tasks.jar {
+  manifest.attributes("FMLModType": "GAMELIBRARY")
+}

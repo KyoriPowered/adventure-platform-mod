@@ -9,8 +9,12 @@
 
   <!-- No JD required in impl or testmod -->
   <suppress files="net[\\/]kyori[\\/]adventure[\\/]platform[\\/]fabric[\\/]impl[\\/].*" checks="FilteringWriteTag|(?:MissingJavadoc.*)|JavadocPackage"/>
+  <suppress files="net[\\/]kyori[\\/]adventure[\\/]platform[\\/]neoforge[\\/]impl[\\/].*" checks="FilteringWriteTag|(?:MissingJavadoc.*)|JavadocPackage"/>
+  <suppress files="net[\\/]kyori[\\/]adventure[\\/]platform[\\/]modcommon[\\/]impl[\\/].*" checks="FilteringWriteTag|(?:MissingJavadoc.*)|JavadocPackage"/>
   <suppress files="net[\\/]kyori[\\/]adventure[\\/]platform[\\/]test[\\/]fabric[\\/].*" checks="FilteringWriteTag|(?:MissingJavadoc.*)|JavadocPackage"/>
+  <suppress files="net[\\/]kyori[\\/]adventure[\\/]platform[\\/]tester[\\/]neoforge[\\/].*" checks="FilteringWriteTag|(?:MissingJavadoc.*)|JavadocPackage"/>
 
   <!-- suppress duplicate file due to split package -->
   <suppress files="net[\\/]kyori[\\/]adventure[\\/]platform[\\/]fabric[\\/][^\\/]*" checks="JavadocPackage"/>
+  <suppress files="net[\\/]kyori[\\/]adventure[\\/]platform[\\/]modcommon[\\/][^\\/]*" checks="JavadocPackage"/>
 </suppressions>

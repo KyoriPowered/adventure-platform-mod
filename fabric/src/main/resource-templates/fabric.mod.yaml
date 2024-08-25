@@ -1,0 +1,55 @@
+schemaVersion: 1
+id: "${project.name.toLowerCase()}"
+version: "${project.version}"
+name: "${project.name}"
+authors: [ "kashike","zml", "Luck", "Electroid" ]
+contact:
+  homepage: "https://github.com/KyoriPowered/adventure-platform-fabric"
+  issues: "https://github.com/KyoriPowered/adventure-platform-fabric/issues"
+  sources: "https://github.com/KyoriPowered/adventure-platform-fabric"
+license: "MIT"
+icon: assets/adventure-platform-fabric/logo.png
+
+entrypoints:
+  main:
+    - "net.kyori.adventure.platform.fabric.impl.AdventureFabricCommon"
+    - "net.kyori.adventure.platform.fabric.impl.compat.permissions.PermissionsApiIntegration"
+  client:
+    - "net.kyori.adventure.platform.fabric.impl.client.AdventureFabricClient"
+  adventure-internal:sidedproxy/client:
+    - "net.kyori.adventure.platform.modcommon.impl.client.ClientProxy"
+  adventure-internal:sidedproxy/server:
+    - "net.kyori.adventure.platform.modcommon.impl.server.DedicatedServerProxy"
+mixins:
+  - "adventure-platform-fabric.accessor.mixins.json"
+  - "adventure-platform-fabric.mixins.json"
+  - "adventure-platform-mod-shared.accessor.mixins.json"
+  - "adventure-platform-mod-shared.mixins.json"
+  - { environment: "client", "config": "adventure-platform-fabric.client.mixins.json" }
+  - { environment: "client", "config": "adventure-platform-mod-shared.client.mixins.json" }
+custom:
+  modmenu:api: true
+  modmenu:
+    badges: [ "library" ]
+  loom:injected_interfaces:
+    net/minecraft/class_2168: [ net/kyori/adventure/platform/modcommon/AdventureCommandSourceStack ] # net/minecraft/commands/CommandSourceStack
+    net/minecraft/class_1297: [ net/kyori/adventure/sound/Sound<%= '$' %>Emitter, net/kyori/adventure/platform/modcommon/EntityHoverEventSource ] # net/minecraft/world/entity/Entity
+    # com/mojang/authlib/GameProfile: [ net/kyori/adventure/identity/Identity ] # We can't inject into libs unfortunately
+    net/minecraft/server/MinecraftServer: [ net/kyori/adventure/audience/Audience ]
+    net/minecraft/class_1657: [ net/kyori/adventure/platform/modcommon/IdentifiedAtRuntime ] # net/minecraft/world/entity/player/Player
+    net/minecraft/class_3350: [ net/kyori/adventure/audience/Audience ] # net/minecraft/server/rcon/RconConsoleSource
+    net/minecraft/class_3222: [ net/kyori/adventure/audience/Audience ] # net/minecraft/server/level/ServerPlayer
+    net/minecraft/class_746: [ net/kyori/adventure/audience/Audience ] # net/minecraft/client/player/LocalPlayer
+    net/minecraft/class_2960: [ net/kyori/adventure/key/Key ] # net/minecraft/resources/ResourceLocation
+    net/minecraft/class_3414: [ net/kyori/adventure/sound/Sound<%= '$' %>Type ] # net/minecraft/sounds/SoundEvent
+    net/minecraft/class_5321: [ net/kyori/adventure/key/Keyed ] # net/minecraft/resources/ResourceKey
+    net/minecraft/class_1799: [ "net/kyori/adventure/text/event/HoverEventSource<Lnet/kyori/adventure/text/event/HoverEvent<%= '$' %>ShowItem;>" ] # net/minecraft/world/item/ItemStack # generic?
+    net/minecraft/class_7469: [ net/kyori/adventure/chat/SignedMessage<%= '$' %>Signature ] # net/minecraft/network/chat/MessageSignature
+
+depends:
+  fabricloader: ">=0.14.0"
+  fabric-api-base: "*"
+  fabric-command-api-v2: "*"
+
+recommends:
+  fabric-networking-api-v1: "*"

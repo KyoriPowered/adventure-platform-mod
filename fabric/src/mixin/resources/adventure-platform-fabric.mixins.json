@@ -1,0 +1,17 @@
+{
+  "package": "net.kyori.adventure.platform.fabric.impl.mixin",
+  "parent": "adventure-platform-mod-shared.parent.mixins.json",
+  "mixins": [
+    "api.KeyMixin",
+    "api.SignedMessageMixin",
+    "authlib.GameProfileMixin",
+    "brigadier.exceptions.CommandSyntaxExceptionMixin",
+    "minecraft.commands.CommandsMixin",
+    "minecraft.commands.synchronization.ArgumentTypeInfosMixin",
+    "minecraft.commands.synchronization.ArgumentUtilsMixin",
+    "minecraft.network.protocol.game.ClientboundCommandsPacketMixin",
+    "minecraft.network.protocol.game.ClientboundCommandsPacketMixin$ArgumentNodeStubMixin",
+    "minecraft.server.level.ServerPlayerMixin",
+    "minecraft.server.players.PlayerListMixin"
+  ]
+}

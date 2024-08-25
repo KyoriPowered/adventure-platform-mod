@@ -1,8 +1,12 @@
 # Gradle
 .gradle/
-build/
-run/
-/logs/
+/build/
+/run/
+/*/build/
+/*/*/build/
+/*/run/
+/*/*/run/
+/*/logs/
 
 # IntelliJ
 
@@ -16,6 +20,10 @@ run/
 /.factorypath
 /bin/
 *.launch
+/*/.settings/
+/*/.classpath
+/*/.factorypath
+/*/bin/
 
 # macOS
 
@@ -23,3 +31,5 @@ run/
 
 # CI test server
 testserver/
+/.apt_generated/
+/.apt_generated_tests/

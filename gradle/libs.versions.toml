@@ -16,6 +16,8 @@ minecraft = "1.21"
 parchment = "1.20.6:2024.06.02"
 vineflower = "1.10.1"
 spotless = "6.25.0"
+neoforge = "21.0.148"
+neoform = "1.21-20240613.152323"
 
 [libraries]
 adventure-api = { module = "net.kyori:adventure-api", version.ref = "adventure" }
@@ -31,6 +33,16 @@ adventure-textSerializerAnsi = { module = "net.kyori:adventure-text-serializer-a
 ansi = { module = "net.kyori:ansi", version.ref = "ansi" }
 examination-api = { module = "net.kyori:examination-api", version.ref = "examination" }
 examination-string = { module = "net.kyori:examination-string", version.ref = "examination" }
+jetbrainsAnnotations = "org.jetbrains:annotations:24.1.0"
+option = { module = "net.kyori:option", version = "1.0.0" }
+
+# mod-shared
+mixin = "net.fabricmc:sponge-mixin:0.13.4+mixin.0.8.5"
+mixinExtras = "io.github.llamalad7:mixinextras-common:0.4.0"
+# For Renovate, do not use directly
+zNeoform = { module = "net.neoforged:neoform", version.ref = "neoform" }
+
+# fabric
 fabric-loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabricLoader"}
 fabric-loader-junit = { module = "net.fabricmc:fabric-loader-junit", version.ref = "fabricLoader"}
 fabric-api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabricApi" }
@@ -40,9 +52,11 @@ fabric-api-networking = { module = "net.fabricmc.fabric-api:fabric-networking-ap
 fabric-api-command = { module = "net.fabricmc.fabric-api:fabric-command-api-v2" }
 fabric-api-lifecycle = { module = "net.fabricmc.fabric-api:fabric-lifecycle-events-v1" }
 fabric-permissionsApi = { module = "me.lucko:fabric-permissions-api", version = "0.3.1" }
-jetbrainsAnnotations = "org.jetbrains:annotations:24.1.0"
 minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
-option = { module = "net.kyori:option", version = "1.0.0" }
+
+# neoforge
+# For Renovate, do not use directly
+zNeoforge = { module = "net.neoforged:neoforge", version.ref = "neoforge" }
 
 # build
 autoService = { module = "com.google.auto.service:auto-service", version.ref = "autoService" }
@@ -55,19 +69,26 @@ junit-launcher = { module = "org.junit.platform:junit-platform-launcher" }
 junit-params = { module = "org.junit.jupiter:junit-jupiter-params" }
 stylecheck = "ca.stellardrift:stylecheck:0.2.1"
 vineflower = { module = "org.vineflower:vineflower", version.ref = "vineflower" }
+build-indra = { module = "net.kyori:indra-common", version.ref = "indra" }
+build-indra-crossdoc = { module = "net.kyori:indra-crossdoc", version.ref = "indra" }
+build-indra-spotless = { module = "net.kyori:indra-licenser-spotless", version.ref = "indra" }
+build-configurate-transformations = { module = "ca.stellardrift:gradle-plugin-configurate", version = "6.1.0" }
+build-idea-ext = { module = "gradle.plugin.org.jetbrains.gradle.plugin.idea-ext:gradle-idea-ext", version = "1.1.8" }
 
 # For Renovate, do not use directly
 zCheckstyle = { module = "com.puppycrawl.tools:checkstyle", version.ref = "checkstyle" }
 
 [plugins]
-configurateTransformations = "ca.stellardrift.configurate-transformations:6.1.0"
+configurateTransformations = { id = "ca.stellardrift.configurate-transformations" }
 eclipseApt = "com.diffplug.eclipse.apt:4.0.1"
-loom = "fabric-loom:1.7.3"
-ideaExt = "org.jetbrains.gradle.plugin.idea-ext:1.1.8"
-indra = { id = "net.kyori.indra", version.ref = "indra" }
+loom = "fabric-loom:1.7.2"
+# ModDevGradle settings plugin is putting another version on the classpath, so we can't specify a version :(
+ideaExt = { id = "org.jetbrains.gradle.plugin.idea-ext" }
+indra = { id = "net.kyori.indra" }
 indra-licenseHeader = { id = "net.kyori.indra.licenser.spotless", version.ref = "indra" }
-indra-checkstyle = { id = "net.kyori.indra.checkstyle", version.ref = "indra" }
-indra-crossdoc = { id = "net.kyori.indra.crossdoc", version.ref = "indra" }
+indra-checkstyle = { id = "net.kyori.indra.checkstyle" }
+indra-publishing = { id = "net.kyori.indra.publishing" }
+indra-crossdoc = { id = "net.kyori.indra.crossdoc" }
 indra-sonatype = { id = "net.kyori.indra.publishing.sonatype", version.ref = "indra" }
 nexusPublish = { id = "io.github.gradle-nexus.publish-plugin", version = "2.0.0" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }

@@ -1,0 +1,12 @@
+{
+  "parent": "adventure-platform-mod-shared.parent.mixins.json",
+  "package": "net.kyori.adventure.platform.modcommon.impl.client.mixin",
+  "client": [
+    "minecraft.MinecraftMixin",
+    "minecraft.OptionsMixin",
+    "minecraft.gui.components.BossHealthOverlayMixin",
+    "minecraft.player.LocalPlayerMixin",
+    "minecraft.resources.server.DownloadedPackSourceMixin",
+    "minecraft.resources.sounds.AbstractSoundInstanceAccess"
+  ]
+}
