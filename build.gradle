@@ -27,8 +27,7 @@ allprojects {
   }
 
   spotless {
-    //ratchetFrom("origin/mc/${libs.versions.minecraft.get().splitToSequence('.').take(2).joinToString(".")}")
-    ratchetFrom("origin/mc/1.20")
+    ratchetFrom("origin/mc/1.21")
 
     java {
       importOrderFile(rootProject.file(".spotless/kyori.importorder"))
@@ -40,7 +39,7 @@ allprojects {
   }
 
   indra {
-    github("KyoriPowered", "adventure-platform-fabric") {
+    github("KyoriPowered", "adventure-platform-mod") {
       ci(true)
     }
     javaVersions().target(21)
