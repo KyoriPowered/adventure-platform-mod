@@ -3,6 +3,10 @@
   "extends": [
     "local>KyoriPowered/.github:renovate-config"
   ],
+  "ignoreDeps": [
+    "io.github.llamalad7:mixinextras-common",
+    "net.fabricmc:sponge-mixin"
+  ],
   "packageRules": [
     {
       "description": "Correct Fabric API version handling",
