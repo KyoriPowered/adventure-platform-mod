@@ -46,20 +46,24 @@ dependencyResolutionManagement {
   }
 }
 
-setOf("fabric", /*"neoforge", */"mod-shared").forEach {
-  include(it)
-  findProject(":$it")?.name = "adventure-platform-$it"
+fun includeAndRename(path: String, name: String? = null) {
+  include(path)
+  findProject(":$path")?.name = "adventure-platform-${name ?: path.replace(":", "-")}"
 }
 
-include(":adventure-platform-fabric:mod-shared-repack")
-findProject(":adventure-platform-fabric:mod-shared-repack")?.name = "adventure-platform-mod-shared-fabric-repack"
-/*
-include(":adventure-platform-neoforge:tester")
-findProject(":adventure-platform-neoforge:tester")?.name = "adventure-platform-neoforge-tester"
-
-include(":adventure-platform-neoforge:services")
-findProject(":adventure-platform-neoforge:services")?.name = "adventure-platform-neoforge-services"
- */
+// Common
+includeAndRename("mod-shared")
 
 include(":test-resources")
 findProject(":test-resources")?.projectDir = file("mod-shared/test-resources")
+
+// Fabric
+includeAndRename("fabric")
+includeAndRename("adventure-platform-fabric:mod-shared-repack", "mod-shared-fabric-repack")
+
+// NeoForge
+/*
+includeAndRename("neoforge")
+includeAndRename("adventure-platform-neoforge:tester", "neoforge-tester")
+includeAndRename("adventure-platform-neoforge:services", "neoforge-services")
+ */
