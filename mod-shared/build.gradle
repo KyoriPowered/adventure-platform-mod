@@ -11,7 +11,29 @@ neoForge {
   }
 }
 
+@CacheableRule
+abstract class RemoveAsmConstraint implements ComponentMetadataRule {
+  @Override
+  void execute(final ComponentMetadataContext ctx) {
+    ctx.details.allVariants {
+      it.withDependencies { deps ->
+        deps.forEach { dep ->
+          if (dep.group == 'org.ow2.asm') {
+            if (dep.versionConstraint.strictVersion != null) {
+              dep.version { it.require(it.strictVersion) }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
 dependencies {
+  components {
+    // Mojang ships an old version of ASM, which conflicts with our deps. Upstream will probably solve this better when an actual release happens.
+    withModule('net.neoforged:minecraft-dependencies', RemoveAsmConstraint)
+  }
   compileOnly(libs.mixin)
   compileOnly(libs.mixinExtras)
 }

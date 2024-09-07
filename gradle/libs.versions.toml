@@ -8,16 +8,16 @@ ansi = "1.1.0"
 autoService = "1.1.1"
 checkstyle = "10.18.2"
 examination = "1.3.0"
-fabricApi = "0.100.1+1.21"
-fabricLoader = "0.15.11"
+fabricApi = "0.103.2+1.21.2"
+fabricLoader = "0.16.4"
 indra = "3.1.3"
 junit = "5.11.2"
-minecraft = "1.21"
-parchment = "1.20.6:2024.06.02"
+minecraft = "24w36a"
+parchment = "1.21:2024.07.28"
 vineflower = "1.10.1"
 spotless = "6.25.0"
 neoforge = "21.0.167"
-neoform = "1.21-20240613.152323"
+neoform = "24w36a-20240904.161315"
 
 [libraries]
 adventure-api = { module = "net.kyori:adventure-api", version.ref = "adventure" }
@@ -37,7 +37,7 @@ jetbrainsAnnotations = "org.jetbrains:annotations:25.0.0"
 option = { module = "net.kyori:option", version = "1.0.0" }
 
 # mod-shared
-mixin = "net.fabricmc:sponge-mixin:0.13.4+mixin.0.8.5"
+mixin = "net.fabricmc:sponge-mixin:0.15.3+mixin.0.8.7"
 mixinExtras = "io.github.llamalad7:mixinextras-common:0.4.1"
 # For Renovate, do not use directly
 zNeoform = { module = "net.neoforged:neoform", version.ref = "neoform" }
