@@ -12,7 +12,12 @@
     {
       "description": "Correct NeoForge version handling",
       "matchPackageNames": ["net.neoforged:neoforge"],
-      "versioning": "regex:^(?<compatibility>(\\d+\\.){2})(?<minor>\\d+)(-beta)?$"
+      "versioning": "regex:^(?<compatibility>(?:\\d+\\.){2})(?<minor>\\d+)(-beta)?$"
+    },
+    {
+      "description": "Correct NeoForm version handling",
+      "matchPackageNames": ["net.neoforged:neoform"],
+      "versioning": "regex:^(?<compatibility>(?:(?:\\d+\\.){2,3}|(?:\\d{2}w\\d{2}[a-z]+)))-(?<minor>\\d{8}\\.\\d{6})$"
     }
   ]
 }
