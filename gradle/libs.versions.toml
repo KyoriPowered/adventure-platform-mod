@@ -33,7 +33,7 @@ adventure-textSerializerAnsi = { module = "net.kyori:adventure-text-serializer-a
 ansi = { module = "net.kyori:ansi", version.ref = "ansi" }
 examination-api = { module = "net.kyori:examination-api", version.ref = "examination" }
 examination-string = { module = "net.kyori:examination-string", version.ref = "examination" }
-jetbrainsAnnotations = "org.jetbrains:annotations:24.1.0"
+jetbrainsAnnotations = "org.jetbrains:annotations:25.0.0"
 option = { module = "net.kyori:option", version = "1.0.0" }
 
 # mod-shared
