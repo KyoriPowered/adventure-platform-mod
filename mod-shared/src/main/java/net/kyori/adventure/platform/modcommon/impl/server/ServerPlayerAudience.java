@@ -385,7 +385,7 @@ public class ServerPlayerAudience implements ControlledAudience {
         pack.uri().toASCIIString(),
         pack.hash(),
         request.required(),
-        it.hasNext() ? Optional.empty() : Optional.of(prompt)
+        it.hasNext() ? Optional.empty() : Optional.ofNullable(prompt)
       ));
 
       if (request.callback() != ResourcePackCallback.noOp()) {
