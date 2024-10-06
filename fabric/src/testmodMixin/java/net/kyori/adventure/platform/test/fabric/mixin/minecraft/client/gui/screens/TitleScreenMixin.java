@@ -33,7 +33,7 @@ import net.minecraft.network.chat.Component;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(TitleScreen.class)
 abstract class TitleScreenMixin extends Screen {
@@ -41,8 +41,8 @@ abstract class TitleScreenMixin extends Screen {
     super(title);
   }
 
-  @Inject(method = "createNormalMenuOptions(II)V", at = @At("HEAD"))
-  void addMenuOptions(final int y, final int rowHeight, final CallbackInfo ci) {
+  @Inject(method = "createNormalMenuOptions(II)I", at = @At("HEAD"))
+  void addMenuOptions(final int y, final int rowHeight, final CallbackInfoReturnable<Integer> cir) {
     final Component nativeText = MinecraftClientAudiences.of().asNative(
       net.kyori.adventure.text.Component.translatable("menu.singleplayer", TextColor.color(0x9A40D2))
     );
