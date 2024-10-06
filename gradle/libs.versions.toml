@@ -6,12 +6,12 @@ adventure = "4.17.0"
 adventurePlatform = "4.3.4"
 ansi = "1.1.0"
 autoService = "1.1.1"
-checkstyle = "10.18.1"
+checkstyle = "10.18.2"
 examination = "1.3.0"
 fabricApi = "0.100.1+1.21"
 fabricLoader = "0.15.11"
 indra = "3.1.3"
-junit = "5.11.0"
+junit = "5.11.2"
 minecraft = "1.21"
 parchment = "1.20.6:2024.06.02"
 vineflower = "1.10.1"
@@ -73,7 +73,7 @@ build-indra = { module = "net.kyori:indra-common", version.ref = "indra" }
 build-indra-crossdoc = { module = "net.kyori:indra-crossdoc", version.ref = "indra" }
 build-indra-spotless = { module = "net.kyori:indra-licenser-spotless", version.ref = "indra" }
 build-configurate-transformations = { module = "ca.stellardrift:gradle-plugin-configurate", version = "6.1.0" }
-build-idea-ext = { module = "gradle.plugin.org.jetbrains.gradle.plugin.idea-ext:gradle-idea-ext", version = "1.1.8" }
+build-idea-ext = { module = "gradle.plugin.org.jetbrains.gradle.plugin.idea-ext:gradle-idea-ext", version = "1.1.9" }
 
 # For Renovate, do not use directly
 zCheckstyle = { module = "com.puppycrawl.tools:checkstyle", version.ref = "checkstyle" }
