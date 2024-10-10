@@ -190,10 +190,10 @@ public class ServerPlayerAudience implements ControlledAudience {
 
   private Holder<SoundEvent> eventHolder(final @NotNull Sound sound) {
     final var soundEventRegistry = this.controller.registryAccess()
-      .registryOrThrow(Registries.SOUND_EVENT);
+      .lookupOrThrow(Registries.SOUND_EVENT);
     final var soundKey = MinecraftAudiences.asNative(sound.name());
 
-    final var eventOptional = soundEventRegistry.getHolder(ResourceKey.create(Registries.SOUND_EVENT, soundKey));
+    final var eventOptional = soundEventRegistry.get(ResourceKey.create(Registries.SOUND_EVENT, soundKey));
     return eventOptional.isPresent() ? eventOptional.get() : Holder.direct(SoundEvent.createVariableRangeEvent(soundKey));
   }
 

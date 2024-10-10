@@ -36,6 +36,8 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -49,6 +51,7 @@ import static java.util.Objects.requireNonNull;
 @Mixin(CommandSourceStack.class)
 public abstract class CommandSourceStackMixin implements AdventureCommandSourceStackInternal {
   // @formatter:off
+  @Shadow @Final private Entity entity;
   @Shadow @Final private CommandSource source;
   @Shadow @Final private boolean silent;
   @Shadow @Final private MinecraftServer server;
@@ -88,7 +91,7 @@ public abstract class CommandSourceStackMixin implements AdventureCommandSourceS
         throw new IllegalStateException("Cannot use adventure operations without an available server!");
       }
       this.adventure$controller = MinecraftServerAudiences.of(this.server);
-      this.adventure$out = this.adventure$controller.audience(this.source);
+      this.adventure$out = this.entity instanceof final ServerPlayer ply && ply.commandSource() == this.source ? this.adventure$controller.audience(ply) : this.adventure$controller.audience(this.source);
     }
     return this.adventure$out;
   }

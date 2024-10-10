@@ -78,6 +78,18 @@ public interface MinecraftServerAudiences extends AudienceProvider, MinecraftAud
   @NotNull AdventureCommandSourceStack audience(@NotNull CommandSourceStack source);
 
   /**
+   * Get an audience that will send to the provided {@link ServerPlayer}.
+   *
+   * <p>Depending on the specific source, the returned audience may only support
+   * a subset of abilities.</p>
+   *
+   * @param source source to send to
+   * @return an audience for the source
+   * @since 6.1.0
+   */
+  @NotNull Audience audience(@NotNull ServerPlayer source);
+
+  /**
    * Get an audience that will send to the provided {@link CommandSource}.
    *
    * <p>Depending on the specific source, the returned audience may only support

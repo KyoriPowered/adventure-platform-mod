@@ -51,7 +51,7 @@ public abstract class EntityMixin implements Sound.Emitter, EntityHoverEventSour
   @Override
   public @NotNull HoverEvent<ShowEntity> asHoverEvent(final @NotNull UnaryOperator<ShowEntity> op) {
     final Key entityType = (Key) (Object) this.level.registryAccess()
-      .registryOrThrow(Registries.ENTITY_TYPE)
+      .lookupOrThrow(Registries.ENTITY_TYPE)
       .getKey(this.shadow$getType());
 
     final ShowEntity data = HoverEvent.ShowEntity.showEntity(
