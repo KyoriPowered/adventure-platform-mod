@@ -177,4 +177,17 @@ public class WrappedComponent implements Component {
   public net.kyori.adventure.text.@NotNull Component asComponent() {
     return this.wrapped;
   }
+
+  @Override
+  public int hashCode() {
+    return this.deepConverted().hashCode();
+  }
+
+  @Override
+  public boolean equals(final Object obj) {
+    if (obj instanceof final WrappedComponent wrappedComponent) {
+      return this.wrapped().equals(wrappedComponent.wrapped());
+    }
+    return this.deepConverted().equals(obj);
+  }
 }

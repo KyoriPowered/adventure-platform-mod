@@ -16,6 +16,7 @@
     "minecraft.network.chat.ComponentMixin$SerializerMixin",
     "minecraft.network.chat.ComponentSerializationMixin",
     "minecraft.network.chat.MessageSignatureMixin",
+    "minecraft.network.chat.MutableComponentMixin",
     "minecraft.network.chat.PlayerChatMessageMixin",
     "minecraft.network.protocol.game.ClientboundCommandsPacketMixin",
     "minecraft.network.protocol.game.ClientboundCommandsPacketMixin$ArgumentNodeStubMixin",

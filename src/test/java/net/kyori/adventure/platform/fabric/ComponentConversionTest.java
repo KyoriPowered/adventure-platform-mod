@@ -37,6 +37,7 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.fabric.impl.AdventureCommon;
+import net.kyori.adventure.platform.fabric.impl.NonWrappingComponentSerializer;
 import net.kyori.adventure.platform.fabric.impl.WrappedComponent;
 import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.text.Component;
@@ -112,6 +113,16 @@ class ComponentConversionTest extends BootstrappedTest {
     final JsonElement serializedNative = this.componentToJson(mc);
 
     assertJsonTreesEqual(serializedNative, serialized);
+  }
+
+  @TestOnComponents
+  void testComponentEquality(final Component input) {
+    final net.minecraft.network.chat.Component deepConverted = new NonWrappingComponentSerializer(BootstrappedTest::lookup).serialize(input);
+    final net.minecraft.network.chat.Component wrapped = this.toNativeWrapped(input);
+    final net.minecraft.network.chat.Component wrapped2 = this.toNativeWrapped(input);
+    assertEquals(wrapped, wrapped2, "two wrapped components should be equal");
+    assertEquals(deepConverted, wrapped, "deep should equal wrapped");
+    assertEquals(wrapped, deepConverted, "wrapped should equal deep");
   }
 
   private static void assertJsonTreesEqual(final JsonElement expected, final JsonElement actual) {
