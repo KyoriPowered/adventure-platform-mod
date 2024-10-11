@@ -174,7 +174,7 @@ public class WrappedComponent implements Component {
 
   @Override
   public boolean equals(final Object obj) {
-    if (obj instanceof WrappedComponent wrappedComponent) {
+    if (obj instanceof final WrappedComponent wrappedComponent) {
       return this.wrapped().equals(wrappedComponent.wrapped());
     }
     return this.deepConverted().equals(obj);
