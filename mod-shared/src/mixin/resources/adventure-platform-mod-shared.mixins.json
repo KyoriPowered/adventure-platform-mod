@@ -9,6 +9,7 @@
     "minecraft.network.chat.ComponentMixin$SerializerMixin",
     "minecraft.network.chat.ComponentSerializationMixin",
     "minecraft.network.chat.MessageSignatureMixin",
+    "minecraft.network.chat.MutableComponentMixin",
     "minecraft.network.chat.PlayerChatMessageMixin",
     "minecraft.resources.DelegatingOpsMixin",
     "minecraft.resources.ResourceKeyMixin",
