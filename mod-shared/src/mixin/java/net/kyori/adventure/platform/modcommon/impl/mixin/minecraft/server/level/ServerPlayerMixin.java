@@ -78,7 +78,7 @@ public abstract class ServerPlayerMixin extends PlayerMixin implements Forwardin
     // This is just setting it to the default en_us, to avoid event calls if it doesn't change (this is the reason for our target not being TAIL)
     this.adventure$locale = LocaleHolderBridge.toLocale(this.language);
 
-    this.adventure$backing = MinecraftServerAudiences.of(this.server).audience(this);
+    this.adventure$backing = MinecraftServerAudiences.of(this.server).audience((ServerPlayer) (Object) this);
   }
 
   @Override

@@ -244,7 +244,7 @@ public interface MinecraftAudiences {
    */
   @Contract("null -> null; !null -> !null")
   static Sound.Type asSoundType(final SoundEvent soundEvent) {
-    return (Sound.Type) soundEvent;
+    return (Sound.Type) (Object) soundEvent;
   }
 
   /**

@@ -148,19 +148,28 @@ public final class MinecraftServerAudiencesImpl implements MinecraftServerAudien
       throw new IllegalArgumentException("The AdventureCommandSource mixin failed!");
     }
 
-    return internal.adventure$audience(this.audience(internal.adventure$source()), this);
+    final Audience backingAudience = source.getEntity() instanceof final ServerPlayer ply && ply.commandSource() == internal.adventure$source()
+      ? this.audience(ply)
+      : this.audience(internal.adventure$source());
+    return internal.adventure$audience(backingAudience, this);
+  }
+
+  @Override
+  public @NotNull Audience audience(final @NotNull ServerPlayer source) {
+    return switch (source) {
+      case final RenderableAudience render -> render.renderUsing(this);
+      case final Audience audience -> audience; // todo: how to pass component renderer through
+      default -> new ServerPlayerAudience(source, this);
+    };
   }
 
   @Override
   public @NotNull Audience audience(final @NotNull CommandSource source) {
-    if (source instanceof final RenderableAudience renderable) {
-      return renderable.renderUsing(this);
-    } else if (source instanceof final Audience audience) {
-      // TODO: How to pass component renderer through
-      return audience;
-    } else {
-      return new CommandSourceAudience(source, this);
-    }
+    return switch (source) {
+      case final RenderableAudience render -> render.renderUsing(this);
+      case final Audience audience -> audience; // todo: how to pass component renderer through
+      default -> new CommandSourceAudience(source, this);
+    };
   }
 
   @Override
