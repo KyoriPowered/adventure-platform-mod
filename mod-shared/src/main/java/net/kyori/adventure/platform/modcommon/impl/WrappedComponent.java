@@ -166,4 +166,17 @@ public class WrappedComponent implements Component {
   public <T> Optional<T> visit(final ContentConsumer<T> visitor) {
     return this.deepConverted().visit(visitor);
   }
+
+  @Override
+  public int hashCode() {
+    return this.deepConverted().hashCode();
+  }
+
+  @Override
+  public boolean equals(final Object obj) {
+    if (obj instanceof final WrappedComponent wrappedComponent) {
+      return this.wrapped().equals(wrappedComponent.wrapped());
+    }
+    return this.deepConverted().equals(obj);
+  }
 }
