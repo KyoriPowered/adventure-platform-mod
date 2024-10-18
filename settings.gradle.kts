@@ -19,7 +19,7 @@ pluginManagement {
 
 plugins {
   id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
-  id("fabric-loom") version "1.8.6"
+  id("fabric-loom") version "1.8.10"
   id("net.neoforged.moddev.repositories") version "1.0.20"
 }
 
