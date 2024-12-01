@@ -26,6 +26,11 @@ neoForge {
       sourceSet(sourceSets.main.get())
     }
   }
+
+  unitTest {
+    enable()
+    testedMod = mods.named("adventure-platform-neoforge")
+  }
 }
 
 configurations.jarJar {
