@@ -1,5 +1,3 @@
-import net.neoforged.moddevgradle.internal.RunGameTask
-
 plugins {
   id("net.neoforged.moddev")
   id("publishing-conventions")
@@ -17,11 +15,9 @@ neoForge {
   runs {
     register("client") {
       client()
-      mods.set(emptySet()) // Work around classpath issues by using the production jar for dev runs
     }
     register("server") {
       server()
-      mods.set(emptySet()) // Work around classpath issues by using the production jar for dev runs
     }
   }
 
@@ -32,25 +28,16 @@ neoForge {
   }
 }
 
-// Work around classpath issues by using the production jar for dev runs
-tasks.withType<RunGameTask>().configureEach {
-  dependsOn(tasks.jar)
-  doFirst {
-    val jar = file("run/mods/main.jar")
-    jar.parentFile.mkdirs()
-    tasks.jar.get().archiveFile.get().asFile.copyTo(jar, true)
-  }
-}
-
 configurations.jarJar {
   extendsFrom(configurations.jarInJar.get())
 }
 
 dependencies {
+  additionalRuntimeClasspath(project(":adventure-platform-neoforge:adventure-platform-neoforge-services"))
   implementation(project(":adventure-platform-neoforge:adventure-platform-neoforge-services"))
   jarJar(project(":adventure-platform-neoforge:adventure-platform-neoforge-services"))
 
-  compileOnlyApi(project(":adventure-platform-mod-shared"))
+  api(project(":adventure-platform-mod-shared"))
   jarJar(project(":adventure-platform-mod-shared"))
 }
 

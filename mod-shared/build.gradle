@@ -54,5 +54,8 @@ sourceSets {
 }
 
 tasks.jar {
-  manifest.attributes("FMLModType": "GAMELIBRARY")
+  manifest.attributes(
+    "FMLModType": "GAMELIBRARY",
+    "Automatic-Module-Name": "net.kyori.adventure.platform.mod.shared"
+  )
 }
