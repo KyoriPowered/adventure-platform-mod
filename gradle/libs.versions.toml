@@ -8,16 +8,16 @@ ansi = "1.1.0"
 autoService = "1.1.1"
 checkstyle = "10.20.0"
 examination = "1.3.0"
-fabricApi = "0.107.0+1.21.3"
-fabricLoader = "0.16.8"
+fabricApi = "0.110.5+1.21.4"
+fabricLoader = "0.16.9"
 indra = "3.1.3"
 junit = "5.11.3"
-minecraft = "1.21.3"
+minecraft = "1.21.4"
 parchment = "1.21:2024.07.28"
 vineflower = "1.10.1"
 spotless = "6.25.0"
-neoforge = "21.3.10-beta"
-neoform = "1.21.3-20241023.131943"
+neoforge = "21.4.0-beta"
+neoform = "1.21.4-20241203.161809"
 
 [libraries]
 adventure-api = { module = "net.kyori:adventure-api", version.ref = "adventure" }
@@ -37,7 +37,7 @@ jetbrainsAnnotations = "org.jetbrains:annotations:26.0.1"
 option = { module = "net.kyori:option", version = "1.0.0" }
 
 # mod-shared
-mixin = "net.fabricmc:sponge-mixin:0.15.3+mixin.0.8.7"
+mixin = "net.fabricmc:sponge-mixin:0.15.4+mixin.0.8.7"
 mixinExtras = "io.github.llamalad7:mixinextras-common:0.4.1"
 # For Renovate, do not use directly
 zNeoform = { module = "net.neoforged:neoform", version.ref = "neoform" }
@@ -81,7 +81,7 @@ zCheckstyle = { module = "com.puppycrawl.tools:checkstyle", version.ref = "check
 [plugins]
 configurateTransformations = { id = "ca.stellardrift.configurate-transformations" }
 eclipseApt = "com.diffplug.eclipse.apt:4.1.0"
-loom = "fabric-loom:1.8.12"
+loom = "fabric-loom:1.9.2"
 # ModDevGradle settings plugin is putting another version on the classpath, so we can't specify a version :(
 ideaExt = { id = "org.jetbrains.gradle.plugin.idea-ext" }
 indra = { id = "net.kyori.indra" }
