@@ -2,7 +2,7 @@
 format = { version = "1.1" }
 
 [versions]
-adventure = "4.18.0"
+adventure = "4.19.0"
 adventurePlatform = "4.3.4"
 ansi = "1.1.1"
 autoService = "1.1.1"
