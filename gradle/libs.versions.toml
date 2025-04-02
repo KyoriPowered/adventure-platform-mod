@@ -72,7 +72,7 @@ vineflower = { module = "org.vineflower:vineflower", version.ref = "vineflower" 
 build-indra = { module = "net.kyori:indra-common", version.ref = "indra" }
 build-indra-crossdoc = { module = "net.kyori:indra-crossdoc", version.ref = "indra" }
 build-indra-spotless = { module = "net.kyori:indra-licenser-spotless", version.ref = "indra" }
-build-configurate-transformations = { module = "ca.stellardrift:gradle-plugin-configurate", version = "6.1.0" }
+build-configurate-transformations = { module = "ca.stellardrift:gradle-plugin-configurate", version = "6.2.0" }
 build-idea-ext = { module = "gradle.plugin.org.jetbrains.gradle.plugin.idea-ext:gradle-idea-ext", version = "1.1.10" }
 
 # For Renovate, do not use directly
