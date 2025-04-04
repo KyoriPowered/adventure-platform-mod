@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
- * Copyright (c) 2020-2024 KyoriPowered
+ * Copyright (c) 2025 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,18 +21,34 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.adventure.platform.modcommon.impl.accessor.minecraft.commands;
+package net.kyori.adventure.platform.modcommon.impl;
 
 import com.google.gson.stream.JsonReader;
-import net.minecraft.commands.ParserUtils;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Invoker;
+import java.lang.reflect.Field;
+import org.jetbrains.annotations.NotNull;
 
-@Mixin(ParserUtils.class)
-public interface ParserUtilsAccess {
-  // @formatter:off
-  @Invoker("getPos") static int getPos(final JsonReader reader) {
-    throw new AssertionError();
+public final class GsonUtils {
+  private static final @NotNull Field JSON_READER_POS = requireField(JsonReader.class, "pos");
+  private static final @NotNull Field JSON_READER_LINESTART = requireField(JsonReader.class, "lineStart");
+
+  private GsonUtils() {
   }
-  // @formatter:on
+
+  private static @NotNull Field requireField(final @NotNull Class<?> clazz, @NotNull String name) {
+    try {
+      final Field declaredField = clazz.getDeclaredField(name);
+      declaredField.setAccessible(true);
+      return declaredField;
+    } catch (final NoSuchFieldException ex) {
+      throw new IllegalStateException("Couldn't get field '" + name + "' for " + clazz.getName(), ex);
+    }
+  }
+
+  public static int posInLine(final @NotNull JsonReader reader) {
+    try {
+      return JSON_READER_POS.getInt(reader) - JSON_READER_LINESTART.getInt(reader);
+    } catch (final IllegalAccessException ex) {
+      throw new IllegalStateException("Couldn't read position of JsonReader", ex);
+    }
+  }
 }
