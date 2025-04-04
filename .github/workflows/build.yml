@@ -33,7 +33,7 @@ jobs:
         run: "./gradlew build --stacktrace"
       - name: "archive test results"
         if: "${{ always() }}"
-        uses: "actions/upload-artifact@v4.6.0"
+        uses: "actions/upload-artifact@v4.6.2"
         with:
           name: "${{ runner.os }}-test-results"
           path: |
@@ -50,7 +50,7 @@ jobs:
           fi
           echo "VERSION=$VERSION" >> $GITHUB_ENV
       - name: "Cache test run data"
-        uses: "actions/cache@v4.2.0"
+        uses: "actions/cache@v4.2.3"
         with:
           path: |
             testserver/libraries
