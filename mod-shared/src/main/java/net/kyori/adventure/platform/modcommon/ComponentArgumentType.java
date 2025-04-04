@@ -117,7 +117,7 @@ public final class ComponentArgumentType implements ArgumentType<Component> {
       return result.parsed();
     } catch (final Exception ex) {
       final String message = ex.getCause() == null ? ex.getMessage() : ex.getCause().getMessage();
-      throw ComponentArgument.ERROR_INVALID_JSON.createWithContext(reader, message);
+      throw ComponentArgument.ERROR_INVALID_COMPONENT.createWithContext(reader, message);
     }
   }
 
