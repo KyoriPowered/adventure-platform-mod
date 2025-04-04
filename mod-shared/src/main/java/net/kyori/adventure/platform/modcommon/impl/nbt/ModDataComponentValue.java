@@ -23,7 +23,6 @@
  */
 package net.kyori.adventure.platform.modcommon.impl.nbt;
 
-import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
 import net.kyori.adventure.nbt.api.BinaryTagHolder;
@@ -35,7 +34,7 @@ import org.jetbrains.annotations.NotNull;
 
 public sealed interface ModDataComponentValue extends DataComponentValue {
   net.kyori.adventure.util.Codec<Tag, String, CommandSyntaxException, RuntimeException> SNBT_CODEC = net.kyori.adventure.util.Codec.codec(
-    s -> new TagParser(new StringReader(s)).readValue(),
+    TagParser::parseCompoundFully,
     Tag::toString
   );
 
