@@ -36,7 +36,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 
 @Mixin(ServerConfigurationPacketListenerImpl.class)
 public abstract class ServerConfigurationPacketListenerImplMixin extends ServerCommonPacketListenerImplMixin {
-  @ModifyArg(method = "handleConfigurationFinished", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/ProtocolInfo$Unbound;bind(Ljava/util/function/Function;)Lnet/minecraft/network/ProtocolInfo;"))
+  @ModifyArg(method = "handleConfigurationFinished", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/protocol/SimpleUnboundProtocol;bind(Ljava/util/function/Function;)Lnet/minecraft/network/ProtocolInfo;"))
   private Function<ByteBuf, RegistryFriendlyByteBuf> adventure$injectPointers(final Function<ByteBuf, RegistryFriendlyByteBuf> original) {
     return buf -> {
       final RegistryFriendlyByteBuf wrapped = original.apply(buf);
