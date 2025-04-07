@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
- * Copyright (c) 2020-2024 KyoriPowered
+ * Copyright (c) 2020-2025 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -73,7 +74,7 @@ import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.kyori.adventure.translation.GlobalTranslator;
-import net.kyori.adventure.translation.TranslationRegistry;
+import net.kyori.adventure.translation.TranslationStore;
 import net.minecraft.client.GuiMessageTag;
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -137,7 +138,7 @@ public class AdventureFabricTester implements ModInitializer {
   @Override
   public void onInitialize() {
     // Register localizations
-    final TranslationRegistry testmodRegistry = TranslationRegistry.create(advKey("testmod_localizations"));
+    final TranslationStore.StringBased<MessageFormat> testmodRegistry = TranslationStore.messageFormat(advKey("testmod_localizations"));
     for (final var lang : List.of(Locale.ENGLISH, Locale.GERMAN)) {
       testmodRegistry.registerAll(lang, ResourceBundle.getBundle("net.kyori.adventure.platform.test.fabric.messages", lang), false);
     }
