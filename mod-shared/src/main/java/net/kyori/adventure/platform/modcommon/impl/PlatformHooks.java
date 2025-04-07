@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
- * Copyright (c) 2024 KyoriPowered
+ * Copyright (c) 2024-2025 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -59,13 +59,13 @@ public interface PlatformHooks extends SidedProxy {
 
   void updateTabList(final ServerPlayer player, final @Nullable Component header, final @Nullable Component footer);
 
-  default void collectPointers(Pointered pointered, Pointers.Builder builder) {
+  default void collectPointers(final Pointered pointered, final Pointers.Builder builder) {
     if (pointered instanceof LocaleHolderBridge holder) {
       builder.withDynamic(Identity.LOCALE, holder::adventure$locale);
     }
   }
 
-  default void onLocaleChange(ServerPlayer player, Locale newLocale) {
+  default void onLocaleChange(final ServerPlayer player, final Locale newLocale) {
     ((LocaleHolderBridge) player).adventure$locale(newLocale);
     MinecraftServerAudiencesImpl.forEachInstance(instance -> {
       instance.bossBars().refreshTitles(player);
