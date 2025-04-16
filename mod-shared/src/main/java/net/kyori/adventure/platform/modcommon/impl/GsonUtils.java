@@ -34,7 +34,7 @@ public final class GsonUtils {
   private GsonUtils() {
   }
 
-  private static @NotNull Field requireField(final @NotNull Class<?> clazz, @NotNull String name) {
+  private static @NotNull Field requireField(final @NotNull Class<?> clazz, final @NotNull String name) {
     try {
       final Field declaredField = clazz.getDeclaredField(name);
       declaredField.setAccessible(true);
