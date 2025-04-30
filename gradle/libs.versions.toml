@@ -2,21 +2,21 @@
 format = { version = "1.1" }
 
 [versions]
-adventure = "4.20.0"
+adventure = "4.21.0"
 adventurePlatform = "4.3.4"
 ansi = "1.1.1"
 autoService = "1.1.1"
 checkstyle = "10.23.0"
 examination = "1.3.0"
-fabricApi = "0.119.6+1.21.5"
-fabricLoader = "0.16.12"
+fabricApi = "0.121.0+1.21.5"
+fabricLoader = "0.16.14"
 indra = "3.1.3"
 junit = "5.12.1"
 minecraft = "1.21.5"
-parchment = "1.21.4:2025.03.23"
+parchment = "1.21.5:2025.04.19"
 vineflower = "1.11.1"
 spotless = "7.0.2"
-neoforge = "21.5.40-beta"
+neoforge = "21.5.63-beta"
 neoform = "1.21.5-20250325.162830"
 
 [libraries]
