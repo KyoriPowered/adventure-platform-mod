@@ -46,7 +46,7 @@ public final class GsonComponentSerializerProviderImpl implements GsonComponentS
       .legacyHoverEventSerializer(NBTLegacyHoverEventSerializer.INSTANCE)
       .editOptions(b -> b
         .value(JSONOptions.EMIT_RGB, false)
-        .value(JSONOptions.EMIT_HOVER_EVENT_TYPE, JSONOptions.HoverEventValueMode.BOTH)
+        .value(JSONOptions.EMIT_HOVER_EVENT_TYPE, JSONOptions.HoverEventValueMode.ALL)
       )
       .build();
   }
