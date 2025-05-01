@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
- * Copyright (c) 2024 KyoriPowered
+ * Copyright (c) 2024-2025 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -36,7 +36,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 
 @Mixin(ServerConfigurationPacketListenerImpl.class)
 public abstract class ServerConfigurationPacketListenerImplMixin extends ServerCommonPacketListenerImplMixin {
-  @ModifyArg(method = "handleConfigurationFinished", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/ProtocolInfo$Unbound;bind(Ljava/util/function/Function;)Lnet/minecraft/network/ProtocolInfo;"))
+  @ModifyArg(method = "handleConfigurationFinished", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/protocol/SimpleUnboundProtocol;bind(Ljava/util/function/Function;)Lnet/minecraft/network/ProtocolInfo;"))
   private Function<ByteBuf, RegistryFriendlyByteBuf> adventure$injectPointers(final Function<ByteBuf, RegistryFriendlyByteBuf> original) {
     return buf -> {
       final RegistryFriendlyByteBuf wrapped = original.apply(buf);

@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
- * Copyright (c) 2020-2024 KyoriPowered
+ * Copyright (c) 2020-2025 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -273,10 +273,10 @@ public class ServerPlayerAudience implements ControlledAudience {
       .build()
     );
 
-    final ItemStack previous = this.player.getInventory().getSelected();
-    this.sendPacket(new ClientboundContainerSetSlotPacket(-2, this.player.containerMenu.getStateId(), this.player.getInventory().selected, bookStack));
+    final ItemStack previous = this.player.getInventory().getSelectedItem();
+    this.sendPacket(new ClientboundContainerSetSlotPacket(-2, this.player.containerMenu.getStateId(), this.player.getInventory().getSelectedSlot(), bookStack));
     this.player.openItemGui(bookStack, InteractionHand.MAIN_HAND);
-    this.sendPacket(new ClientboundContainerSetSlotPacket(-2, this.player.containerMenu.getStateId(), this.player.getInventory().selected, previous));
+    this.sendPacket(new ClientboundContainerSetSlotPacket(-2, this.player.containerMenu.getStateId(), this.player.getInventory().getSelectedSlot(), previous));
   }
 
   private static String validateField(final String content, final int length, final String name) {

@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
- * Copyright (c) 2020-2024 KyoriPowered
+ * Copyright (c) 2020-2025 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -38,14 +38,14 @@ import org.jetbrains.annotations.Nullable;
 public final class GameEnums {
   public static final MappedRegistry<BossEvent.BossBarColor, BossBar.Color> BOSS_BAR_COLOR = MappedRegistry.named(
     BossEvent.BossBarColor.class,
-    BossEvent.BossBarColor::byName,
+    byNameProvider(BossEvent.BossBarColor.class, BossEvent.BossBarColor::getName),
     BossBar.Color.class,
     BossBar.Color.NAMES
   );
 
   public static final MappedRegistry<BossEvent.BossBarOverlay, BossBar.Overlay> BOSS_BAR_OVERLAY = MappedRegistry.named(
     BossEvent.BossBarOverlay.class,
-    BossEvent.BossBarOverlay::byName,
+    byNameProvider(BossEvent.BossBarOverlay.class, BossEvent.BossBarOverlay::getName),
     BossBar.Overlay.class,
     BossBar.Overlay.NAMES
   );
