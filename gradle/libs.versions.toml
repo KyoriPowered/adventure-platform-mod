@@ -2,22 +2,22 @@
 format = { version = "1.1" }
 
 [versions]
-adventure = "4.21.0"
+adventure = "4.22.0"
 adventurePlatform = "4.4.0"
 ansi = "1.1.1"
 autoService = "1.1.1"
 checkstyle = "10.25.0"
 examination = "1.3.0"
-fabricApi = "0.121.0+1.21.5"
+fabricApi = "0.127.0+1.21.6"
 fabricLoader = "0.16.14"
 indra = "3.1.3"
 junit = "5.13.1"
-minecraft = "1.21.5"
-parchment = "1.21.5:2025.04.19"
+minecraft = "1.21.6"
+parchment = "1.21.5:2025.06.15"
 vineflower = "1.11.1"
 spotless = "7.0.4"
-neoforge = "21.5.63-beta"
-neoform = "1.21.5-20250325.162830"
+neoforge = "21.6.4-beta"
+neoform = "1.21.6-20250617.151856"
 
 [libraries]
 adventure-api = { module = "net.kyori:adventure-api", version.ref = "adventure" }
