@@ -24,13 +24,14 @@
 package net.kyori.adventure.platform.fabric.impl.mixin.minecraft.commands;
 
 import com.google.common.collect.Iterators;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
-import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.tree.CommandNode;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 import net.kyori.adventure.platform.fabric.impl.ServerArgumentType;
 import net.kyori.adventure.platform.fabric.impl.ServerArgumentTypes;
@@ -42,37 +43,29 @@ import net.minecraft.commands.Commands;
 import net.minecraft.resources.ResourceLocation;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(Commands.class)
 public abstract class CommandsMixin {
 
   @SuppressWarnings({"rawtypes", "unchecked"}) // argument type generics
-  @Inject(
+  @WrapOperation(
     method = "fillUsableCommands",
-    locals = LocalCapture.CAPTURE_FAILEXCEPTION,
     at = @At(
       value = "INVOKE",
       target = "Lcom/mojang/brigadier/builder/ArgumentBuilder;build()Lcom/mojang/brigadier/tree/CommandNode;",
       remap = false
     )
   )
-  private static <T> void adventure$replaceArgumentType(
-    final CommandNode<T> commandNode,
-    final CommandNode<T> commandNode2,
-    final T object,
-    final Map<CommandNode<T>, CommandNode<T>> map,
-    final CallbackInfo ci,
-    final CommandNode<T> commandNode3,
-    final ArgumentBuilder<T, ?> argBuilder
+  private static <T> CommandNode<T> adventure$replaceArgumentType(
+    final ArgumentBuilder<T, ?> instance,
+    final Operation<CommandNode<T>> original,
+    final @Local(argsOnly = true) T sourceRaw
   ) {
-    if (!(argBuilder instanceof RequiredArgumentBuilder builder)) {
-      return; // only replace argument types for required arguments
+    if (!(instance instanceof RequiredArgumentBuilder builder)) {
+      return original.call(instance); // only replace argument types for required arguments
     }
-    final CommandSourceStack source = (CommandSourceStack) object;
+    final CommandSourceStack source = (CommandSourceStack) sourceRaw;
     ServerArgumentType<ArgumentType<T>> type = ServerArgumentTypes.byClass((Class) builder.getType().getClass());
     final Set<ResourceLocation> knownExtraCommands = ServerArgumentTypes.knownArgumentTypes(source.getPlayer()); // throws an exception, we can ignore bc this is always a player
     // If we have a replacement and the arg type isn't known to the client, change the argument type
@@ -82,10 +75,11 @@ public abstract class CommandsMixin {
       final CommandBuildContext ctx = CommandBuildContext.simple(source.registryAccess(), source.enabledFeatures());
       ((RequiredArgumentBuilderAccess) builder).accessor$type(type.fallbackProvider().apply(builder.getType(), ctx));
       if (type.fallbackSuggestions() != null) {
-        builder.suggests((SuggestionProvider) type.fallbackSuggestions());
+        builder.suggests(type.fallbackSuggestions());
       }
       type = ServerArgumentTypes.byClass((Class) builder.getType().getClass());
     }
+    return original.call(instance);
   }
 
   /**
