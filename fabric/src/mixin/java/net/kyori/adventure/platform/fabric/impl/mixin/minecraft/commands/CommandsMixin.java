@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
- * Copyright (c) 2022-2024 KyoriPowered
+ * Copyright (c) 2022-2025 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,6 @@ import com.google.common.collect.Iterators;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.tree.CommandNode;
 import java.util.Iterator;
@@ -40,7 +39,6 @@ import net.kyori.adventure.platform.modcommon.impl.HiddenRequirement;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.resources.ResourceLocation;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -56,20 +54,25 @@ public abstract class CommandsMixin {
   @Inject(
     method = "fillUsableCommands",
     locals = LocalCapture.CAPTURE_FAILEXCEPTION,
-    at = @At(value = "INVOKE", target = "com.mojang.brigadier.builder.RequiredArgumentBuilder.getSuggestionsProvider()Lcom/mojang/brigadier/suggestion/SuggestionProvider;", remap = false, ordinal = 0)
-  /*slice = @Slice(from = @At(value = "INVOKE_ASSIGN", target = "RequiredArgumentBuilder.executes(Lcom/mojang/brigadier/Command;)Lcom/mojang/brigadier/builder/ArgumentBuilder;", remap = false), to = @At(value = "INVOKE", target = "RequiredArgumentBuilder.getRedirect()Lcom/mojang/brigadier/tree/CommandNode;", remap = false))*/
+    at = @At(
+      value = "INVOKE",
+      target = "Lcom/mojang/brigadier/builder/ArgumentBuilder;build()Lcom/mojang/brigadier/tree/CommandNode;",
+      remap = false
+    )
   )
-  public <T> void adventure$replaceArgumentType(
-    final CommandNode<CommandSourceStack> tree,
-    final CommandNode<SharedSuggestionProvider> result,
-    final CommandSourceStack source,
-    final Map<CommandNode<CommandSourceStack>, CommandNode<SharedSuggestionProvider>> nodes,
+  private static <T> void adventure$replaceArgumentType(
+    final CommandNode<T> commandNode,
+    final CommandNode<T> commandNode2,
+    final T object,
+    final Map<CommandNode<T>, CommandNode<T>> map,
     final CallbackInfo ci,
-    final Iterator<?> it,
-    final CommandNode<CommandSourceStack> current,
-    final ArgumentBuilder<?, ?> unused,
-    final RequiredArgumentBuilder<?, T> builder
-  ) throws CommandSyntaxException {
+    final CommandNode<T> commandNode3,
+    final ArgumentBuilder<T, ?> argBuilder
+  ) {
+    if (!(argBuilder instanceof RequiredArgumentBuilder builder)) {
+      return; // only replace argument types for required arguments
+    }
+    final CommandSourceStack source = (CommandSourceStack) object;
     ServerArgumentType<ArgumentType<T>> type = ServerArgumentTypes.byClass((Class) builder.getType().getClass());
     final Set<ResourceLocation> knownExtraCommands = ServerArgumentTypes.knownArgumentTypes(source.getPlayer()); // throws an exception, we can ignore bc this is always a player
     // If we have a replacement and the arg type isn't known to the client, change the argument type
@@ -83,7 +86,6 @@ public abstract class CommandsMixin {
       }
       type = ServerArgumentTypes.byClass((Class) builder.getType().getClass());
     }
-
   }
 
   /**
@@ -95,7 +97,7 @@ public abstract class CommandsMixin {
    * @return the filtered iterator
    */
   @ModifyVariable(method = "fillUsableCommands", at = @At("STORE"), ordinal = 0, require = 0)
-  private Iterator<CommandNode<CommandSourceStack>> adventure$filterHiddenCommands(final Iterator<CommandNode<CommandSourceStack>> itr) {
+  private static Iterator<CommandNode<CommandSourceStack>> adventure$filterHiddenCommands(final Iterator<CommandNode<CommandSourceStack>> itr) {
     return Iterators.filter(itr, node -> !(node.getRequirement() instanceof HiddenRequirement<CommandSourceStack>));
   }
 }

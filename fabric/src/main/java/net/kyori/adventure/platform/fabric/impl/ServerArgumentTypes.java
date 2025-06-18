@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
- * Copyright (c) 2022-2024 KyoriPowered
+ * Copyright (c) 2022-2025 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -102,7 +102,7 @@ public final class ServerArgumentTypes {
     ((ServerPlayerBridge) player).bridge$knownArguments(ids);
     sendMappings(player, responder);
     if (!ids.isEmpty()) { // TODO: Avoid resending the whole command tree, find a way to receive the packet before sending?
-      player.server.getCommands().sendCommands(player);
+      player.getServer().getCommands().sendCommands(player);
     }
   }
 

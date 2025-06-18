@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
- * Copyright (c) 2023-2024 KyoriPowered
+ * Copyright (c) 2023-2025 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@ package net.kyori.adventure.platform.fabric;
 
 import com.google.gson.JsonElement;
 import com.google.gson.stream.JsonWriter;
+import com.mojang.serialization.JsonOps;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.lang.annotation.ElementType;
@@ -48,6 +49,7 @@ import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.translation.GlobalTranslator;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -91,7 +93,9 @@ class ComponentConversionTest extends BootstrappedTest {
   @TestOnComponents
   void testNonWrappingSerializerComponentsEqual(final Component input) {
     final JsonElement serialized = GsonComponentSerializer.gson().serializeToTree(input);
-    final JsonElement serializedNative = this.componentToJson(net.minecraft.network.chat.Component.Serializer.fromJson(serialized, lookup()));
+    final JsonElement serializedNative = this.componentToJson(
+      ComponentSerialization.CODEC.decode(lookup().createSerializationContext(JsonOps.INSTANCE), serialized).getOrThrow().getFirst()
+    );
 
     assertJsonTreesEqual(serializedNative, serialized);
   }

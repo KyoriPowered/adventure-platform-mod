@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
- * Copyright (c) 2020-2024 KyoriPowered
+ * Copyright (c) 2020-2025 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,7 +35,6 @@ import net.kyori.adventure.pointer.Pointers;
 import net.kyori.adventure.sound.Sound;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
@@ -53,8 +52,8 @@ public abstract class LocalPlayerMixin extends Player implements ForwardingAudie
 
   private final Audience adventure$default = MinecraftClientAudiences.of().audience();
 
-  private LocalPlayerMixin(final Level level, final BlockPos blockPos, final float f, final GameProfile gameProfile) {
-    super(level, blockPos, f, gameProfile);
+  private LocalPlayerMixin(final Level p_250508_, final GameProfile p_252153_) {
+    super(p_250508_, p_252153_);
   }
 
   @Override

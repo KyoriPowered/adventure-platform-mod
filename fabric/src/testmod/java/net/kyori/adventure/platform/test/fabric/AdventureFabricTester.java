@@ -198,7 +198,7 @@ public class AdventureFabricTester implements ModInitializer {
           }));
           return 1;
         }))))
-        .then(literal("sound").then(argument(ARG_SOUND, key()).suggests(SuggestionProviders.AVAILABLE_SOUNDS).executes(ctx -> {
+        .then(literal("sound").then(argument(ARG_SOUND, key()).suggests(SuggestionProviders.cast(SuggestionProviders.AVAILABLE_SOUNDS)).executes(ctx -> {
           final Audience viewer = this.adventure().audience(ctx.getSource());
           final Key sound = key(ctx, ARG_SOUND);
           viewer.sendMessage(text(b -> b.content("Playing sound ").append(represent(sound)).color(COLOR_RESPONSE)));
