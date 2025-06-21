@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
- * Copyright (c) 2020-2024 KyoriPowered
+ * Copyright (c) 2020-2025 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,6 +24,7 @@
 package net.kyori.adventure.platform.modcommon.impl;
 
 import com.google.common.base.Suppliers;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.mojang.serialization.JsonOps;
 import java.util.function.Supplier;
@@ -34,7 +35,6 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.ComponentSerialization;
-import net.minecraft.network.chat.MutableComponent;
 import org.jetbrains.annotations.NotNull;
 
 public final class NonWrappingComponentSerializer implements ComponentSerializer<Component, Component, net.minecraft.network.chat.Component> {
@@ -68,11 +68,15 @@ public final class NonWrappingComponentSerializer implements ComponentSerializer
   }
 
   @Override
-  public MutableComponent serialize(final Component component) {
+  public net.minecraft.network.chat.Component serialize(final Component component) {
     BYPASS_IS_ALLOWED_FROM_SERVER.set(true);
-    final MutableComponent mutableComponent;
+    final net.minecraft.network.chat.Component mutableComponent;
     try {
-      mutableComponent = net.minecraft.network.chat.Component.Serializer.fromJson(GsonComponentSerializer.gson().serializeToTree(component), this.holderProvider.get());
+      final JsonElement jsonElement = GsonComponentSerializer.gson().serializeToTree(component);
+      mutableComponent = ComponentSerialization.CODEC
+        .decode(this.holderProvider.get().createSerializationContext(JsonOps.INSTANCE), jsonElement)
+        .getOrThrow(JsonParseException::new)
+        .getFirst();
     } finally {
       BYPASS_IS_ALLOWED_FROM_SERVER.set(false);
     }

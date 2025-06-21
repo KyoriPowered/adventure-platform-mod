@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
- * Copyright (c) 2024 KyoriPowered
+ * Copyright (c) 2024-2025 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -46,7 +46,6 @@ import net.kyori.adventure.text.TranslatableComponent;
 import net.kyori.adventure.text.TranslationArgument;
 import net.kyori.adventure.text.flattener.ComponentFlattener;
 import net.kyori.adventure.translation.GlobalTranslator;
-import net.kyori.adventure.translation.TranslationRegistry;
 import net.kyori.adventure.translation.Translator;
 import net.kyori.adventure.util.Services;
 import net.minecraft.core.Holder;
@@ -107,7 +106,7 @@ public final class AdventureCommon {
     flattenerBuilder.complexMapper(TranslatableComponent.class, (translatable, consumer) -> {
       final String key = translatable.key();
       for (final Translator registry : GlobalTranslator.translator().sources()) {
-        if (registry instanceof TranslationRegistry tr && tr.contains(key)) {
+        if (registry.canTranslate(key, Locale.getDefault())) {
           consumer.accept(GlobalTranslator.render(translatable, Locale.getDefault()));
           return;
         }

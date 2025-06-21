@@ -55,6 +55,6 @@ public final class GsonComponentSerializerProviderImpl implements GsonComponentS
   public @NotNull Consumer<GsonComponentSerializer.Builder> builder() {
     return builder -> builder
       .legacyHoverEventSerializer(NBTLegacyHoverEventSerializer.INSTANCE)
-      .options(JSONOptions.byDataVersion().at(SharedConstants.getCurrentVersion().getDataVersion().getVersion()));
+      .options(JSONOptions.byDataVersion().at(SharedConstants.getCurrentVersion().dataVersion().version()));
   }
 }
