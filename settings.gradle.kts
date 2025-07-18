@@ -1,5 +1,9 @@
 pluginManagement {
   repositories {
+    maven("https://repo.papermc.io/repository/maven-snapshots/") {
+      name = "papermcSnapshots"
+      mavenContent { snapshotsOnly() }
+    }
     maven(url = "https://repo.stellardrift.ca/maven/internal/") {
       name = "stellardriftReleases"
       mavenContent { releasesOnly() }
@@ -8,7 +12,9 @@ pluginManagement {
       name = "stellardriftSnapshots"
       mavenContent { snapshotsOnly() }
     }
-    mavenCentral()
+    mavenCentral {
+      mavenContent { releasesOnly() }
+    }
     maven {
       name = "Fabric"
       url = uri("https://maven.fabricmc.net")
@@ -19,8 +25,8 @@ pluginManagement {
 
 plugins {
   id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
-  id("fabric-loom") version "1.10.5"
-  id("net.neoforged.moddev.repositories") version "2.0.95"
+  id("fabric-loom") version "1.11.4"
+  id("net.neoforged.moddev.repositories") version "2.0.103"
 }
 
 rootProject.name = "adventure-platform-mod-parent"
@@ -29,12 +35,8 @@ dependencyResolutionManagement {
   repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
   repositories {
     mavenCentral()
-    maven("https://oss.sonatype.org/content/repositories/snapshots/") {
-      name = "ossSnapshots"
-      mavenContent { snapshotsOnly() }
-    }
-    maven("https://s01.oss.sonatype.org/content/repositories/snapshots/") {
-      name = "s01ossSnapshots"
+    maven("https://central.sonatype.com/repository/maven-snapshots/") {
+      name = "sonatypeSnapshots"
       mavenContent { snapshotsOnly() }
     }
     maven(url = "https://maven.parchmentmc.org/") {
