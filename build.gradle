@@ -6,10 +6,6 @@ plugins {
   alias(libs.plugins.ideaExt)
 }
 
-indraSonatype {
-  useAlternateSonatypeOSSHost("s01")
-}
-
 allprojects {
   // subprojects would not configure second layer subprojects
   if (project == rootProject) {
