@@ -3,8 +3,14 @@ plugins {
 }
 
 repositories {
-  mavenCentral()
+  mavenCentral {
+    mavenContent { releasesOnly() }
+  }
   gradlePluginPortal()
+  maven("https://repo.papermc.io/repository/maven-snapshots/") {
+    name = "papermcSnapshots"
+    mavenContent { snapshotsOnly() }
+  }
 }
 
 dependencies {
