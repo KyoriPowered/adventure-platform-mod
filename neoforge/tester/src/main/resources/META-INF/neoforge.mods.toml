@@ -38,14 +38,14 @@ config="adventure-platform-neoforge-tester.mixins.json"
 [[dependencies.adventure_platform_neoforge_tester]]
 modId="neoforge"
 type="required"
-versionRange="[21.2.0-beta,)"
+versionRange="[21.6.4-beta,)"
 ordering="NONE"
 side="BOTH"
 
 [[dependencies.adventure_platform_neoforge_tester]]
 modId="minecraft"
 type="required"
-versionRange="[1.21.2,1.22)"
+versionRange="[1.21.6,)"
 ordering="NONE"
 side="BOTH"
 
