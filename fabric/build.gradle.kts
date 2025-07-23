@@ -14,12 +14,12 @@ dependencies {
   vineflowerDecompilerClasspath(libs.vineflower)
   sequenceOf<(Any) -> Dependency?>(
     ::modImplementation, ::modApi, ::modCompileOnly
-  ).forEach { it(platform(libs.fabric.api.bom)) }
-  modApi(libs.fabric.api.base)
-  modImplementation(libs.fabric.api.networking)
-  modImplementation(libs.fabric.api.command)
+  ).forEach { it(platform(fabricApiLibs.bom)) }
+  modApi(fabricApiLibs.base)
+  modImplementation(fabricApiLibs.networking.api.v1)
+  modImplementation(fabricApiLibs.command.api.v2)
   // Only used for prod test
-  modCompileOnly(libs.fabric.api.lifecycle)
+  modCompileOnly(fabricApiLibs.lifecycle.events.v1)
 
   minecraft(libs.minecraft)
   mappings(loom.layered {
@@ -186,7 +186,7 @@ dependencies {
   }
 
   // Testmod-specific dependencies
-  "modTestmod"(libs.fabric.api)
+  "modTestmod"(fabricApiLibs.fabric.api)
 }
 
 // Create a remapped testmod jar

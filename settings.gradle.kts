@@ -46,6 +46,12 @@ dependencyResolutionManagement {
       name = "neoforge"
     }
   }
+
+  versionCatalogs {
+    create("fabricApiLibs") {
+      from("net.fabricmc.fabric-api:fabric-api-catalog:0.127.0+1.21.6")
+    }
+  }
 }
 
 fun includeAndRename(path: String, name: String? = null) {
