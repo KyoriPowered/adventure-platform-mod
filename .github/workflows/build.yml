@@ -5,6 +5,8 @@ on:
     branches: "**"
     tags-ignore: ["**"]
   pull_request:
+  release:
+    types: [ released ]
 
 concurrency:
   group: "${{ github.workflow }}-${{ github.event.number || github.ref }}"
@@ -97,9 +99,17 @@ jobs:
             echo "::error::Server did not exit successfully, see logs for details"
             exit 1
           fi
-      - name: "publish"
+      - name: "publish snapshot"
         if: "${{ runner.os == 'Linux' && env.STATUS != 'release' && github.event_name == 'push' && steps.setup.outputs.publishing_branch != '' }}"
         run: "./gradlew publish"
         env:
           ORG_GRADLE_PROJECT_sonatypeUsername: "${{ secrets.SONATYPE_USERNAME }}"
           ORG_GRADLE_PROJECT_sonatypePassword: "${{ secrets.SONATYPE_PASSWORD }}"
+      - name: "publish release"
+        if: "${{ runner.os == 'Linux' && env.STATUS == 'release' && github.event_name == 'release' }}"
+        run: "./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository"
+        env:
+          ORG_GRADLE_PROJECT_sonatypeUsername: "${{ secrets.SONATYPE_USERNAME }}"
+          ORG_GRADLE_PROJECT_sonatypePassword: "${{ secrets.SONATYPE_PASSWORD }}"
+          ORG_GRADLE_PROJECT_kyoriSigningKey: "${{ secrets.KYORI_GPG_KEY }}"
+          ORG_GRADLE_PROJECT_kyoriSigningPassword: "${{ secrets.KYORI_GPG_PASSWORD }}"
