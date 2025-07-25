@@ -26,6 +26,11 @@ neoForge {
       sourceSet(sourceSets.main.get())
     }
   }
+
+  interfaceInjectionData {
+    from(file("interfaces.json"))
+    publish(file("interfaces.json"))
+  }
 }
 
 configurations.jarJar {
