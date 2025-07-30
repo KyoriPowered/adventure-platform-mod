@@ -113,3 +113,30 @@ jobs:
           ORG_GRADLE_PROJECT_sonatypePassword: "${{ secrets.SONATYPE_PASSWORD }}"
           ORG_GRADLE_PROJECT_kyoriSigningKey: "${{ secrets.KYORI_GPG_KEY }}"
           ORG_GRADLE_PROJECT_kyoriSigningPassword: "${{ secrets.KYORI_GPG_PASSWORD }}"
+      - name: "copy javadoc for publication"
+        if: "${{ runner.os == 'Linux' && env.STATUS == 'release' && github.event_name == 'release' }}"
+        run: |
+          mkdir -p build/publish-jd/platform/
+          ./gradlew copyJavadoc --output build/publish-jd/platform/
+      - name: "authenticate for javadoc publication"
+        if: "${{ runner.os == 'Linux' && env.STATUS == 'release' && github.event_name == 'release' }}"
+        uses: "tibdex/github-app-token@3beb63f4bd073e61482598c45c71c1019b59b73a" # v2.1.0
+        id: jd-token
+        with:
+          app_id: "${{ secrets.DEPLOYMENT_APP_ID }}"
+          private_key: "${{ secrets.DEPLOYMENT_APP_SECRET }}"
+          installation_retrieval_mode: "repository"
+          installation_retrieval_payload: "KyoriPowered/adventure-javadocs"
+      - name: "publish javadoc"
+        if: "${{ runner.os == 'Linux' && env.STATUS == 'release' && github.event_name == 'release' }}"
+        uses: JamesIves/github-pages-deploy-action@6c2d9db40f9296374acc17b90404b6e8864128c8 # v4.7.3
+        with:
+          folder: build/publish-jd
+          repository-name: KyoriPowered/adventure-javadocs
+          token: ${{ steps.jd-token.outputs.token }}
+          branch: main
+          git-config-name: kyoripowered-deployment[bot]
+          git-config-email: "121842021+kyoripowered-deployment[bot]@users.noreply.github.com"
+          clean: false
+          force: false
+          commit-message: "Publishing javadoc for ${{ github.repository }} ${{ env.PROJECT_VERSION }}"
