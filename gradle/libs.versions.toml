@@ -3,15 +3,15 @@ format = { version = "1.1" }
 
 [versions]
 adventure = "4.24.0"
-adventurePlatform = "4.4.0"
+adventurePlatform = "4.4.1"
 ansi = "1.1.1"
 autoService = "1.1.1"
 checkstyle = "10.25.0"
 examination = "1.3.0"
 fabricApi = "0.127.0+1.21.6"
 fabricLoader = "0.16.14"
-indra = "3.2.0-SNAPSHOT"
-junit = "5.13.1"
+indra = "3.2.0"
+junit = "5.13.4"
 minecraft = "1.21.6"
 parchment = "1.21.5:2025.06.15"
 vineflower = "1.11.1"
