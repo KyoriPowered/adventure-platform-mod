@@ -25,8 +25,8 @@ pluginManagement {
 
 plugins {
   id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
-  id("fabric-loom") version "1.11.4"
-  id("net.neoforged.moddev.repositories") version "2.0.103"
+  id("fabric-loom") version "1.11.7"
+  id("net.neoforged.moddev.repositories") version "2.0.107"
 }
 
 rootProject.name = "adventure-platform-mod-parent"
@@ -39,6 +39,10 @@ dependencyResolutionManagement {
       name = "sonatypeSnapshots"
       mavenContent { snapshotsOnly() }
     }
+    maven("https://repo.papermc.io/repository/maven-snapshots/") {
+      name = "papermcSnapshots"
+      mavenContent { snapshotsOnly() }
+    }
     maven(url = "https://maven.parchmentmc.org/") {
       name = "parchment"
     }
@@ -49,7 +53,7 @@ dependencyResolutionManagement {
 
   versionCatalogs {
     create("fabricApiLibs") {
-      from("net.fabricmc.fabric-api:fabric-api-catalog:0.127.0+1.21.6")
+      from("net.fabricmc.fabric-api:fabric-api-catalog:0.132.1+1.21.9")
     }
   }
 }
