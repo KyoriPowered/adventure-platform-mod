@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
- * Copyright (c) 2023-2024 KyoriPowered
+ * Copyright (c) 2023-2025 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -82,7 +82,7 @@ public abstract class ServerCommonPacketListenerImplMixin implements ServerCommo
       state.cb().packEventReceived(
         pkt.id(),
         GameEnums.RESOURCE_PACK_STATUS.asAdventure(pkt.action()),
-        state.controller().player(this.shadow$playerProfile().getId())
+        state.controller().player(this.shadow$playerProfile().id())
       );
       ci.cancel();
     }

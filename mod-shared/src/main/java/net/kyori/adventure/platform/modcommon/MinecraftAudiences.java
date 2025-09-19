@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
- * Copyright (c) 2020-2024 KyoriPowered
+ * Copyright (c) 2020-2025 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -223,10 +223,10 @@ public interface MinecraftAudiences {
     if (profile == null) {
       return null;
     }
-    if (profile instanceof Identity identity) {
+    if ((Object) profile instanceof Identity identity) {
       return identity;
     }
-    return Identity.identity(profile.getId());
+    return Identity.identity(profile.id());
   }
 
   /**

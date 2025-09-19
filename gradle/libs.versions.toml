@@ -9,16 +9,16 @@ ansi = "1.1.1"
 autoService = "1.1.1"
 checkstyle = "10.25.0"
 examination = "1.3.0"
-fabricApi = "0.132.1+1.21.9"
+fabricApi = "0.133.8+1.21.9"
 fabricLoader = "0.17.2"
 indra = "3.2.0"
 junit = "5.13.4"
-minecraft = "25w34b"
+minecraft = "1.21.9-pre1"
 parchment = "1.21.8:2025.07.20"
 vineflower = "1.11.1"
 spotless = "7.2.1"
-neoforge = "21.8.36"
-neoform = "25w34b-20250819.153953"
+neoforge = "21.5.0-alpha.1.21.9-pre1.20250918.184530"
+neoform = "1.21.9-pre1-20250916.160523"
 
 [libraries]
 #adventure-api = { module = "net.kyori:adventure-api", version.ref = "adventure" }
@@ -84,7 +84,7 @@ zCheckstyle = { module = "com.puppycrawl.tools:checkstyle", version.ref = "check
 [plugins]
 configurateTransformations = { id = "ca.stellardrift.configurate-transformations" }
 eclipseApt = "com.diffplug.eclipse.apt:4.3.0"
-loom = "fabric-loom:1.11.7"
+loom = "fabric-loom:1.11.8"
 # ModDevGradle settings plugin is putting another version on the classpath, so we can't specify a version :(
 ideaExt = { id = "org.jetbrains.gradle.plugin.idea-ext" }
 indra = { id = "net.kyori.indra" }

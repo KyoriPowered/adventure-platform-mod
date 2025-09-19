@@ -25,7 +25,7 @@ pluginManagement {
 
 plugins {
   id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
-  id("fabric-loom") version "1.11.7"
+  id("fabric-loom") version "1.11.8"
   id("net.neoforged.moddev.repositories") version "2.0.107"
 }
 
@@ -49,11 +49,19 @@ dependencyResolutionManagement {
     maven(url= "https://maven.neoforged.net/") {
       name = "neoforge"
     }
+    maven {
+      name = "Maven for PR #2639" // https://github.com/neoforged/NeoForge/pull/2639
+      url = uri("https://prmaven.neoforged.net/NeoForge/pr2639")
+      content {
+        includeModule("net.neoforged", "neoforge")
+        includeModule("net.neoforged", "testframework")
+      }
+    }
   }
 
   versionCatalogs {
     create("fabricApiLibs") {
-      from("net.fabricmc.fabric-api:fabric-api-catalog:0.132.1+1.21.9")
+      from("net.fabricmc.fabric-api:fabric-api-catalog:0.133.8+1.21.9")
     }
   }
 }

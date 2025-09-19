@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
- * Copyright (c) 2020-2024 KyoriPowered
+ * Copyright (c) 2020-2025 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -70,7 +70,7 @@ public abstract class PlayerMixin extends LivingEntity implements IdentifiedAtRu
         }
 
         final Pointers.Builder builder = Pointers.builder()
-          .withDynamic(Identity.NAME, () -> this.shadow$getGameProfile().getName())
+          .withDynamic(Identity.NAME, () -> this.shadow$getGameProfile().name())
           .withDynamic(Identity.UUID, this::getUUID)
           .withDynamic(Identity.DISPLAY_NAME, () -> new NonWrappingComponentSerializer(this.level()::registryAccess).deserialize(this.getDisplayName()));
 
