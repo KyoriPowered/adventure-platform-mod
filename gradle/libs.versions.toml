@@ -2,8 +2,7 @@
 format = { version = "1.1" }
 
 [versions]
-#adventure = "4.24.0"
-adventure = "mc1.21.9-dev-SNAPSHOT"
+adventure = "4.25.0-SNAPSHOT"
 adventurePlatform = "4.4.1"
 ansi = "1.1.1"
 autoService = "1.1.1"
@@ -21,23 +20,15 @@ neoforge = "21.5.0-alpha.1.21.9-pre1.20250918.184530"
 neoform = "1.21.9-pre1-20250916.160523"
 
 [libraries]
-#adventure-api = { module = "net.kyori:adventure-api", version.ref = "adventure" }
-#adventure-key = { module = "net.kyori:adventure-key", version.ref = "adventure" }
+adventure-api = { module = "net.kyori:adventure-api", version.ref = "adventure" }
+adventure-key = { module = "net.kyori:adventure-key", version.ref = "adventure" }
 adventure-platform-api = { module = "net.kyori:adventure-platform-api", version.ref = "adventurePlatform" }
-#adventure-textLoggerSlf4j = { module = "net.kyori:adventure-text-logger-slf4j", version.ref = "adventure" }
-#adventure-textMinimessage = { module = "net.kyori:adventure-text-minimessage", version.ref = "adventure" }
-#adventure-textSerializerPlain = { module = "net.kyori:adventure-text-serializer-plain", version.ref = "adventure" }
-#adventure-textSerializerGson = { module = "net.kyori:adventure-text-serializer-gson", version.ref = "adventure" }
-#adventure-textSerializerJson = { module = "net.kyori:adventure-text-serializer-json", version.ref = "adventure" }
-#adventure-textSerializerAnsi = { module = "net.kyori:adventure-text-serializer-ansi", version.ref = "adventure" }
-adventure-api = { module = "io.papermc.adventure:adventure-api", version.ref = "adventure" }
-adventure-key = { module = "io.papermc.adventure:adventure-key", version.ref = "adventure" }
-adventure-textLoggerSlf4j = { module = "io.papermc.adventure:adventure-text-logger-slf4j", version.ref = "adventure" }
-adventure-textMinimessage = { module = "io.papermc.adventure:adventure-text-minimessage", version.ref = "adventure" }
-adventure-textSerializerPlain = { module = "io.papermc.adventure:adventure-text-serializer-plain", version.ref = "adventure" }
-adventure-textSerializerGson = { module = "io.papermc.adventure:adventure-text-serializer-gson", version.ref = "adventure" }
-adventure-textSerializerJson = { module = "io.papermc.adventure:adventure-text-serializer-json", version.ref = "adventure" }
-adventure-textSerializerAnsi = { module = "io.papermc.adventure:adventure-text-serializer-ansi", version.ref = "adventure" }
+adventure-textLoggerSlf4j = { module = "net.kyori:adventure-text-logger-slf4j", version.ref = "adventure" }
+adventure-textMinimessage = { module = "net.kyori:adventure-text-minimessage", version.ref = "adventure" }
+adventure-textSerializerPlain = { module = "net.kyori:adventure-text-serializer-plain", version.ref = "adventure" }
+adventure-textSerializerGson = { module = "net.kyori:adventure-text-serializer-gson", version.ref = "adventure" }
+adventure-textSerializerJson = { module = "net.kyori:adventure-text-serializer-json", version.ref = "adventure" }
+adventure-textSerializerAnsi = { module = "net.kyori:adventure-text-serializer-ansi", version.ref = "adventure" }
 
 ansi = { module = "net.kyori:ansi", version.ref = "ansi" }
 examination-api = { module = "net.kyori:examination-api", version.ref = "examination" }
