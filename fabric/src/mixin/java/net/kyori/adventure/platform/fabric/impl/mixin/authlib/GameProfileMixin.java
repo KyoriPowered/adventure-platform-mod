@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
- * Copyright (c) 2020-2024 KyoriPowered
+ * Copyright (c) 2020-2025 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,11 +33,11 @@ import org.spongepowered.asm.mixin.Shadow;
 @Mixin(value = GameProfile.class, remap = false)
 public abstract class GameProfileMixin implements Identity {
   // @formatter:off
-  @Shadow public abstract UUID shadow$getId();
+  @Shadow public abstract UUID shadow$id();
   // @formatter:on
 
   @Override
   public @NotNull UUID uuid() {
-    return this.shadow$getId();
+    return this.shadow$id();
   }
 }

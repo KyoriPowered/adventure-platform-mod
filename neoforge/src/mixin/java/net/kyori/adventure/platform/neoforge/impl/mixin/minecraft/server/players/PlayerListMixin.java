@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
- * Copyright (c) 2020-2024 KyoriPowered
+ * Copyright (c) 2020-2025 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,9 +30,9 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import net.minecraft.core.LayeredRegistryAccess;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.notifications.NotificationService;
 import net.minecraft.server.players.PlayerList;
 import net.minecraft.world.level.storage.PlayerDataStorage;
 import org.spongepowered.asm.mixin.Final;
@@ -55,8 +55,7 @@ public class PlayerListMixin {
   // @formatter:on
 
   @Inject(method = "<init>", at = @At("RETURN"), require = 0)
-  private void adventure$replacePlayerLists(final MinecraftServer server, final LayeredRegistryAccess<RegistryAccess> tracker, final PlayerDataStorage handler, final int i,
-                                            final CallbackInfo ci) {
+  private void adventure$replacePlayerLists(final MinecraftServer p_203842_, final LayeredRegistryAccess p_251844_, final PlayerDataStorage p_203844_, final NotificationService p_443409_, final CallbackInfo ci) {
     this.players = new CopyOnWriteArrayList<>();
     this.playersByUUID = new ConcurrentHashMap<>();
     this.playersView = Collections.unmodifiableList(this.players);

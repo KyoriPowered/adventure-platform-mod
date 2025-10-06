@@ -102,7 +102,7 @@ public final class ServerArgumentTypes {
     ((ServerPlayerBridge) player).bridge$knownArguments(ids);
     sendMappings(player, responder);
     if (!ids.isEmpty()) { // TODO: Avoid resending the whole command tree, find a way to receive the packet before sending?
-      player.getServer().getCommands().sendCommands(player);
+      player.level().getServer().getCommands().sendCommands(player);
     }
   }
 

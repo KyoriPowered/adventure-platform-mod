@@ -47,13 +47,13 @@ config="adventure-platform-neoforge.mixins.json"
 [[dependencies.adventure_platform_neoforge]]
 modId="neoforge"
 type="required"
-versionRange="[21.6.4-beta,)"
+versionRange="[21.9.15-beta,)"
 ordering="NONE"
 side="BOTH"
 
 [[dependencies.adventure_platform_neoforge]]
 modId="minecraft"
 type="required"
-versionRange="[1.21.6,)"
+versionRange="[1.21.9,)"
 ordering="NONE"
 side="BOTH"

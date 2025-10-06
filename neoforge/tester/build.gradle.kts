@@ -34,3 +34,5 @@ dependencies {
   jarJar(project(":adventure-platform-neoforge"))
   checkstyle(libs.stylecheck)
 }
+
+configureUnstableAdventureStrategy()

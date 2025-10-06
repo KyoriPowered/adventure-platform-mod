@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
- * Copyright (c) 2023-2024 KyoriPowered
+ * Copyright (c) 2023-2025 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -54,8 +54,8 @@ public abstract class MinecraftMixin implements Pointered {
   private Pointers makePointers() {
     final Pointers.Builder builder = Pointers.builder()
       .withDynamic(Identity.LOCALE, () -> ((LocaleHolderBridge) this.options).adventure$locale())
-      .withDynamic(Identity.NAME, () -> this.getGameProfile().getName())
-      .withDynamic(Identity.UUID, () -> this.getGameProfile().getId());
+      .withDynamic(Identity.NAME, () -> this.getGameProfile().name())
+      .withDynamic(Identity.UUID, () -> this.getGameProfile().id());
 
     AdventureCommon.HOOKS.collectPointers(this, builder);
 

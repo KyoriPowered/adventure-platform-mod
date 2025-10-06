@@ -49,3 +49,5 @@ dependencies {
 
   checkstyle(libs.stylecheck)
 }
+
+configureUnstableAdventureStrategy()

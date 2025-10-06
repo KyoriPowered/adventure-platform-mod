@@ -2,22 +2,22 @@
 format = { version = "1.1" }
 
 [versions]
-adventure = "4.24.0"
+adventure = "4.25.0"
 adventurePlatform = "4.4.1"
 ansi = "1.1.1"
 autoService = "1.1.1"
 checkstyle = "10.25.0"
 examination = "1.3.0"
-fabricApi = "0.127.0+1.21.6"
-fabricLoader = "0.16.14"
+fabricApi = "0.134.0+1.21.9"
+fabricLoader = "0.17.2"
 indra = "3.2.0"
 junit = "5.13.4"
-minecraft = "1.21.6"
-parchment = "1.21.5:2025.06.15"
+minecraft = "1.21.9"
+parchment = "1.21.8:2025.07.20"
 vineflower = "1.11.1"
-spotless = "7.0.4"
-neoforge = "21.6.4-beta"
-neoform = "1.21.6-20250617.151856"
+spotless = "7.2.1"
+neoforge = "21.9.15-beta"
+neoform = "1.21.9-20250930.151910"
 
 [libraries]
 adventure-api = { module = "net.kyori:adventure-api", version.ref = "adventure" }
@@ -45,7 +45,7 @@ zNeoform = { module = "net.neoforged:neoform", version.ref = "neoform" }
 # fabric
 fabric-loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabricLoader"}
 fabric-loader-junit = { module = "net.fabricmc:fabric-loader-junit", version.ref = "fabricLoader"}
-fabric-permissionsApi = { module = "me.lucko:fabric-permissions-api", version = "0.4.1" }
+fabric-permissionsApi = { module = "me.lucko:fabric-permissions-api", version = "0.5.0" }
 minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
 
 # neoforge
@@ -75,7 +75,7 @@ zCheckstyle = { module = "com.puppycrawl.tools:checkstyle", version.ref = "check
 [plugins]
 configurateTransformations = { id = "ca.stellardrift.configurate-transformations" }
 eclipseApt = "com.diffplug.eclipse.apt:4.3.0"
-loom = "fabric-loom:1.11.4"
+loom = "fabric-loom:1.11.8"
 # ModDevGradle settings plugin is putting another version on the classpath, so we can't specify a version :(
 ideaExt = { id = "org.jetbrains.gradle.plugin.idea-ext" }
 indra = { id = "net.kyori.indra" }

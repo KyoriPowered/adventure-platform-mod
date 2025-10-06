@@ -171,11 +171,8 @@ loom {
   runtimeOnlyLog4j.set(true)
 }
 
-// Loom -- needs to run late to avoid preset config not applying properly
-afterEvaluate {
-  tasks.withType(RunGameTask::class).configureEach {
-    javaLauncher.set(javaToolchains.launcherFor { languageVersion.set(indra.javaVersions().target().map { v -> JavaLanguageVersion.of(v) })})
-  }
+tasks.withType(RunGameTask::class).configureEach {
+  javaLauncher.set(javaToolchains.launcherFor { languageVersion.set(indra.javaVersions().target().map { v -> JavaLanguageVersion.of(v) })})
 }
 
 dependencies {
