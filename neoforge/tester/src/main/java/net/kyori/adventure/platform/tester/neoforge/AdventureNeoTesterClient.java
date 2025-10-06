@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
- * Copyright (c) 2024 KyoriPowered
+ * Copyright (c) 2024-2025 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -36,7 +36,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandSourceStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.common.NeoForge;
 
@@ -51,7 +51,7 @@ public class AdventureNeoTesterClient {
     NeoForge.EVENT_BUS.addListener((RegisterClientCommandsEvent e) -> {
       e.getDispatcher().register(LiteralArgumentBuilder.<CommandSourceStack>literal("adventure_client")
         .then(LiteralArgumentBuilder.<CommandSourceStack>literal("open_file").executes(ctx -> {
-          final Path path = FMLLoader.getGamePath().resolve("adventure_test_file.txt").toAbsolutePath();
+          final Path path = FMLPaths.GAMEDIR.get().resolve("adventure_test_file.txt").toAbsolutePath();
           try {
             Files.writeString(path, "Hello there " + Minecraft.getInstance().getUser().getName() + "!", StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
           } catch (final IOException ex) {
