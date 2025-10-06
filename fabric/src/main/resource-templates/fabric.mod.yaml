@@ -47,8 +47,8 @@ custom:
     net/minecraft/class_7469: [ net/kyori/adventure/chat/SignedMessage<%= '$' %>Signature ] # net/minecraft/network/chat/MessageSignature
 
 depends:
-  minecraft: ">=1.21.6"
-  fabricloader: ">=0.14.0"
+  minecraft: ">=1.21.9"
+  fabricloader: ">=0.17.2"
   fabric-api-base: "*"
   fabric-command-api-v2: "*"
 
