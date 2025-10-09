@@ -15,7 +15,7 @@ junit = "5.13.4"
 minecraft = "1.21.9"
 parchment = "1.21.8:2025.07.20"
 vineflower = "1.11.1"
-spotless = "7.2.1"
+spotless = "8.0.0"
 neoforge = "21.9.15-beta"
 neoform = "1.21.9-20250930.151910"
 
