@@ -6,6 +6,8 @@ Integration between the [adventure](https://github.com/KyoriPowered/adventure) l
 
 See the [documentation](https://docs.adventure.kyori.net/platform/modded.html) for usage and dependency information for this project and the main `adventure` library.
 
+Players and Server Admins: If another mod is asking for `adventure-platform-fabric` or `adventure-platform-neoforge`, you can find the download at Modrinth: https://modrinth.com/mod/adventure-platform-mod.
+
 ### Versions
 
 `adventure-platform-mod` tends to not work on more than one major version of Minecraft at a time. See the docs for the latest tested versions on each Minecraft release.
