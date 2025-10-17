@@ -24,7 +24,7 @@ jobs:
     steps:
       - name: "setup env"
         id: "setup"
-        uses: "KyoriPowered/.github/.github/actions/setup-java-env@trunk"
+        uses: "KyoriPowered/ci-cookbook/actions/setup-java-env@2025.10.17"
         with:
           runtime_version: 21
           publishing_branch_regex: '(?:(?:(?:mc\/)?(\d+(?:\.\d+)*(?:\.x)?)))'
