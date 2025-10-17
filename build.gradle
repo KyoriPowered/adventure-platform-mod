@@ -35,7 +35,7 @@ allprojects {
   }
 
   indra {
-    github("KyoriPowered", "adventure-platform-mod") {
+    github("PaperMC", "adventure-platform-mod") {
       ci(true)
     }
     javaVersions().target(21)

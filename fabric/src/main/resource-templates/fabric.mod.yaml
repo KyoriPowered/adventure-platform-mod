@@ -4,9 +4,9 @@ version: "${project.version}"
 name: "${project.name}"
 authors: [ "kashike","zml", "Luck", "Electroid" ]
 contact:
-  homepage: "https://github.com/KyoriPowered/adventure-platform-fabric"
-  issues: "https://github.com/KyoriPowered/adventure-platform-fabric/issues"
-  sources: "https://github.com/KyoriPowered/adventure-platform-fabric"
+  homepage: "https://github.com/PaperMC/adventure-platform-fabric"
+  issues: "https://github.com/PaperMC/adventure-platform-fabric/issues"
+  sources: "https://github.com/PaperMC/adventure-platform-fabric"
 license: "MIT"
 icon: assets/adventure-platform-fabric/logo.png
 
