@@ -29,7 +29,7 @@ allprojects {
       importOrderFile(rootProject.file(".spotless/kyori.importorder"))
       trimTrailingWhitespace()
       endWithNewline()
-      indentWithSpaces(2)
+      leadingTabsToSpaces(2)
       removeUnusedImports()
     }
   }

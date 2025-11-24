@@ -1,6 +1,7 @@
 plugins {
   id 'net.neoforged.moddev'
   id 'publishing-conventions'
+  id 'net.fabricmc.fabric-loom-companion'
 }
 
 neoForge {

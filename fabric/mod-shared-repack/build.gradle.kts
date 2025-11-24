@@ -15,9 +15,6 @@ dependencies {
 }
 
 loom {
-  mixin {
-    useLegacyMixinAp = false
-  }
   runtimeOnlyLog4j.set(true)
 }
 

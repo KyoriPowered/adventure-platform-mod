@@ -33,7 +33,6 @@ configurations.jarJar {
 }
 
 dependencies {
-  "additionalRuntimeClasspath"(project(":adventure-platform-neoforge:adventure-platform-neoforge-services"))
   implementation(project(":adventure-platform-neoforge:adventure-platform-neoforge-services"))
   jarJar(project(":adventure-platform-neoforge:adventure-platform-neoforge-services"))
 
