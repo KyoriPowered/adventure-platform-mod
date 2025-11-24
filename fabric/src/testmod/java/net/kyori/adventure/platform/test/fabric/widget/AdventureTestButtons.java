@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
- * Copyright (c) 2020-2024 KyoriPowered
+ * Copyright (c) 2020-2025 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -41,7 +41,7 @@ public final class AdventureTestButtons {
   }
 
   public static List<AbstractWidget> testItems() {
-    final BossBar testBar = BossBar.bossBar(text("Your current world is called: ").append(text(Minecraft.getInstance().level.dimension().location().toString(), NamedTextColor.AQUA)), 1f, BossBar.Color.BLUE, BossBar.Overlay.PROGRESS);
+    final BossBar testBar = BossBar.bossBar(text("Your current world is called: ").append(text(Minecraft.getInstance().level.dimension().identifier().toString(), NamedTextColor.AQUA)), 1f, BossBar.Color.BLUE, BossBar.Overlay.PROGRESS);
     return List.of(
       button(text("I am a test!"), b -> {
         clientAudience().sendMessage(text("I'm from the client!", NamedTextColor.DARK_PURPLE));

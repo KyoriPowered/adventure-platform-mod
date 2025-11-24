@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
- * Copyright (c) 2022-2024 KyoriPowered
+ * Copyright (c) 2022-2025 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,15 +31,15 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 
 import static net.kyori.adventure.platform.modcommon.impl.AdventureCommon.res;
 
-public record ClientboundArgumentTypeMappingsPacket(Int2ObjectMap<ResourceLocation> mappings) implements CustomPacketPayload {
+public record ClientboundArgumentTypeMappingsPacket(Int2ObjectMap<Identifier> mappings) implements CustomPacketPayload {
   public static final CustomPacketPayload.Type<ClientboundArgumentTypeMappingsPacket> TYPE = new Type<>(res("registered_arg_mappings"));
   private static final StreamCodec<RegistryFriendlyByteBuf, ClientboundArgumentTypeMappingsPacket> CODEC = StreamCodec.composite(
-    ByteBufCodecs.map(Int2ObjectArrayMap::new, ByteBufCodecs.VAR_INT, ResourceLocation.STREAM_CODEC),
+    ByteBufCodecs.map(Int2ObjectArrayMap::new, ByteBufCodecs.VAR_INT, Identifier.STREAM_CODEC),
     ClientboundArgumentTypeMappingsPacket::mappings,
     ClientboundArgumentTypeMappingsPacket::new
   );

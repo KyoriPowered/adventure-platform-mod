@@ -38,7 +38,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.kyori.adventure.platform.fabric.impl.server.ServerPlayerBridge;
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.Nullable;
 
@@ -46,7 +46,7 @@ import static java.util.Objects.requireNonNull;
 
 public final class ServerArgumentTypes {
   private static final Map<Class<?>, ServerArgumentType<?>> BY_TYPE = new HashMap<>();
-  private static final Map<ResourceLocation, ServerArgumentType<?>> BY_LOCATION = new ConcurrentHashMap<>();
+  private static final Map<Identifier, ServerArgumentType<?>> BY_LOCATION = new ConcurrentHashMap<>();
   private static final Map<ArgumentTypeInfo<?, ?>, ServerArgumentType<?>> BY_INFO = new HashMap<>();
   private static final Int2ObjectMap<ServerArgumentType<?>> BY_ID = new Int2ObjectArrayMap<>();
   private static final Reference2IntMap<ArgumentTypeInfo<?, ?>> IDS_BY_TYPE_INFO = new Reference2IntOpenHashMap<>();
@@ -74,7 +74,7 @@ public final class ServerArgumentTypes {
     BY_LOCATION.put(type.id(), type);
   }
 
-  public static Set<ResourceLocation> ids() {
+  public static Set<Identifier> ids() {
     return Collections.unmodifiableSet(BY_LOCATION.keySet());
   }
 
@@ -98,7 +98,7 @@ public final class ServerArgumentTypes {
     return IDS_BY_TYPE_INFO.getInt(argumentTypeInfo);
   }
 
-  public static void knownArgumentTypes(final ServerPlayer player, final Set<ResourceLocation> ids, final PacketSender responder) {
+  public static void knownArgumentTypes(final ServerPlayer player, final Set<Identifier> ids, final PacketSender responder) {
     ((ServerPlayerBridge) player).bridge$knownArguments(ids);
     sendMappings(player, responder);
     if (!ids.isEmpty()) { // TODO: Avoid resending the whole command tree, find a way to receive the packet before sending?
@@ -106,14 +106,14 @@ public final class ServerArgumentTypes {
     }
   }
 
-  public static Set<ResourceLocation> knownArgumentTypes(final ServerPlayer player) {
+  public static Set<Identifier> knownArgumentTypes(final ServerPlayer player) {
     return ((ServerPlayerBridge) player).bridge$knownArguments();
   }
 
   private static void sendMappings(final ServerPlayer player, final PacketSender responder) {
-    final Set<ResourceLocation> known = knownArgumentTypes(player);
-    final Int2ObjectMap<ResourceLocation> map = new Int2ObjectArrayMap<>();
-    for (final ResourceLocation resourceLocation : known) {
+    final Set<Identifier> known = knownArgumentTypes(player);
+    final Int2ObjectMap<Identifier> map = new Int2ObjectArrayMap<>();
+    for (final Identifier resourceLocation : known) {
       final ServerArgumentType<?> type = BY_LOCATION.get(resourceLocation);
       if (type != null) {
         map.put(id(type.argumentTypeInfo()), type.id());
@@ -124,7 +124,7 @@ public final class ServerArgumentTypes {
 
   public static void receiveMappings(final ClientboundArgumentTypeMappingsPacket packet) {
     final Int2ObjectMap<ServerArgumentType<?>> map = new Int2ObjectArrayMap<>();
-    for (final Int2ObjectMap.Entry<ResourceLocation> entry : packet.mappings().int2ObjectEntrySet()) {
+    for (final Int2ObjectMap.Entry<Identifier> entry : packet.mappings().int2ObjectEntrySet()) {
       map.put(entry.getIntKey(), BY_LOCATION.get(entry.getValue()));
     }
     BY_ID_ACTIVE_SERVER = map;

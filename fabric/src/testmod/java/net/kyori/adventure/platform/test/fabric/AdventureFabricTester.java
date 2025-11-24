@@ -80,7 +80,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.synchronization.SuggestionProviders;
 import net.minecraft.network.chat.ComponentUtils;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -127,8 +127,8 @@ public class AdventureFabricTester implements ModInitializer {
 
   private static final ChatType ADVENTURE_BROADCAST = net.kyori.adventure.chat.ChatType.chatType(advKey("broadcast"));
 
-  private static ResourceLocation advKey(final String location) {
-    return ResourceLocation.fromNamespaceAndPath(Adventure.NAMESPACE, location);
+  private static Identifier advKey(final String location) {
+    return Identifier.fromNamespaceAndPath(Adventure.NAMESPACE, location);
   }
 
   public @NotNull MinecraftServerAudiences adventure() {

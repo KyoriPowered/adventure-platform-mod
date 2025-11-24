@@ -7,7 +7,7 @@ neoForge {
   version = libs.versions.neoforge.get()
 
   parchment {
-    parchmentArtifact = "org.parchmentmc.data:parchment-${libs.versions.parchment.get()}@zip"
+    parchmentArtifact = "io.papermc.parchment.data:parchment:${libs.versions.parchment.get()}"
   }
 
   validateAccessTransformers = true

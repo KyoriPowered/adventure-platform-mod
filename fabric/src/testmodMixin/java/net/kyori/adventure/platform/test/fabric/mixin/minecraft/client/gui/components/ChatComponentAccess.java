@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
- * Copyright (c) 2020-2024 KyoriPowered
+ * Copyright (c) 2025 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,33 +21,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.adventure.platform.modcommon.impl.mixin.minecraft.resources;
+package net.kyori.adventure.platform.test.fabric.mixin.minecraft.client.gui.components;
 
-import net.kyori.adventure.key.Key;
-import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.NotNull;
-import org.spongepowered.asm.mixin.Implements;
-import org.spongepowered.asm.mixin.Interface;
+import net.minecraft.client.gui.components.ChatComponent;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.gen.Invoker;
 
-@Mixin(ResourceLocation.class)
-@Implements(@Interface(iface = Key.class, prefix = "key$")) // we have to soft-implement due to conflicting synthetic bridges for compareTo
-public abstract class ResourceLocationMixin {
-  // @formatter:off
-  @Shadow public abstract String shadow$getNamespace();
-  @Shadow public abstract String shadow$getPath();
-  // @formatter:on
+@Mixin(ChatComponent.class)
+public interface ChatComponentAccess {
 
-  public @NotNull String key$namespace() {
-    return this.shadow$getNamespace();
-  }
+  @Invoker("getHeight")
+  int adventure_testmod$getHeight();
 
-  public @NotNull String key$value() {
-    return this.shadow$getPath();
-  }
-
-  public @NotNull String key$asString() {
-    return this.toString();
-  }
+  @Invoker("getScale")
+  double adventure_testmod$getScale();
 }

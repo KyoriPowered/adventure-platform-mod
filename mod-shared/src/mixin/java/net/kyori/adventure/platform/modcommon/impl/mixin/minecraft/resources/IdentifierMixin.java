@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
- * Copyright (c) 2022-2025 KyoriPowered
+ * Copyright (c) 2020-2025 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,30 +21,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.adventure.platform.fabric.impl;
+package net.kyori.adventure.platform.modcommon.impl.mixin.minecraft.resources;
 
-import com.mojang.brigadier.arguments.ArgumentType;
-import com.mojang.brigadier.suggestion.SuggestionProvider;
-import java.util.function.BiFunction;
-import net.minecraft.commands.CommandBuildContext;
-import net.minecraft.commands.synchronization.ArgumentTypeInfo;
+import net.kyori.adventure.key.Key;
 import net.minecraft.resources.Identifier;
+import org.jetbrains.annotations.NotNull;
+import org.spongepowered.asm.mixin.Implements;
+import org.spongepowered.asm.mixin.Interface;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 
-/**
- * An argument type that only needs to be known on the server.
- *
- * @param id argument id
- * @param type argument type
- * @param argumentTypeInfo argument type info
- * @param fallbackProvider fallback type provider
- * @param fallbackSuggestions fallback suggestions provider
- * @param <T> argument type
- */
-public record ServerArgumentType<T extends ArgumentType<?>>(
-  Identifier id,
-  Class<? super T> type,
-  ArgumentTypeInfo<T, ? extends ArgumentTypeInfo.Template<T>> argumentTypeInfo,
-  BiFunction<T, CommandBuildContext, ArgumentType<?>> fallbackProvider,
-  SuggestionProvider<?> fallbackSuggestions
-) {
+@Mixin(Identifier.class)
+@Implements(@Interface(iface = Key.class, prefix = "key$")) // we have to soft-implement due to conflicting synthetic bridges for compareTo
+public abstract class IdentifierMixin {
+  // @formatter:off
+  @Shadow public abstract String shadow$getNamespace();
+  @Shadow public abstract String shadow$getPath();
+  // @formatter:on
+
+  public @NotNull String key$namespace() {
+    return this.shadow$getNamespace();
+  }
+
+  public @NotNull String key$value() {
+    return this.shadow$getPath();
+  }
+
+  public @NotNull String key$asString() {
+    return this.toString();
+  }
 }

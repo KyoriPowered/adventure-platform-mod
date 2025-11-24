@@ -51,7 +51,7 @@ import net.kyori.adventure.util.Services;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.locale.Language;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -89,8 +89,8 @@ public final class AdventureCommon {
     return player instanceof Pointered ? (Pointered) player : Audience.empty();
   }
 
-  public static ResourceLocation res(final @NotNull String value) {
-    return ResourceLocation.fromNamespaceAndPath(Adventure.NAMESPACE, value);
+  public static Identifier res(final @NotNull String value) {
+    return Identifier.fromNamespaceAndPath(Adventure.NAMESPACE, value);
   }
 
   static PlatformHooks discoverHooks() {

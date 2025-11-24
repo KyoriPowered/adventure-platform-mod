@@ -8,7 +8,7 @@ neoForge {
   neoFormVersion = libs.versions.neoform.get()
 
   parchment {
-    parchmentArtifact = "org.parchmentmc.data:parchment-${libs.versions.parchment.get()}@zip"
+    parchmentArtifact = "io.papermc.parchment.data:parchment:${libs.versions.parchment.get()}"
   }
 }
 

@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
- * Copyright (c) 2020-2024 KyoriPowered
+ * Copyright (c) 2020-2025 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,8 +26,8 @@ package net.kyori.adventure.platform.fabric.impl.mixin.api;
 import net.kyori.adventure.key.InvalidKeyException;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.modcommon.impl.accessor.api.key.InvalidKeyExceptionAccess;
-import net.minecraft.ResourceLocationException;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.IdentifierException;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -47,8 +47,8 @@ public interface KeyMixin {
   @SuppressWarnings("overwrite")
   static @NotNull Key key(final String namespace, final String value) {
     try {
-      return (Key) (Object) ResourceLocation.fromNamespaceAndPath(namespace, value);
-    } catch (final ResourceLocationException ex) {
+      return (Key) (Object) Identifier.fromNamespaceAndPath(namespace, value);
+    } catch (final IdentifierException ex) {
       throw InvalidKeyExceptionAccess.newInvalidKeyException(namespace, value, ex.getMessage());
     }
   }

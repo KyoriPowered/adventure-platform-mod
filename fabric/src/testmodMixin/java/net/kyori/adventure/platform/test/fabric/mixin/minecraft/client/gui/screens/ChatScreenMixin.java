@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
- * Copyright (c) 2020-2024 KyoriPowered
+ * Copyright (c) 2020-2025 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,6 +23,7 @@
  */
 package net.kyori.adventure.platform.test.fabric.mixin.minecraft.client.gui.screens;
 
+import net.kyori.adventure.platform.test.fabric.mixin.minecraft.client.gui.components.ChatComponentAccess;
 import net.kyori.adventure.platform.test.fabric.widget.AdventureTestButtons;
 import net.kyori.adventure.platform.test.fabric.widget.Widgets;
 import net.minecraft.client.gui.ComponentPath;
@@ -52,9 +53,9 @@ public abstract class ChatScreenMixin extends Screen {
     // Instantiate and add all children
     int x = Widgets.BETWEEN_GROUP_SPACING; // padding used for chat screen edit box
     final int y = this.height - ( // starting from bottom of the screen
-      this.minecraft.gui.getChat().getHeight() // height of the chat box
+      ((ChatComponentAccess) this.minecraft.gui.getChat()).adventure_testmod$getHeight() // height of the chat box
         + this.input.getHeight() // height of the edit bar
-        + (int) Math.floor(24 * this.minecraft.gui.getChat().getScale())
+        + (int) Math.floor(24 * ((ChatComponentAccess) this.minecraft.gui.getChat()).adventure_testmod$getScale())
         + Widgets.BETWEEN_GROUP_SPACING * 2); // paddings
 
     for (final AbstractWidget widget : AdventureTestButtons.testItems()) {
