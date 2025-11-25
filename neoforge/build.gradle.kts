@@ -28,6 +28,11 @@ neoForge {
   }
 }
 
+publishMods.modrinth {
+  file = tasks.jar.flatMap { it.archiveFile }
+  modLoaders = listOf("neoforge")
+}
+
 configurations.jarJar {
   extendsFrom(configurations.jarInJar.get())
 }

@@ -10,6 +10,12 @@ plugins {
   id("publishing-conventions")
 }
 
+publishMods.modrinth {
+  file = tasks.remapJar.flatMap { it.archiveFile }
+  modLoaders = listOf("fabric")
+  requires("fabric-api")
+}
+
 dependencies {
   vineflowerDecompilerClasspath(libs.vineflower)
   sequenceOf<(Any) -> Dependency?>(
