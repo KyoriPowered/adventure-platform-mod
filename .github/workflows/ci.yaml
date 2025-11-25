@@ -148,5 +148,5 @@ jobs:
         if: "${{ runner.os == 'Linux' && env.STATUS == 'release' && github.event_name == 'release' }}"
         run: ./gradlew publishModrinth
         env:
-          MODRINTH_TOKEN: "${{ secrets.MODRINTH_TOKEN }}"
+          MODRINTH_TOKEN: "${{ secrets.PAPERMC_MODRINTH_TOKEN }}"
           RELEASE_NOTES: "${{ github.event.release.body }}"
