@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
- * Copyright (c) 2020-2024 KyoriPowered
+ * Copyright (c) 2020-2025 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,7 @@ import net.kyori.adventure.platform.fabric.impl.ServerArgumentTypes;
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.commands.synchronization.ArgumentUtils;
 import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -37,10 +37,10 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 public abstract class ArgumentUtilsMixin {
   @Redirect(
     method = "serializeArgumentToJson(Lcom/google/gson/JsonObject;Lcom/mojang/brigadier/arguments/ArgumentType;)V",
-    at = @At(value = "INVOKE", target = "Lnet/minecraft/core/Registry;getKey(Ljava/lang/Object;)Lnet/minecraft/resources/ResourceLocation;")
+    at = @At(value = "INVOKE", target = "Lnet/minecraft/core/Registry;getKey(Ljava/lang/Object;)Lnet/minecraft/resources/Identifier;")
   )
   @SuppressWarnings({"rawtypes", "unchecked"})
-  private static @Nullable ResourceLocation redirectArgumentName(final Registry registry, final Object argumentTypeInfo) {
+  private static @Nullable Identifier redirectArgumentName(final Registry registry, final Object argumentTypeInfo) {
     if (ServerArgumentTypes.isServerType((ArgumentTypeInfo<?, ?>) argumentTypeInfo)) {
       return ServerArgumentTypes.serverType((ArgumentTypeInfo<?, ?>) argumentTypeInfo).id();
     }

@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
- * Copyright (c) 2020-2024 KyoriPowered
+ * Copyright (c) 2020-2025 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,7 @@ package net.kyori.adventure.platform.modcommon.impl.mixin.minecraft.sounds;
 
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Final;
@@ -35,7 +35,7 @@ import org.spongepowered.asm.mixin.Shadow;
 @Mixin(SoundEvent.class)
 public class SoundEventMixin implements Sound.Type {
   // @formatter:off
-  @Shadow @Final private ResourceLocation location;
+  @Shadow @Final private Identifier location;
   // @formatter:on
 
   @Override

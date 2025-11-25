@@ -67,7 +67,7 @@ import net.kyori.adventure.translation.TranslationRegistry;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.synchronization.SuggestionProviders;
 import net.minecraft.network.chat.ComponentUtils;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -120,7 +120,7 @@ public class AdventureNeoTester {
   private static final ChatType ADVENTURE_BROADCAST = net.kyori.adventure.chat.ChatType.chatType(advKey("broadcast"));
 
   private static Key advKey(final String location) {
-    return MinecraftAudiences.asAdventure(ResourceLocation.fromNamespaceAndPath(Adventure.NAMESPACE, location));
+    return MinecraftAudiences.asAdventure(Identifier.fromNamespaceAndPath(Adventure.NAMESPACE, location));
   }
 
   public @NotNull MinecraftServerAudiences adventure() {

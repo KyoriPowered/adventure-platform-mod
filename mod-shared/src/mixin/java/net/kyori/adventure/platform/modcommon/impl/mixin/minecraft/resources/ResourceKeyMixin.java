@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
- * Copyright (c) 2020-2024 KyoriPowered
+ * Copyright (c) 2020-2025 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,8 +25,8 @@ package net.kyori.adventure.platform.modcommon.impl.mixin.minecraft.resources;
 
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.key.Keyed;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -34,11 +34,11 @@ import org.spongepowered.asm.mixin.Shadow;
 @Mixin(ResourceKey.class)
 public abstract class ResourceKeyMixin implements Keyed {
   // @formatter:off
-  @Shadow public abstract ResourceLocation shadow$location();
+  @Shadow public abstract Identifier shadow$identifier();
   // @formatter:on
 
   @Override
   public @NotNull Key key() {
-    return (Key) (Object) this.shadow$location();
+    return (Key) (Object) this.shadow$identifier();
   }
 }

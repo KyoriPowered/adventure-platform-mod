@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
- * Copyright (c) 2020-2024 KyoriPowered
+ * Copyright (c) 2020-2025 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -59,7 +59,7 @@ import net.minecraft.client.resources.sounds.EntityBoundSoundInstance;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.network.chat.MessageSignature;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
@@ -254,8 +254,8 @@ public class ClientAudience implements ControlledAudience {
       targetEntity,
       this.seed(sound)
     );
-    // Then apply the ResourceLocation of our real sound event
-    ((AbstractSoundInstanceAccess) mcSound).setLocation(MinecraftAudiences.asNative(sound.name()));
+    // Then apply the Identifier of our real sound event
+    ((AbstractSoundInstanceAccess) mcSound).setIdentifier(MinecraftAudiences.asNative(sound.name()));
 
     this.client.getSoundManager().play(mcSound);
   }
@@ -281,7 +281,7 @@ public class ClientAudience implements ControlledAudience {
   @Override
   public void stopSound(final @NotNull SoundStop stop) {
     final @Nullable Key sound = stop.sound();
-    final @Nullable ResourceLocation soundIdent = sound == null ? null : MinecraftAudiences.asNative(sound);
+    final @Nullable Identifier soundIdent = sound == null ? null : MinecraftAudiences.asNative(sound);
     final Sound.@Nullable Source source = stop.source();
     final @Nullable SoundSource category = source == null ? null : GameEnums.SOUND_SOURCE.toMinecraft(source);
     this.client.getSoundManager().stop(soundIdent, category);

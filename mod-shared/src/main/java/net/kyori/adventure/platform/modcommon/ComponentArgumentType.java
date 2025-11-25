@@ -38,7 +38,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.util.Index;
 import net.minecraft.commands.arguments.ComponentArgument;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 
 import static java.util.Objects.requireNonNull;
@@ -151,7 +151,7 @@ public final class ComponentArgumentType implements ArgumentType<Component> {
    */
   public enum Format {
     JSON(
-      ResourceLocation.fromNamespaceAndPath(Adventure.NAMESPACE, "json"),
+      Identifier.fromNamespaceAndPath(Adventure.NAMESPACE, "json"),
       "\"Hello world!\"",
       "[\"Message\", {\"text\": \"example\", \"color\": \"#aabbcc\"}]"
     ) {
@@ -164,7 +164,7 @@ public final class ComponentArgumentType implements ArgumentType<Component> {
       }
     },
     MINIMESSAGE(
-      ResourceLocation.fromNamespaceAndPath(Adventure.NAMESPACE, "minimessage/v1"),
+      Identifier.fromNamespaceAndPath(Adventure.NAMESPACE, "minimessage/v1"),
       "<rainbow>hello world!",
       "hello <bold>everyone</bold> here!",
       "hello <hover:show_text:'sneak sneak'>everyone</hover> who likes <blue>cats"
@@ -178,10 +178,10 @@ public final class ComponentArgumentType implements ArgumentType<Component> {
 
     public static final Index<Key, Format> INDEX = Index.create(Format.class, Format::id);
 
-    private final ResourceLocation id;
+    private final Identifier id;
     private final List<String> examples;
 
-    Format(final ResourceLocation id, final String... examples) {
+    Format(final Identifier id, final String... examples) {
       this.id = id;
       this.examples = List.of(examples);
     }

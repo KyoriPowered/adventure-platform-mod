@@ -2,6 +2,7 @@
   "parent": "adventure-platform-mod-shared.parent.mixins.json",
   "package": "net.kyori.adventure.platform.test.fabric.mixin",
   "client": [
+    "minecraft.client.gui.components.ChatComponentAccess",
     "minecraft.client.gui.screens.ChatScreenMixin",
     "minecraft.client.gui.screens.TitleScreenMixin"
   ]

@@ -40,7 +40,7 @@ import net.kyori.adventure.platform.modcommon.impl.HiddenRequirement;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
@@ -67,7 +67,7 @@ public abstract class CommandsMixin {
     }
     final CommandSourceStack source = (CommandSourceStack) sourceRaw;
     ServerArgumentType<ArgumentType<T>> type = ServerArgumentTypes.byClass((Class) builder.getType().getClass());
-    final Set<ResourceLocation> knownExtraCommands = ServerArgumentTypes.knownArgumentTypes(source.getPlayer()); // throws an exception, we can ignore bc this is always a player
+    final Set<Identifier> knownExtraCommands = ServerArgumentTypes.knownArgumentTypes(source.getPlayer()); // throws an exception, we can ignore bc this is always a player
     // If we have a replacement and the arg type isn't known to the client, change the argument type
     // This is super un-typesafe, but as long as the returned CommandNode is only used for serialization we are fine.
     // Repeat as long as a type is replaceable -- that way you can have a hierarchy of argument types.

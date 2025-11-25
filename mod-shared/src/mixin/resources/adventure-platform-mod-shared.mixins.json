@@ -11,7 +11,7 @@
     "minecraft.network.chat.PlayerChatMessageMixin",
     "minecraft.resources.DelegatingOpsMixin",
     "minecraft.resources.ResourceKeyMixin",
-    "minecraft.resources.ResourceLocationMixin",
+    "minecraft.resources.IdentifierMixin",
     "minecraft.server.MinecraftServerMixin",
     "minecraft.server.level.ServerBossEventMixin",
     "minecraft.server.level.ServerPlayerMixin",

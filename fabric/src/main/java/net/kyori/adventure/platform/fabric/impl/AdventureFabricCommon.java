@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
- * Copyright (c) 2020-2024 KyoriPowered
+ * Copyright (c) 2020-2025 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -48,7 +48,7 @@ import net.kyori.adventure.platform.modcommon.impl.SidedProxy;
 import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.pointer.Pointers;
 import net.minecraft.commands.arguments.ComponentArgument;
-import net.minecraft.commands.arguments.ResourceLocationArgument;
+import net.minecraft.commands.arguments.IdentifierArgument;
 import net.minecraft.commands.synchronization.SingletonArgumentInfo;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.Nullable;
@@ -142,7 +142,7 @@ public class AdventureFabricCommon implements ModInitializer {
         AdventureCommon.res("key"),
         KeyArgumentType.class,
         SingletonArgumentInfo.contextFree(KeyArgumentType::key),
-        (arg, ctx) -> ResourceLocationArgument.id(),
+        (arg, ctx) -> IdentifierArgument.id(),
         null
       )
     );

@@ -33,7 +33,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -43,10 +43,10 @@ import org.jetbrains.annotations.NotNull;
  *
  * @param known Known argument type ids
  */
-public record ServerboundRegisteredArgumentTypesPacket(Set<ResourceLocation> known) implements CustomPacketPayload {
+public record ServerboundRegisteredArgumentTypesPacket(Set<Identifier> known) implements CustomPacketPayload {
   public static final CustomPacketPayload.Type<ServerboundRegisteredArgumentTypesPacket> TYPE = new CustomPacketPayload.Type<>(AdventureCommon.res("registered_args"));
   private static final StreamCodec<RegistryFriendlyByteBuf, ServerboundRegisteredArgumentTypesPacket> CODEC = StreamCodec.composite(
-    ByteBufCodecs.collection(HashSet::new, ResourceLocation.STREAM_CODEC),
+    ByteBufCodecs.collection(HashSet::new, Identifier.STREAM_CODEC),
     ServerboundRegisteredArgumentTypesPacket::known,
     ServerboundRegisteredArgumentTypesPacket::new
   );
@@ -60,7 +60,7 @@ public record ServerboundRegisteredArgumentTypesPacket(Set<ResourceLocation> kno
     });
   }
 
-  public static ServerboundRegisteredArgumentTypesPacket of(final Set<ResourceLocation> idents) {
+  public static ServerboundRegisteredArgumentTypesPacket of(final Set<Identifier> idents) {
     return new ServerboundRegisteredArgumentTypesPacket(Set.copyOf(idents));
   }
 

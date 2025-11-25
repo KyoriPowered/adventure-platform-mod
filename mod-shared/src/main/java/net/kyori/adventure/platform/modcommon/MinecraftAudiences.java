@@ -54,8 +54,8 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.chat.MessageSignature;
 import net.minecraft.network.chat.PlayerChatMessage;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -107,9 +107,9 @@ public interface MinecraftAudiences {
   }
 
   /**
-   * Convert a MC {@link ResourceLocation} instance to a text Key.
+   * Convert a MC {@link Identifier} instance to a text Key.
    *
-   * <p>{@link ResourceLocation} implements {@link Key} at runtime, so this is effectively a cast.</p>
+   * <p>{@link Identifier} implements {@link Key} at runtime, so this is effectively a cast.</p>
    *
    * @param loc The Identifier to convert
    * @return The equivalent data as a Key
@@ -117,7 +117,7 @@ public interface MinecraftAudiences {
    */
   @Contract("null -> null; !null -> !null")
   @SuppressWarnings("DataFlowIssue")
-  static Key asAdventure(final ResourceLocation loc) {
+  static Key asAdventure(final Identifier loc) {
     if (loc == null) {
       return null;
     }
@@ -125,7 +125,7 @@ public interface MinecraftAudiences {
   }
 
   /**
-   * Convert a Kyori {@link Key} instance to a MC ResourceLocation.
+   * Convert a Kyori {@link Key} instance to a MC Identifier.
    *
    * @param key The Key to convert
    * @return The equivalent data as a resource location
@@ -133,15 +133,15 @@ public interface MinecraftAudiences {
    */
   @Contract("null -> null; !null -> !null")
   @SuppressWarnings("ConstantValue")
-  static ResourceLocation asNative(final Key key) {
+  static Identifier asNative(final Key key) {
     if (key == null) {
       return null;
     }
 
-    if ((Object) key instanceof ResourceLocation loc) {
+    if ((Object) key instanceof Identifier loc) {
       return loc;
     }
-    return ResourceLocation.fromNamespaceAndPath(key.namespace(), key.value());
+    return Identifier.fromNamespaceAndPath(key.namespace(), key.value());
   }
 
   /**
@@ -266,7 +266,7 @@ public interface MinecraftAudiences {
   }
 
   /**
-   * Returns the Kyori {@link Key} representation of the {@link ResourceKey}'s {@link ResourceKey#location() location}.
+   * Returns the Kyori {@link Key} representation of the {@link ResourceKey}'s {@link ResourceKey#identifier() location}.
    *
    * @param resourceKey resource key
    * @return key

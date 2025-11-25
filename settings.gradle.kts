@@ -39,21 +39,25 @@ dependencyResolutionManagement {
       name = "sonatypeSnapshots"
       mavenContent { snapshotsOnly() }
     }
-    maven("https://repo.papermc.io/repository/maven-snapshots/") {
-      name = "papermcSnapshots"
-      mavenContent { snapshotsOnly() }
-    }
-    maven(url = "https://maven.parchmentmc.org/") {
-      name = "parchment"
+    maven("https://repo.papermc.io/repository/maven-public/") {
+      name = "papermc"
     }
     maven(url= "https://maven.neoforged.net/") {
       name = "neoforge"
+    }
+    maven { // TODO remove on neoforge release
+      name = "Maven for PR #2815" // https://github.com/neoforged/NeoForge/pull/2815
+      url = uri("https://prmaven.neoforged.net/NeoForge/pr2815")
+      content {
+        includeModule("net.neoforged", "neoforge")
+        includeModule("net.neoforged", "testframework")
+      }
     }
   }
 
   versionCatalogs {
     create("fabricApiLibs") {
-      from("net.fabricmc.fabric-api:fabric-api-catalog:0.134.0+1.21.9")
+      from("net.fabricmc.fabric-api:fabric-api-catalog:0.139.2+1.21.11")
     }
   }
 }

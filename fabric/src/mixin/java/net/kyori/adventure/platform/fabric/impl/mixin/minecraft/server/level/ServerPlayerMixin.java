@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
- * Copyright (c) 2024 KyoriPowered
+ * Copyright (c) 2024-2025 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,7 +31,7 @@ import net.kyori.adventure.platform.modcommon.impl.AdventureCommon;
 import net.kyori.adventure.platform.modcommon.impl.LocaleHolderBridge;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundTabListPacket;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ClientInformation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
@@ -47,7 +47,7 @@ public abstract class ServerPlayerMixin implements ServerPlayerBridge {
   @Shadow public ServerGamePacketListenerImpl connection;
   private Component adventure$tabListHeader = Component.empty();
   private Component adventure$tabListFooter = Component.empty();
-  private Set<ResourceLocation> adventure$arguments = Set.of();
+  private Set<Identifier> adventure$arguments = Set.of();
 
   // Locale tracking
 
@@ -81,12 +81,12 @@ public abstract class ServerPlayerMixin implements ServerPlayerBridge {
   // Known argument type tracking
 
   @Override
-  public Set<ResourceLocation> bridge$knownArguments() {
+  public Set<Identifier> bridge$knownArguments() {
     return this.adventure$arguments;
   }
 
   @Override
-  public void bridge$knownArguments(final Set<ResourceLocation> arguments) {
+  public void bridge$knownArguments(final Set<Identifier> arguments) {
     this.adventure$arguments = Set.copyOf(arguments);
   }
 
