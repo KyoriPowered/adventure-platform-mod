@@ -7,7 +7,7 @@ plugins {
   alias(libs.plugins.loom)
   alias(libs.plugins.configurateTransformations)
   id("standard-conventions")
-  id("publishing-conventions")
+  id("mod-publishing-conventions")
 }
 
 publishMods.modrinth {

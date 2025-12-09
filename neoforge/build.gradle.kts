@@ -1,6 +1,6 @@
 plugins {
   id("net.neoforged.moddev")
-  id("publishing-conventions")
+  id("mod-publishing-conventions")
 }
 
 neoForge {

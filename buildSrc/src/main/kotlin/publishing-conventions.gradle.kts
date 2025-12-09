@@ -1,10 +1,7 @@
-import me.modmuss50.mpp.ReleaseType
-
 plugins {
   id("standard-conventions")
   id("net.kyori.indra.publishing")
   id("net.kyori.indra.crossdoc")
-  id("me.modmuss50.mod-publish-plugin")
 }
 
 indraCrossdoc {
@@ -33,15 +30,5 @@ tasks {
     options.links(
       "https://jd.advntr.dev/platform/api/${libs.versions.adventurePlatform.get()}",
     )
-  }
-}
-
-publishMods.modrinth {
-  projectId = "O5VsIpQY"
-  type = ReleaseType.STABLE
-  changelog = providers.environmentVariable("RELEASE_NOTES")
-  accessToken = providers.environmentVariable("MODRINTH_TOKEN")
-  minecraftVersions = providers.gradleProperty("modrinthMinecraftVersions").map {
-    it.split(',').map(String::trim)
   }
 }
