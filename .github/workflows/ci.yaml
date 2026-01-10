@@ -35,7 +35,7 @@ jobs:
         run: "./gradlew build --stacktrace"
       - name: "archive test results"
         if: "${{ always() }}"
-        uses: "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02" # v4.6.2
+        uses: "actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f" # v6.0.0
         with:
           name: "${{ runner.os }}-test-results"
           path: |
@@ -52,7 +52,7 @@ jobs:
           fi
           echo "VERSION=$VERSION" >> $GITHUB_ENV
       - name: "Cache test run data"
-        uses: "actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830" # v4.3.0
+        uses: "actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb" # v5.0.1
         with:
           path: |
             testserver/libraries
