@@ -24,7 +24,7 @@ jobs:
     steps:
       - name: "setup env"
         id: "setup"
-        uses: "KyoriPowered/ci-cookbook/actions/setup-java-env@2025.10.17"
+        uses: "KyoriPowered/ci-cookbook/actions/setup-java-env@ce1dea3f90f8e361ed19afb2c914ab0fdcf42fef" # 2025.12.18
         with:
           runtime_version: 21
           publishing_branch_regex: '(?:(?:(?:mc\/)?(\d+(?:\.\d+)*(?:\.x)?)))'
@@ -35,7 +35,7 @@ jobs:
         run: "./gradlew build --stacktrace"
       - name: "archive test results"
         if: "${{ always() }}"
-        uses: "actions/upload-artifact@v4.6.2"
+        uses: "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02" # v4.6.2
         with:
           name: "${{ runner.os }}-test-results"
           path: |
@@ -52,7 +52,7 @@ jobs:
           fi
           echo "VERSION=$VERSION" >> $GITHUB_ENV
       - name: "Cache test run data"
-        uses: "actions/cache@v4.2.3"
+        uses: "actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830" # v4.3.0
         with:
           path: |
             testserver/libraries
@@ -126,7 +126,7 @@ jobs:
           ./gradlew copyJavadoc --output build/publish-jd/platform/
       - name: "authenticate for javadoc publication"
         if: "${{ runner.os == 'Linux' && env.STATUS == 'release' && github.event_name == 'release' }}"
-        uses: "actions/create-github-app-token@67018539274d69449ef7c02e8e71183d1719ab42" # v2.1.4
+        uses: "actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf" # v2.2.1
         id: jd-token
         with:
           app-id: "${{ secrets.DEPLOYMENT_APP_ID }}"
@@ -139,7 +139,7 @@ jobs:
         run: 'echo "user-id=$(gh api "/users/${{ steps.jd-token.outputs.app-slug }}[bot]" --jq .id)" >> "$GITHUB_OUTPUT"'
       - name: "publish javadoc"
         if: "${{ runner.os == 'Linux' && env.STATUS == 'release' && github.event_name == 'release' }}"
-        uses: JamesIves/github-pages-deploy-action@6c2d9db40f9296374acc17b90404b6e8864128c8 # v4.7.3
+        uses: JamesIves/github-pages-deploy-action@d92aa235d04922e8f08b40ce78cc5442fcfbfa2f # v4.8.0
         with:
           folder: build/publish-jd
           repository-name: "PaperMC/adventure-javadocs"
