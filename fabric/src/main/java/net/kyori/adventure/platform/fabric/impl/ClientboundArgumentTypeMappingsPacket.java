@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
- * Copyright (c) 2022-2025 KyoriPowered
+ * Copyright (c) 2022-2026 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -45,7 +45,7 @@ public record ClientboundArgumentTypeMappingsPacket(Int2ObjectMap<Identifier> ma
   );
 
   public static void register() {
-    PayloadTypeRegistry.playS2C().register(ClientboundArgumentTypeMappingsPacket.TYPE, ClientboundArgumentTypeMappingsPacket.CODEC);
+    PayloadTypeRegistry.clientboundPlay().register(ClientboundArgumentTypeMappingsPacket.TYPE, ClientboundArgumentTypeMappingsPacket.CODEC);
   }
 
   public void sendTo(final PacketSender responder) {

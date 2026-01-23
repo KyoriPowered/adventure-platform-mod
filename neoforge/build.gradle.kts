@@ -6,10 +6,6 @@ plugins {
 neoForge {
   version = libs.versions.neoforge.get()
 
-  parchment {
-    parchmentArtifact = "io.papermc.parchment.data:parchment:${libs.versions.parchment.get()}"
-  }
-
   validateAccessTransformers = true
 
   runs {

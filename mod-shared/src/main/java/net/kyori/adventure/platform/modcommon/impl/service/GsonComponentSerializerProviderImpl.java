@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
- * Copyright (c) 2020-2025 KyoriPowered
+ * Copyright (c) 2020-2026 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -55,6 +55,7 @@ public final class GsonComponentSerializerProviderImpl implements GsonComponentS
   public @NotNull Consumer<GsonComponentSerializer.Builder> builder() {
     return builder -> builder
       .legacyHoverEventSerializer(NBTLegacyHoverEventSerializer.INSTANCE)
-      .options(JSONOptions.byDataVersion().at(SharedConstants.getCurrentVersion().dataVersion().version()));
+      .options(JSONOptions.byDataVersion().at(SharedConstants.getCurrentVersion().dataVersion().version()))
+      .editOptions(b -> b.value(JSONOptions.EMIT_DEFAULT_ITEM_HOVER_QUANTITY, false)); // TODO: Add to 26.1+ schema..?
   }
 }

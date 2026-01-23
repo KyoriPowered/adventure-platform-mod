@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
- * Copyright (c) 2023-2025 KyoriPowered
+ * Copyright (c) 2023-2026 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -51,7 +51,7 @@ import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.util.GsonHelper;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -62,6 +62,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Named.named;
 
 class ComponentConversionTest extends BootstrappedTest {
+  // TODO: ItemStack no longer available before data is loaded
   @SuppressWarnings("deprecation")
   static Stream<Object> testedComponents() {
     return Stream.of(
@@ -69,8 +70,10 @@ class ComponentConversionTest extends BootstrappedTest {
       Component.translatable("gameMode.creative", style(NamedTextColor.RED).font(Key.key("uniform"))),
       Component.text("Hello").append(Component.text(" friends", TextColor.color(0xaabbcc))),
       Component.keybind("key.jump"),
-      Component.text("Hello world", style(new ItemStack(Items.ACACIA_LOG, 1).asHoverEvent())),
-      Component.text("I've got a hover!", style(new ItemStack(Items.ACACIA_LOG.builtInRegistryHolder(), 1, DataComponentPatch.builder().set(DataComponents.ITEM_NAME, net.minecraft.network.chat.Component.literal("test")).build()).asHoverEvent()))
+      //Component.text("Hello world", style(new ItemStack(Items.ACACIA_LOG, 1).asHoverEvent())),
+      Component.text("Hello world", style(new ItemStackTemplate(Items.ACACIA_LOG, 1).asHoverEvent())),
+      //Component.text("I've got a hover!", style(new ItemStack(Items.ACACIA_LOG.builtInRegistryHolder(), 1, DataComponentPatch.builder().set(DataComponents.ITEM_NAME, net.minecraft.network.chat.Component.literal("test")).build()).asHoverEvent()))
+      Component.text("I've got a hover!", style(new ItemStackTemplate(Items.ACACIA_LOG.builtInRegistryHolder(), 1, DataComponentPatch.builder().set(DataComponents.ITEM_NAME, net.minecraft.network.chat.Component.literal("test")).build()).asHoverEvent()))
     )
       .map(comp -> named(MiniMessage.miniMessage().serialize(comp), comp));
   }

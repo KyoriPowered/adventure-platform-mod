@@ -38,7 +38,7 @@ allprojects {
     github("PaperMC", "adventure-platform-mod") {
       ci(true)
     }
-    javaVersions().target(21)
+    javaVersions().target(25)
     mitLicense()
     checkstyle(libs.versions.checkstyle.get())
 

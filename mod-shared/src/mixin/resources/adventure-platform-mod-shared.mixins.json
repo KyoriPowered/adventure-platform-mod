@@ -10,8 +10,8 @@
     "minecraft.network.chat.MutableComponentMixin",
     "minecraft.network.chat.PlayerChatMessageMixin",
     "minecraft.resources.DelegatingOpsMixin",
-    "minecraft.resources.ResourceKeyMixin",
     "minecraft.resources.IdentifierMixin",
+    "minecraft.resources.ResourceKeyMixin",
     "minecraft.server.MinecraftServerMixin",
     "minecraft.server.level.ServerBossEventMixin",
     "minecraft.server.level.ServerPlayerMixin",
@@ -21,6 +21,7 @@
     "minecraft.sounds.SoundEventMixin",
     "minecraft.world.entity.EntityMixin",
     "minecraft.world.entity.player.PlayerMixin",
-    "minecraft.world.item.ItemStackMixin"
+    "minecraft.world.item.ItemStackMixin",
+    "minecraft.world.item.ItemStackTemplateMixin"
   ]
 }

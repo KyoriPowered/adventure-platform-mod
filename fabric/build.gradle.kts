@@ -1,6 +1,4 @@
-import net.fabricmc.loom.api.RemapConfigurationSettings
 import net.fabricmc.loom.task.GenerateSourcesTask
-import net.fabricmc.loom.task.RemapJarTask
 import net.fabricmc.loom.task.RunGameTask
 
 plugins {
@@ -11,7 +9,7 @@ plugins {
 }
 
 publishMods.modrinth {
-  file = tasks.remapJar.flatMap { it.archiveFile }
+  file = tasks.jar.flatMap { it.archiveFile }
   modLoaders = listOf("fabric")
   requires("fabric-api")
 }
@@ -19,28 +17,21 @@ publishMods.modrinth {
 dependencies {
   vineflowerDecompilerClasspath(libs.vineflower)
   sequenceOf<(Any) -> Dependency?>(
-    ::modImplementation, ::modApi, ::modCompileOnly
+    ::implementation, ::api, ::compileOnly
   ).forEach { it(platform(fabricApiLibs.bom)) }
-  modApi(fabricApiLibs.base)
-  modImplementation(fabricApiLibs.networking.api.v1)
-  modImplementation(fabricApiLibs.command.api.v2)
+  api(fabricApiLibs.base)
+  implementation(fabricApiLibs.networking.api.v1)
+  implementation(fabricApiLibs.command.api.v2)
   // Only used for prod test
-  modCompileOnly(fabricApiLibs.lifecycle.events.v1)
+  compileOnly(fabricApiLibs.lifecycle.events.v1)
 
   minecraft(libs.minecraft)
-  mappings(loom.layered {
-    officialMojangMappings()
-    parchment("io.papermc.parchment.data:parchment:${libs.versions.parchment.get()}")
-  })
-  modImplementation(libs.fabric.loader)
+  implementation(libs.fabric.loader)
 
   testImplementation(libs.fabric.loader.junit)
 
-  localRuntime(project(":adventure-platform-mod-shared"))
-  compileOnly(project(":adventure-platform-mod-shared"))
-  testImplementation(project(":adventure-platform-mod-shared"))
-  api(project(":adventure-platform-fabric:adventure-platform-mod-shared-fabric-repack", configuration = "namedElements"))
-  include(project(":adventure-platform-fabric:adventure-platform-mod-shared-fabric-repack"))
+  api(project(":adventure-platform-mod-shared"))
+  include(project(":adventure-platform-mod-shared"))
 }
 
 configurations {
@@ -49,16 +40,6 @@ configurations {
   }
   runtimeClasspath {
     extendsFrom(vineflowerDecompilerClasspath.get())
-    exclude("net.kyori", "adventure-platform-mod-shared-fabric-repack")
-  }
-  compileClasspath {
-    exclude("net.kyori", "adventure-platform-mod-shared-fabric-repack")
-  }
-  testRuntimeClasspath {
-    exclude("net.kyori", "adventure-platform-mod-shared-fabric-repack")
-  }
-  testCompileClasspath {
-    exclude("net.kyori", "adventure-platform-mod-shared-fabric-repack")
   }
 }
 
@@ -95,14 +76,6 @@ fun createSecondarySet(name: String, action: Action<SourceSet> = Action { }): So
     extendsFrom(setConfig)
   }
 
-  loom.addRemapConfiguration("mod${name.first().uppercase() + name.drop(1)}") {
-    sourceSet = set
-    targetConfigurationName = name
-    onCompileClasspath = true
-    onRuntimeClasspath = true
-    publishingMode = RemapConfigurationSettings.PublishingMode.NONE
-  }
-
   dependencies {
     set.implementationConfigurationName(sourceSets.named("client").map { it.output })
   }
@@ -116,7 +89,8 @@ val testmod = createSecondarySet("testmod") {
   resources.srcDirs("src/testmodMixin/resources")
 }
 
-val permissionsApiCompat = createSecondarySet("permissionsApiCompat")
+val enablePermissionsApiCompat = false // TODO: permissions API for 26.1
+val permissionsApiCompat = if (enablePermissionsApiCompat) createSecondarySet("permissionsApiCompat") else createSecondarySet("dummyPermissionsApiCompat")
 
 configurations.named("clientAnnotationProcessor") {
   extendsFrom(configurations.annotationProcessor.get())
@@ -155,7 +129,7 @@ loom {
     register("adventure-platform-fabric") {
       sourceSet(sourceSets.main.get())
       sourceSet(sourceSets.named("client").get())
-      sourceSet(permissionsApiCompat)
+      if (enablePermissionsApiCompat) sourceSet(permissionsApiCompat)
       sourceSet("main", ":adventure-platform-mod-shared")
     }
     register("adventure-platform-fabric-testmod") {
@@ -176,40 +150,34 @@ tasks.withType(RunGameTask::class).configureEach {
 }
 
 dependencies {
-  "testmodRuntimeOnly"(permissionsApiCompat.output)
+  if (enablePermissionsApiCompat) "testmodRuntimeOnly"(permissionsApiCompat.output)
   "testmodRuntimeOnly"(project.project(":test-resources").sourceSets.main.get().output)
-  "modPermissionsApiCompat"(libs.fabric.permissionsApi) {
+  if (enablePermissionsApiCompat) "permissionsApiCompat"(libs.fabric.permissionsApi) {
     isTransitive = false
   }
 
   // Testmod-specific dependencies
-  "modTestmod"(fabricApiLibs.fabric.api)
+  "testmod"(fabricApiLibs.fabric.api)
 }
 
-// Create a remapped testmod jar
-val testmodDevJar = tasks.register("testmodJar", Jar::class) {
+// Create a testmod jar
+val testmodJar = tasks.register("testmodJar", Jar::class) {
   from(testmod.output)
   from(project(":test-resources").sourceSets.main.get().output)
-  archiveClassifier = "testmod-dev"
-}
-
-val remapTestmodJar = tasks.register("remapTestmodJar", RemapJarTask::class) {
-  inputFile = testmodDevJar.flatMap { it.archiveFile }
-  addNestedDependencies = false
-  classpath.from(testmod.runtimeClasspath)
   archiveClassifier = "testmod"
 }
+
 tasks.build {
-  dependsOn(remapTestmodJar)
+  dependsOn(testmodJar)
 }
 
 tasks {
   jar {
-    from(permissionsApiCompat.output)
+    if (enablePermissionsApiCompat) from(permissionsApiCompat.output)
   }
 
   sourcesJar {
-    from(permissionsApiCompat.allSource)
+    if (enablePermissionsApiCompat) from(permissionsApiCompat.allSource)
   }
 }
 

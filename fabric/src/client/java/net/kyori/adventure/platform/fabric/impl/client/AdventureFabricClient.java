@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
- * Copyright (c) 2020-2024 KyoriPowered
+ * Copyright (c) 2020-2026 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,8 +24,8 @@
 package net.kyori.adventure.platform.fabric.impl.client;
 
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.networking.v1.C2SPlayChannelEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.client.networking.v1.ServerboundPlayChannelEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.kyori.adventure.platform.fabric.impl.AdventureFabricCommon;
 import net.kyori.adventure.platform.fabric.impl.ClientboundArgumentTypeMappingsPacket;
@@ -41,7 +41,7 @@ public final class AdventureFabricClient implements ClientModInitializer {
   private void setupCustomArgumentTypes() {
     // sync is optional, so fapi is not required
     if (FabricLoader.getInstance().isModLoaded(AdventureFabricCommon.MOD_FAPI_NETWORKING)) {
-      C2SPlayChannelEvents.REGISTER.register((handler, sender, client, channels) -> {
+      ServerboundPlayChannelEvents.REGISTER.register((handler, sender, client, channels) -> {
         if (channels.contains(ServerboundRegisteredArgumentTypesPacket.TYPE.id())) {
           client.execute(() -> {
             if (ClientPlayNetworking.canSend(ServerboundRegisteredArgumentTypesPacket.TYPE)) {

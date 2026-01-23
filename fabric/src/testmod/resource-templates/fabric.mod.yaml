@@ -19,4 +19,4 @@ mixins:
 depends:
   fabricloader: ">=0.4.0"
   adventure-platform-fabric: "*"
-  fabric: "*"
+  fabric-api: "*"

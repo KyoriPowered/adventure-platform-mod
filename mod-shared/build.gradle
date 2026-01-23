@@ -6,10 +6,6 @@ plugins {
 
 neoForge {
   neoFormVersion = libs.versions.neoform.get()
-
-  parchment {
-    parchmentArtifact = "io.papermc.parchment.data:parchment:${libs.versions.parchment.get()}"
-  }
 }
 
 @CacheableRule

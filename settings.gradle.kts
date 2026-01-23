@@ -25,9 +25,11 @@ pluginManagement {
 
 plugins {
   id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
-  id("fabric-loom") version "1.14.10"
-  id("net.neoforged.moddev.repositories") version "2.0.138"
+  id("net.fabricmc.fabric-loom") version "1.15.2" apply false
+  id("net.neoforged.moddev.repositories") version "2.0.140"
 }
+
+plugins.apply(net.fabricmc.loom.LoomRepositoryPlugin::class.java)
 
 rootProject.name = "adventure-platform-mod-parent"
 
@@ -49,7 +51,7 @@ dependencyResolutionManagement {
 
   versionCatalogs {
     create("fabricApiLibs") {
-      from("net.fabricmc.fabric-api:fabric-api-catalog:0.141.1+1.21.11")
+      from("net.fabricmc.fabric-api:fabric-api-catalog:0.142.1+26.1")
     }
   }
 }
@@ -67,11 +69,8 @@ findProject(":test-resources")?.projectDir = file("mod-shared/test-resources")
 
 // Fabric
 includeAndRename("fabric")
-includeAndRename("adventure-platform-fabric:mod-shared-repack", "mod-shared-fabric-repack")
 
 // NeoForge
-
 includeAndRename("neoforge")
 includeAndRename("adventure-platform-neoforge:tester", "neoforge-tester")
 includeAndRename("adventure-platform-neoforge:services", "neoforge-services")
-

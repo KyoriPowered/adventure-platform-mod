@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
- * Copyright (c) 2022-2025 KyoriPowered
+ * Copyright (c) 2022-2026 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -52,7 +52,7 @@ public record ServerboundRegisteredArgumentTypesPacket(Set<Identifier> known) im
   );
 
   public static void register() {
-    PayloadTypeRegistry.playC2S().register(TYPE, CODEC);
+    PayloadTypeRegistry.serverboundPlay().register(TYPE, CODEC);
     ServerPlayNetworking.registerGlobalReceiver(TYPE, (pkt, ctx) -> {
       ctx.player().level().getServer().execute(() -> { // on main thread
         ServerArgumentTypes.knownArgumentTypes(ctx.player(), pkt.known, ctx.responseSender());
