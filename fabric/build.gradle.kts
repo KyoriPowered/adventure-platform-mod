@@ -2,7 +2,7 @@ import net.fabricmc.loom.task.GenerateSourcesTask
 import net.fabricmc.loom.task.RunGameTask
 
 plugins {
-  alias(libs.plugins.loom)
+  id("net.fabricmc.fabric-loom")
   alias(libs.plugins.configurateTransformations)
   id("standard-conventions")
   id("mod-publishing-conventions")
