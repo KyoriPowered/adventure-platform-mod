@@ -23,16 +23,11 @@
  */
 package net.kyori.adventure.platform.modcommon.impl.mixin.minecraft.world.item;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.UnaryOperator;
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.platform.modcommon.ItemHoverEventSource;
 import net.kyori.adventure.platform.modcommon.impl.nbt.ModDataComponentValue;
 import net.kyori.adventure.text.event.DataComponentValue;
 import net.kyori.adventure.text.event.HoverEvent;
-import net.kyori.adventure.text.event.HoverEventSource;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -42,8 +37,14 @@ import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.UnaryOperator;
+
 @Mixin(ItemStack.class)
-public abstract class ItemStackMixin implements HoverEventSource<HoverEvent.ShowItem> {
+public abstract class ItemStackMixin implements ItemHoverEventSource {
   // @formatter:off
   @Shadow public abstract int shadow$getCount();
   @Shadow public abstract Item shadow$getItem();

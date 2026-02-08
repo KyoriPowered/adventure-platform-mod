@@ -1,0 +1,39 @@
+{
+  "net/minecraft/commands/CommandSourceStack": [
+    "net/kyori/adventure/platform/modcommon/AdventureCommandSourceStack"
+  ],
+  "net/minecraft/world/entity/Entity": [
+    "net/kyori/adventure/sound/Sound$Emitter",
+    "net/kyori/adventure/platform/modcommon/EntityHoverEventSource"
+  ],
+  "net/minecraft/server/MinecraftServer": [
+    "net/kyori/adventure/audience/Audience"
+  ],
+  "net/minecraft/world/entity/player/Player": [
+    "net/kyori/adventure/platform/modcommon/IdentifiedAtRuntime"
+  ],
+  "net/minecraft/server/rcon/RconConsoleSource": [
+    "net/kyori/adventure/audience/Audience"
+  ],
+  "net/minecraft/server/level/ServerPlayer": [
+    "net/kyori/adventure/audience/Audience"
+  ],
+  "net/minecraft/client/player/LocalPlayer": [
+    "net/kyori/adventure/audience/Audience"
+  ],
+  "net/minecraft/resources/ResourceLocation": [
+    "net/kyori/adventure/key/Key"
+  ],
+  "net/minecraft/sounds/SoundEvent": [
+    "net/kyori/adventure/sound/Sound$Type"
+  ],
+  "net/minecraft/resources/ResourceKey": [
+    "net/kyori/adventure/key/Keyed"
+  ],
+  "net/minecraft/world/item/ItemStack": [
+    "net/kyori/adventure/platform/modcommon/ItemHoverEventSource"
+  ],
+  "net/minecraft/network/chat/MessageSignature": [
+    "net/kyori/adventure/chat/SignedMessage$Signature"
+  ]
+}
