@@ -16,7 +16,7 @@ junit = "6.0.2"
 minecraft = "1.21.11"
 parchment = "1.21.11+build.2"
 vineflower = "1.11.2"
-spotless = "8.1.0"
+spotless = "8.2.1"
 neoforge = "21.11.26-beta"
 neoform = "1.21.11-20251209.172050"
 
@@ -77,7 +77,7 @@ zCheckstyle = { module = "com.puppycrawl.tools:checkstyle", version.ref = "check
 [plugins]
 configurateTransformations = { id = "ca.stellardrift.configurate-transformations" }
 eclipseApt = "com.diffplug.eclipse.apt:4.4.1"
-loom = "fabric-loom:1.14.10"
+loom = "fabric-loom:1.15.3"
 # ModDevGradle settings plugin is putting another version on the classpath, so we can't specify a version :(
 ideaExt = { id = "org.jetbrains.gradle.plugin.idea-ext" }
 indra = { id = "net.kyori.indra" }
