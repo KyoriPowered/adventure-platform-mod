@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
- * Copyright (c) 2020-2024 KyoriPowered
+ * Copyright (c) 2020-2026 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,6 +30,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(Level.class)
 public interface LevelAccess {
-  @Accessor("threadSafeRandom")
-  RandomSource accessor$threadSafeRandom();
+  @Accessor("soundSeedGenerator")
+  RandomSource accessor$soundSeedGenerator();
 }

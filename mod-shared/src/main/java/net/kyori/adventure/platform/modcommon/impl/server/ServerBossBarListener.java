@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
- * Copyright (c) 2020-2024 KyoriPowered
+ * Copyright (c) 2020-2026 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@ package net.kyori.adventure.platform.modcommon.impl.server;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.UUID;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.platform.modcommon.impl.AbstractBossBarListener;
 import net.kyori.adventure.platform.modcommon.impl.MinecraftAudiencesInternal;
@@ -129,7 +130,7 @@ public class ServerBossBarListener extends AbstractBossBarListener<ServerBossEve
     final net.minecraft.world.BossEvent.@NotNull BossBarOverlay style,
     final float progress
   ) {
-    final ServerBossEvent event = new ServerBossEvent(title, color, style);
+    final ServerBossEvent event = new ServerBossEvent(UUID.randomUUID(), title, color, style);
     event.setProgress(progress);
     return event;
   }

@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
- * Copyright (c) 2020-2025 KyoriPowered
+ * Copyright (c) 2020-2026 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -51,9 +51,9 @@ import net.kyori.adventure.sound.SoundStop;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
 import net.kyori.adventure.title.TitlePart;
-import net.minecraft.client.GuiMessageTag;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.BookViewScreen;
+import net.minecraft.client.multiplayer.chat.GuiMessageTag;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.resources.sounds.EntityBoundSoundInstance;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
@@ -84,7 +84,7 @@ public class ClientAudience implements ControlledAudience {
 
   @Override
   public void sendMessage(final @NotNull Component message) {
-    this.client.gui.getChat().addMessage(this.controller.asNative(message));
+    this.client.gui.getChat().addClientSystemMessage(this.controller.asNative(message));
   }
 
   private net.minecraft.network.chat.ChatType.Bound toMc(final ChatType.Bound bound) {
@@ -94,7 +94,7 @@ public class ClientAudience implements ControlledAudience {
   @Override
   public void sendMessage(final @NotNull Component message, final ChatType.@NotNull Bound boundChatType) {
     final net.minecraft.network.chat.ChatType.Bound bound = this.toMc(boundChatType);
-    this.client.gui.getChat().addMessage(bound.decorate(this.controller.asNative(message)), null, GuiMessageTag.chatNotSecure());
+    this.client.gui.getChat().addPlayerMessage(bound.decorate(this.controller.asNative(message)), null, GuiMessageTag.chatNotSecure());
   }
 
   @Override
@@ -102,7 +102,11 @@ public class ClientAudience implements ControlledAudience {
     final net.minecraft.network.chat.ChatType.Bound bound = this.toMc(boundChatType);
     final Component message = Objects.requireNonNullElse(signedMessage.unsignedContent(), Component.text(signedMessage.message()));
 
-    this.client.gui.getChat().addMessage(bound.decorate(this.controller.asNative(message)), (MessageSignature) (Object) signedMessage.signature(), this.tag(signedMessage));
+    this.client.gui.getChat().addPlayerMessage(
+      bound.decorate(this.controller.asNative(message)),
+      (MessageSignature) (Object) signedMessage.signature(),
+      this.tag(signedMessage)
+    );
   }
 
   private GuiMessageTag tag(final SignedMessage message) {
@@ -135,12 +139,12 @@ public class ClientAudience implements ControlledAudience {
     if (type == MessageType.CHAT) {
       // Add to chat queue (following delay and such)
       if (visibility == ChatVisiblity.FULL) {
-        this.client.gui.getChat().addMessage(this.controller.asNative(message), null, null);
+        this.client.gui.getChat().addPlayerMessage(this.controller.asNative(message), null, null);
       }
     } else {
       // Add immediately as a system message
       if (visibility == ChatVisiblity.FULL || visibility == ChatVisiblity.SYSTEM) {
-        this.client.gui.getChat().addMessage(this.controller.asNative(message));
+        this.client.gui.getChat().addClientSystemMessage(this.controller.asNative(message));
       }
     }
   }
@@ -215,7 +219,7 @@ public class ClientAudience implements ControlledAudience {
     } else {
       final @Nullable LocalPlayer player = this.client.player;
       if (player != null) {
-        return ((LevelAccess) player.level()).accessor$threadSafeRandom().nextLong();
+        return ((LevelAccess) player.level()).accessor$soundSeedGenerator().nextLong();
       } else {
         return 0l;
       }
