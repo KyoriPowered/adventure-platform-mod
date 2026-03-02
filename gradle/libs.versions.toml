@@ -17,7 +17,7 @@ minecraft = "1.21.11"
 parchment = "1.21.11+build.2"
 vineflower = "1.11.2"
 spotless = "8.2.1"
-neoforge = "21.11.26-beta"
+neoforge = "21.11.38-beta"
 neoform = "1.21.11-20251209.172050"
 
 [libraries]
