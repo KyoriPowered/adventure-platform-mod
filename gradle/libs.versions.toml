@@ -15,7 +15,7 @@ mod-publish-plugin = "1.1.0"
 junit = "6.0.3"
 minecraft = "26.1-pre-2"
 vineflower = "1.11.2"
-spotless = "8.1.0"
+spotless = "8.3.0"
 neoforge = "26.1.0.0-alpha.14+snapshot-11"
 neoform = "26.1-pre-2-1"
 
