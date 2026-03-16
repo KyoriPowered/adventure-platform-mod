@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
- * Copyright (c) 2024-2025 KyoriPowered
+ * Copyright (c) 2024-2026 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,8 +31,8 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import net.kyori.adventure.platform.modcommon.MinecraftClientAudiences;
 import net.kyori.adventure.text.Component;
-import net.minecraft.client.GuiMessageTag;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.chat.GuiMessageTag;
 import net.minecraft.commands.CommandSourceStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.common.Mod;
@@ -64,7 +64,7 @@ public class AdventureNeoTesterClient {
             .clickEvent(openFile(path.toString()))
             .build();
 
-          Minecraft.getInstance().gui.getChat().addMessage(MinecraftClientAudiences.of().asNative(message), null, kyoriMessage);
+          Minecraft.getInstance().gui.getChat().addPlayerMessage(MinecraftClientAudiences.of().asNative(message), null, kyoriMessage);
           // ctx.getSource().getPlayer().sendMessage(message); // Works as well!
 
           return Command.SINGLE_SUCCESS;
