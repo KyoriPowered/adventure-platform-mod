@@ -24,7 +24,11 @@ fun Project.createProcessResourceTemplates(name: String, set: SourceSet): TaskPr
     this.destinationDir = destinationDir
     from("src/${set.name}/resource-templates")
 
-    inputs.property("version", project.version)
+    val properties = objects.mapProperty(String::class.java, String::class.java)
+    properties.put("name", project.name)
+    properties.put("rootName", project.rootProject.name)
+    properties.put("version", project.version.toString())
+    inputs.property("properties", properties)
 
     // Convert data files yaml -> json
     filesMatching(
@@ -37,7 +41,7 @@ fun Project.createProcessResourceTemplates(name: String, set: SourceSet): TaskPr
     ) {
       convertFormat(ConfigFormats.YAML, ConfigFormats.JSON)
       if (this.name.startsWith("fabric.mod")) {
-        expand("project" to project)
+        expand(properties.get())
       }
       this.name = this.name.substringBeforeLast('.') + ".json"
     }

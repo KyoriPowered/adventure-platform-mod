@@ -1,7 +1,7 @@
 schemaVersion: 1
-id: "${project.rootProject.name.toLowerCase()}-testmod"
-version: "${project.version}"
-name: "${project.rootProject.name} Tester"
+id: "${rootName.toLowerCase()}-testmod"
+version: "${version}"
+name: "${rootName} Tester"
 
 authors: [ "zml" ]
 contact:

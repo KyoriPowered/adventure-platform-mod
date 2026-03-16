@@ -1,7 +1,7 @@
 schemaVersion: 1
-id: "${project.name.toLowerCase()}"
-version: "${project.version}"
-name: "${project.name}"
+id: "${name.toLowerCase()}"
+version: "${version}"
+name: "${name}"
 authors: [ "kashike","zml", "Luck", "Electroid" ]
 contact:
   homepage: "https://github.com/PaperMC/adventure-platform-fabric"
