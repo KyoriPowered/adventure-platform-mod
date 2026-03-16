@@ -80,6 +80,7 @@ import net.minecraft.client.multiplayer.chat.GuiMessageTag;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.synchronization.SuggestionProviders;
 import net.minecraft.network.chat.ComponentUtils;
+import net.minecraft.network.chat.ResolutionContext;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -170,7 +171,10 @@ public class AdventureFabricTester implements ModInitializer {
         })))
         .then(literal("eval").then(argument(ARG_TEXT, miniMessage()).executes(ctx -> {
           final Component result = component(ctx, ARG_TEXT);
-          ctx.getSource().sendMessage(this.adventure().asAdventure(ComponentUtils.updateForEntity(ctx.getSource(), this.adventure().asNative(result), ctx.getSource().getEntity(), 0)));
+          ctx.getSource().sendMessage(this.adventure().asAdventure(ComponentUtils.resolve(
+            ResolutionContext.create(ctx.getSource()),
+            this.adventure().asNative(result)
+          )));
           return Command.SINGLE_SUCCESS;
         })))
         .then(literal("countdown").then(argument(ARG_SECONDS, integer()).executes(ctx -> { // multiple boss bars!
