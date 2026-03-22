@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
- * Copyright (c) 2020-2025 KyoriPowered
+ * Copyright (c) 2020-2026 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@ package net.kyori.adventure.platform.tester.neoforge;
 
 import com.google.common.base.Strings;
 import com.mojang.brigadier.Command;
+import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -63,10 +64,11 @@ import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.kyori.adventure.translation.GlobalTranslator;
-import net.kyori.adventure.translation.TranslationRegistry;
+import net.kyori.adventure.translation.TranslationStore;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.synchronization.SuggestionProviders;
 import net.minecraft.network.chat.ComponentUtils;
+import net.minecraft.network.chat.ResolutionContext;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -131,7 +133,7 @@ public class AdventureNeoTester {
     AdventureArgumentTypes.register();
 
     // Register localizations
-    final TranslationRegistry testmodRegistry = TranslationRegistry.create(advKey("testmod_localizations"));
+    final TranslationStore.StringBased<MessageFormat> testmodRegistry = TranslationStore.messageFormat(advKey("testmod_localizations"));
     for (final var lang : List.of(Locale.ENGLISH, Locale.GERMAN)) {
       testmodRegistry.registerAll(lang, ResourceBundle.getBundle("net.kyori.adventure.platform.test.fabric.messages", lang), false);
     }
@@ -163,7 +165,7 @@ public class AdventureNeoTester {
         })))
         .then(literal("eval").then(argument(ARG_TEXT, miniMessage()).executes(ctx -> {
           final Component result = component(ctx, ARG_TEXT);
-          this.platform.audience(ctx.getSource()).sendMessage(this.platform.asAdventure(ComponentUtils.updateForEntity(ctx.getSource(), this.platform.asNative(result), ctx.getSource().getEntity(), 0)));
+          this.platform.audience(ctx.getSource()).sendMessage(this.platform.asAdventure(ComponentUtils.resolve(ResolutionContext.create(ctx.getSource()), this.platform.asNative(result))));
           return Command.SINGLE_SUCCESS;
         })))
         .then(literal("countdown").then(argument(ARG_SECONDS, integer()).executes(ctx -> { // multiple boss bars!
