@@ -26,7 +26,7 @@ pluginManagement {
 plugins {
   id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
   id("net.fabricmc.fabric-loom-repositories") version "1.15.5"
-  id("net.neoforged.moddev.repositories") version "2.0.140"
+  id("net.neoforged.moddev.repositories") version "2.0.141"
 }
 
 rootProject.name = "adventure-platform-mod-parent"
@@ -49,7 +49,7 @@ dependencyResolutionManagement {
 
   versionCatalogs {
     create("fabricApiLibs") {
-      from("net.fabricmc.fabric-api:fabric-api-catalog:0.143.14+26.1")
+      from("net.fabricmc.fabric-api:fabric-api-catalog:0.145.3+26.1.1")
     }
   }
 }
