@@ -89,7 +89,7 @@ val testmod = createSecondarySet("testmod") {
   resources.srcDirs("src/testmodMixin/resources")
 }
 
-val enablePermissionsApiCompat = false // TODO: permissions API for 26.1
+val enablePermissionsApiCompat = true
 val permissionsApiCompat = if (enablePermissionsApiCompat) createSecondarySet("permissionsApiCompat") else createSecondarySet("dummyPermissionsApiCompat")
 
 configurations.named("clientAnnotationProcessor") {
