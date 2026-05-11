@@ -1,10 +1,10 @@
 # adventure-platform-mod
 
-![GitHub Workflow Status (branch)](https://img.shields.io/github/actions/workflow/status/PaperMC/adventure-platform-mod/ci.yaml?branch=mc/1.21) [![MIT License](https://img.shields.io/badge/license-MIT-blue)](LICENSE) [![Maven Central](https://img.shields.io/maven-central/v/net.kyori/adventure-platform-mod-shared?label=stable)](https://search.maven.org/search?q=g:net.kyori%20AND%20a:adventure*) ![Maven snapshots](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fcentral.sonatype.com%2Frepository%2Fmaven-snapshots%2Fnet%2Fkyori%2Fadventure-platform-mod-shared%2Fmaven-metadata.xml&strategy=highestVersion&label=dev)
+[![MIT License](https://img.shields.io/badge/license-MIT-blue)](LICENSE) [![Maven Central](https://img.shields.io/maven-central/v/net.kyori/adventure-platform-mod-shared?label=stable)](https://search.maven.org/search?q=g:net.kyori%20AND%20a:adventure*) ![Maven snapshots](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fcentral.sonatype.com%2Frepository%2Fmaven-snapshots%2Fnet%2Fkyori%2Fadventure-platform-mod-shared%2Fmaven-metadata.xml&strategy=highestVersion&label=dev)
 
-Integration between the [adventure](https://github.com/KyoriPowered/adventure) library and *Minecraft: Java Edition* for the [Fabric](https://fabricmc.net) and [NeoForge](https://neoforged.net) modding systems.
+Integration between the [adventure](https://github.com/PaperMC/adventure) library and *Minecraft: Java Edition* for the [Fabric](https://fabricmc.net) and [NeoForge](https://neoforged.net) modding systems.
 
-See the [documentation](https://docs.adventure.kyori.net/platform/modded.html) for usage and dependency information for this project and the main `adventure` library.
+See the [documentation] for usage and dependency information for this project and the main `adventure` library.
 
 ### Versions
 
@@ -12,7 +12,8 @@ See the [documentation](https://docs.adventure.kyori.net/platform/modded.html) f
 
 ### Contributing
 
-We appreciate contributions of any type. For any new features or typo-fix/style changes, please open an issue or come talk to us in our [Discord] first, so we make sure you're going in the right direction for the project.
+We appreciate contributions of any type.
+For any new features or typo-fix/style changes, please open an issue or come talk to us in the [#adventure-contrib] channel on the [PaperMC Discord] first so we make sure you're going in the right direction for the project.
 
 All the adventure projects are built with Gradle and use a common checkstyle configuration. `adventure-platform-mod` requires the same Java version that Minecraft itself does in the target version. Please make sure all tests pass, license headers are updated, and checkstyle passes to help us review your contribution.
 
@@ -29,4 +30,6 @@ To have browsable game source in your IDE, run `./gradlew genSources` before imp
 
 `adventure-platform-mod` is released under the terms of the [MIT License](LICENSE).
 
-[Discord]: https://discord.gg/MMfhJ8F
+[documentation]: https://docs.papermc.io/adventure/
+[#adventure-contrib]: https://discord.com/channels/289587909051416579/1342377788266512415
+[PaperMC Discord]: https://discord.gg/PaperMC
