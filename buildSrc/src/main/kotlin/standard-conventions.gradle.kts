@@ -23,10 +23,7 @@ dependencies {
     jarInJar(it)
   }
 
-  sequenceOf(
-    libs.adventure.platform.api,
-    libs.adventure.textSerializerGson
-  ).forEach {
+  libs.adventure.textSerializerGson.let {
     api(it) {
       exclude("com.google.code.gson")
     }
