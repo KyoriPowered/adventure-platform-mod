@@ -27,8 +27,5 @@ tasks {
         "https://jd.advntr.dev/key/${advVersion}",
       )
     }
-    options.links(
-      "https://jd.advntr.dev/platform/api/${libs.versions.adventurePlatform.get()}",
-    )
   }
 }

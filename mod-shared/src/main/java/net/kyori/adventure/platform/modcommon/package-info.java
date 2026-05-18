@@ -1,5 +1,5 @@
 /**
- * Implementation of <a href="https://docs.adventure.kyori.net">Adventure</a>
+ * Implementation of <a href="https://docs.papermc.io/adventure/">Adventure</a>
  * on Minecraft using various mod loaders.
  *
  * <p>There are both server- and clientside entry points for Adventure,

@@ -3,7 +3,6 @@ format = { version = "1.1" }
 
 [versions]
 adventure = "4.26.1"
-adventurePlatform = "4.4.1"
 ansi = "1.1.1"
 autoService = "1.1.1"
 checkstyle = "13.0.0"
@@ -22,7 +21,6 @@ neoform = "26.1.2-1"
 [libraries]
 adventure-api = { module = "net.kyori:adventure-api", version.ref = "adventure" }
 adventure-key = { module = "net.kyori:adventure-key", version.ref = "adventure" }
-adventure-platform-api = { module = "net.kyori:adventure-platform-api", version.ref = "adventurePlatform" }
 adventure-textLoggerSlf4j = { module = "net.kyori:adventure-text-logger-slf4j", version.ref = "adventure" }
 adventure-textMinimessage = { module = "net.kyori:adventure-text-minimessage", version.ref = "adventure" }
 adventure-textSerializerPlain = { module = "net.kyori:adventure-text-serializer-plain", version.ref = "adventure" }
