@@ -49,7 +49,7 @@ dependencyResolutionManagement {
 
   versionCatalogs {
     create("fabricApiLibs") {
-      from("net.fabricmc.fabric-api:fabric-api-catalog:0.145.4+26.1.2")
+      from("net.fabricmc.fabric-api:fabric-api-catalog:0.150.1+26.2")
     }
   }
 }
@@ -69,6 +69,8 @@ findProject(":test-resources")?.projectDir = file("mod-shared/test-resources")
 includeAndRename("fabric")
 
 // NeoForge
+/* TODO: NeoForge not yet published for 26.2
 includeAndRename("neoforge")
 includeAndRename("adventure-platform-neoforge:tester", "neoforge-tester")
 includeAndRename("adventure-platform-neoforge:services", "neoforge-services")
+*/

@@ -54,6 +54,6 @@ side="BOTH"
 [[dependencies.adventure_platform_neoforge]]
 modId="minecraft"
 type="required"
-versionRange="(1.21.11,26.2)"
+versionRange="[26.2,26.3)"
 ordering="NONE"
 side="BOTH"

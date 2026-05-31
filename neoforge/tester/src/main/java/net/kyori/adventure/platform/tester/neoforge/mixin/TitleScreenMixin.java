@@ -47,7 +47,7 @@ abstract class TitleScreenMixin extends Screen {
       net.kyori.adventure.text.Component.translatable("menu.singleplayer", TextColor.color(0x9A40D2))
     );
     this.addRenderableWidget(
-      Button.builder(nativeText, button -> this.minecraft.setScreen(new SelectWorldScreen(this)))
+      Button.builder(nativeText, button -> this.minecraft.gui.setScreen(new SelectWorldScreen(this)))
         .bounds(this.width / 2 - 100, y - rowHeight, 200, 20)
         .build()
     );

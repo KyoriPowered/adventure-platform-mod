@@ -64,7 +64,7 @@ public class AdventureNeoTesterClient {
             .clickEvent(openFile(path.toString()))
             .build();
 
-          Minecraft.getInstance().gui.getChat().addPlayerMessage(MinecraftClientAudiences.of().asNative(message), null, kyoriMessage);
+          Minecraft.getInstance().gui.hud.getChat().addPlayerMessage(MinecraftClientAudiences.of().asNative(message), null, kyoriMessage);
           // ctx.getSource().getPlayer().sendMessage(message); // Works as well!
 
           return Command.SINGLE_SUCCESS;

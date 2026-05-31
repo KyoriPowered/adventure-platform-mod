@@ -84,7 +84,7 @@ public class ClientAudience implements ControlledAudience {
 
   @Override
   public void sendMessage(final @NotNull Component message) {
-    this.client.gui.getChat().addClientSystemMessage(this.controller.asNative(message));
+    this.client.gui.hud.getChat().addClientSystemMessage(this.controller.asNative(message));
   }
 
   private net.minecraft.network.chat.ChatType.Bound toMc(final ChatType.Bound bound) {
@@ -94,7 +94,7 @@ public class ClientAudience implements ControlledAudience {
   @Override
   public void sendMessage(final @NotNull Component message, final ChatType.@NotNull Bound boundChatType) {
     final net.minecraft.network.chat.ChatType.Bound bound = this.toMc(boundChatType);
-    this.client.gui.getChat().addPlayerMessage(bound.decorate(this.controller.asNative(message)), null, GuiMessageTag.chatNotSecure());
+    this.client.gui.hud.getChat().addPlayerMessage(bound.decorate(this.controller.asNative(message)), null, GuiMessageTag.chatNotSecure());
   }
 
   @Override
@@ -102,7 +102,7 @@ public class ClientAudience implements ControlledAudience {
     final net.minecraft.network.chat.ChatType.Bound bound = this.toMc(boundChatType);
     final Component message = Objects.requireNonNullElse(signedMessage.unsignedContent(), Component.text(signedMessage.message()));
 
-    this.client.gui.getChat().addPlayerMessage(
+    this.client.gui.hud.getChat().addPlayerMessage(
       bound.decorate(this.controller.asNative(message)),
       (MessageSignature) (Object) signedMessage.signature(),
       this.tag(signedMessage)
@@ -125,7 +125,7 @@ public class ClientAudience implements ControlledAudience {
 
   @Override
   public void deleteMessage(final SignedMessage.@NotNull Signature signature) {
-    this.client.gui.getChat().deleteMessage((MessageSignature) (Object) signature);
+    this.client.gui.hud.getChat().deleteMessage((MessageSignature) (Object) signature);
   }
 
   @Override
@@ -139,19 +139,19 @@ public class ClientAudience implements ControlledAudience {
     if (type == MessageType.CHAT) {
       // Add to chat queue (following delay and such)
       if (visibility == ChatVisiblity.FULL) {
-        this.client.gui.getChat().addPlayerMessage(this.controller.asNative(message), null, null);
+        this.client.gui.hud.getChat().addPlayerMessage(this.controller.asNative(message), null, null);
       }
     } else {
       // Add immediately as a system message
       if (visibility == ChatVisiblity.FULL || visibility == ChatVisiblity.SYSTEM) {
-        this.client.gui.getChat().addClientSystemMessage(this.controller.asNative(message));
+        this.client.gui.hud.getChat().addClientSystemMessage(this.controller.asNative(message));
       }
     }
   }
 
   @Override
   public void sendActionBar(final @NotNull Component message) {
-    this.client.gui.setOverlayMessage(this.controller.asNative(message), false);
+    this.client.gui.hud.setOverlayMessage(this.controller.asNative(message), false);
   }
 
   @Override
@@ -159,9 +159,9 @@ public class ClientAudience implements ControlledAudience {
     final net.minecraft.network.chat.@Nullable Component titleText = title.title() == Component.empty() ? null : this.controller.asNative(title.title());
     final net.minecraft.network.chat.@Nullable Component subtitleText = title.subtitle() == Component.empty() ? null : this.controller.asNative(title.subtitle());
     final Title.@Nullable Times times = title.times();
-    this.client.gui.setTitle(titleText);
-    this.client.gui.setSubtitle(subtitleText);
-    this.client.gui.setTimes(
+    this.client.gui.hud.setTitle(titleText);
+    this.client.gui.hud.setSubtitle(subtitleText);
+    this.client.gui.hud.setTimes(
       this.adventure$ticks(times == null ? null : times.fadeIn()),
       this.adventure$ticks(times == null ? null : times.stay()),
       this.adventure$ticks(times == null ? null : times.fadeOut())
@@ -172,12 +172,12 @@ public class ClientAudience implements ControlledAudience {
   public <T> void sendTitlePart(final @NotNull TitlePart<T> part, final @NotNull T value) {
     Objects.requireNonNull(value, "value");
     if (part == TitlePart.TITLE) {
-      this.client.gui.setTitle(this.controller.asNative((Component) value));
+      this.client.gui.hud.setTitle(this.controller.asNative((Component) value));
     } else if (part == TitlePart.SUBTITLE) {
-      this.client.gui.setSubtitle(this.controller.asNative((Component) value));
+      this.client.gui.hud.setSubtitle(this.controller.asNative((Component) value));
     } else if (part == TitlePart.TIMES) {
       final Title.Times times = (Title.Times) value;
-      this.client.gui.setTimes(
+      this.client.gui.hud.setTimes(
         this.adventure$ticks(times.fadeIn()),
         this.adventure$ticks(times.stay()),
         this.adventure$ticks(times.fadeOut())
@@ -193,24 +193,24 @@ public class ClientAudience implements ControlledAudience {
 
   @Override
   public void clearTitle() {
-    this.client.gui.setTitle(null);
-    this.client.gui.setSubtitle(null);
+    this.client.gui.hud.setTitle(null);
+    this.client.gui.hud.setSubtitle(null);
   }
 
   @Override
   public void resetTitle() {
-    this.client.gui.resetTitleTimes();
+    this.client.gui.hud.resetTitleTimes();
     this.clearTitle();
   }
 
   @Override
   public void showBossBar(final @NotNull BossBar bar) {
-    BossHealthOverlayBridge.listener(this.client.gui.getBossOverlay(), this.controller).add(bar);
+    BossHealthOverlayBridge.listener(this.client.gui.hud.getBossOverlay(), this.controller).add(bar);
   }
 
   @Override
   public void hideBossBar(final @NotNull BossBar bar) {
-    BossHealthOverlayBridge.listener(this.client.gui.getBossOverlay(), this.controller).remove(bar);
+    BossHealthOverlayBridge.listener(this.client.gui.hud.getBossOverlay(), this.controller).remove(bar);
   }
 
   private long seed(final @NotNull Sound sound) {
@@ -293,17 +293,17 @@ public class ClientAudience implements ControlledAudience {
 
   @Override
   public void openBook(final @NotNull Book book) {
-    this.client.setScreen(new BookViewScreen(new BookViewScreen.BookAccess(book.pages().stream().map(this.controller::asNative).toList())));
+    this.client.gui.setScreen(new BookViewScreen(new BookViewScreen.BookAccess(book.pages().stream().map(this.controller::asNative).toList())));
   }
 
   @Override
   public void sendPlayerListHeader(final @NotNull Component header) {
-    this.client.gui.getTabList().setHeader(header == Component.empty() ? null : this.controller.asNative(header));
+    this.client.gui.hud.getTabList().setHeader(header == Component.empty() ? null : this.controller.asNative(header));
   }
 
   @Override
   public void sendPlayerListFooter(final @NotNull Component footer) {
-    this.client.gui.getTabList().setHeader(footer == Component.empty() ? null : this.controller.asNative(footer));
+    this.client.gui.hud.getTabList().setFooter(footer == Component.empty() ? null : this.controller.asNative(footer));
   }
 
   @Override

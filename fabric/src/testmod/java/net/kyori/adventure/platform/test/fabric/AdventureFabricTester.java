@@ -297,7 +297,7 @@ public class AdventureFabricTester implements ModInitializer {
             .clickEvent(openFile(path.toString()))
             .build();
 
-          ctx.getSource().getClient().gui.getChat().addPlayerMessage(MinecraftClientAudiences.of().asNative(message), null, kyoriMessage);
+          ctx.getSource().getClient().gui.hud.getChat().addPlayerMessage(MinecraftClientAudiences.of().asNative(message), null, kyoriMessage);
           // ctx.getSource().getPlayer().sendMessage(message); // Works as well!
 
           return Command.SINGLE_SUCCESS;
