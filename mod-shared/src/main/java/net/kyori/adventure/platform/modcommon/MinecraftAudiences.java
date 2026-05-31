@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
- * Copyright (c) 2020-2025 KyoriPowered
+ * Copyright (c) 2020-2026 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -284,9 +284,11 @@ public interface MinecraftAudiences {
    * @since 6.0.0
    */
   @Contract("null -> null; !null -> !null")
-  @SuppressWarnings("DataFlowIssue")
   static SignedMessage.Signature asAdventure(final MessageSignature signature) {
-    return (SignedMessage.Signature) (Object) signature;
+    if (signature == null) {
+      return null;
+    }
+    return SignedMessage.signature(signature.bytes());
   }
 
   /**
@@ -297,13 +299,9 @@ public interface MinecraftAudiences {
    * @since 6.0.0
    */
   @Contract("null -> null; !null -> !null")
-  @SuppressWarnings("ConstantValue")
   static MessageSignature asNative(final SignedMessage.Signature signature) {
     if (signature == null) {
       return null;
-    }
-    if ((Object) signature instanceof MessageSignature nativeSig) {
-      return nativeSig;
     }
     return new MessageSignature(signature.bytes());
   }

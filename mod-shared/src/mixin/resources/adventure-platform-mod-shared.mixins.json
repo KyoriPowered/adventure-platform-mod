@@ -6,7 +6,6 @@
     "minecraft.network.FriendlyByteBufMixin",
     "minecraft.network.chat.ClickEvent_ActionMixin",
     "minecraft.network.chat.ComponentSerializationMixin",
-    "minecraft.network.chat.MessageSignatureMixin",
     "minecraft.network.chat.MutableComponentMixin",
     "minecraft.network.chat.PlayerChatMessageMixin",
     "minecraft.resources.DelegatingOpsMixin",
