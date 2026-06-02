@@ -70,6 +70,7 @@ import net.minecraft.network.protocol.game.ClientboundBundlePacket;
 import net.minecraft.network.protocol.game.ClientboundClearTitlesPacket;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.network.protocol.game.ClientboundDeleteChatPacket;
+import net.minecraft.network.protocol.game.ClientboundOpenBookPacket;
 import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket;
 import net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket;
 import net.minecraft.network.protocol.game.ClientboundSetTitlesAnimationPacket;
@@ -274,9 +275,7 @@ public class ServerPlayerAudience implements ControlledAudience {
     );
 
     final ItemStack previous = this.player.getInventory().getSelectedItem();
-    this.sendPacket(new ClientboundContainerSetSlotPacket(-2, this.player.containerMenu.getStateId(), this.player.getInventory().getSelectedSlot(), bookStack));
-    this.player.openItemGui(bookStack, InteractionHand.MAIN_HAND);
-    this.sendPacket(new ClientboundContainerSetSlotPacket(-2, this.player.containerMenu.getStateId(), this.player.getInventory().getSelectedSlot(), previous));
+    this.sendPacket(new ClientboundBundlePacket(List.of(new ClientboundContainerSetSlotPacket(-2, this.player.containerMenu.getStateId(), this.player.getInventory().getSelectedSlot(), bookStack), new ClientboundOpenBookPacket(InteractionHand.MAIN_HAND), new ClientboundContainerSetSlotPacket(-2, this.player.containerMenu.getStateId(), this.player.getInventory().getSelectedSlot(), previous))));
   }
 
   private static String validateField(final String content, final int length, final String name) {
