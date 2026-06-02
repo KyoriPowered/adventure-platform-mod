@@ -15,7 +15,7 @@ junit = "6.1.0"
 minecraft = "26.2-pre-2"
 vineflower = "1.12.0"
 spotless = "8.6.0"
-neoforge = "26.1.2.7-beta"
+neoforge = "26.2.0-alpha.0+pre-2.20260602.164726"
 neoform = "26.2-pre-2-1"
 
 [libraries]

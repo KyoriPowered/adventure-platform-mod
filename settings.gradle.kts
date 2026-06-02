@@ -45,6 +45,14 @@ dependencyResolutionManagement {
     maven(url= "https://maven.neoforged.net/") {
       name = "neoforge"
     }
+    maven {
+      name = "Maven for PR #3198" // https://github.com/neoforged/NeoForge/pull/3198
+      url = uri("https://prmaven.neoforged.net/NeoForge/pr3198")
+      content {
+        includeModule("net.neoforged", "neoforge")
+        includeModule("net.neoforged", "testframework")
+      }
+    }
   }
 
   versionCatalogs {
@@ -68,9 +76,6 @@ findProject(":test-resources")?.projectDir = file("mod-shared/test-resources")
 // Fabric
 includeAndRename("fabric")
 
-// NeoForge
-/* TODO: NeoForge not yet published for 26.2
 includeAndRename("neoforge")
 includeAndRename("adventure-platform-neoforge:tester", "neoforge-tester")
 includeAndRename("adventure-platform-neoforge:services", "neoforge-services")
-*/
