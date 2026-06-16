@@ -45,19 +45,11 @@ dependencyResolutionManagement {
     maven(url= "https://maven.neoforged.net/") {
       name = "neoforge"
     }
-    maven {
-      name = "Maven for PR #3198" // https://github.com/neoforged/NeoForge/pull/3198
-      url = uri("https://prmaven.neoforged.net/NeoForge/pr3198")
-      content {
-        includeModule("net.neoforged", "neoforge")
-        includeModule("net.neoforged", "testframework")
-      }
-    }
   }
 
   versionCatalogs {
     create("fabricApiLibs") {
-      from("net.fabricmc.fabric-api:fabric-api-catalog:0.150.1+26.2")
+      from("net.fabricmc.fabric-api:fabric-api-catalog:0.152.1+26.2")
     }
   }
 }
