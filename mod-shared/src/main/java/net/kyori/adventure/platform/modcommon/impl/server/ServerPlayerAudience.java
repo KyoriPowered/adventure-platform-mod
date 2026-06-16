@@ -68,8 +68,9 @@ import net.minecraft.network.protocol.common.ClientboundResourcePackPopPacket;
 import net.minecraft.network.protocol.common.ClientboundResourcePackPushPacket;
 import net.minecraft.network.protocol.game.ClientboundBundlePacket;
 import net.minecraft.network.protocol.game.ClientboundClearTitlesPacket;
-import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.network.protocol.game.ClientboundDeleteChatPacket;
+import net.minecraft.network.protocol.game.ClientboundOpenBookPacket;
+import net.minecraft.network.protocol.game.ClientboundSetPlayerInventoryPacket;
 import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket;
 import net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket;
 import net.minecraft.network.protocol.game.ClientboundSetTitlesAnimationPacket;
@@ -273,10 +274,15 @@ public class ServerPlayerAudience implements ControlledAudience {
       .build()
     );
 
-    final ItemStack previous = this.player.getInventory().getSelectedItem();
-    this.sendPacket(new ClientboundContainerSetSlotPacket(-2, this.player.containerMenu.getStateId(), this.player.getInventory().getSelectedSlot(), bookStack));
-    this.player.openItemGui(bookStack, InteractionHand.MAIN_HAND);
-    this.sendPacket(new ClientboundContainerSetSlotPacket(-2, this.player.containerMenu.getStateId(), this.player.getInventory().getSelectedSlot(), previous));
+    final ItemStack selectedItem = this.player.getInventory().getSelectedItem();
+    final int slot = this.player.getInventory().getSelectedSlot();
+    this.player.connection.send(new ClientboundBundlePacket(
+      List.of(
+        new ClientboundSetPlayerInventoryPacket(slot, bookStack),
+        new ClientboundOpenBookPacket(InteractionHand.MAIN_HAND),
+        new ClientboundSetPlayerInventoryPacket(slot, selectedItem)
+      )
+    ));
   }
 
   private static String validateField(final String content, final int length, final String name) {
