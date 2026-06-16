@@ -30,11 +30,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
-import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.chat.ChatType;
 import net.kyori.adventure.chat.SignedMessage;
-import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.modcommon.MinecraftAudiences;
@@ -59,7 +57,6 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.network.chat.MessageSignature;
 import net.minecraft.network.chat.OutgoingChatMessage;
 import net.minecraft.network.chat.PlayerChatMessage;
 import net.minecraft.network.protocol.Packet;
@@ -116,20 +113,6 @@ public class ServerPlayerAudience implements ControlledAudience {
     this.player.sendSystemMessage(this.controller.asNative(message));
   }
 
-  @Override
-  @Deprecated
-  public void sendMessage(final Identity source, final Component text, final net.kyori.adventure.audience.MessageType type) {
-    final boolean shouldSend = switch (this.player.getChatVisibility()) {
-      case FULL -> true;
-      case SYSTEM -> type == MessageType.SYSTEM;
-      case HIDDEN -> false;
-    };
-
-    if (shouldSend) {
-      this.player.sendSystemMessage(this.controller.asNative(text));
-    }
-  }
-
   private net.minecraft.network.chat.ChatType.Bound toMc(final ChatType.Bound adv) {
     return AdventureCommon.chatTypeToNative(adv, this.controller);
   }
@@ -157,7 +140,7 @@ public class ServerPlayerAudience implements ControlledAudience {
 
   @Override
   public void deleteMessage(final SignedMessage.@NotNull Signature signature) {
-    this.sendPacket(new ClientboundDeleteChatPacket(((MessageSignature) (Object) signature)
+    this.sendPacket(new ClientboundDeleteChatPacket(MinecraftAudiences.asNative(signature)
       .pack(((ServerGamePacketListenerImplAccess) this.player.connection).accessor$messageSignatureCache())));
   }
 

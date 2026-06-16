@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
- * Copyright (c) 2020-2024 KyoriPowered
+ * Copyright (c) 2020-2026 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,9 +24,7 @@
 package net.kyori.adventure.platform.modcommon.impl.server;
 
 import java.util.function.Consumer;
-import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.chat.ChatType;
-import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.platform.modcommon.impl.AdventureCommon;
 import net.kyori.adventure.platform.modcommon.impl.ControlledAudience;
 import net.kyori.adventure.platform.modcommon.impl.MinecraftAudiencesInternal;
@@ -60,12 +58,6 @@ public final class PlainAudience implements ControlledAudience {
   @Override
   public void sendMessage(final @NotNull Component message, final ChatType.@NotNull Bound boundChatType) {
     this.plainOutput.accept(AdventureCommon.chatTypeToNative(boundChatType, this.controller).decorate(this.controller.asNative(message)).getString());
-  }
-
-  @Override
-  @Deprecated
-  public void sendMessage(final Identity source, final Component text, final MessageType type) {
-    this.sendMessage(text);
   }
 
   @Override

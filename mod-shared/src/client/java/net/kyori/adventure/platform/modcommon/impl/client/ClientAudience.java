@@ -27,11 +27,9 @@ import java.net.MalformedURLException;
 import java.time.Duration;
 import java.util.Objects;
 import java.util.UUID;
-import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.chat.ChatType;
 import net.kyori.adventure.chat.SignedMessage;
-import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.modcommon.MinecraftAudiences;
@@ -58,13 +56,11 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.resources.sounds.EntityBoundSoundInstance;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
-import net.minecraft.network.chat.MessageSignature;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.ChatVisiblity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -104,7 +100,7 @@ public class ClientAudience implements ControlledAudience {
 
     this.client.gui.hud.getChat().addPlayerMessage(
       bound.decorate(this.controller.asNative(message)),
-      (MessageSignature) (Object) signedMessage.signature(),
+      MinecraftAudiences.asNative(signedMessage.signature()),
       this.tag(signedMessage)
     );
   }
@@ -125,28 +121,7 @@ public class ClientAudience implements ControlledAudience {
 
   @Override
   public void deleteMessage(final SignedMessage.@NotNull Signature signature) {
-    this.client.gui.hud.getChat().deleteMessage((MessageSignature) (Object) signature);
-  }
-
-  @Override
-  @Deprecated
-  public void sendMessage(final Identity source, final @NotNull Component message, final @NotNull MessageType type) {
-    if (this.client.isBlocked(source.uuid())) {
-      return;
-    }
-
-    final ChatVisiblity visibility = this.client.options.chatVisibility().get();
-    if (type == MessageType.CHAT) {
-      // Add to chat queue (following delay and such)
-      if (visibility == ChatVisiblity.FULL) {
-        this.client.gui.hud.getChat().addPlayerMessage(this.controller.asNative(message), null, null);
-      }
-    } else {
-      // Add immediately as a system message
-      if (visibility == ChatVisiblity.FULL || visibility == ChatVisiblity.SYSTEM) {
-        this.client.gui.hud.getChat().addClientSystemMessage(this.controller.asNative(message));
-      }
-    }
+    this.client.gui.hud.getChat().deleteMessage(MinecraftAudiences.asNative(signature));
   }
 
   @Override

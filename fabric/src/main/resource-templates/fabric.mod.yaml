@@ -34,7 +34,6 @@ custom:
   loom:injected_interfaces:
     net/minecraft/commands/CommandSourceStack: [ net/kyori/adventure/platform/modcommon/AdventureCommandSourceStack ]
     net/minecraft/world/entity/Entity: [ net/kyori/adventure/sound/Sound<%= '$' %>Emitter, net/kyori/adventure/platform/modcommon/EntityHoverEventSource ]
-    # com/mojang/authlib/GameProfile: [ net/kyori/adventure/identity/Identity ] # We can't inject into libs unfortunately
     net/minecraft/server/MinecraftServer: [ net/kyori/adventure/audience/Audience ]
     net/minecraft/world/entity/player/Player: [ net/kyori/adventure/platform/modcommon/IdentifiedAtRuntime ]
     net/minecraft/server/rcon/RconConsoleSource: [ net/kyori/adventure/audience/Audience ]
@@ -45,7 +44,6 @@ custom:
     net/minecraft/resources/ResourceKey: [ net/kyori/adventure/key/Keyed ]
     net/minecraft/world/item/ItemStack: [ "net/kyori/adventure/text/event/HoverEventSource<Lnet/kyori/adventure/text/event/HoverEvent<%= '$' %>ShowItem;>" ] # generic?
     net/minecraft/world/item/ItemStackTemplate: [ "net/kyori/adventure/text/event/HoverEventSource<Lnet/kyori/adventure/text/event/HoverEvent<%= '$' %>ShowItem;>" ] # generic?
-    net/minecraft/network/chat/MessageSignature: [ net/kyori/adventure/chat/SignedMessage<%= '$' %>Signature ]
 
 depends:
   minecraft: "~26.2-"

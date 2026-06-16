@@ -31,8 +31,6 @@ dependencies {
   }
 
   // Transitive deps
-  jarInJar(libs.examination.api)
-  jarInJar(libs.examination.string)
   jarInJar(libs.adventure.textSerializerJson)
   jarInJar(libs.ansi)
   jarInJar(libs.option)

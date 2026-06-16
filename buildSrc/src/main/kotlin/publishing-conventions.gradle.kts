@@ -22,10 +22,7 @@ tasks {
     }
     val advVersion = libs.versions.adventure.get()
     if (!advVersion.contains("SNAPSHOT")) {
-      options.links(
-        "https://jd.advntr.dev/api/${advVersion}",
-        "https://jd.advntr.dev/key/${advVersion}",
-      )
+      options.links("https://jd.papermc.io/adventure/${advVersion}/")
     }
   }
 }

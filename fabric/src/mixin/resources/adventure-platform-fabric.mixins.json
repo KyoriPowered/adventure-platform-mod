@@ -3,8 +3,6 @@
   "parent": "adventure-platform-mod-shared.parent.mixins.json",
   "mixins": [
     "api.KeyMixin",
-    "api.SignedMessageMixin",
-    "authlib.GameProfileMixin",
     "brigadier.exceptions.CommandSyntaxExceptionMixin",
     "minecraft.commands.CommandsMixin",
     "minecraft.commands.synchronization.ArgumentTypeInfosMixin",

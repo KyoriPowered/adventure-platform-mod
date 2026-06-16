@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
- * Copyright (c) 2020-2024 KyoriPowered
+ * Copyright (c) 2020-2026 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,10 +23,8 @@
  */
 package net.kyori.adventure.platform.modcommon.impl.server;
 
-import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.chat.ChatType;
 import net.kyori.adventure.chat.SignedMessage;
-import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.platform.modcommon.impl.AdventureCommon;
 import net.kyori.adventure.platform.modcommon.impl.ControlledAudience;
 import net.kyori.adventure.platform.modcommon.impl.MinecraftAudiencesInternal;
@@ -67,12 +65,6 @@ public final class CommandSourceAudience implements ControlledAudience {
     final Component message = signedMessage.unsignedContent() != null ? signedMessage.unsignedContent() : Component.text(signedMessage.message());
     this.output.sendSystemMessage(AdventureCommon.chatTypeToNative(boundChatType, this.serializer)
       .decorate(this.serializer.asNative(message)));
-  }
-
-  @Override
-  @Deprecated
-  public void sendMessage(final Identity source, final Component text, final MessageType type) {
-    this.output.sendSystemMessage(this.serializer.asNative(text));
   }
 
   @Override
