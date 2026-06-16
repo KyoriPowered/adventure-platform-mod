@@ -108,17 +108,17 @@ sourceSets {
 loom {
   runs {
     register("testmodClient") {
-      source("testmod")
+      sourceSet = "testmod"
       client()
     }
     register("testmodServer") {
-      source("testmod")
+      sourceSet = "testmod"
       server()
     }
 
     configureEach {
-      isIdeConfigGenerated = true
-      vmArgs(
+      generateRunConfig = true
+      jvmArguments.addAll(
         // "-Dmixin.debug.countInjections=true",
         // "-Dmixin.debug.strict=true", // Breaks FAPI :(
       )
