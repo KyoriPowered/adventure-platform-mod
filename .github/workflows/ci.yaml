@@ -111,8 +111,8 @@ jobs:
         env:
           ORG_GRADLE_PROJECT_sonatypeUsername: "${{ secrets.ADVENTURE_SONATYPE_USERNAME }}"
           ORG_GRADLE_PROJECT_sonatypePassword: "${{ secrets.ADVENTURE_SONATYPE_PASSWORD }}"
-          ORG_GRADLE_PROJECT_kyoriSigningKey: "${{ secrets.ADVENTURE_GPG_KEY }}"
-          ORG_GRADLE_PROJECT_kyoriSigningPassword: "${{ secrets.ADVENTURE_GPG_PASSWORD }}"
+          ORG_GRADLE_PROJECT_papermcSigningKey: "${{ secrets.PAPERMC_GPG_KEY }}"
+          ORG_GRADLE_PROJECT_papermcSigningPassword: "${{ secrets.PAPERMC_GPG_PASSWORD }}"
       - name: "publish release to modrinth"
         if: "${{ runner.os == 'Linux' && env.STATUS == 'release' && github.event_name == 'release' }}"
         run: ./gradlew publishModrinth

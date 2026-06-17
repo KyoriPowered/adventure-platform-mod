@@ -42,7 +42,7 @@ allprojects {
     mitLicense()
     checkstyle(libs.versions.checkstyle.get())
 
-    signWithKeyFromPrefixedProperties("kyori")
+    signWithKeyFromPrefixedProperties("papermc")
     configurePublications {
       pom {
         developers {
