@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
- * Copyright (c) 2020-2024 KyoriPowered
+ * Copyright (c) 2020-2025 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,7 +30,7 @@ import net.kyori.adventure.platform.modcommon.MinecraftAudiences;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public final class ComponentArgumentTypeSerializer implements ArgumentTypeInfo<ComponentArgumentType, ComponentArgumentTypeSerializer.Template> {
 
@@ -41,12 +41,12 @@ public final class ComponentArgumentTypeSerializer implements ArgumentTypeInfo<C
 
   @Override
   public void serializeToNetwork(final Template type, final FriendlyByteBuf buffer) {
-    buffer.writeResourceLocation(MinecraftAudiences.asNative(type.format.id()));
+    buffer.writeIdentifier(MinecraftAudiences.asNative(type.format.id()));
   }
 
   @Override
   public Template deserializeFromNetwork(final FriendlyByteBuf buffer) {
-    final ResourceLocation id = buffer.readResourceLocation();
+    final Identifier id = buffer.readIdentifier();
     final ComponentArgumentType.Format format = ComponentArgumentType.Format.INDEX.value((Key) (Object) id);
     if (format == null) {
       throw new IllegalArgumentException("Unknown Adventure component format: " + id);

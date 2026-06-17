@@ -29,13 +29,13 @@ allprojects {
       importOrderFile(rootProject.file(".spotless/kyori.importorder"))
       trimTrailingWhitespace()
       endWithNewline()
-      indentWithSpaces(2)
+      leadingTabsToSpaces(2)
       removeUnusedImports()
     }
   }
 
   indra {
-    github("KyoriPowered", "adventure-platform-mod") {
+    github("PaperMC", "adventure-platform-mod") {
       ci(true)
     }
     javaVersions().target(21)

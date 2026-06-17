@@ -24,7 +24,7 @@ jobs:
     steps:
       - name: "setup env"
         id: "setup"
-        uses: "KyoriPowered/.github/.github/actions/setup-java-env@trunk"
+        uses: "KyoriPowered/ci-cookbook/actions/setup-java-env@ce1dea3f90f8e361ed19afb2c914ab0fdcf42fef" # 2025.12.18
         with:
           runtime_version: 21
           publishing_branch_regex: '(?:(?:(?:mc\/)?(\d+(?:\.\d+)*(?:\.x)?)))'
@@ -35,7 +35,7 @@ jobs:
         run: "./gradlew build --stacktrace"
       - name: "archive test results"
         if: "${{ always() }}"
-        uses: "actions/upload-artifact@v4.6.2"
+        uses: "actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f" # v6.0.0
         with:
           name: "${{ runner.os }}-test-results"
           path: |
@@ -52,7 +52,7 @@ jobs:
           fi
           echo "VERSION=$VERSION" >> $GITHUB_ENV
       - name: "Cache test run data"
-        uses: "actions/cache@v4.2.3"
+        uses: "actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306" # v5.0.3
         with:
           path: |
             testserver/libraries
@@ -103,16 +103,22 @@ jobs:
         if: "${{ runner.os == 'Linux' && env.STATUS != 'release' && github.event_name == 'push' && steps.setup.outputs.publishing_branch != '' }}"
         run: "./gradlew publish"
         env:
-          ORG_GRADLE_PROJECT_sonatypeUsername: "${{ secrets.SONATYPE_USERNAME }}"
-          ORG_GRADLE_PROJECT_sonatypePassword: "${{ secrets.SONATYPE_PASSWORD }}"
+          ORG_GRADLE_PROJECT_sonatypeUsername: "${{ secrets.ADVENTURE_SONATYPE_USERNAME }}"
+          ORG_GRADLE_PROJECT_sonatypePassword: "${{ secrets.ADVENTURE_SONATYPE_PASSWORD }}"
       - name: "publish release"
         if: "${{ runner.os == 'Linux' && env.STATUS == 'release' && github.event_name == 'release' }}"
         run: "./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository"
         env:
-          ORG_GRADLE_PROJECT_sonatypeUsername: "${{ secrets.SONATYPE_USERNAME }}"
-          ORG_GRADLE_PROJECT_sonatypePassword: "${{ secrets.SONATYPE_PASSWORD }}"
-          ORG_GRADLE_PROJECT_kyoriSigningKey: "${{ secrets.KYORI_GPG_KEY }}"
-          ORG_GRADLE_PROJECT_kyoriSigningPassword: "${{ secrets.KYORI_GPG_PASSWORD }}"
+          ORG_GRADLE_PROJECT_sonatypeUsername: "${{ secrets.ADVENTURE_SONATYPE_USERNAME }}"
+          ORG_GRADLE_PROJECT_sonatypePassword: "${{ secrets.ADVENTURE_SONATYPE_PASSWORD }}"
+          ORG_GRADLE_PROJECT_kyoriSigningKey: "${{ secrets.ADVENTURE_GPG_KEY }}"
+          ORG_GRADLE_PROJECT_kyoriSigningPassword: "${{ secrets.ADVENTURE_GPG_PASSWORD }}"
+      - name: "publish release to modrinth"
+        if: "${{ runner.os == 'Linux' && env.STATUS == 'release' && github.event_name == 'release' }}"
+        run: ./gradlew publishModrinth
+        env:
+          MODRINTH_TOKEN: "${{ secrets.PAPERMC_MODRINTH_TOKEN }}"
+          RELEASE_NOTES: "${{ github.event.release.body }}"
       - name: "copy javadoc for publication"
         if: "${{ runner.os == 'Linux' && env.STATUS == 'release' && github.event_name == 'release' }}"
         run: |
@@ -120,23 +126,27 @@ jobs:
           ./gradlew copyJavadoc --output build/publish-jd/platform/
       - name: "authenticate for javadoc publication"
         if: "${{ runner.os == 'Linux' && env.STATUS == 'release' && github.event_name == 'release' }}"
-        uses: "tibdex/github-app-token@3beb63f4bd073e61482598c45c71c1019b59b73a" # v2.1.0
+        uses: "actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf" # v2.2.1
         id: jd-token
         with:
-          app_id: "${{ secrets.DEPLOYMENT_APP_ID }}"
-          private_key: "${{ secrets.DEPLOYMENT_APP_SECRET }}"
-          installation_retrieval_mode: "repository"
-          installation_retrieval_payload: "KyoriPowered/adventure-javadocs"
+          app-id: "${{ secrets.DEPLOYMENT_APP_ID }}"
+          private-key: "${{ secrets.DEPLOYMENT_APP_SECRET }}"
+          owner: "PaperMC"
+          repositories: "adventure-javadocs"
+      - name: "get JD app ID"
+        if: "${{ runner.os == 'Linux' && env.STATUS == 'release' && github.event_name == 'release' }}"
+        id: "get-app-id"
+        run: 'echo "user-id=$(gh api "/users/${{ steps.jd-token.outputs.app-slug }}[bot]" --jq .id)" >> "$GITHUB_OUTPUT"'
       - name: "publish javadoc"
         if: "${{ runner.os == 'Linux' && env.STATUS == 'release' && github.event_name == 'release' }}"
-        uses: JamesIves/github-pages-deploy-action@6c2d9db40f9296374acc17b90404b6e8864128c8 # v4.7.3
+        uses: JamesIves/github-pages-deploy-action@d92aa235d04922e8f08b40ce78cc5442fcfbfa2f # v4.8.0
         with:
           folder: build/publish-jd
-          repository-name: KyoriPowered/adventure-javadocs
+          repository-name: "PaperMC/adventure-javadocs"
           token: ${{ steps.jd-token.outputs.token }}
           branch: main
-          git-config-name: kyoripowered-deployment[bot]
-          git-config-email: "121842021+kyoripowered-deployment[bot]@users.noreply.github.com"
+          git-config-name: "${{ steps.jd-token.outputs.app-slug }}[bot]"
+          git-config-email: "${{ steps.get-app-id.outputs.user-id }}+${{ steps.jd-token.outputs.app-slug }}[bot]@users.noreply.github.com"
           clean: false
           force: false
           commit-message: "Publishing javadoc for ${{ github.repository }} ${{ env.PROJECT_VERSION }}"

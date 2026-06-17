@@ -9,15 +9,12 @@ dependencies {
   minecraft(libs.minecraft)
   mappings(loom.layered {
     officialMojangMappings()
-    parchment("org.parchmentmc.data:parchment-${libs.versions.parchment.get()}@zip")
+    parchment("io.papermc.parchment.data:parchment:${libs.versions.parchment.get()}")
   })
   compileOnly(libs.fabric.loader)
 }
 
 loom {
-  mixin {
-    useLegacyMixinAp = false
-  }
   runtimeOnlyLog4j.set(true)
 }
 

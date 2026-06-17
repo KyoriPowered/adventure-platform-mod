@@ -7,7 +7,13 @@ plugins {
   alias(libs.plugins.loom)
   alias(libs.plugins.configurateTransformations)
   id("standard-conventions")
-  id("publishing-conventions")
+  id("mod-publishing-conventions")
+}
+
+publishMods.modrinth {
+  file = tasks.remapJar.flatMap { it.archiveFile }
+  modLoaders = listOf("fabric")
+  requires("fabric-api")
 }
 
 dependencies {
@@ -24,7 +30,7 @@ dependencies {
   minecraft(libs.minecraft)
   mappings(loom.layered {
     officialMojangMappings()
-    parchment("org.parchmentmc.data:parchment-${libs.versions.parchment.get()}@zip")
+    parchment("io.papermc.parchment.data:parchment:${libs.versions.parchment.get()}")
   })
   modImplementation(libs.fabric.loader)
 
@@ -150,18 +156,12 @@ loom {
       sourceSet(sourceSets.main.get())
       sourceSet(sourceSets.named("client").get())
       sourceSet(permissionsApiCompat)
-      sourceSet("main", project(":adventure-platform-mod-shared"))
+      sourceSet("main", ":adventure-platform-mod-shared")
     }
     register("adventure-platform-fabric-testmod") {
       sourceSet(testmod)
-      sourceSet("main", project(":test-resources"))
+      sourceSet("main", ":test-resources")
     }
-  }
-
-  mixin {
-    add(sourceSets.main.get(), "adventure-platform-fabric-refmap.json")
-    add(sourceSets.named("client").get(), "adventure-platform-fabric-client-refmap.json")
-    add(testmod, "adventure-platform-fabric-testmod-refmap.json")
   }
 
   decompilerOptions.named("vineflower") {

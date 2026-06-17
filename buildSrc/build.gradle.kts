@@ -21,4 +21,5 @@ dependencies {
   implementation(libs.build.indra.spotless)
   implementation(libs.build.configurate.transformations)
   implementation(libs.build.idea.ext)
+  implementation(libs.mod.publish.plugin)
 }

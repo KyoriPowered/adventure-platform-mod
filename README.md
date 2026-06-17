@@ -1,10 +1,10 @@
 # adventure-platform-mod
 
-![GitHub Workflow Status (branch)](https://img.shields.io/github/actions/workflow/status/KyoriPowered/adventure-platform-mod/build.yml?branch=mc/1.21) [![MIT License](https://img.shields.io/badge/license-MIT-blue)](LICENSE) [![Maven Central](https://img.shields.io/maven-central/v/net.kyori/adventure-platform-mod-shared?label=stable)](https://search.maven.org/search?q=g:net.kyori%20AND%20a:adventure*) ![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/net.kyori/adventure-platform-mod-shared?label=dev&server=https%3A%2F%2Fs01.oss.sonatype.org) [![Modrinth Version](https://img.shields.io/modrinth/v/adventure-platform-mod?logo=modrinth&label=modrinth)](https://modrinth.com/mod/adventure-platform-mod)
+![GitHub Workflow Status (branch)](https://img.shields.io/github/actions/workflow/status/PaperMC/adventure-platform-mod/ci.yaml?branch=mc/1.21) [![MIT License](https://img.shields.io/badge/license-MIT-blue)](LICENSE) [![Maven Central](https://img.shields.io/maven-central/v/net.kyori/adventure-platform-mod-shared?label=stable)](https://search.maven.org/search?q=g:net.kyori%20AND%20a:adventure*) ![Maven snapshots](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fcentral.sonatype.com%2Frepository%2Fmaven-snapshots%2Fnet%2Fkyori%2Fadventure-platform-mod-shared%2Fmaven-metadata.xml&strategy=highestVersion&label=dev) [![Modrinth Version](https://img.shields.io/modrinth/v/adventure-platform-mod?logo=modrinth&label=modrinth)](https://modrinth.com/mod/adventure-platform-mod)
 
-Integration between the [adventure](https://github.com/KyoriPowered/adventure) library and *Minecraft: Java Edition* for the [Fabric](https://fabricmc.net) and [NeoForge](https://neoforged.net) modding systems.
+Integration between the [adventure](https://github.com/PaperMC/adventure) library and *Minecraft: Java Edition* for the [Fabric](https://fabricmc.net) and [NeoForge](https://neoforged.net) modding systems.
 
-See the [documentation](https://docs.adventure.kyori.net/platform/modded.html) for usage and dependency information for this project and the main `adventure` library.
+See the [documentation](https://docs.papermc.io/adventure/platform/modded/) for usage and dependency information for this project and the main `adventure` library.
 
 Players and Server Admins: If another mod is asking for `adventure-platform-fabric` or `adventure-platform-neoforge`, you can find the download at Modrinth: https://modrinth.com/mod/adventure-platform-mod.
 
@@ -31,4 +31,4 @@ To have browsable game source in your IDE, run `./gradlew genSources` before imp
 
 `adventure-platform-mod` is released under the terms of the [MIT License](LICENSE).
 
-[Discord]: https://discord.gg/MMfhJ8F
+[Discord]: https://discord.gg/papermc

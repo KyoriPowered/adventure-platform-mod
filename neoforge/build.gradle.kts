@@ -1,13 +1,13 @@
 plugins {
   id("net.neoforged.moddev")
-  id("publishing-conventions")
+  id("mod-publishing-conventions")
 }
 
 neoForge {
   version = libs.versions.neoforge.get()
 
   parchment {
-    parchmentArtifact = "org.parchmentmc.data:parchment-${libs.versions.parchment.get()}@zip"
+    parchmentArtifact = "io.papermc.parchment.data:parchment:${libs.versions.parchment.get()}"
   }
 
   validateAccessTransformers = true
@@ -28,12 +28,16 @@ neoForge {
   }
 }
 
+publishMods.modrinth {
+  file = tasks.jar.flatMap { it.archiveFile }
+  modLoaders = listOf("neoforge")
+}
+
 configurations.jarJar {
   extendsFrom(configurations.jarInJar.get())
 }
 
 dependencies {
-  "additionalRuntimeClasspath"(project(":adventure-platform-neoforge:adventure-platform-neoforge-services"))
   implementation(project(":adventure-platform-neoforge:adventure-platform-neoforge-services"))
   jarJar(project(":adventure-platform-neoforge:adventure-platform-neoforge-services"))
 

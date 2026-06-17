@@ -2,22 +2,23 @@
 format = { version = "1.1" }
 
 [versions]
-adventure = "4.25.0"
+adventure = "4.26.1"
 adventurePlatform = "4.4.1"
 ansi = "1.1.1"
 autoService = "1.1.1"
-checkstyle = "10.25.0"
+checkstyle = "13.0.0"
 examination = "1.3.0"
-fabricApi = "0.134.0+1.21.9"
-fabricLoader = "0.17.2"
-indra = "3.2.0"
-junit = "5.13.4"
-minecraft = "1.21.9"
-parchment = "1.21.8:2025.07.20"
-vineflower = "1.11.1"
-spotless = "7.2.1"
-neoforge = "21.9.15-beta"
-neoform = "1.21.9-20250930.151910"
+fabricApi = "0.139.4+1.21.11"
+fabricLoader = "0.18.4"
+indra = "4.0.0"
+mod-publish-plugin = "1.1.0"
+junit = "6.0.2"
+minecraft = "1.21.11"
+parchment = "1.21.11+build.2"
+vineflower = "1.11.2"
+spotless = "8.2.1"
+neoforge = "21.11.26-beta"
+neoform = "1.21.11-20251209.172050"
 
 [libraries]
 adventure-api = { module = "net.kyori:adventure-api", version.ref = "adventure" }
@@ -33,7 +34,7 @@ adventure-textSerializerAnsi = { module = "net.kyori:adventure-text-serializer-a
 ansi = { module = "net.kyori:ansi", version.ref = "ansi" }
 examination-api = { module = "net.kyori:examination-api", version.ref = "examination" }
 examination-string = { module = "net.kyori:examination-string", version.ref = "examination" }
-jetbrainsAnnotations = "org.jetbrains:annotations:26.0.2"
+jetbrainsAnnotations = "org.jetbrains:annotations:26.0.2-1"
 option = { module = "net.kyori:option", version = "1.1.0" }
 
 # mod-shared
@@ -45,7 +46,7 @@ zNeoform = { module = "net.neoforged:neoform", version.ref = "neoform" }
 # fabric
 fabric-loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabricLoader"}
 fabric-loader-junit = { module = "net.fabricmc:fabric-loader-junit", version.ref = "fabricLoader"}
-fabric-permissionsApi = { module = "me.lucko:fabric-permissions-api", version = "0.5.0" }
+fabric-permissionsApi = { module = "me.lucko:fabric-permissions-api", version = "0.6.1" }
 minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
 
 # neoforge
@@ -67,15 +68,16 @@ build-indra = { module = "net.kyori:indra-common", version.ref = "indra" }
 build-indra-crossdoc = { module = "net.kyori:indra-crossdoc", version.ref = "indra" }
 build-indra-spotless = { module = "net.kyori:indra-licenser-spotless", version.ref = "indra" }
 build-configurate-transformations = { module = "ca.stellardrift:gradle-plugin-configurate", version = "6.2.0" }
-build-idea-ext = { module = "gradle.plugin.org.jetbrains.gradle.plugin.idea-ext:gradle-idea-ext", version = "1.1.10" }
+build-idea-ext = { module = "gradle.plugin.org.jetbrains.gradle.plugin.idea-ext:gradle-idea-ext", version = "1.4" }
+mod-publish-plugin = { module = "me.modmuss50:mod-publish-plugin", version.ref = "mod-publish-plugin" }
 
 # For Renovate, do not use directly
 zCheckstyle = { module = "com.puppycrawl.tools:checkstyle", version.ref = "checkstyle" }
 
 [plugins]
 configurateTransformations = { id = "ca.stellardrift.configurate-transformations" }
-eclipseApt = "com.diffplug.eclipse.apt:4.3.0"
-loom = "fabric-loom:1.11.8"
+eclipseApt = "com.diffplug.eclipse.apt:4.4.1"
+loom = "fabric-loom:1.15.3"
 # ModDevGradle settings plugin is putting another version on the classpath, so we can't specify a version :(
 ideaExt = { id = "org.jetbrains.gradle.plugin.idea-ext" }
 indra = { id = "net.kyori.indra" }

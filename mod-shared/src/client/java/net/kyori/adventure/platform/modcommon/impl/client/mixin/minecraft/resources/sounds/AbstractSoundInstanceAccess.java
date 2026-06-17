@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
- * Copyright (c) 2020-2024 KyoriPowered
+ * Copyright (c) 2020-2025 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,7 @@
 package net.kyori.adventure.platform.modcommon.impl.client.mixin.minecraft.resources.sounds;
 
 import net.minecraft.client.resources.sounds.AbstractSoundInstance;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.gen.Accessor;
@@ -32,6 +32,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(AbstractSoundInstance.class)
 public interface AbstractSoundInstanceAccess {
   // @formatter:off
-  @Accessor @Mutable void setLocation(final ResourceLocation loc);
+  @Accessor @Mutable void setIdentifier(final Identifier loc);
   // @formatter:on
 }

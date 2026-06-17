@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
- * Copyright (c) 2020-2024 KyoriPowered
+ * Copyright (c) 2020-2025 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,7 @@ package net.kyori.adventure.platform.fabric.impl.server;
 
 import java.util.Set;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 public interface ServerPlayerBridge {
@@ -43,12 +43,12 @@ public interface ServerPlayerBridge {
    *
    * @return immutable set of type identifiers
    */
-  Set<ResourceLocation> bridge$knownArguments();
+  Set<Identifier> bridge$knownArguments();
 
   /**
    * Set the set of registered optional argument types.
    *
    * @param arguments set of type identifiers
    */
-  void bridge$knownArguments(final Set<ResourceLocation> arguments);
+  void bridge$knownArguments(final Set<Identifier> arguments);
 }
