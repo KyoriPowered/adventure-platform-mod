@@ -1,6 +1,6 @@
 # adventure-platform-mod
 
-![GitHub Workflow Status (branch)](https://img.shields.io/github/actions/workflow/status/KyoriPowered/adventure-platform-mod/build.yml?branch=mc/1.21) [![MIT License](https://img.shields.io/badge/license-MIT-blue)](LICENSE) [![Maven Central](https://img.shields.io/maven-central/v/net.kyori/adventure-platform-mod-shared?label=stable)](https://search.maven.org/search?q=g:net.kyori%20AND%20a:adventure*) ![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/net.kyori/adventure-platform-mod-shared?label=dev&server=https%3A%2F%2Fs01.oss.sonatype.org)
+![GitHub Workflow Status (branch)](https://img.shields.io/github/actions/workflow/status/KyoriPowered/adventure-platform-mod/build.yml?branch=mc/1.21) [![MIT License](https://img.shields.io/badge/license-MIT-blue)](LICENSE) [![Maven Central](https://img.shields.io/maven-central/v/net.kyori/adventure-platform-mod-shared?label=stable)](https://search.maven.org/search?q=g:net.kyori%20AND%20a:adventure*) ![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/net.kyori/adventure-platform-mod-shared?label=dev&server=https%3A%2F%2Fs01.oss.sonatype.org) [![Modrinth Version](https://img.shields.io/modrinth/v/adventure-platform-mod?logo=modrinth&label=modrinth)](https://modrinth.com/mod/adventure-platform-mod)
 
 Integration between the [adventure](https://github.com/KyoriPowered/adventure) library and *Minecraft: Java Edition* for the [Fabric](https://fabricmc.net) and [NeoForge](https://neoforged.net) modding systems.
 
