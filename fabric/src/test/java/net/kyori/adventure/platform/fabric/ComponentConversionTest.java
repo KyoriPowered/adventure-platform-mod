@@ -65,7 +65,7 @@ class ComponentConversionTest extends BootstrappedTest {
   // TODO: ItemStack no longer available before data is loaded
   @SuppressWarnings("deprecation")
   static Stream<Object> testedComponents() {
-    return Stream.of(
+    return Stream.<Component>of(
       Component.text("Hi"),
       Component.translatable("gameMode.creative", style(NamedTextColor.RED).font(Key.key("uniform"))),
       Component.text("Hello").append(Component.text(" friends", TextColor.color(0xaabbcc))),
