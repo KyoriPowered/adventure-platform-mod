@@ -20,6 +20,8 @@ neoForge {
   mods {
     register("adventure-platform-neoforge") {
       sourceSet(sourceSets.main.get())
+      // Mirror the nested mod-shared JAR used in production as transformed game content.
+      sourceSet(project(":adventure-platform-mod-shared").sourceSets.main.get())
     }
   }
 }
@@ -34,10 +36,12 @@ configurations.jarJar {
 }
 
 dependencies {
+  // Adventure discovers these bridges from its own non-transforming classloader.
   implementation(project(":adventure-platform-neoforge:adventure-platform-neoforge-services"))
   jarJar(project(":adventure-platform-neoforge:adventure-platform-neoforge-services"))
 
-  api(project(":adventure-platform-mod-shared"))
+  // Expose the shared API without adding its untransformed implementation to dev runtimes.
+  compileOnlyApi(project(":adventure-platform-mod-shared"))
   jarJar(project(":adventure-platform-mod-shared"))
 }
 

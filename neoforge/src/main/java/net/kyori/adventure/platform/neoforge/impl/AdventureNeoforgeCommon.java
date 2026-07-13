@@ -1,7 +1,7 @@
 /*
  * This file is part of adventure-platform-mod, licensed under the MIT License.
  *
- * Copyright (c) 2024-2025 KyoriPowered
+ * Copyright (c) 2024-2026 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -81,12 +81,8 @@ public final class AdventureNeoforgeCommon {
       SIDE_PROXY = new ClientProxy();
     }
 
-    /*
-    hack around service loader issues:
-     adventure tries to load services using the api's class loader, which is not on a module layer able to see the game/mods.
-     to work around this, we jij delegating service providers and manually populate them with game-accessing providers.
-     better solution: add something in adventure to switch the lookup loader?
-    */
+    // Adventure sees the bridge providers on its class loader; their implementations must remain
+    // here in transformed game content so they can safely access Minecraft and injected interfaces.
     ANSIComponentSerializerProviderImpl.DELEGATE = new net.kyori.adventure.platform.modcommon.impl.service.ANSIComponentSerializerProviderImpl();
     ClickCallbackProviderImpl.DELEGATE = new net.kyori.adventure.platform.modcommon.impl.service.ClickCallbackProviderImpl();
     ComponentLoggerProviderImpl.DELEGATE = new net.kyori.adventure.platform.modcommon.impl.service.ComponentLoggerProviderImpl();
