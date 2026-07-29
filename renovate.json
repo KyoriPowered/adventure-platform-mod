@@ -16,7 +16,7 @@
     {
       "description": "Correct NeoForge version handling",
       "matchPackageNames": ["net.neoforged:neoforge"],
-      "versioning": "regex:^(?<compatibility>(?:\\d+\\.){2})(?<minor>\\d+)(-beta)?$"
+      "versioning": "regex:^(?<compatibility>(?:\\d+\\.){3})(?<minor>\\d+)(?:-beta)?$"
     },
     {
       "description": "Correct NeoForm version handling",
