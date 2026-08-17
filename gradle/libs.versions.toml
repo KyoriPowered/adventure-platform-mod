@@ -5,7 +5,7 @@ format = { version = "1.1" }
 adventure = "5.2.0"
 ansi = "1.1.1"
 autoService = "1.1.1"
-checkstyle = "13.0.0"
+checkstyle = "13.11.0"
 fabricApi = "0.152.1+26.2"
 fabricLoader = "0.19.3"
 indra = "4.0.0"
